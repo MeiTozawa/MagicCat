@@ -273,10 +273,15 @@
     <ClCompile Include="..\common\tnl\tnl_vector2i.cpp" />
     <ClCompile Include="..\common\tnl\tnl_vector3.cpp" />
     <ClCompile Include="MagicCat.cpp" />
+    <ClCompile Include="program\Card\CardService.ixx" />
     <ClCompile Include="program\gm_main.cpp" />
+    <ClCompile Include="program\Input\InputService.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="program\Input\InputService.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -5,10 +5,12 @@
 #include "../ResourceConstantHedder.h"
 #include "gm_main.h"
 
+import InputService;
+
 
 void gameStart()
 {
-    
+    auto inputService = CreateInputService();
 }
 
 //------------------------------------------------------------------------------------------------------------

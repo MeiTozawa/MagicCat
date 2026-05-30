@@ -1,4 +1,4 @@
-// 000_GameDevelop.cpp : アプリケーションのエントリ ポイントを定義します。
+// MagicCat.cpp : アプリケーションのエントリ ポイントを定義します。
 //
 
 #pragma warning(disable:4819)
@@ -6,7 +6,7 @@
 #include <chrono>
 #pragma comment(lib,"winmm.lib")
 #include "framework.h"
-#include "000_GameDevelop.h"
+#include "MagicCat.h"
 #include "dxe.h"
 #include "app_build_setting.h"
 #include "program/gm_main.h"

@@ -86,6 +86,9 @@
     <IncludePath>..\common;..\common\tnl;..\common\dxe;..\common\dxe\imgui;..\common\DirectXTex\Inc\DirectXTex;..\common\DirectXTK\Inc;C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;$(IncludePath)</IncludePath>
     <LibraryPath>..\common\DirectXTK\lib_release;..\common\DirectXTex\lib_release;C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>MagicCat</RootNamespace>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -203,7 +206,7 @@
     <ClInclude Include="..\common\tnl\tnl_vector2f.h" />
     <ClInclude Include="..\common\tnl\tnl_vector2i.h" />
     <ClInclude Include="..\common\tnl\tnl_vector3.h" />
-    <ClInclude Include="000_GameDevelop.h" />
+    <ClInclude Include="MagicCat.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="program\gm_main.h" />
     <ClInclude Include="Resource.h" />
@@ -269,22 +272,10 @@
     <ClCompile Include="..\common\tnl\tnl_vector2f.cpp" />
     <ClCompile Include="..\common\tnl\tnl_vector2i.cpp" />
     <ClCompile Include="..\common\tnl\tnl_vector3.cpp" />
-    <ClCompile Include="000_GameDevelop.cpp" />
-    <ClCompile Include="program\Game.cppm" />
+    <ClCompile Include="MagicCat.cpp" />
     <ClCompile Include="program\gm_main.cpp" />
-    <ClCompile Include="program\CardSystem.cppm" />
-    <ClCompile Include="program\CombatLogic.cppm" />
-    <ClCompile Include="program\GameInput.cppm" />
-    <ClCompile Include="program\CombatScene.cppm" />
-    <ClCompile Include="program\AssetLoading.cppm" />
-    <ClCompile Include="program\CardRenderer.cppm" />
-    <ClCompile Include="program\TitleScene.cppm" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="000_GameDevelop.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="000_GameDevelop.ico" />
     <Image Include="small.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

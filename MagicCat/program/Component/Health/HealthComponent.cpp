@@ -1,22 +1,22 @@
-﻿module;
+module;
 
 module HealthComponent;
 #include <functional>
 
 class HealthComponent : public IDamageable
 {
-    int health = 100;
-    bool isDead = false;
+    int _health = 100;
+    bool _isDead = false;
 
 public:
     std::vector<std::function<void()>> OnDeathEvent;
     
     void TakeDamage(int damage) override
     {
-        health -= damage;
-        if (health <= 0)
+        _health -= damage;
+        if (_health <= 0)
         {
-            isDead = true;
+            _isDead = true;
             for (auto i : OnDeathEvent)
             {
                 i();
@@ -32,6 +32,6 @@ public:
 
     bool IsDead() override
     {
-        return isDead;
+        return _isDead;
     }
 };

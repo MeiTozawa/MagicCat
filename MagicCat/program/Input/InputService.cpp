@@ -7,20 +7,20 @@ module InputService;
 class InputService : public IInputService
 {
 private:
-    Shared<dxe::Input> input;
-    std::vector<InputContext> activeInputModes;
-    std::unordered_map<InputContext, std::unordered_map<InputAction, std::vector<dxe::Input::eButton>>> actionMappings;
+    Shared<dxe::Input> _input;
+    std::vector<InputContext> _activeInputModes;
+    std::unordered_map<InputContext, std::unordered_map<InputAction, std::vector<dxe::Input::eButton>>> _actionMappings;
 
-    const std::vector<dxe::Input::eButton>* checkInput(InputAction action) const
+    const std::vector<dxe::Input::eButton>* CheckInput(InputAction action) const
     {
-        if (activeInputModes.empty()) return nullptr;
+        if (_activeInputModes.empty()) return nullptr;
 
         // 現在のコンテキストを表示する
-        InputContext currentContext = activeInputModes.back();
+        InputContext currentContext = _activeInputModes.back();
 
         // 現在のコンテキストのマッピングテーブル内で、このアクションが設定されているか確認する
-        auto contextIt = actionMappings.find(currentContext);
-        if (contextIt == actionMappings.end()) return nullptr;
+        auto contextIt = _actionMappings.find(currentContext);
+        if (contextIt == _actionMappings.end()) return nullptr;
 
         // 現在のコンテキストがこのアクションを認識しているかを確認する
         auto actionIt = contextIt->second.find(action);
@@ -32,22 +32,22 @@ private:
 public:
     InputService()
     {
-        input = dxe::Input::Create(0, dxe::Input::eJoypad::PAD1);
+        _input = dxe::Input::Create(0, dxe::Input::eJoypad::PAD1);
         
-        activeInputModes.push_back(InputContext::Gameplay);
+        _activeInputModes.push_back(InputContext::Gameplay);
 
         // Gameplay マッピングを設定する
-        actionMappings[InputContext::Gameplay][InputAction::Interact] = {
+        _actionMappings[InputContext::Gameplay][InputAction::GpInteract] = {
             dxe::Input::eButton::KB_SPACE,
             dxe::Input::eButton::PAD_A
         };
 
         // Menu マッピングを設定する
-        actionMappings[InputContext::Menu][InputAction::UI_Confirm] = {
+        _actionMappings[InputContext::Menu][InputAction::UiConfirm] = {
             dxe::Input::eButton::KB_SPACE,
             dxe::Input::eButton::PAD_A
         };
-        actionMappings[InputContext::Menu][InputAction::UI_Cancel] = {
+        _actionMappings[InputContext::Menu][InputAction::UiCancel] = {
             dxe::Input::eButton::KB_ESCAPE, 
             dxe::Input::eButton::PAD_B
         };
@@ -56,50 +56,50 @@ public:
 
     bool IsPressed(InputAction action) const override
     {
-        auto keys = checkInput(action);
+        auto keys = CheckInput(action);
         if (keys != nullptr)
-            return input->pressed(keys);
+            return _input->pressed(keys);
         return false;
     }
 
     bool IsHolding(InputAction action) const override
     {
-        auto keys = checkInput(action);
+        auto keys = CheckInput(action);
         if (keys != nullptr)
-            return input->keep(keys);
+            return _input->keep(keys);
         return false;
     }
 
     bool IsReleased(InputAction action) const override
     {
-        auto keys = checkInput(action);
+        auto keys = CheckInput(action);
         if (keys != nullptr)
-            return input->released(keys);
+            return _input->released(keys);
         return false;
     }
 
     void PushContext(InputContext context) override
     {
         // 同じContextが連続してスタックにプッシュされるのを防ぐ
-        if (activeInputModes.empty() || activeInputModes.back() != context)
+        if (_activeInputModes.empty() || _activeInputModes.back() != context)
         {
-            activeInputModes.push_back(context);
+            _activeInputModes.push_back(context);
         }
     }
 
     void PopContext() override
     {
         // スタックが空になるのを防ぐ
-        if (activeInputModes.size() > 1)
+        if (_activeInputModes.size() > 1)
         {
-            activeInputModes.pop_back();
+            _activeInputModes.pop_back();
         }
     }
 
     void ClearAndSetContext(InputContext context) override
     {
-        activeInputModes.clear();
-        activeInputModes.push_back(context);
+        _activeInputModes.clear();
+        _activeInputModes.push_back(context);
     }
 };
 

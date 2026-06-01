@@ -4,10 +4,10 @@ module;
 export module InputService; 
 
 export enum class InputAction {
-    GP_Move, GP_Interact, GP_Confirm, GP_ToggleMenu,
+    GpMove, GpInteract, GpConfirm, GpToggleMenu,
     
-    UI_Confirm = 100,
-    UI_Cancel,
+    UiConfirm = 100,
+    UiCancel,
 };
 
 export enum class InputContext {

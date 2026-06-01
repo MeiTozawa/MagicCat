@@ -1,7 +1,8 @@
 ﻿module;
 
-export module HealthComponent;
 #include <functional>
+
+export module HealthComponent;
 
 export class IDamageable
 {

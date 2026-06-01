@@ -1,7 +1,8 @@
 module;
 
-module HealthComponent;
 #include <functional>
+
+module HealthComponent;
 
 class HealthComponent : public IDamageable
 {

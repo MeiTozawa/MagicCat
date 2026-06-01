@@ -1,8 +1,11 @@
 module;
+
 #include <dxe.h>
 #include <memory>
 
 module InputService;
+
+import ServiceLocator;
 
 class InputService : public IInputService
 {
@@ -103,7 +106,8 @@ public:
     }
 };
 
-Shared<IInputService> CreateInputService()
-{
-    return std::make_shared<InputService>();
-}
+static struct RegisterInputService {
+    RegisterInputService() {
+        ServiceLocator::RegisterSingleton<IInputService, InputService>(std::make_shared<InputService>());
+    }
+} autoRegister_InputService;

@@ -1,5 +1,5 @@
 module;
-#include <memory>
+
 
 export module InputService; 
 
@@ -26,5 +26,3 @@ public:
     virtual void PopContext() = 0;
     virtual void ClearAndSetContext(InputContext context) = 0;
 };
-
-export std::shared_ptr<IInputService> CreateInputService();

@@ -1,4 +1,4 @@
-﻿#include <time.h>
+#include <time.h>
 #include <string>
 #include <fstream>
 #include <dxe.h>
@@ -6,17 +6,20 @@
 #include "gm_main.h"
 
 import InputService;
+import ServiceLocator;
+import UiService;
 
 
 void gameStart()
 {
-    auto inputService = CreateInputService();
+    auto inputService = ServiceLocator::Get<IInputService>();
 }
 
 //------------------------------------------------------------------------------------------------------------
 // 毎フレーム実行されます
 void gameMain(float delta_time)
 {
+    
 }
 
 //------------------------------------------------------------------------------------------------------------

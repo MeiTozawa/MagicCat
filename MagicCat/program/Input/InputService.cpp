@@ -8,15 +8,15 @@ class InputService : public IInputService
 {
 private:
     Shared<dxe::Input> input;
-    std::vector<InputContext> contextStack;
+    std::vector<InputContext> activeInputModes;
     std::unordered_map<InputContext, std::unordered_map<InputAction, std::vector<dxe::Input::eButton>>> actionMappings;
 
     const std::vector<dxe::Input::eButton>* checkInput(InputAction action) const
     {
-        if (contextStack.empty()) return nullptr;
+        if (activeInputModes.empty()) return nullptr;
 
         // 現在のコンテキストを表示する
-        InputContext currentContext = contextStack.back();
+        InputContext currentContext = activeInputModes.back();
 
         // 現在のコンテキストのマッピングテーブル内で、このアクションが設定されているか確認する
         auto contextIt = actionMappings.find(currentContext);
@@ -34,7 +34,7 @@ public:
     {
         input = dxe::Input::Create(0, dxe::Input::eJoypad::PAD1);
         
-        contextStack.push_back(InputContext::Gameplay);
+        activeInputModes.push_back(InputContext::Gameplay);
 
         // Gameplay マッピングを設定する
         actionMappings[InputContext::Gameplay][InputAction::Interact] = {
@@ -81,25 +81,25 @@ public:
     void PushContext(InputContext context) override
     {
         // 同じContextが連続してスタックにプッシュされるのを防ぐ
-        if (contextStack.empty() || contextStack.back() != context)
+        if (activeInputModes.empty() || activeInputModes.back() != context)
         {
-            contextStack.push_back(context);
+            activeInputModes.push_back(context);
         }
     }
 
     void PopContext() override
     {
         // スタックが空になるのを防ぐ
-        if (contextStack.size() > 1)
+        if (activeInputModes.size() > 1)
         {
-            contextStack.pop_back();
+            activeInputModes.pop_back();
         }
     }
 
     void ClearAndSetContext(InputContext context) override
     {
-        contextStack.clear();
-        contextStack.push_back(context);
+        activeInputModes.clear();
+        activeInputModes.push_back(context);
     }
 };
 

@@ -1,10 +1,18 @@
 module;
 
 #include <dxe.h>
+#include <vector>
+#include <memory>
 
 module UiService;
 
-class CombatUi : public IUiService
+import GameService;
+import CardService;
+import ServiceLocator;
+
+constexpr float ICON_SCALE = 0.3f;
+
+class CombatUi : public IUi
 {
 public:
     CombatUi()
@@ -15,17 +23,17 @@ public:
     void Draw() override
     {
         auto card = Card{ROCK, 2};
-        drawCard(card, tnl::Vector2f{300, 450}, false);
-        drawCard(card, tnl::Vector2f{450, 450}, false);
-        drawCard(card, tnl::Vector2f{600, 450}, false);
-        drawCard(card, tnl::Vector2f{750, 450}, false);
+        drawCard(card, tnl::Vector2i{300, 450}, true);
+        drawCard(card, tnl::Vector2i{450, 450}, false);
+        drawCard(card, tnl::Vector2i{600, 450}, false);
+        drawCard(card, tnl::Vector2i{750, 450}, false);
     }
 
 private:
     std::vector<Shared<dxe::Sprite>> spriteMappings{nullptr, nullptr, nullptr};
     
     
-    void drawCard(Card card, tnl::Vector2f start_position, bool is_selected = false)
+    void drawCard(Card card, tnl::Vector2i start_position, bool is_selected = false)
     {
         auto x = start_position.x, y = start_position.y;
         uint16_t color = 0;
@@ -47,12 +55,12 @@ private:
                 color, TRUE);
 
         auto icon = spriteMappings[card.CardType];
-        icon->setScale(0.2f);
-        icon->setPosition(tnl::Vector2f((x + CARD_WIDTH / 2), (y + CARD_HEIGHT / 3)));
+        icon->setScaleXY({ICON_SCALE, ICON_SCALE});
+        icon->setPosition(tnl::Vector2f((x + CARD_WIDTH / 2 ), (y + CARD_HEIGHT / 3)));
         icon->draw();
 
         DrawFormatString(x + 10, y + CARD_HEIGHT / 2 + 10, COLOR_BLACK,
-                         L"敵が「%s」を出す確率を%d上げる", textMappings[card.CardType], card.Offset);
+                         L"敵が「%s」を\n出す確率\nを%d上げる", textMappings[card.CardType], card.Offset);
     }
 
     void loadAssets()
@@ -87,9 +95,11 @@ private:
 
 static struct RegisterCombatUi {
     RegisterCombatUi() {
-        auto manager = ServiceLocator::Get<IUiManager>();
-        if(manager) {
-            manager->RegisterScene(COMBAT, std::make_shared<CombatUi>());
-        }
+        UiRegistry::GetRegistrations().push_back([]() {
+            auto manager = ServiceLocator::Get<IUiService>();
+            if(manager) {
+                manager->RegisterScene(COMBAT, std::make_shared<CombatUi>());
+            }
+        });
     }
 } autoRegister_CombatUi;

@@ -5,26 +5,29 @@
 #include "../ResourceConstantHedder.h"
 #include "gm_main.h"
 
-import InputService;
+import GameService;
 import ServiceLocator;
-import UiService;
 
+
+Shared<IGameService> gameService;
 
 void gameStart()
 {
-    auto inputService = ServiceLocator::Get<IInputService>();
+    gameService = ServiceLocator::Get<IGameService>();
+    gameService->Start();
 }
 
 //------------------------------------------------------------------------------------------------------------
 // 毎フレーム実行されます
 void gameMain(float delta_time)
 {
-    
+    gameService->Update(delta_time);
 }
 
 //------------------------------------------------------------------------------------------------------------
 // ゲーム終了時に一度だけ実行されます
 void gameEnd()
 {
+    gameService->End();
 }
 

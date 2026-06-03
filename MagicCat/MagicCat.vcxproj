@@ -209,6 +209,7 @@
     <ClInclude Include="MagicCat.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="program\gm_main.h" />
+    <ClInclude Include="program\RandomUtils.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -273,26 +274,32 @@
     <ClCompile Include="..\common\tnl\tnl_vector2i.cpp" />
     <ClCompile Include="..\common\tnl\tnl_vector3.cpp" />
     <ClCompile Include="MagicCat.cpp" />
+    <ClCompile Include="program\Audio\AudioService.cpp" />
+    <ClCompile Include="program\Audio\AudioService.ixx" />
     <ClCompile Include="program\Card\CardService.ixx" />
     <ClCompile Include="program\Character\Character.ixx" />
     <ClCompile Include="program\Character\Enmey\Enemy.ixx" />
-    <ClCompile Include="program\Character\Health\HealthComponent.cpp" />
+    <ClCompile Include="program\Character\Enmey\EnemyService.cpp" />
+    <ClCompile Include="program\Character\Enmey\EnemyService.ixx" />
     <ClCompile Include="program\Character\Health\HealthComponent.ixx" />
+    <ClCompile Include="program\Character\Health\IDamagable.ixx" />
     <ClCompile Include="program\Character\Player\Player.ixx" />
+    <ClCompile Include="program\Core\GameService.cpp" />
     <ClCompile Include="program\Core\GameService.ixx" />
     <ClCompile Include="program\gm_main.cpp" />
     <ClCompile Include="program\Input\InputService.cpp" />
     <ClCompile Include="program\ServiceLocator.ixx" />
     <ClCompile Include="program\UI\CombatUi.cpp" />
+    <ClCompile Include="program\UI\ResultUi.cpp" />
     <ClCompile Include="program\UI\StartUi.cpp" />
-    <ClCompile Include="program\UI\UiManager.cpp" />
+    <ClCompile Include="program\UI\UiService.cpp" />
+    <ClCompile Include="program\UI\UiService.ixx" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="program\Input\InputService.ixx" />
-    <Content Include="program\UI\UiService.ixx" />
+    <ClCompile Include="program\Input\InputService.ixx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="program\Component\" />

@@ -1,6 +1,7 @@
 # IDE cache/options directory
 .vs/
 .idea/
+.vscode/
 
 # User-specific files
 *.rsuser

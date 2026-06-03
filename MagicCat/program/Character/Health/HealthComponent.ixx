@@ -1,19 +1,34 @@
-﻿module;
+module;
 
 #include <functional>
 
 export module HealthComponent;
 
-export class IDamageable
+import IDamagable;
+
+export class HealthComponent : public IDamageable
 {
+    int _health = 100;
+    bool _isDead = false;
+
 public:
-    virtual ~IDamageable() const = 0;
+    std::vector<std::function<void()>> OnDeathEvent;
     
-    virtual void TakeDamage(int damage) = 0;
+    void TakeDamage(int damage) override
+    {
+        _health -= damage;
+        if (_health <= 0)
+        {
+            _isDead = true;
+            for (auto i : OnDeathEvent)
+            {
+                i();
+            }
+        }
+    }
 
-    virtual void RegisterDeathCallback(std::function<void()> callback) = 0;
-    
-    virtual bool IsDead() = 0;
+    bool IsDead() override
+    {
+        return _isDead;
+    }
 };
-
-

@@ -1,16 +1,18 @@
 module;
 
 #include <vector>
+#include <functional>
 
-module Player;
+export module Player;
 
 import Character;
 import HealthComponent;
 import CardService;
 
 
-class Player: public Character, IDamageable
+export class Player: public Character, public HealthComponent
 {
+
 private:
     std::vector<Card> _cards = std::vector<Card>();
 };

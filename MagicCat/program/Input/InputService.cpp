@@ -2,6 +2,8 @@ module;
 
 #include <dxe.h>
 #include <memory>
+#include <vector>
+#include <unordered_map>
 
 module InputService;
 
@@ -37,20 +39,24 @@ public:
     {
         _input = dxe::Input::Create(0, dxe::Input::eJoypad::PAD1);
         
-        _activeInputModes.push_back(InputContext::Gameplay);
+        _activeInputModes.push_back(InputContext::InGame);
 
         // Gameplay マッピングを設定する
-        _actionMappings[InputContext::Gameplay][InputAction::GpInteract] = {
+        _actionMappings[InputContext::InGame][InputAction::IgInteract] = {
+            dxe::Input::eButton::KB_E,
+            dxe::Input::eButton::PAD_X
+        };
+        _actionMappings[InputContext::InGame][InputAction::IgConfirm] = {
             dxe::Input::eButton::KB_SPACE,
             dxe::Input::eButton::PAD_A
         };
 
         // Menu マッピングを設定する
-        _actionMappings[InputContext::Menu][InputAction::UiConfirm] = {
+        _actionMappings[InputContext::MENU][InputAction::MenuConfirm] = {
             dxe::Input::eButton::KB_SPACE,
             dxe::Input::eButton::PAD_A
         };
-        _actionMappings[InputContext::Menu][InputAction::UiCancel] = {
+        _actionMappings[InputContext::MENU][InputAction::MenuCancel] = {
             dxe::Input::eButton::KB_ESCAPE, 
             dxe::Input::eButton::PAD_B
         };
@@ -61,7 +67,13 @@ public:
     {
         auto keys = CheckInput(action);
         if (keys != nullptr)
-            return _input->pressed(keys);
+        {
+            for (auto key : *keys)
+            {
+                if (_input->pressed(key))
+                    return true;
+            }
+        }
         return false;
     }
 
@@ -69,7 +81,13 @@ public:
     {
         auto keys = CheckInput(action);
         if (keys != nullptr)
-            return _input->keep(keys);
+        {
+            for (auto key : *keys)
+            {
+                if (_input->keep(key))
+                    return true;
+            }
+        }
         return false;
     }
 
@@ -77,7 +95,13 @@ public:
     {
         auto keys = CheckInput(action);
         if (keys != nullptr)
-            return _input->released(keys);
+        {
+            for (auto key : *keys)
+            {
+                if (_input->released(key))
+                    return true;
+            }
+        }
         return false;
     }
 

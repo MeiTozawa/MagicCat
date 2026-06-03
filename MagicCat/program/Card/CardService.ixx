@@ -4,8 +4,8 @@ module;
 
 export module CardService;
 
-export constexpr float CARD_HEIGHT = 300;
-export constexpr float CARD_WIDTH = 200;
+export constexpr int CARD_HEIGHT = 300;
+export constexpr int CARD_WIDTH = 200;
 
 export enum ECardType {
     ROCK, PAPER, SCISSORS

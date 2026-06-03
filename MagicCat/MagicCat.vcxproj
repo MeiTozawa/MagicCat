@@ -22,7 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{7067FFD2-DC34-4C8F-B908-8506AD83844E}</ProjectGuid>
-    <RootNamespace>000_GameDevelop</RootNamespace>
+    <RootNamespace>MagicCat</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -276,23 +276,24 @@
     <ClCompile Include="program\Card\CardService.ixx" />
     <ClCompile Include="program\Character\Character.ixx" />
     <ClCompile Include="program\Character\Enmey\Enemy.ixx" />
-    <ClCompile Include="program\Character\Health\HealthComponent.cpp" />
     <ClCompile Include="program\Character\Health\HealthComponent.ixx" />
+    <ClCompile Include="program\Character\Health\IDamagable.ixx" />
     <ClCompile Include="program\Character\Player\Player.ixx" />
+    <ClCompile Include="program\Core\GameService.cpp" />
     <ClCompile Include="program\Core\GameService.ixx" />
     <ClCompile Include="program\gm_main.cpp" />
+    <ClCompile Include="program\Input\InputService.ixx" />
     <ClCompile Include="program\Input\InputService.cpp" />
     <ClCompile Include="program\ServiceLocator.ixx" />
     <ClCompile Include="program\UI\CombatUi.cpp" />
     <ClCompile Include="program\UI\StartUi.cpp" />
-    <ClCompile Include="program\UI\UiManager.cpp" />
+    <ClCompile Include="program\UI\UiService.ixx" />
+    <ClCompile Include="program\UI\UiService.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="program\Input\InputService.ixx" />
-    <Content Include="program\UI\UiService.ixx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="program\Component\" />

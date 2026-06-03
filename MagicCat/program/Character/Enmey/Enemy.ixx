@@ -8,39 +8,44 @@ import Character;
 import HealthComponent;
 
 
-export class Enemy : public Character, IDamageable
+export class Enemy : public Character, public HealthComponent
 {
 public:
-    Enemy(float baseProbability)
-        : _baseProbability(baseProbability)
+    Enemy(int baseProbability)
+        : baseProbability(baseProbability)
     {
-        _rockProbability = baseProbability;
-        _scissorsProbability = baseProbability;
-        _paperProbability = baseProbability;
+        rockProbability = baseProbability;
+        scissorsProbability = baseProbability;
+        paperProbability = baseProbability;
         
         std::random_device rd;
-        _rng = std::mt19937(rd());
+        rng = std::mt19937(rd());
     }
     
     void AddRockProbability(int v)
     {
-        _rockProbability += v;
+        rockProbability += v;
     }
     
     void AddScissorsProbability(int v)
     {
-        _scissorsProbability += v;
+        scissorsProbability += v;
     }
     
     void AddPaperProbability(int v)
     {
-        _paperProbability += v;
+        paperProbability += v;
+    }
+    
+    void Attack()
+    {
+        
     }
 
 private:
-    int _baseProbability = 0;
-    int _rockProbability = 0;
-    int _scissorsProbability = 0;
-    int _paperProbability = 0;
-    std::mt19937 _rng;
+    int baseProbability = 0;
+    int rockProbability = 0;
+    int scissorsProbability = 0;
+    int paperProbability = 0;
+    std::mt19937 rng;
 };

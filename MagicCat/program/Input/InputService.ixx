@@ -4,14 +4,14 @@ module;
 export module InputService; 
 
 export enum class InputAction {
-    GpMove, GpInteract, GpConfirm, GpToggleMenu,
+    IgMove, IgInteract, IgConfirm, IgToggleMenu,
     
-    UiConfirm = 100,
-    UiCancel,
+    MenuConfirm = 100,
+    MenuCancel,
 };
 
 export enum class InputContext {
-    Gameplay, Menu, Cutscene
+    InGame, MENU
 };
 
 export class IInputService {

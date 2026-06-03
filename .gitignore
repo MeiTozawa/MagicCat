@@ -53,3 +53,9 @@ Desktop.ini
 
 # Ignore specific files
 imgui.ini
+
+#CMake files
+/build/
+/out/
+CMakeCache.txt
+CMakeFiles/

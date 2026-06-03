@@ -209,6 +209,7 @@
     <ClInclude Include="MagicCat.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="program\gm_main.h" />
+    <ClInclude Include="program\RandomUtils.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -276,6 +277,7 @@
     <ClCompile Include="program\Card\CardService.ixx" />
     <ClCompile Include="program\Character\Character.ixx" />
     <ClCompile Include="program\Character\Enmey\Enemy.ixx" />
+    <ClCompile Include="program\Character\Enmey\EnemyService.ixx" />
     <ClCompile Include="program\Character\Health\HealthComponent.ixx" />
     <ClCompile Include="program\Character\Health\IDamagable.ixx" />
     <ClCompile Include="program\Character\Player\Player.ixx" />

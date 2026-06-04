@@ -23,10 +23,10 @@ public:
     void Draw() override
     {
         auto card = Card{ROCK, 2};
-        drawCard(card, tnl::Vector2i{300, 450}, true);
-        drawCard(card, tnl::Vector2i{450, 450}, false);
+        drawCard(card, tnl::Vector2i{200, 450}, true);
+        drawCard(card, tnl::Vector2i{400, 450}, false);
         drawCard(card, tnl::Vector2i{600, 450}, false);
-        drawCard(card, tnl::Vector2i{750, 450}, false);
+        drawCard(card, tnl::Vector2i{800, 450}, false);
     }
 
 private:

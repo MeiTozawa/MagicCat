@@ -1,16 +1,15 @@
 cmake_minimum_required(VERSION 3.28)
+project(MagicCat LANGUAGES CXX)
 
-project(MyAwesomeGame CXX)
-
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h")
+set(DXLIB_DIR "C:/DxLib_VC/プロジェクトに追加すべきファイル_VC用" CACHE PATH "Path to DxLib")
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+if(MSVC)
+    add_compile_options(/utf-8 /source-charset:utf-8)
+    add_compile_definitions(WIN32 _WINDOWS UNICODE _UNICODE)
+endif()
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src)
-
-target_include_directories(${PROJECT_NAME} PRIVATE "C:\DxLib_VC")
-target_link_directories(${PROJECT_NAME} PRIVATE "C:\DxLib_VC")
+add_subdirectory(common)
+add_subdirectory(MagicCat)

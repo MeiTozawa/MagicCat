@@ -4,7 +4,7 @@ module;
 #include <vector>
 export module HealthComponent;
 
-import IDamagable;
+import IDamageable;
 
 export class HealthComponent : public IDamageable
 {

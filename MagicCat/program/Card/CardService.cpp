@@ -9,10 +9,10 @@ import ServiceLocator;
 
 class CardService : public ICardService
 {
-public:
+private:
     std::vector<tnl::Rect> rectOfCards = {};
     
-    
+public:
     CardService()
     {
         deck.push_back(CARD_ROCK_2);
@@ -30,12 +30,12 @@ public:
         Random::Shuffle(drawPile);
     }
 
-    const std::vector<Card>& GetHandCards()
+    const std::vector<Card>& GetHandCards() override
     {
         return hand;
     }
 
-    const std::vector<Card>& CardService::DrawCards(int count) override
+    const std::vector<Card>& DrawCards(int count) override
     {
         discardPile.insert(discardPile.end(), hand.begin(), hand.end());
         hand.clear();

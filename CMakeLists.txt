@@ -10,7 +10,7 @@ if(NOT EXISTS "${DXLIB_DIR}")
 endif()
 
 if(MSVC)
-    add_compile_options(/utf-8)
+    add_compile_options("/utf-8")
     add_compile_definitions(WIN32 _WINDOWS UNICODE _UNICODE)
 endif()
 

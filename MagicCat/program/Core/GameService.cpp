@@ -34,7 +34,7 @@ private:
 public:
     GameService()
     {
-        
+        // TODO
     }
 
     void Start() override
@@ -47,7 +47,7 @@ public:
 
     void End() override
     {
-        
+        // TODO
     }
 
     void Update(float deltaTime) override
@@ -63,7 +63,7 @@ public:
                 ChangeToStart();
             if (auto p = inputService->OnMouseClick(InputAction::IgMouseClick); p.x >= 0 && p.y >= 0)
             {
-                for (auto rect : cardService->GetRectOfCards())
+                for (const auto& rect : cardService->GetRectOfCards())
                 {
                     // TODO: Handling mouse events
                 }
@@ -88,6 +88,11 @@ private:
         player = Player();
         enemy = enemyPool->GetEnemy();
         uiService->ChangeSceneTo(COMBAT);
+    }
+    
+    static void PlayCard(int index, Enemy& enemy, const std::vector<Card>& hand)
+    {
+        enemy.AddWeight(hand[index]);
     }
 };
 

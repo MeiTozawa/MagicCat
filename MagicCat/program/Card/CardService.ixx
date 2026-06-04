@@ -44,11 +44,11 @@ export class ICardService
 {
 public:
     virtual ~ICardService() = default;
-    virtual const std::vector<Card>& DrawCards(int count);
-    virtual const std::vector<Card>& GetHandCards();
-    virtual void PushBackRectOfCard(tnl::Rect);
-    virtual const std::vector<tnl::Rect>& GetRectOfCards();
-    virtual void ClearRectOfCards();
+    virtual const std::vector<Card>& DrawCards(int count) = 0;
+    virtual const std::vector<Card>& GetHandCards() = 0;
+    virtual void PushBackRectOfCard(tnl::Rect) = 0;
+    virtual const std::vector<tnl::Rect>& GetRectOfCards() = 0;
+    virtual void ClearRectOfCards() = 0;
 };
 
 

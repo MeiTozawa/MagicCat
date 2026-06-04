@@ -22,8 +22,6 @@ private:
     Shared<ICardService> cardService;
 
 public:
-    
-
     CombatUi()
     {
         loadAssets();
@@ -48,7 +46,7 @@ private:
     std::vector<Shared<dxe::Sprite>> spriteMappings{nullptr, nullptr, nullptr};
 
 
-    void drawCard(Card card, tnl::Vector2i start_position, bool is_selected = false)
+    void drawCard(Card card, tnl::Vector2i start_position, bool is_selected = false) const
     {
         auto x = start_position.x, y = start_position.y;
         uint16_t color = 0;
@@ -69,11 +67,10 @@ private:
                 start_position.x + CARD_WIDTH, start_position.y + CARD_HEIGHT,
                 color, TRUE);
 
-        auto icon = spriteMappings[card.CardType];
-        if (icon)
+        if (auto icon = spriteMappings[card.CardType])
         {
             icon->setScaleXY({ICON_SCALE, ICON_SCALE});
-            icon->setPosition(tnl::Vector2f((x + CARD_WIDTH / 2), (y + CARD_HEIGHT / 3)));
+            icon->setPosition({(x + CARD_WIDTH / 2.5f), (y + CARD_HEIGHT / 3.5f)});
             icon->draw();
         }
 

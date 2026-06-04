@@ -1,13 +1,9 @@
 ﻿module;
 
-#include <memory>
-#include <vector>
-
-#include "../../RandomUtils.h"
+#include <RandomUtils.h>
 
 module EnemyService;
 
-import Enmey;
 import ServiceLocator;
 
 class EnemyPool: public IEnemyPool
@@ -33,7 +29,7 @@ public:
         return em;
     }
     
-    private:
+private:
     std::vector<Enemy> enemies;
 };
 

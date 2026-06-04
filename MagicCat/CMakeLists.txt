@@ -6,7 +6,8 @@ add_executable(MagicCat WIN32
     program/UI/CombatUi.cpp
     program/UI/StartUi.cpp
     program/UI/UiService.cpp
-    program/Character/Enmey/EnemyService.cpp
+    program/Character/Enemy/EnemyService.cpp
+    program/Card/CardService.cpp
 )
 
 target_sources(MagicCat
@@ -14,10 +15,10 @@ target_sources(MagicCat
     FILE_SET cxx_modules TYPE CXX_MODULES FILES
     program/Card/CardService.ixx
     program/Character/Character.ixx
-    program/Character/Enmey/Enemy.ixx
-    program/Character/Enmey/EnemyService.ixx
+    program/Character/Enemy/Enemy.ixx
+    program/Character/Enemy/EnemyService.ixx
     program/Character/Health/HealthComponent.ixx
-    program/Character/Health/IDamagable.ixx
+    program/Character/Health/IDamageable.ixx
     program/Character/Player/Player.ixx
     program/Core/GameService.ixx
     program/Input/InputService.ixx

@@ -17,6 +17,8 @@ import HealthComponent;
 
 import EnemyService;
 import Enmey;
+import CardService;
+
 
 class GameService : public IGameService
 {
@@ -27,6 +29,7 @@ private:
     Shared<IEnemyPool> enemyPool = nullptr;
     Player player{};
     Enemy enemy{};
+    Shared<ICardService> cardService;
 
 public:
     GameService()
@@ -39,6 +42,7 @@ public:
         uiService = ServiceLocator::Get<IUiService>();
         inputService = ServiceLocator::Get<IInputService>();
         enemyPool = ServiceLocator::Get<IEnemyPool>();
+        cardService = ServiceLocator::Get<ICardService>();
     }
 
     void End() override
@@ -57,6 +61,13 @@ public:
         case COMBAT:
             if (player.IsDead())
                 ChangeToStart();
+            if (auto p = inputService->OnMouseClick(InputAction::IgMouseClick); p.x >= 0 && p.y >= 0)
+            {
+                for (auto rect : cardService->GetRectOfCards())
+                {
+                    // TODO: Handling mouse events
+                }
+            }
             break;
         default: ;
         }

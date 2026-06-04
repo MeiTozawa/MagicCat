@@ -1,17 +1,19 @@
 module;
 
+#include <tnl_vector2i.h>
 
 export module InputService; 
 
 export enum class InputAction {
-    IgMove, IgInteract, IgConfirm, IgToggleMenu,
+    IgMove, IgInteract, IgConfirm, IgToggleMenu,IgMouseClick,
     
     MenuConfirm = 100,
     MenuCancel,
+    MenuMouseClick,
 };
 
 export enum class InputContext {
-    InGame, MENU
+    InGame, Menu
 };
 
 export class IInputService {
@@ -21,6 +23,7 @@ public:
     virtual bool IsPressed(InputAction action) const = 0;
     virtual bool IsHolding(InputAction action) const = 0;
     virtual bool IsReleased(InputAction action) const = 0;
+    virtual tnl::Vector2i OnMouseClick(InputAction action) const = 0;
 
     virtual void PushContext(InputContext context) = 0;
     virtual void PopContext() = 0;

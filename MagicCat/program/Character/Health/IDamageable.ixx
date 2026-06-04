@@ -2,7 +2,7 @@
 
 #include <functional>
 
-export module IDamagable;
+export module IDamageable;
 
 export class IDamageable
 {

@@ -1,6 +1,7 @@
 module;
 
 #include <dxe.h>
+#include <DxLib.h>
 #include <memory>
 #include <vector>
 #include <unordered_map>
@@ -30,7 +31,7 @@ private:
         // 現在のコンテキストがこのアクションを認識しているかを確認する
         auto actionIt = contextIt->second.find(action);
         if (actionIt == contextIt->second.end()) return nullptr;
-        
+
         return &actionIt->second;
     }
 
@@ -38,7 +39,7 @@ public:
     InputService()
     {
         _input = dxe::Input::Create(0, dxe::Input::eJoypad::PAD1);
-        
+
         _activeInputModes.push_back(InputContext::InGame);
 
         // Gameplay マッピングを設定する
@@ -50,15 +51,21 @@ public:
             dxe::Input::eButton::KB_SPACE,
             dxe::Input::eButton::PAD_A
         };
+        _actionMappings[InputContext::InGame][InputAction::IgMouseClick] = {
+            dxe::Input::eButton::MOUSE_LEFT
+        };
 
         // Menu マッピングを設定する
-        _actionMappings[InputContext::MENU][InputAction::MenuConfirm] = {
+        _actionMappings[InputContext::Menu][InputAction::MenuConfirm] = {
             dxe::Input::eButton::KB_SPACE,
             dxe::Input::eButton::PAD_A
         };
-        _actionMappings[InputContext::MENU][InputAction::MenuCancel] = {
-            dxe::Input::eButton::KB_ESCAPE, 
+        _actionMappings[InputContext::Menu][InputAction::MenuCancel] = {
+            dxe::Input::eButton::KB_ESCAPE,
             dxe::Input::eButton::PAD_B
+        };
+        _actionMappings[InputContext::Menu][InputAction::MenuMouseClick] = {
+            dxe::Input::eButton::MOUSE_LEFT
         };
     }
 
@@ -128,10 +135,24 @@ public:
         _activeInputModes.clear();
         _activeInputModes.push_back(context);
     }
+
+    tnl::Vector2i OnMouseClick(InputAction action) const override
+    {
+        auto key = CheckInput(action)->at(0);
+        if (_input->pressed(key))
+        {
+            int x = 0, y = 0;
+            GetMousePoint(&x, &y);
+            return tnl::Vector2i(x, y);
+        }
+        return tnl::Vector2i(-1, -1);
+    }
 };
 
-static struct RegisterInputService {
-    RegisterInputService() {
+static struct RegisterInputService
+{
+    RegisterInputService()
+    {
         ServiceLocator::RegisterSingleton<IInputService, InputService>(std::make_shared<InputService>());
     }
 } autoRegister_InputService;

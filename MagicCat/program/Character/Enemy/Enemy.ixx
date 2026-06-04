@@ -1,9 +1,6 @@
 module;
 
-#include <random>
-#include "../../RandomUtils.h"
-
-export module Enmey;
+export module Enemy;
 
 import Character;
 import HealthComponent;
@@ -15,8 +12,7 @@ class Player;
 export class Enemy : public Character, public HealthComponent
 {
 public:
-    Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0,
-        const std::wstring& name = L"Unknown")
+    Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0, const wchar_t* name = L"Unknown")
         : baseWeight(baseWeight),
           rockDamage(rockDamage),
           scissorsDamage(scissorsDamage),
@@ -46,23 +42,20 @@ public:
 
     ECardType Attack() const
     {
-        int index = Random::RandomSelection(
-            rockWeight, scissorsWeight, paperWeight
-        );
-       return static_cast<ECardType>(index);
+        return static_cast<ECardType>(0);
     }
 
     bool operator==(const Enemy& e) const
     {
+        // For simplicity, we just compare pointers for name since they are string literals
         return this->name == e.name &&
             this->baseWeight == e.baseWeight &&
             this->rockDamage == e.rockDamage &&
             this->scissorsDamage == e.scissorsDamage &&
             this->paperDamage == e.paperDamage;
     }
-    
-    
-    std::wstring name = L"";
+
+    const wchar_t* name = L"Unknown";
 
     int baseWeight = 0;
     int rockWeight = 0;

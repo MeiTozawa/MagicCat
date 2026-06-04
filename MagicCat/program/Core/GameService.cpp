@@ -16,7 +16,7 @@ import EnemyService;
 import HealthComponent;
 
 import EnemyService;
-import Enmey;
+import Enemy;
 import CardService;
 
 

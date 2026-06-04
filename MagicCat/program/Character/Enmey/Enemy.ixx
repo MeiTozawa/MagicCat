@@ -10,10 +10,13 @@ import HealthComponent;
 import CardService;
 
 
+class Player;
+
 export class Enemy : public Character, public HealthComponent
 {
 public:
-    Enemy(int baseWeight, int rockDamage, int scissorsDamage, int paperDamage, std::wstring name)
+    Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0,
+        const std::wstring& name = L"Unknown")
         : baseWeight(baseWeight),
           rockDamage(rockDamage),
           scissorsDamage(scissorsDamage),
@@ -41,12 +44,12 @@ public:
         }
     }
 
-    void Attack()
+    ECardType Attack() const
     {
         int index = Random::RandomSelection(
             rockWeight, scissorsWeight, paperWeight
         );
-        ECardType attackType = static_cast<ECardType>(index);
+       return static_cast<ECardType>(index);
     }
 
     bool operator==(const Enemy& e) const

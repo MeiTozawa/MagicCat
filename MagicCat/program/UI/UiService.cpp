@@ -33,9 +33,9 @@ public:
         }
     }
 
-    void ChangeScene(EGameState type) override {
+    void ChangeSceneTo(EGameState type) override {
         EnsureInitialized();
-        if (scenes.find(type) != scenes.end()) {
+        if (scenes.contains(type)) {
             currentScene = scenes[type];
         }
     }

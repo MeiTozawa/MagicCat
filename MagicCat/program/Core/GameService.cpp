@@ -16,6 +16,7 @@ import EnemyService;
 import HealthComponent;
 
 import EnemyService;
+import Enmey;
 
 class GameService : public IGameService
 {
@@ -24,56 +25,65 @@ private:
     Shared<IUiService> uiService = nullptr;
     Shared<IInputService> inputService = nullptr;
     Shared<IEnemyPool> enemyPool = nullptr;
-    std::unordered_map<EGameState, std::function<void(float)>> UpdateStateMappings = {};
-    std::unique_ptr<Player> player = nullptr;
+    Player player{};
+    Enemy enemy{};
+
 public:
     GameService()
     {
-        UpdateStateMappings[START] = [this](float deltaTime) { Update_Start(deltaTime); };
-        UpdateStateMappings[COMBAT] = [this](float deltaTime) { Update_Combat(deltaTime); };
+        
     }
-    
+
     void Start() override
     {
         uiService = ServiceLocator::Get<IUiService>();
         inputService = ServiceLocator::Get<IInputService>();
         enemyPool = ServiceLocator::Get<IEnemyPool>();
     }
-    
+
     void End() override
     {
         
     }
-    
+
     void Update(float deltaTime) override
     {
-        UpdateStateMappings[gameState](deltaTime);
+        switch (gameState)
+        {
+        case START:
+            if (inputService->IsPressed(InputAction::IgConfirm))
+                ChangeToCombat();
+            break;
+        case COMBAT:
+            if (player.IsDead())
+                ChangeToStart();
+            break;
+        default: ;
+        }
+
         uiService->Draw();
     }
-    
+
 private:
-    void Update_Start(float deltaTime)
+    void ChangeToStart()
     {
-        if (inputService->IsPressed(InputAction::IgConfirm))
-        {
-            gameState = COMBAT;
-            player = std::make_unique<Player>();
-            uiService->ChangeScene(COMBAT);
-        }
+        gameState = START;
+        uiService->ChangeSceneTo(START);
     }
-    
-    void Update_Combat(float deltaTime)
+
+    void ChangeToCombat()
     {
-        if (player->IsDead())
-        {
-            gameState = START;
-            uiService->ChangeScene(START);
-        }
+        gameState = COMBAT;
+        player = Player();
+        enemy = enemyPool->GetEnemy();
+        uiService->ChangeSceneTo(COMBAT);
     }
 };
 
-static struct RegisterGameService {
-    RegisterGameService() {
+static struct RegisterGameService
+{
+    RegisterGameService()
+    {
         ServiceLocator::RegisterSingleton<IGameService, GameService>(std::make_shared<GameService>());
     }
 } autoRegister_GameService;

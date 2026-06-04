@@ -39,7 +39,7 @@ export class IUiService
 public:
     virtual ~IUiService() = default;
 
-    virtual void ChangeScene(EGameState type) = 0;
+    virtual void ChangeSceneTo(EGameState type) = 0;
 
     virtual void Draw() = 0;
 

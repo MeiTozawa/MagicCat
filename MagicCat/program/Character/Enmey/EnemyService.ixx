@@ -8,7 +8,7 @@ export class IEnemyPool
 {
 public:
     virtual ~IEnemyPool() = default;
-    virtual Enemy& GetEnemy() = 0;
+    virtual Enemy GetEnemy() = 0;
 };
 
 export const Enemy ENEMY_NUT = Enemy{5, 3, 1, 1, L"ナッツ"};

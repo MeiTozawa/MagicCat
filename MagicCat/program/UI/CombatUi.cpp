@@ -55,9 +55,11 @@ private:
                 color, TRUE);
 
         auto icon = spriteMappings[card.CardType];
-        icon->setScaleXY({ICON_SCALE, ICON_SCALE});
-        icon->setPosition(tnl::Vector2f((x + CARD_WIDTH / 2 ), (y + CARD_HEIGHT / 3)));
-        icon->draw();
+        if (icon) {
+            icon->setScaleXY({ICON_SCALE, ICON_SCALE});
+            icon->setPosition(tnl::Vector2f((x + CARD_WIDTH / 2 ), (y + CARD_HEIGHT / 3)));
+            icon->draw();
+        }
 
         DrawFormatString(x + 10, y + CARD_HEIGHT / 2 + 10, COLOR_BLACK,
                          L"敵が「%s」を\n出す確率\nを%d上げる", textMappings[card.CardType], card.Offset);
@@ -73,18 +75,17 @@ private:
             else
                 spriteMappings[ROCK] = dxe::Sprite::Create(rock_resource);
 
-            auto paper_resource = dxe::SpriteResouce::Create(L"resource/graphics/example/paper.png");
-            if (!paper_resource)
-                printfDx(L"紙の画像の読み込みに失敗");
-            else
-                spriteMappings[PAPER] = dxe::Sprite::Create(rock_resource);
-
-
             auto scissors_resource = dxe::SpriteResouce::Create(L"resource/graphics/example/scissors.png");
             if (!scissors_resource)
                 printfDx(L"ハサミの画像の読み込みに失敗");
             else
-                spriteMappings[SCISSORS] = dxe::Sprite::Create(rock_resource);
+                spriteMappings[SCISSORS] = dxe::Sprite::Create(scissors_resource);
+            
+            auto paper_resource = dxe::SpriteResouce::Create(L"resource/graphics/example/paper.png");
+            if (!paper_resource)
+                printfDx(L"紙の画像の読み込みに失敗");
+            else
+                spriteMappings[PAPER] = dxe::Sprite::Create(paper_resource);
         }
         catch (const std::exception&)
         {

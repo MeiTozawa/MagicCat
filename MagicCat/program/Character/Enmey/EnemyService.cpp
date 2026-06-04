@@ -26,7 +26,7 @@ public:
         Random::Shuffle(enemies);
     }
     
-    Enemy& GetEnemy() override
+    Enemy GetEnemy() override
     {
         auto em = enemies.back();
         enemies.pop_back();

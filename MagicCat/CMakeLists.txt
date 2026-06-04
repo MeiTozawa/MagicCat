@@ -1,4 +1,5 @@
 add_executable(MagicCat WIN32
+    MagicCat.cpp
     program/gm_main.cpp
     program/Core/GameService.cpp
     program/Input/InputService.cpp

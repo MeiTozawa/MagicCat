@@ -60,6 +60,7 @@ imgui.ini
 /build/
 /out/
 /cmake-build-debug/
+CMakeUserPresets.json
 
 #AI agent files
 /docs/

@@ -13,6 +13,8 @@ Shared<IGameService> gameService;
 
 void gameStart()
 {
+    SetFontSize(32);
+    
     gameService = ServiceLocator::Get<IGameService>();
     gameService->Start();
 }

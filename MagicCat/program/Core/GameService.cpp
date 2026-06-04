@@ -19,6 +19,8 @@ import EnemyService;
 import Enemy;
 import CardService;
 
+constexpr int CARD_MAX = 4;
+
 
 class GameService : public IGameService
 {
@@ -86,6 +88,7 @@ private:
     {
         gameState = COMBAT;
         player = Player();
+        cardService->DrawCards(CARD_MAX);
         enemy = enemyPool->GetEnemy();
         uiService->ChangeSceneTo(COMBAT);
     }

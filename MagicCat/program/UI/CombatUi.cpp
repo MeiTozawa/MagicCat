@@ -14,7 +14,7 @@ import ServiceLocator;
 constexpr float ICON_SCALE = 0.3f;
 constexpr int CARD_START_X = 200;
 constexpr int CARD_START_Y = 400;
-constexpr int OFFSET_X = 200;
+constexpr int OFFSET_X = 250;
 
 class CombatUi : public IUi
 {
@@ -36,7 +36,7 @@ public:
         auto position = tnl::Vector2i{CARD_START_X, CARD_START_Y};
         for (int i = 0; i < hand.size(); ++i)
         {
-            drawCard(hand[i], position, true);
+            drawACard(hand[i], position, true);
             cardService->PushBackRectOfCard({position, {CARD_WIDTH, CARD_HEIGHT}});
             position.x += OFFSET_X;
         }
@@ -46,7 +46,7 @@ private:
     std::vector<Shared<dxe::Sprite>> spriteMappings{nullptr, nullptr, nullptr};
 
 
-    void drawCard(Card card, tnl::Vector2i start_position, bool is_selected = false) const
+    void drawACard(Card card, tnl::Vector2i start_position, bool is_selected = false) const
     {
         auto x = start_position.x, y = start_position.y;
         uint16_t color = 0;
@@ -75,7 +75,7 @@ private:
         }
 
         DrawFormatString(x + 10, y + CARD_HEIGHT / 2 + 10, COLOR_BLACK,
-                         L"敵が「%s」を\n出す確率\nを%d上げる", textMappings[card.CardType], card.Offset);
+                         L"確率を%d上げる", textMappings[card.CardType], card.Offset);
     }
 
     void loadAssets()

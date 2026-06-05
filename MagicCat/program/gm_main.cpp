@@ -2,7 +2,6 @@
 #include <string>
 #include <fstream>
 #include <dxe.h>
-#include "../ResourceConstantHedder.h"
 #include "gm_main.h"
 
 import GameService;
@@ -14,6 +13,7 @@ Shared<IGameService> gameService;
 void gameStart()
 {
     SetFontSize(32);
+    SetDrawMode(DX_DRAWMODE_NEAREST); 
     
     gameService = ServiceLocator::Get<IGameService>();
     gameService->Start();

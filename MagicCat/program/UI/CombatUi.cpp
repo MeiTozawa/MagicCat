@@ -11,9 +11,12 @@ import GameService;
 import CardService;
 import ServiceLocator;
 import AssetService;
+import AnimationService;
 
-constexpr int CARD_START_X = 200;
+constexpr int CARD_START_X = 150;
 constexpr int CARD_START_Y = 400;
+constexpr int PLAYER_START_X = 100;
+constexpr int PLAYER_START_Y = 100;
 constexpr int OFFSET_X = 250;
 constexpr int THICKNESS = 5;
 constexpr int RADIUS = 30;
@@ -31,12 +34,14 @@ class CombatUi : public IUi
 {
     Shared<ICardService> cardService;
     Shared<IAssetService> assetService;
+    Shared<IAnimationService> animationService;
 
 public:
     CombatUi()
     {
         assetService = ServiceLocator::Get<IAssetService>();
         cardService = ServiceLocator::Get<ICardService>();
+        animationService = ServiceLocator::Get<IAnimationService>();
     }
 
     // FIXME: frequent
@@ -51,6 +56,9 @@ public:
             cardService->PushBackRectOfCard({position, {CARD_WIDTH, CARD_HEIGHT}});
             position.x += OFFSET_X;
         }
+        
+        int handle = assetService->GetSpriteHandle(ESprite::Bunny);
+        animationService->Draw(handle, PLAYER_START_X, PLAYER_START_Y);
     }
 
 private:
@@ -95,7 +103,7 @@ private:
                             32, color, FALSE);
         }
 
-        if (const auto icon = assetService->GetImage(static_cast<EAsset>(card.CardType)))
+        if (const auto icon = assetService->GetImage(static_cast<EImage>(card.CardType)))
         {
             icon->setScaleXY({SPRITE_SCALE, SPRITE_SCALE});
             icon->setPosition({(x + CARD_WIDTH / 2.f), (y + CARD_HEIGHT / 3.5f)});

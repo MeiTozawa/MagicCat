@@ -1,29 +1,19 @@
+file(GLOB_RECURSE MAGICCAT_SOURCES CONFIGURE_DEPENDS
+        "program/*.cpp"
+)
+file(GLOB_RECURSE MAGICCAT_MODULES CONFIGURE_DEPENDS
+        "program/*.ixx"
+)
+
 add_executable(MagicCat WIN32
     MagicCat.cpp
-    program/gm_main.cpp
-    program/Core/GameService.cpp
-    program/Input/InputService.cpp
-    program/UI/CombatUi.cpp
-    program/UI/StartUi.cpp
-    program/UI/UiService.cpp
-    program/Character/Enemy/EnemyService.cpp
-    program/Card/CardService.cpp
+    ${MAGICCAT_SOURCES}
 )
 
 target_sources(MagicCat
-    PUBLIC
-    FILE_SET cxx_modules TYPE CXX_MODULES FILES
-    program/Card/CardService.ixx
-    program/Character/Character.ixx
-    program/Character/Enemy/Enemy.ixx
-    program/Character/Enemy/EnemyService.ixx
-    program/Character/Health/HealthComponent.ixx
-    program/Character/Health/IDamageable.ixx
-    program/Character/Player/Player.ixx
-    program/Core/GameService.ixx
-    program/Input/InputService.ixx
-    program/ServiceLocator.ixx
-    program/UI/UiService.ixx
+        PUBLIC
+        FILE_SET cxx_modules TYPE CXX_MODULES FILES
+        ${MAGICCAT_MODULES}
 )
 
 target_include_directories(MagicCat PRIVATE

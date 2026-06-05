@@ -10,6 +10,7 @@ module UiService;
 import GameService;
 import CardService;
 import ServiceLocator;
+import AssetService;
 
 constexpr int CARD_START_X = 200;
 constexpr int CARD_START_Y = 400;
@@ -29,11 +30,12 @@ constexpr uint32_t COLOR_SCISSORS = 0xB0C4DE;
 class CombatUi : public IUi
 {
     Shared<ICardService> cardService;
+    Shared<IAssetService> assetService;
 
 public:
     CombatUi()
     {
-        loadAssets();
+        assetService = ServiceLocator::Get<IAssetService>();
         cardService = ServiceLocator::Get<ICardService>();
     }
 
@@ -52,9 +54,6 @@ public:
     }
 
 private:
-    std::vector<Shared<dxe::Sprite>> spriteMappings{nullptr, nullptr, nullptr};
-
-
     void drawACard(Card card, tnl::Vector2i start_position) const
     {
         auto x = start_position.x, y = start_position.y;
@@ -69,13 +68,13 @@ private:
         {
             switch (card.CardType)
             {
-            case ROCK:
+            case Rock:
                 color = COLOR_ROCK;
                 break;
-            case PAPER:
+            case Paper:
                 color = COLOR_PAPER;
                 break;
-            case SCISSORS:
+            case Scissors:
                 color = COLOR_SCISSORS;
                 break;
             }
@@ -96,7 +95,7 @@ private:
                             32, color, FALSE);
         }
 
-        if (auto icon = spriteMappings[card.CardType])
+        if (const auto icon = assetService->GetImage(static_cast<EAsset>(card.CardType)))
         {
             icon->setScaleXY({SPRITE_SCALE, SPRITE_SCALE});
             icon->setPosition({(x + CARD_WIDTH / 2.f), (y + CARD_HEIGHT / 3.5f)});
@@ -105,34 +104,6 @@ private:
 
         DrawFormatString(x + CARD_WIDTH / 2 - 20, y + CARD_HEIGHT / 2 + 10, COLOR_WHITE,
                          L"+%d", card.Offset);
-    }
-
-    void loadAssets()
-    {
-        try
-        {
-            auto rock_resource = dxe::SpriteResouce::Create(L"resource/graphics/example/stone.png");
-            if (!rock_resource)
-                printfDx(L"石の画像の読み込みに失敗");
-            else
-                spriteMappings[ROCK] = dxe::Sprite::Create(rock_resource);
-
-            auto scissors_resource = dxe::SpriteResouce::Create(L"resource/graphics/example/scissors.png");
-            if (!scissors_resource)
-                printfDx(L"ハサミの画像の読み込みに失敗");
-            else
-                spriteMappings[SCISSORS] = dxe::Sprite::Create(scissors_resource);
-
-            auto paper_resource = dxe::SpriteResouce::Create(L"resource/graphics/example/paper.png");
-            if (!paper_resource)
-                printfDx(L"紙の画像の読み込みに失敗");
-            else
-                spriteMappings[PAPER] = dxe::Sprite::Create(paper_resource);
-        }
-        catch (const std::exception&)
-        {
-            printfDx(L"画像の読み込みに失敗");
-        }
     }
 };
 

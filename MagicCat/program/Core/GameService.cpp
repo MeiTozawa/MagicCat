@@ -18,8 +18,11 @@ import HealthComponent;
 import EnemyService;
 import Enemy;
 import CardService;
+import AssetService;
 
 constexpr int CARD_MAX = 4;
+
+
 
 
 class GameService : public IGameService
@@ -29,6 +32,7 @@ private:
     Shared<IUiService> uiService = nullptr;
     Shared<IInputService> inputService = nullptr;
     Shared<IEnemyPool> enemyPool = nullptr;
+    Shared<IAssetService> assetService;
     Player player{};
     Enemy enemy{};
     Shared<ICardService> cardService;
@@ -45,6 +49,8 @@ public:
         inputService = ServiceLocator::Get<IInputService>();
         enemyPool = ServiceLocator::Get<IEnemyPool>();
         cardService = ServiceLocator::Get<ICardService>();
+        assetService = ServiceLocator::Get<IAssetService>();
+        assetService->LoadAssets();
     }
 
     void End() override

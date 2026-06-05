@@ -28,13 +28,13 @@ public:
     {
         switch (card.CardType)
         {
-        case ROCK:
+        case Rock:
             AddRockWeight(card.Offset);
             break;
-        case SCISSORS:
+        case Scissors:
             AddScissorsWeight(card.Offset);
             break;
-        case PAPER:
+        case Paper:
             AddPaperWeight(card.Offset);
             break;
         }

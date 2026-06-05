@@ -12,7 +12,7 @@ export constexpr int CARD_WIDTH = 200;
 
 export enum ECardType
 {
-    ROCK = 0, SCISSORS = 1, PAPER = 2
+    Rock = 0, Scissors = 1, Paper = 2
 };
 
 // ⚠️ 警告：伝達性が損なわれているため、ソートや関連付けコンテナには絶対に使用しないでください！
@@ -57,12 +57,12 @@ public:
 };
 
 
-export constexpr Card CARD_ROCK_2 = {ROCK, 2};
-export constexpr Card CARD_ROCK_3 = {ROCK, 3};
-export constexpr Card CARD_ROCK_4 = {ROCK, 4};
-export constexpr Card CARD_SCISSORS_2 = {SCISSORS, 2};
-export constexpr Card CARD_SCISSORS_3 = {SCISSORS, 3};
-export constexpr Card CARD_SCISSORS_4 = {SCISSORS, 4};
-export constexpr Card CARD_PAPER_2 = {PAPER, 2};
-export constexpr Card CARD_PAPER_3 = {PAPER, 3};
-export constexpr Card CARD_PAPER_4 = {PAPER, 4};
+export constexpr Card CARD_ROCK_2 = {Rock, 2};
+export constexpr Card CARD_ROCK_3 = {Rock, 3};
+export constexpr Card CARD_ROCK_4 = {Rock, 4};
+export constexpr Card CARD_SCISSORS_2 = {Scissors, 2};
+export constexpr Card CARD_SCISSORS_3 = {Scissors, 3};
+export constexpr Card CARD_SCISSORS_4 = {Scissors, 4};
+export constexpr Card CARD_PAPER_2 = {Paper, 2};
+export constexpr Card CARD_PAPER_3 = {Paper, 3};
+export constexpr Card CARD_PAPER_4 = {Paper, 4};

@@ -15,6 +15,8 @@ constexpr float ICON_SCALE = 0.3f;
 constexpr int CARD_START_X = 200;
 constexpr int CARD_START_Y = 400;
 constexpr int OFFSET_X = 250;
+constexpr int THICKNESS = 5;
+constexpr int RADIUS = 5;
 
 class CombatUi : public IUi
 {
@@ -50,22 +52,36 @@ private:
     {
         auto x = start_position.x, y = start_position.y;
         uint16_t color = 0;
-        switch (card.CardType)
+        if (is_selected)
         {
-        case ROCK:
-            color = COLOR_ROCK;
-            break;
-        case PAPER:
-            color = COLOR_PAPER;
-            break;
-        case SCISSORS:
-            color = COLOR_SCISSORS;
-            break;
+            color = COLOR_WHITE;
+        }
+        else
+        {
+            switch (card.CardType)
+            {
+            case ROCK:
+                color = COLOR_ROCK;
+                break;
+            case PAPER:
+                color = COLOR_PAPER;
+                break;
+            case SCISSORS:
+                color = COLOR_SCISSORS;
+                break;
+            }
         }
 
-        DrawBox(start_position.x, start_position.y,
-                start_position.x + CARD_WIDTH, start_position.y + CARD_HEIGHT,
-                color, TRUE);
+        for (int i = 0; i < THICKNESS; ++i) {
+            float currentX1 = x + i;
+            float currentY1 = y + i;
+            float currentX2 = x + CARD_WIDTH - i;
+            float currentY2 = y + CARD_HEIGHT - i;
+            float currentRadius = RADIUS - i; 
+            if (currentRadius < 0) currentRadius = 0;
+
+            DrawRoundRectAA(currentX1, currentY1, currentX2, currentY2, currentRadius, currentRadius, 32, color, FALSE);
+        }
 
         if (auto icon = spriteMappings[card.CardType])
         {
@@ -75,7 +91,7 @@ private:
         }
 
         DrawFormatString(x + 10, y + CARD_HEIGHT / 2 + 10, COLOR_BLACK,
-                         L"確率を%d上げる", textMappings[card.CardType], card.Offset);
+                         L"確率を%d上げる", card.Offset);
     }
 
     void loadAssets()

@@ -16,7 +16,7 @@ import AnimationService;
 constexpr int CARD_START_X = 150;
 constexpr int CARD_START_Y = 400;
 constexpr int PLAYER_START_X = 100;
-constexpr int PLAYER_START_Y = 100;
+constexpr int PLAYER_START_Y = 50;
 constexpr int OFFSET_X = 250;
 constexpr int THICKNESS = 5;
 constexpr int RADIUS = 30;

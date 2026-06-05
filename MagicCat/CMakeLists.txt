@@ -10,6 +10,8 @@ add_executable(MagicCat WIN32
     ${MAGICCAT_SOURCES}
 )
 
+set_target_properties(MagicCat PROPERTIES UNITY_BUILD ON)
+
 target_sources(MagicCat
         PUBLIC
         FILE_SET cxx_modules TYPE CXX_MODULES FILES

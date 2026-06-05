@@ -6,6 +6,7 @@
 module CardService;
 
 import ServiceLocator;
+import Character;
 
 class CardService : public ICardService
 {
@@ -78,6 +79,7 @@ public:
 
     void MoveFocusToRight() override
     {
+        if (hand.empty()) return;
         if (focus >= hand.size() - 1) return;
 
         hand[focus].is_selected = false;
@@ -87,11 +89,28 @@ public:
 
     void MoveFocusToLeft() override
     {
+        if (hand.empty()) return;
         if (focus <= 0) return;
 
         hand[focus].is_selected = false;
         focus--;
         hand[focus].is_selected = true;
+    }
+
+    void PlayCard(Enemy& enemy) override
+    {
+        if (hand.empty()) return;
+        auto card = hand.begin() + focus;
+        int t = card->CardType;
+        assert(t >= 0 && t <= 2);
+        enemy.AddWeight(static_cast<EAttackType>(t), card->Offset);
+
+        hand.erase(card);
+
+        if (focus >= hand.size())
+            focus--;
+        if (!hand.empty())
+            hand[focus].is_selected = true;
     }
 
 private:

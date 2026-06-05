@@ -16,10 +16,9 @@ import Enemy;
 import CardService;
 import AssetService;
 import CharacterService;
+import Character;
 
 constexpr int CARD_MAX = 4;
-
-
 
 
 class GameService : public IGameService
@@ -79,6 +78,10 @@ public:
             {
                 cardService->MoveFocusToRight();
             }
+            else if (inputService->IsPressed(InputAction::IgConfirm))
+            {
+                cardService->PlayCard(characterService->GetEnemy());
+            }
             break;
         default: ;
         }
@@ -100,11 +103,6 @@ private:
         characterService->Reset();
         cardService->DrawCards(CARD_MAX);
         uiService->ChangeSceneTo(COMBAT);
-    }
-
-    static void PlayCard(int index, Enemy& enemy, const std::vector<Card>& hand)
-    {
-        enemy.AddWeight(hand[index]);
     }
 };
 

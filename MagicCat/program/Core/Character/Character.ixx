@@ -2,6 +2,11 @@ module;
 
 export module Character;
 
+export enum class EAttackType
+{
+    Rock, Scissors, Paper
+};
+
 export class Character
 {
 protected:

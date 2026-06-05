@@ -6,6 +6,8 @@ module;
 
 export module CardService;
 
+import Enemy;
+
 export constexpr int CARD_HEIGHT = 300;
 export constexpr int CARD_WIDTH = 200;
 
@@ -54,6 +56,7 @@ public:
     virtual void ClearRectOfCards() = 0;
     virtual void MoveFocusToRight() = 0;
     virtual void MoveFocusToLeft() = 0;
+    virtual void PlayCard(Enemy&) = 0;
 };
 
 

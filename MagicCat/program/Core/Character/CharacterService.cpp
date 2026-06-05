@@ -21,12 +21,12 @@ public:
         //
     }
 
-    const Enemy& GetEnemy() override
+    Enemy& GetEnemy() override
     {
         return currentEnemy;
     }
 
-    const Player& GetPlayer() override
+    Player& GetPlayer() override
     {
         return currentPlayer;
     }

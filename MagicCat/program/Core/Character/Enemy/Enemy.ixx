@@ -4,7 +4,6 @@ export module Enemy;
 
 import Character;
 import HealthComponent;
-import CardService;
 
 
 class Player;
@@ -24,25 +23,25 @@ public:
         paperWeight = baseWeight;
     }
 
-    void AddWeight(Card card)
+    void AddWeight(EAttackType t, int weight)
     {
-        switch (card.CardType)
+        switch (t)
         {
-        case Rock:
-            AddRockWeight(card.Offset);
+        case EAttackType::Rock:
+            AddRockWeight(weight);
             break;
-        case Scissors:
-            AddScissorsWeight(card.Offset);
+        case EAttackType::Scissors:
+            AddScissorsWeight(weight);
             break;
-        case Paper:
-            AddPaperWeight(card.Offset);
+        case EAttackType::Paper:
+            AddPaperWeight(weight);
             break;
         }
     }
 
-    ECardType Attack() const
+    EAttackType Attack() const
     {
-        return static_cast<ECardType>(0);
+        return static_cast<EAttackType>(0);
     }
 
     bool operator==(const Enemy& e) const

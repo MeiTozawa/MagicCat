@@ -9,9 +9,8 @@ import ServiceLocator;
 
 class CardService : public ICardService
 {
-private:
     std::vector<tnl::Rect> rectOfCards = {};
-    
+
 public:
     CardService()
     {
@@ -47,8 +46,16 @@ public:
                 Random::Shuffle(drawPile);
             }
             auto c = drawPile.back();
+
             drawPile.pop_back();
+
             discardPile.push_back(c);
+
+            if (i == 0)
+            {
+                focus = 0;
+                c.is_selected = true;
+            }
             hand.push_back(c);
         }
         return hand;
@@ -58,15 +65,33 @@ public:
     {
         rectOfCards.clear();
     }
-    
+
     const std::vector<tnl::Rect>& GetRectOfCards() override
     {
         return rectOfCards;
     }
-    
+
     void PushBackRectOfCard(tnl::Rect r) override
     {
         rectOfCards.push_back(r);
+    }
+
+    void MoveFocusToRight() override
+    {
+        if (focus >= hand.size() - 1) return;
+
+        hand[focus].is_selected = false;
+        focus++;
+        hand[focus].is_selected = true;
+    }
+
+    void MoveFocusToLeft() override
+    {
+        if (focus <= 0) return;
+
+        hand[focus].is_selected = false;
+        focus--;
+        hand[focus].is_selected = true;
     }
 
 private:
@@ -74,6 +99,7 @@ private:
     std::vector<Card> hand = std::vector<Card>();
     std::vector<Card> drawPile = std::vector<Card>();
     std::vector<Card> discardPile = std::vector<Card>();
+    int focus = 0;
 };
 
 static struct RegisterCardService

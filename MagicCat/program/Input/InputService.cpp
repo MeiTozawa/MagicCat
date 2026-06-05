@@ -12,7 +12,6 @@ import ServiceLocator;
 
 class InputService : public IInputService
 {
-private:
     Shared<dxe::Input> _input;
     std::vector<InputContext> _activeInputModes;
     std::unordered_map<InputContext, std::unordered_map<InputAction, std::vector<dxe::Input::eButton>>> _actionMappings;
@@ -53,6 +52,14 @@ public:
         };
         _actionMappings[InputContext::InGame][InputAction::IgMouseClick] = {
             dxe::Input::eButton::MOUSE_LEFT
+        };
+        _actionMappings[InputContext::InGame][InputAction::IgLeft] = {
+            dxe::Input::eButton::KB_LEFT,
+            dxe::Input::eButton::PAD_LEFT
+        };
+        _actionMappings[InputContext::InGame][InputAction::IgRight] = {
+            dxe::Input::eButton::KB_RIGHT,
+            dxe::Input::eButton::PAD_RIGHT
         };
 
         // Menu マッピングを設定する

@@ -11,16 +11,23 @@ import GameService;
 import CardService;
 import ServiceLocator;
 
-constexpr float ICON_SCALE = 0.3f;
 constexpr int CARD_START_X = 200;
 constexpr int CARD_START_Y = 400;
 constexpr int OFFSET_X = 250;
 constexpr int THICKNESS = 5;
-constexpr int RADIUS = 5;
+constexpr int RADIUS = 30;
+
+constexpr float SPRITE_OFFSET = 50;
+constexpr float SPRITE_SCALE = 0.3f;
+
+constexpr uint32_t COLOR_WHITE = 0xFFFFFF;
+constexpr uint32_t COLOR_BLACK = 0;
+constexpr uint32_t COLOR_ROCK = 0x555555;
+constexpr uint32_t COLOR_PAPER = 0xF5F5DC;
+constexpr uint32_t COLOR_SCISSORS = 0xB0C4DE;
 
 class CombatUi : public IUi
 {
-private:
     Shared<ICardService> cardService;
 
 public:
@@ -38,7 +45,7 @@ public:
         auto position = tnl::Vector2i{CARD_START_X, CARD_START_Y};
         for (int i = 0; i < hand.size(); ++i)
         {
-            drawACard(hand[i], position, true);
+            drawACard(hand[i], position);
             cardService->PushBackRectOfCard({position, {CARD_WIDTH, CARD_HEIGHT}});
             position.x += OFFSET_X;
         }
@@ -48,13 +55,15 @@ private:
     std::vector<Shared<dxe::Sprite>> spriteMappings{nullptr, nullptr, nullptr};
 
 
-    void drawACard(Card card, tnl::Vector2i start_position, bool is_selected = false) const
+    void drawACard(Card card, tnl::Vector2i start_position) const
     {
         auto x = start_position.x, y = start_position.y;
-        uint16_t color = 0;
-        if (is_selected)
+        uint32_t color = 0;
+        int thickness = THICKNESS;
+        if (card.is_selected)
         {
             color = COLOR_WHITE;
+            thickness *= 2;
         }
         else
         {
@@ -72,26 +81,30 @@ private:
             }
         }
 
-        for (int i = 0; i < THICKNESS; ++i) {
+        for (int i = 0; i < thickness; ++i)
+        {
             float currentX1 = x + i;
             float currentY1 = y + i;
             float currentX2 = x + CARD_WIDTH - i;
             float currentY2 = y + CARD_HEIGHT - i;
-            float currentRadius = RADIUS - i; 
+            float currentRadius = RADIUS - i;
             if (currentRadius < 0) currentRadius = 0;
 
-            DrawRoundRectAA(currentX1, currentY1, currentX2, currentY2, currentRadius, currentRadius, 32, color, FALSE);
+            DrawRoundRectAA(currentX1, currentY1,
+                            currentX2, currentY2,
+                            currentRadius, currentRadius,
+                            32, color, FALSE);
         }
 
         if (auto icon = spriteMappings[card.CardType])
         {
-            icon->setScaleXY({ICON_SCALE, ICON_SCALE});
-            icon->setPosition({(x + CARD_WIDTH / 2.5f), (y + CARD_HEIGHT / 3.5f)});
+            icon->setScaleXY({SPRITE_SCALE, SPRITE_SCALE});
+            icon->setPosition({(x + CARD_WIDTH / 2.f), (y + CARD_HEIGHT / 3.5f)});
             icon->draw();
         }
 
-        DrawFormatString(x + 10, y + CARD_HEIGHT / 2 + 10, COLOR_BLACK,
-                         L"確率を%d上げる", card.Offset);
+        DrawFormatString(x + CARD_WIDTH / 2 - 20, y + CARD_HEIGHT / 2 + 10, COLOR_WHITE,
+                         L"+%d", card.Offset);
     }
 
     void loadAssets()

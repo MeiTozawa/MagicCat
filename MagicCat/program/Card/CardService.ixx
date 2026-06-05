@@ -16,19 +16,21 @@ export enum ECardType
 };
 
 // ⚠️ 警告：伝達性が損なわれているため、ソートや関連付けコンテナには絶対に使用しないでください！
-constexpr std::strong_ordering operator<=>(ECardType l, ECardType r) {
+constexpr std::strong_ordering operator<=>(ECardType l, ECardType r)
+{
     if (l == r) return std::strong_ordering::equal;
 
     int diff = (static_cast<int>(l) - static_cast<int>(r) + 3) % 3;
-    
-    if (diff == 1) {
+
+    if (diff == 1)
+    {
         return std::strong_ordering::greater;
-    } else {
-        return std::strong_ordering::less;   
     }
+    return std::strong_ordering::less;
 }
 
-constexpr bool operator==(ECardType l, ECardType r) {
+constexpr bool operator==(ECardType l, ECardType r)
+{
     return (l <=> r) == std::strong_ordering::equal;
 }
 
@@ -38,6 +40,7 @@ export struct Card
     ECardType CardType;
     // 敵が「ECardType」を出す確率のオフセット
     int Offset = 0;
+    bool is_selected = false;
 };
 
 export class ICardService
@@ -49,6 +52,8 @@ public:
     virtual void PushBackRectOfCard(tnl::Rect) = 0;
     virtual const std::vector<tnl::Rect>& GetRectOfCards() = 0;
     virtual void ClearRectOfCards() = 0;
+    virtual void MoveFocusToRight() = 0;
+    virtual void MoveFocusToLeft() = 0;
 };
 
 

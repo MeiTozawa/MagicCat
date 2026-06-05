@@ -70,6 +70,14 @@ public:
                     // TODO: Handling mouse events
                 }
             }
+            if (inputService->IsPressed(InputAction::IgLeft))
+            {
+                cardService->MoveFocusToLeft();
+            }
+            else if (inputService->IsPressed(InputAction::IgRight))
+            {
+                cardService->MoveFocusToRight();
+            }
             break;
         default: ;
         }
@@ -92,7 +100,7 @@ private:
         enemy = enemyPool->GetEnemy();
         uiService->ChangeSceneTo(COMBAT);
     }
-    
+
     static void PlayCard(int index, Enemy& enemy, const std::vector<Card>& hand)
     {
         enemy.AddWeight(hand[index]);

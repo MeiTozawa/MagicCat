@@ -27,7 +27,7 @@ public:
         }
     }
 
-    bool IsDead() override
+    bool IsDead() const override
     {
         return _isDead;
     }

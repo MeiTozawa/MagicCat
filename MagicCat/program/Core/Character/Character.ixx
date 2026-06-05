@@ -5,10 +5,9 @@ export module Character;
 export class Character
 {
 protected:
-    int _rockAttack = 0;
-    int _scissorsAttack = 0;
-    int _paperAttack = 0;
+    int rockAttack = 0;
+    int scissorsAttack = 0;
+    int paperAttack = 0;
     
-    Character() = default;
-    ~Character() = default;
+    virtual ~Character() = default;
 };

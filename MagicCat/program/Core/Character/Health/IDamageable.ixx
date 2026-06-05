@@ -11,7 +11,7 @@ public:
     
     virtual void TakeDamage(int damage) = 0;
     
-    virtual bool IsDead() = 0;
+    virtual bool IsDead() const = 0;
 };
 
 

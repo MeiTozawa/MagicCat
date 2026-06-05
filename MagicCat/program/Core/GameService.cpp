@@ -11,14 +11,11 @@ import UiService;
 import InputService;
 import ServiceLocator;
 import Player;
-import EnemyService;
-
 import HealthComponent;
-
-import EnemyService;
 import Enemy;
 import CardService;
 import AssetService;
+import CharacterService;
 
 constexpr int CARD_MAX = 4;
 
@@ -31,10 +28,8 @@ private:
     EGameState gameState = START;
     Shared<IUiService> uiService = nullptr;
     Shared<IInputService> inputService = nullptr;
-    Shared<IEnemyPool> enemyPool = nullptr;
+    Shared<ICharacterService> characterService = nullptr;
     Shared<IAssetService> assetService;
-    Player player{};
-    Enemy enemy{};
     Shared<ICardService> cardService;
 
 public:
@@ -47,7 +42,7 @@ public:
     {
         uiService = ServiceLocator::Get<IUiService>();
         inputService = ServiceLocator::Get<IInputService>();
-        enemyPool = ServiceLocator::Get<IEnemyPool>();
+        characterService = ServiceLocator::Get<ICharacterService>();
         cardService = ServiceLocator::Get<ICardService>();
         assetService = ServiceLocator::Get<IAssetService>();
         assetService->LoadAssets();
@@ -67,7 +62,7 @@ public:
                 ChangeToCombat();
             break;
         case COMBAT:
-            if (player.IsDead())
+            if (characterService->GetPlayer().IsDead())
                 ChangeToStart();
             if (auto p = inputService->OnMouseClick(InputAction::IgMouseClick); p.x >= 0 && p.y >= 0)
             {
@@ -96,14 +91,14 @@ private:
     {
         gameState = START;
         uiService->ChangeSceneTo(START);
+        characterService->Reset();
     }
 
     void ChangeToCombat()
     {
         gameState = COMBAT;
-        player = Player();
+        characterService->Reset();
         cardService->DrawCards(CARD_MAX);
-        enemy = enemyPool->GetEnemy();
         uiService->ChangeSceneTo(COMBAT);
     }
 

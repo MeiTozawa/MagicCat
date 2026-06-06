@@ -50,8 +50,6 @@ public:
 
             drawPile.pop_back();
 
-            discardPile.push_back(c);
-
             if (i == 0)
             {
                 focus = 0;
@@ -105,6 +103,7 @@ public:
         assert(t >= 0 && t <= 2);
         enemy.AddWeight(static_cast<EAttackType>(t), card->Offset);
 
+        discardPile.push_back(*card);
         hand.erase(card);
 
         if (focus >= hand.size())

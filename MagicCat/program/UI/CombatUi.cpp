@@ -53,11 +53,11 @@ public:
     // FIXME: frequent
     void Draw() override
     {
-        std::wstring message = std::format(L"山札\n{}枚", cardService->GetDrawCards().size());
+        std::wstring message = std::format(L"山札\n{:2}枚", cardService->GetDrawCards().size());
         drawACard({Null}, {DRAW_PILE_X, DRAW_PILE_Y}, message.c_str(), false);
-        message = std::format(L"捨札\n {}枚", cardService->GetDiscardCards().size());
+        message = std::format(L"捨札\n{:2}枚", cardService->GetDiscardCards().size());
         drawACard({Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, message.c_str(), false);
-        
+
         cardService->ClearRectOfCards();
         auto hand = cardService->GetHandCards();
         auto position = tnl::Vector2i{CARD_START_X, CARD_START_Y};
@@ -96,8 +96,8 @@ private:
                 break;
             case Scissors:
                 color = COLOR_SCISSORS;
-                break;         
-            default: 
+                break;
+            default:
                 color = COLOR_DEFAULT;
             }
         }
@@ -116,6 +116,8 @@ private:
                             currentRadius, currentRadius,
                             32, color, FALSE);
         }
+
+        int lineCount = 1;
         if (has_icon)
         {
             if (const auto icon = assetService->GetImage(static_cast<EImage>(card.CardType)))
@@ -124,14 +126,21 @@ private:
                 icon->setPosition({(x + CARD_WIDTH / 2.f), (y + CARD_HEIGHT / 3.5f)});
                 icon->draw();
             }
-            DrawFormatString(x + CARD_WIDTH / 2 - 20, y + CARD_HEIGHT / 2 + 10, COLOR_WHITE,
-                             message);
+
+            drawCenterText(x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10, lineCount, message, color);
         }
         else
         {
-            DrawFormatString(x + CARD_WIDTH / 2 - 25, y + CARD_HEIGHT / 2, COLOR_WHITE,
-                             message);
+            lineCount += 1;
+            drawCenterText(x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2, lineCount, message, color);
         }
+    }
+
+    static void drawCenterText(int middle_x, int middle_y, int lineCount, const wchar_t* message, int color = COLOR_WHITE)
+    {
+        auto textSize = GetFontSize();
+        auto textWidth = GetDrawStringSize(&textSize, &textSize, &lineCount, message, -1);
+        DrawString(middle_x - textWidth / 2, middle_y - textSize / 2, message, color);
     }
 };
 

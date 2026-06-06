@@ -13,8 +13,7 @@ Shared<IGameService> gameService;
 void gameStart()
 {
     SetFontSize(32);
-    SetDrawMode(DX_DRAWMODE_NEAREST); 
-    
+    SetBackgroundColor(7 , 31, 56);
     gameService = ServiceLocator::Get<IGameService>();
     gameService->Start();
 }

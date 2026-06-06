@@ -35,7 +35,7 @@ public:
         return hand;
     }
 
-    const std::vector<Card>& DrawCards(int count) override
+    const std::vector<Card>& DrawCards(int count = 1) override
     {
         discardPile.insert(discardPile.end(), hand.begin(), hand.end());
         hand.clear();
@@ -111,6 +111,15 @@ public:
             focus--;
         if (!hand.empty())
             hand[focus].is_selected = true;
+    }
+
+    const std::vector<Card>& GetDrawCards() override
+    {
+        return drawPile;
+    }
+    const std::vector<Card>& GetDiscardCards() override
+    {
+        return discardPile;
     }
 
 private:

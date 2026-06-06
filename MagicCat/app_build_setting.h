@@ -1,8 +1,8 @@
 #pragma once
 
 // ウィンドウの幅
-const int WINDOW_WIDTH = 1280;
-const int WINDOW_HEIGHT = 720;
+const int WINDOW_WIDTH = 1920;
+const int WINDOW_HEIGHT = 1080;
 
 // 固定フレームレート
 const int FIX_FPS = 60;

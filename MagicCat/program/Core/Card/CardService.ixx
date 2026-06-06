@@ -14,7 +14,9 @@ export constexpr int CARD_WIDTH = 200;
 
 export enum ECardType
 {
-    Rock = 0, Scissors = 1, Paper = 2
+    Rock = 0, Scissors = 1, Paper = 2,
+    Null = -1, 
+    Magic = 100
 };
 
 // ⚠️ 警告：伝達性が損なわれているため、ソートや関連付けコンテナには絶対に使用しないでください！
@@ -51,6 +53,8 @@ public:
     virtual ~ICardService() = default;
     virtual const std::vector<Card>& DrawCards(int count) = 0;
     virtual const std::vector<Card>& GetHandCards() = 0;
+    virtual const std::vector<Card>& GetDrawCards() = 0;
+    virtual const std::vector<Card>& GetDiscardCards() = 0;
     virtual void PushBackRectOfCard(tnl::Rect) = 0;
     virtual const std::vector<tnl::Rect>& GetRectOfCards() = 0;
     virtual void ClearRectOfCards() = 0;

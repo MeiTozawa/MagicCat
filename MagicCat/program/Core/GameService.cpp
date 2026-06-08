@@ -1,13 +1,11 @@
 module;
 
 #include <dxe.h>
-#include <unordered_map>
-#include <functional>
 #include <memory>
 
 module GameService;
 
-import UiService;
+import SceneService;
 import InputService;
 import ServiceLocator;
 import Player;
@@ -25,7 +23,7 @@ class GameService : public IGameService
 {
 private:
     EGameState gameState = START;
-    Shared<IUiService> uiService = nullptr;
+    Shared<ISceneService> uiService = nullptr;
     Shared<IInputService> inputService = nullptr;
     Shared<ICharacterService> characterService = nullptr;
     Shared<IAssetService> assetService;
@@ -39,7 +37,7 @@ public:
 
     void Start() override
     {
-        uiService = ServiceLocator::Get<IUiService>();
+        uiService = ServiceLocator::Get<ISceneService>();
         inputService = ServiceLocator::Get<IInputService>();
         characterService = ServiceLocator::Get<ICharacterService>();
         cardService = ServiceLocator::Get<ICardService>();
@@ -86,7 +84,7 @@ public:
         default: ;
         }
 
-        uiService->Draw();
+        uiService->Update(deltaTime);
     }
 
 private:

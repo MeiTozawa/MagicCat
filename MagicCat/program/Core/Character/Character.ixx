@@ -7,12 +7,9 @@ export enum class EAttackType
     Rock, Scissors, Paper
 };
 
-export class Character
+export struct Character
 {
-protected:
     int rockAttack = 0;
     int scissorsAttack = 0;
     int paperAttack = 0;
-    
-    virtual ~Character() = default;
 };

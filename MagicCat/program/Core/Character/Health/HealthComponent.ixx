@@ -31,4 +31,9 @@ public:
     {
         return _isDead;
     }
+
+    int GetHealth() const
+    {
+        return _health;
+    }
 };

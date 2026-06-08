@@ -64,7 +64,7 @@ public:
     virtual void ClearRectOfCards() = 0;
     virtual void MoveFocusToRight() = 0;
     virtual void MoveFocusToLeft() = 0;
-    virtual void PlayCard(Enemy&) = 0;
+    // virtual void PlayCard(Enemy&) = 0; // Decoupled
 };
 
 

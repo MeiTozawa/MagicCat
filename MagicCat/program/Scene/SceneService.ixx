@@ -11,6 +11,12 @@ import CardService;
 import ServiceLocator;
 import GameService;
 
+
+export enum ESceneState
+{
+    START, COMBAT, RESULT
+};
+
 export struct SceneRegistry
 {
     static std::vector<std::function<void()>>& GetRegistrations()
@@ -19,6 +25,7 @@ export struct SceneRegistry
         return registrations;
     }
 };
+
 export class IView
 {
 public:
@@ -40,9 +47,12 @@ export class ISceneService
 public:
     virtual ~ISceneService() = default;
 
-    virtual void ChangeSceneTo(EGameState type) = 0;
+    virtual void ChangeSceneTo(ESceneState type) = 0;
 
     virtual void Update(float delta_time) = 0;
 
-    virtual void RegisterScene(EGameState type, std::shared_ptr<IScene> scene) = 0;
+    virtual void RegisterScene(ESceneState type, std::unique_ptr<IScene>&& scene) = 0;
+
+    virtual ESceneState GetCurrentScene() = 0;
+    virtual void SetCurrentScene(ESceneState) = 0;
 };

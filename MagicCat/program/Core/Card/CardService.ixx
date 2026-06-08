@@ -7,15 +7,19 @@ module;
 export module CardService;
 
 import Enemy;
+import EventBus;
 
 export constexpr int CARD_HEIGHT = 300;
 export constexpr int CARD_WIDTH = 200;
+
+export struct MoveFocusToLeftEvent : IEvent {};
+export struct MoveFocusToRightEvent : IEvent {};
 
 
 export enum ECardType
 {
     Rock = 0, Scissors = 1, Paper = 2,
-    Null = -1, 
+    Null = -1,
     Magic = 100
 };
 

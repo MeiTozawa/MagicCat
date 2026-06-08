@@ -7,10 +7,16 @@ module CardService;
 
 import ServiceLocator;
 import Character;
+import InputService;
+import EventBus;
 
 class CardService : public ICardService
 {
     std::vector<tnl::Rect> rectOfCards = {};
+    
+
+    EventHandle moveFocusToLeftEvent;
+    EventHandle moveFocusToRightEvent;
 
 public:
     CardService()
@@ -28,6 +34,18 @@ public:
         drawPile = std::vector<Card>(deck);
 
         Random::Shuffle(drawPile);
+
+        moveFocusToLeftEvent = EventBus::Subscribe<MoveFocusToLeftEvent>(
+            [this](const MoveFocusToLeftEvent&) { MoveFocusToLeft();}
+        );
+        moveFocusToRightEvent = EventBus::Subscribe<MoveFocusToRightEvent>(
+    [this](const MoveFocusToRightEvent&) { MoveFocusToRight();}
+);
+    }
+    ~CardService() override
+    {
+        EventBus::Unsubscribe(moveFocusToLeftEvent);
+        EventBus::Unsubscribe(moveFocusToRightEvent);
     }
 
     const std::vector<Card>& GetHandCards() override
@@ -95,27 +113,28 @@ public:
         hand[focus].is_selected = true;
     }
 
-    void PlayCard(Enemy& enemy) override
-    {
-        if (hand.empty()) return;
-        auto card = hand.begin() + focus;
-        int t = card->CardType;
-        assert(t >= 0 && t <= 2);
-        enemy.AddWeight(static_cast<EAttackType>(t), card->Offset);
-
-        discardPile.push_back(*card);
-        hand.erase(card);
-
-        if (focus >= hand.size())
-            focus--;
-        if (!hand.empty())
-            hand[focus].is_selected = true;
-    }
+    // void PlayCard(Enemy& enemy) override
+    // {
+    //     if (hand.empty()) return;
+    //     auto card = hand.begin() + focus;
+    //     int t = card->CardType;
+    //     assert(t >= 0 && t <= 2);
+    //     enemy.AddWeight(static_cast<EAttackType>(t), card->Offset);
+    //
+    //     discardPile.push_back(*card);
+    //     hand.erase(card);
+    //
+    //     if (focus >= hand.size())
+    //         focus--;
+    //     if (!hand.empty())
+    //         hand[focus].is_selected = true;
+    // }
 
     const std::vector<Card>& GetDrawCards() override
     {
         return drawPile;
     }
+
     const std::vector<Card>& GetDiscardCards() override
     {
         return discardPile;

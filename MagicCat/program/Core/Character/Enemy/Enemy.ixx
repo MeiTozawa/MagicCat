@@ -4,23 +4,31 @@ export module Enemy;
 
 import Character;
 import HealthComponent;
-
+import EventBus;
 
 class Player;
 
-export class Enemy : public Character, public HealthComponent
+export class Enemy : public Character
 {
+    std::unique_ptr<HealthComponent> healthComp;
 public:
-    Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0, const wchar_t* name = L"Unknown")
-        : baseWeight(baseWeight),
+    Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0,
+          const wchar_t* name = L"Unknown")
+        : name(name),
+          baseWeight(baseWeight),
           rockDamage(rockDamage),
           scissorsDamage(scissorsDamage),
-          paperDamage(paperDamage),
-          name(name)
+          paperDamage(paperDamage)
     {
         rockWeight = baseWeight;
         scissorsWeight = baseWeight;
         paperWeight = baseWeight;
+        
+        healthComp = std::make_unique<HealthComponent>(this);
+
+        EventBus::Subscribe<DeathEvent>(
+            [this](const DeathEvent&) { OnEnemyDeath(); }
+        );
     }
 
     void AddWeight(EAttackType t, int weight)
@@ -39,10 +47,10 @@ public:
         }
     }
 
-    EAttackType Attack() const
-    {
-        return static_cast<EAttackType>(0);
-    }
+    // EAttackType Attack() const
+    // {
+    //     return static_cast<EAttackType>(0);
+    // }
 
     bool operator==(const Enemy& e) const
     {
@@ -64,7 +72,7 @@ public:
     int rockDamage = 0;
     int scissorsDamage = 0;
     int paperDamage = 0;
-    
+
 private:
     void AddRockWeight(int weight)
     {
@@ -79,5 +87,10 @@ private:
     void AddPaperWeight(int weight)
     {
         paperWeight += weight;
+    }
+
+    void OnEnemyDeath()
+    {
+        // TODO
     }
 };

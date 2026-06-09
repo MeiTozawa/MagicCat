@@ -7,12 +7,16 @@ module SceneService;
 
 import GameService;
 import ServiceLocator;
+import HealthComponent;
+import EventBus;
+import CharacterService;
 
 class SceneService : public ISceneService
 {
     std::unordered_map<ESceneState, std::unique_ptr<IScene>> scenes;
     ESceneState currentScene = START;
     bool initialized = false;
+    EventHandle characterDiedHandle;
 
     void EnsureInitialized()
     {
@@ -23,10 +27,30 @@ class SceneService : public ISceneService
             {
                 reg();
             }
+            scenes[currentScene]->Start();
         }
     }
 
 public:
+    SceneService()
+    {
+        characterDiedHandle = EventBus::Subscribe<DeathEvent>([this](const DeathEvent& event) {
+            if (auto characterService = ServiceLocator::Get<ICharacterService>())
+            {
+                if (event.Victim == &characterService->GetPlayer())
+                {
+                    ChangeSceneTo(START);
+                    characterService->Reset();
+                }
+            }
+        });
+    }
+
+    ~SceneService() override
+    {
+        EventBus::Unsubscribe(characterDiedHandle);
+    }
+
     void RegisterScene(ESceneState type, std::unique_ptr<IScene>&& scene) override
     {
         scenes[type] = std::move(scene);

@@ -4,6 +4,7 @@ export module CharacterService;
 
 import Enemy;
 import Player;
+import EventBus;
 
 export class ICharacterService
 {
@@ -14,4 +15,5 @@ public:
     virtual Player& GetPlayer() = 0;
     virtual void Reset() = 0;
 };
+
 

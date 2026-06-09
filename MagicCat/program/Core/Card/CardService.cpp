@@ -39,8 +39,8 @@ public:
             [this](const MoveFocusToLeftEvent&) { MoveFocusToLeft();}
         );
         moveFocusToRightEvent = EventBus::Subscribe<MoveFocusToRightEvent>(
-    [this](const MoveFocusToRightEvent&) { MoveFocusToRight();}
-);
+            [this](const MoveFocusToRightEvent&) { MoveFocusToRight(); }
+        );
     }
     ~CardService() override
     {
@@ -75,6 +75,7 @@ public:
             }
             hand.push_back(c);
         }
+        EventBus::Publish(HandUpdatedEvent(hand));
         return hand;
     }
 
@@ -101,6 +102,7 @@ public:
         hand[focus].is_selected = false;
         focus++;
         hand[focus].is_selected = true;
+        EventBus::Publish(HandUpdatedEvent{hand});
     }
 
     void MoveFocusToLeft() override
@@ -111,6 +113,7 @@ public:
         hand[focus].is_selected = false;
         focus--;
         hand[focus].is_selected = true;
+        EventBus::Publish(HandUpdatedEvent{hand});
     }
 
     // void PlayCard(Enemy& enemy) override

@@ -8,19 +8,27 @@ import Character;
 import HealthComponent;
 import CardService;
 import ServiceLocator;
+import EventBus;
 
 
-
-export class Player : public Character, public HealthComponent
+export class Player : public Character
 {
+private:
+    std::unique_ptr<HealthComponent> healthComp;
+
 public:
     Player()
     {
-        cardService = ServiceLocator::Get<ICardService>();
+        healthComp = std::make_unique<HealthComponent>(this);
+
+        EventBus::Subscribe<DeathEvent>(
+            [this](const DeathEvent&) { OnPlayerDeath(); }
+        );
     }
+
 private:
-    Shared<ICardService> cardService;
-
-
-
+    void OnPlayerDeath()
+    {
+        // TODO
+    }
 };

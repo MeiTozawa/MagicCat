@@ -41,7 +41,7 @@ static struct RegisterStartScene
         {
             if (auto uiService = ServiceLocator::Get<ISceneService>())
             {
-                uiService->RegisterScene(START, std::unique_ptr<StartScene>());
+                uiService->RegisterScene(START, std::make_unique<StartScene>());
             }
         });
     }

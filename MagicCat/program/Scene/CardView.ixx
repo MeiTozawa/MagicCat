@@ -5,6 +5,7 @@ export module CardView;
 import CardService;
 import ServiceLocator;
 import AssetService;
+import EventBus;
 
 // card
 constexpr int CARD_START_X = 400;
@@ -36,18 +37,30 @@ export class CardView
     Shared<ICardService> cardService;
     Shared<IAssetService> assetService;
 
+    EventHandle handUpdateHandle;
+    std::vector<Card> cachedHand;
+
 public:
     CardView()
     {
         cardService = ServiceLocator::Get<ICardService>();
         assetService = ServiceLocator::Get<IAssetService>();
+
+        handUpdateHandle = EventBus::Subscribe<HandUpdatedEvent>([this](const HandUpdatedEvent& e) {
+            cachedHand = e.hand;
+        });
+    }
+
+    ~CardView()
+    {
+        EventBus::Unsubscribe(handUpdateHandle);
     }
 
     void PrintCards() const
     {
         std::wstring message;
         cardService->ClearRectOfCards();
-        auto hand = cardService->GetHandCards();
+        const auto& hand = cachedHand;
         auto position = tnl::Vector2i{CARD_START_X, CARD_START_Y};
         for (int i = 0; i < hand.size(); ++i)
         {

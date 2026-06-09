@@ -9,12 +9,9 @@ export module CardService;
 import Enemy;
 import EventBus;
 
+
 export constexpr int CARD_HEIGHT = 300;
 export constexpr int CARD_WIDTH = 200;
-
-export struct MoveFocusToLeftEvent : IEvent {};
-export struct MoveFocusToRightEvent : IEvent {};
-
 
 export enum ECardType
 {
@@ -65,6 +62,14 @@ public:
     virtual void MoveFocusToRight() = 0;
     virtual void MoveFocusToLeft() = 0;
     // virtual void PlayCard(Enemy&) = 0; // Decoupled
+};
+
+export struct MoveFocusToLeftEvent : IEvent {};
+export struct MoveFocusToRightEvent : IEvent {};
+export struct HandUpdatedEvent : IEvent
+{
+    std::vector<Card> hand;
+    HandUpdatedEvent(const std::vector<Card>& hand) : hand(hand) {};
 };
 
 

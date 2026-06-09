@@ -10,6 +10,11 @@ import CardService;
 import ServiceLocator;
 import EventBus;
 
+export enum class EPlayerAction
+{
+     Magic, Rock, Scissors, Paper,
+};
+
 
 export class Player : public Character
 {

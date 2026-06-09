@@ -46,8 +46,8 @@ public:
         cardService = ServiceLocator::Get<ICardService>();
         assetService = ServiceLocator::Get<IAssetService>();
 
-        handUpdateHandle = EventBus::Subscribe<HandUpdatedEvent>([this](const HandUpdatedEvent& e) {
-            cachedHand = e.Hand;
+        handUpdateHandle = EventBus::Subscribe<DrawCardEvent>([this](const DrawCardEvent& e) {
+            cachedHand = cardService->GetHandCards();
         });
     }
 
@@ -97,27 +97,20 @@ private:
         auto x = start_position.x, y = start_position.y;
         uint32_t color;
         int thickness = THICKNESS;
-        if (card.is_selected)
+
+        switch (card.CardType)
         {
-            color = COLOR_WHITE;
-            thickness *= 2;
-        }
-        else
-        {
-            switch (card.CardType)
-            {
-            case Rock:
-                color = COLOR_ROCK;
-                break;
-            case Paper:
-                color = COLOR_PAPER;
-                break;
-            case Scissors:
-                color = COLOR_SCISSORS;
-                break;
-            default:
-                color = COLOR_DEFAULT;
-            }
+        case Rock:
+            color = COLOR_ROCK;
+            break;
+        case Paper:
+            color = COLOR_PAPER;
+            break;
+        case Scissors:
+            color = COLOR_SCISSORS;
+            break;
+        default:
+            color = COLOR_DEFAULT;
         }
 
         for (int i = 0; i < thickness; ++i)

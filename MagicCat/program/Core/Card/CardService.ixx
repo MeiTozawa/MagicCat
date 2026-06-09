@@ -12,6 +12,7 @@ import EventBus;
 
 export constexpr int CARD_HEIGHT = 300;
 export constexpr int CARD_WIDTH = 200;
+export constexpr int HAND_SIZE_MAX = 4;
 
 export enum ECardType
 {
@@ -45,34 +46,22 @@ export struct Card
     ECardType CardType;
     // 敵が「ECardType」を出す確率のオフセット
     int Offset = 0;
-    bool is_selected = false;
 };
 
 export class ICardService
 {
 public:
     virtual ~ICardService() = default;
-    virtual const std::vector<Card>& DrawCard() = 0;
+    virtual const void DrawCard() = 0;
     virtual const std::vector<Card>& GetHandCards() = 0;
     virtual const std::vector<Card>& GetDrawCards() = 0;
     virtual const std::vector<Card>& GetDiscardCards() = 0;
     virtual void PushBackRectOfCard(tnl::Rect) = 0;
     virtual const std::vector<tnl::Rect>& GetRectOfCards() = 0;
     virtual void ClearRectOfCards() = 0;
-    virtual void MoveFocusToRight() = 0;
-    virtual void MoveFocusToLeft() = 0;
-    virtual void PlayCard() = 0;
 };
 
-export struct MoveFocusToLeftEvent : IEvent {};
-export struct MoveFocusToRightEvent : IEvent {};
-export struct PlayCardEvent : IEvent {};
 export struct DrawCardEvent : IEvent {};
-export struct HandUpdatedEvent : IEvent
-{
-    const std::vector<Card>& Hand;
-    HandUpdatedEvent(const std::vector<Card>& hand) : Hand(hand) {}
-};
 
 
 export constexpr Card CARD_ROCK_2 = {Rock, 2};

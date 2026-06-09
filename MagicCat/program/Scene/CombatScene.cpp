@@ -41,19 +41,7 @@ public:
 
     void Update(float deltaTime) override
     {
-        if (inputService->IsPressed(InputAction::IgLeft))
-        {
-            EventBus::Publish(MoveFocusToLeftEvent());
-        }
-        else if (inputService->IsPressed(InputAction::IgRight))
-        {
-            EventBus::Publish(MoveFocusToRightEvent());
-        }
-        else if (inputService->IsPressed(InputAction::IgPlatCard))
-        {
-            EventBus::Publish(PlayCardEvent());
-        }
-        else if (inputService->IsPressed(InputAction::IgDrawCard))
+        if (inputService->IsPressed(InputAction::IgDrawCard))
         {
             EventBus::Publish(DrawCardEvent());
         }

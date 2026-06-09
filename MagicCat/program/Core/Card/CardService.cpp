@@ -14,11 +14,7 @@ class CardService : public ICardService
 {
     std::vector<tnl::Rect> rectOfCards = {};
 
-
-    EventHandle moveFocusToLeftEvent;
-    EventHandle moveFocusToRightEvent;
     EventHandle drawCardEvent;
-    EventHandle playCardEvent;
 
 public:
     CardService()
@@ -37,26 +33,14 @@ public:
 
         Random::Shuffle(drawPile);
 
-        moveFocusToLeftEvent = EventBus::Subscribe<MoveFocusToLeftEvent>(
-            [this](const MoveFocusToLeftEvent&) { MoveFocusToLeft(); }
-        );
-        moveFocusToRightEvent = EventBus::Subscribe<MoveFocusToRightEvent>(
-            [this](const MoveFocusToRightEvent&) { MoveFocusToRight(); }
-        );
         drawCardEvent = EventBus::Subscribe<DrawCardEvent>(
             [this](const DrawCardEvent&) { DrawCard(); }
-        );
-        playCardEvent = EventBus::Subscribe<PlayCardEvent>(
-            [this](const PlayCardEvent&) { PlayCard(); }
         );
     }
 
     ~CardService() override
     {
-        EventBus::Unsubscribe(moveFocusToLeftEvent);
-        EventBus::Unsubscribe(moveFocusToRightEvent);
         EventBus::Unsubscribe(drawCardEvent);
-        EventBus::Unsubscribe(playCardEvent);
     }
 
     const std::vector<Card>& GetHandCards() override
@@ -64,8 +48,12 @@ public:
         return hand;
     }
 
-    const std::vector<Card>& DrawCard() override
+    const void DrawCard() override
     {
+        if (hand.size() >= HAND_SIZE_MAX)
+        {
+            return;
+        }
         if (drawPile.empty())
         {
             drawPile.insert(drawPile.end(), discardPile.begin(), discardPile.end());
@@ -74,16 +62,10 @@ public:
         auto c = drawPile.back();
 
         drawPile.pop_back();
+        if (c.CardType == Rock || c.CardType == Scissors || c.CardType == Paper)
+            EventBus::Publish(AddWeightEvent(static_cast<EAttackType>(c.CardType), c.Offset));
 
-        if (hand.empty())
-        {
-            focus = 0;
-            c.is_selected = true;
-        }
         hand.push_back(c);
-
-        EventBus::Publish(HandUpdatedEvent(hand));
-        return hand;
     }
 
     void ClearRectOfCards() override
@@ -101,46 +83,6 @@ public:
         rectOfCards.push_back(r);
     }
 
-    void MoveFocusToRight() override
-    {
-        if (hand.empty()) return;
-        if (focus >= hand.size() - 1) return;
-
-        hand[focus].is_selected = false;
-        focus++;
-        hand[focus].is_selected = true;
-        EventBus::Publish(HandUpdatedEvent{hand});
-    }
-
-    void MoveFocusToLeft() override
-    {
-        if (hand.empty()) return;
-        if (focus <= 0) return;
-
-        hand[focus].is_selected = false;
-        focus--;
-        hand[focus].is_selected = true;
-        EventBus::Publish(HandUpdatedEvent{hand});
-    }
-
-    void PlayCard() override
-    {
-        if (hand.empty()) return;
-        auto card = hand.begin() + focus;
-        int t = card->CardType;
-        assert(t >= 0 && t <= 2);
-        EventBus::Publish(AddWeightEvent(static_cast<EAttackType>(t), card->Offset));
-
-        discardPile.push_back(*card);
-        hand.erase(card);
-
-        if (focus >= hand.size())
-            focus--;
-        if (!hand.empty())
-            hand[focus].is_selected = true;
-            
-        EventBus::Publish(HandUpdatedEvent(hand));
-    }
 
     const std::vector<Card>& GetDrawCards() override
     {
@@ -157,7 +99,6 @@ private:
     std::vector<Card> hand = std::vector<Card>();
     std::vector<Card> drawPile = std::vector<Card>();
     std::vector<Card> discardPile = std::vector<Card>();
-    int focus = 0;
 };
 
 static struct RegisterCardService

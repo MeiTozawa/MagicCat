@@ -4,6 +4,9 @@ export module CharacterView;
 
 import AssetService;
 import ServiceLocator;
+import EventBus;
+import CharacterService;
+import HealthComponent;
 
 constexpr int PLAYER_START_X = 800;
 constexpr int PLAYER_START_Y = 450;
@@ -30,6 +33,12 @@ export class CharacterView
     Shared<IAssetService> assetService;
     std::vector<Animation> animations = {};
     
+    EventHandle healthUpdateHandle;
+    int playerHealth = 0;
+    int playerMaxHealth = 0;
+    int enemyHealth = 0;
+    int enemyMaxHealth = 0;
+
     float timer = 0;
     int frame_index = 0;
     int sprite_size = 0;
@@ -42,6 +51,21 @@ public:
         animations.push_back({handle, PLAYER_START_X, PLAYER_START_Y, EXTRA_RATE, false});
         handle = assetService->GetSpriteHandle(ESprite::Wolf);
         animations.push_back({handle, ENEMY_START_X, ENEMY_START_Y, EXTRA_RATE, true});
+
+        healthUpdateHandle = EventBus::Subscribe<HealthChangedEvent>([this](const HealthChangedEvent& e) {
+            if (auto characterService = ServiceLocator::Get<ICharacterService>()) {
+                if (e.Victim == &characterService->GetPlayer()) {
+                    playerHealth = e.CurrentHealth;
+                } else {
+                    enemyHealth = e.CurrentHealth;
+                }
+            }
+        });
+    }
+
+    ~CharacterView()
+    {
+        EventBus::Unsubscribe(healthUpdateHandle);
     }
 
 

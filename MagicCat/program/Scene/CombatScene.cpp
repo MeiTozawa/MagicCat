@@ -37,11 +37,6 @@ public:
 
     void Update(float deltaTime) override
     {
-        if (characterService->GetPlayer().IsDead())
-        {
-            sceneService->ChangeSceneTo(START);
-            characterService->Reset();
-        }
         if (auto p = inputService->OnMouseClick(InputAction::IgMouseClick); p.x >= 0 && p.y >= 0)
         {
             // TODO: Handling mouse events
@@ -70,7 +65,7 @@ static struct RegisterCombatScene
             auto manager = ServiceLocator::Get<ISceneService>();
             if (manager)
             {
-                manager->RegisterScene(COMBAT, std::unique_ptr<CombatScene>());
+                manager->RegisterScene(COMBAT, std::make_unique<CombatScene>());
             }
         });
     }

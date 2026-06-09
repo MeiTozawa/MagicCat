@@ -5,35 +5,59 @@ module;
 export module HealthComponent;
 
 import IDamageable;
+import EventBus;
+import Character;
+
+export struct DeathEvent : public IEvent
+{
+    const Character* Victim;
+    DeathEvent(const Character* victim) : Victim(victim) {}
+};
+
+export struct HealthChangedEvent : public IEvent
+{
+    const Character* Victim;
+    int CurrentHealth;
+
+    HealthChangedEvent(const Character* victim, int currentHealth) : Victim(victim), CurrentHealth(currentHealth) {};
+};
 
 export class HealthComponent : public IDamageable
 {
-    int _health = 100;
-    bool _isDead = false;
+    int health = 100;
+    bool isDead = false;
+    Character* owner;
 
 public:
-    std::vector<std::function<void()>> OnDeathEvent;
-    
+    explicit HealthComponent(Character* owner, int initialHealth = 100)
+        : health(initialHealth), owner(owner) {}
+
     void TakeDamage(int damage) override
     {
-        _health -= damage;
-        if (_health <= 0)
+        if (isDead) return;
+
+        health -= damage;
+
+        EventBus::Publish(HealthChangedEvent(GetOwner(), health));
+        if (health <= 0)
         {
-            _isDead = true;
-            for (auto i : OnDeathEvent)
-            {
-                i();
-            }
+            isDead = true;
+            EventBus::Publish(DeathEvent(GetOwner()));
         }
     }
 
     bool IsDead() const override
     {
-        return _isDead;
+        return isDead;
     }
 
-    int GetHealth() const
+    int GetHealth() const override
     {
-        return _health;
+        return health;
+    }
+
+    const Character* GetOwner() const override
+    {
+        return owner;
     }
 };

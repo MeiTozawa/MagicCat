@@ -6,40 +6,46 @@ export module Player;
 
 import Character;
 import HealthComponent;
-import CardService;
 import ServiceLocator;
 import EventBus;
 
 export enum class EPlayerAction
 {
-     Magic, Rock, Scissors, Paper,
+    Magic, Rock, Scissors, Paper,
 };
 
+export struct ChangeMpEvent : IEvent
+{
+    int offset;
+    ChangeMpEvent(int offset) : offset(offset) {}
+};
 
 export class Player : public Character
 {
-private:
     std::unique_ptr<HealthComponent> healthComp;
-    EventHandle deathEvent;
+    EventHandle changeMpEvent;
+    int mp = 0;
+    int maxMp = 10;
 
 public:
     Player()
     {
         healthComp = std::make_unique<HealthComponent>(this);
-
-        deathEvent = EventBus::Subscribe<DeathEvent>(
-            [this](const DeathEvent&) { OnPlayerDeath(); }
+        changeMpEvent = EventBus::Subscribe<ChangeMpEvent>(
+            [this](const ChangeMpEvent& e) { ChangeMp(e.offset); }
         );
     }
-    
+
     ~Player()
     {
-        EventBus::Unsubscribe(deathEvent);
+        EventBus::Unsubscribe(changeMpEvent);
     }
 
-private:
-    void OnPlayerDeath()
-    {
-        // TODO
-    }
+    void ChangeMp(int offset) { mp += offset; }
+
+    int GetMp() const { return mp; }
+
+    int GetMaxMp() const { return maxMp; }
+
+    const HealthComponent& GetHealthComponent() const { return *healthComp; }
 };

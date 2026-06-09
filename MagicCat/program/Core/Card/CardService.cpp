@@ -9,6 +9,7 @@ import ServiceLocator;
 import Character;
 import InputService;
 import EventBus;
+import Player;
 
 class CardService : public ICardService
 {
@@ -28,6 +29,9 @@ public:
         deck.push_back(CARD_PAPER_2);
         deck.push_back(CARD_PAPER_3);
         deck.push_back(CARD_PAPER_4);
+        deck.push_back(CARD_MAGIC_2);
+        deck.push_back(CARD_MAGIC_3);
+        deck.push_back(CARD_MAGIC_4);
 
         drawPile = std::vector<Card>(deck);
 
@@ -62,8 +66,10 @@ public:
         auto c = drawPile.back();
 
         drawPile.pop_back();
-        if (c.CardType == Rock || c.CardType == Scissors || c.CardType == Paper)
-            EventBus::Publish(AddWeightEvent(static_cast<EAttackType>(c.CardType), c.Offset));
+        if (c.CardType == Magic)
+            EventBus::Publish(ChangeMpEvent(c.Value));
+        else if (c.CardType == Rock || c.CardType == Scissors || c.CardType == Paper)
+            EventBus::Publish(AddWeightEvent(static_cast<EAttackType>(c.CardType), c.Value));
 
         hand.push_back(c);
     }

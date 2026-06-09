@@ -72,7 +72,8 @@ public:
         cardView->PrintDrawPile();
         cardView->PrintDiscardPile();
         spriteView->PrintSprites(deltaTime);
-        characterView->PrintEnemyData();
+        characterView->PrintEnemyInfo();
+        characterView->PrintPlayerInfo();
         characterView->PrintPlayerActions(focus);
         controlView->PrintControl();
     }

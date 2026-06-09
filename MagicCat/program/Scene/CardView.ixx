@@ -46,7 +46,8 @@ public:
         cardService = ServiceLocator::Get<ICardService>();
         assetService = ServiceLocator::Get<IAssetService>();
 
-        handUpdateHandle = EventBus::Subscribe<DrawCardEvent>([this](const DrawCardEvent& e) {
+        handUpdateHandle = EventBus::Subscribe<DrawCardEvent>([this](const DrawCardEvent& e)
+        {
             cachedHand = cardService->GetHandCards();
         });
     }
@@ -64,19 +65,19 @@ public:
         auto position = tnl::Vector2i{CARD_START_X, CARD_START_Y};
         for (int i = 0; i < hand.size(); ++i)
         {
-            message = std::format(L"+{}", hand[i].Offset);
+            message = std::format(L"+{}", hand[i].Value);
             printACard(hand[i], position, message.c_str());
             cardService->PushBackRectOfCard({position, {CARD_WIDTH, CARD_HEIGHT}});
             position.x += OFFSET_X;
         }
     }
-    
+
     void PrintDrawPile() const
     {
         std::wstring message = std::format(L"山札\n{:2}枚", cardService->GetDrawCards().size());
         printACard({Null}, {DRAW_PILE_X, DRAW_PILE_Y}, message.c_str(), false);
     }
-    
+
     void PrintDiscardPile() const
     {
         std::wstring message = std::format(L"捨札\n{:2}枚", cardService->GetDiscardCards().size());

@@ -8,13 +8,13 @@ import IDamageable;
 import EventBus;
 import Character;
 
-export struct DeathEvent : public IEvent
+export struct DeathEvent : IEvent
 {
     const Character* Victim;
     DeathEvent(const Character* victim) : Victim(victim) {}
 };
 
-export struct HealthChangedEvent : public IEvent
+export struct HealthChangedEvent : IEvent
 {
     const Character* Victim;
     int CurrentHealth;
@@ -24,22 +24,23 @@ export struct HealthChangedEvent : public IEvent
 
 export class HealthComponent : public IDamageable
 {
-    int health = 100;
+    int maxHp = 10;
+    int hp = 10;
     bool isDead = false;
     Character* owner;
 
 public:
-    explicit HealthComponent(Character* owner, int initialHealth = 100)
-        : health(initialHealth), owner(owner) {}
+    explicit HealthComponent(Character* owner)
+        : owner(owner) {}
 
     void TakeDamage(int damage) override
     {
         if (isDead) return;
 
-        health -= damage;
+        hp -= damage;
 
-        EventBus::Publish(HealthChangedEvent(GetOwner(), health));
-        if (health <= 0)
+        EventBus::Publish(HealthChangedEvent(GetOwner(), hp));
+        if (hp <= 0)
         {
             isDead = true;
             EventBus::Publish(DeathEvent(GetOwner()));
@@ -53,7 +54,12 @@ public:
 
     int GetHealth() const override
     {
-        return health;
+        return hp;
+    }
+
+    int GetMaxHealth() const override
+    {
+        return maxHp;
     }
 
     const Character* GetOwner() const override

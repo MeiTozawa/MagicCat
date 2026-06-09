@@ -16,9 +16,9 @@ export constexpr int HAND_SIZE_MAX = 4;
 
 export enum ECardType
 {
-    Rock = 0, Scissors = 1, Paper = 2,
+    Rock = 0, Scissors = 1, Paper = 2, Magic = 3,
     Null = -1,
-    Magic = 100
+    
 };
 
 // ⚠️ 警告：伝達性が損なわれているため、ソートや関連付けコンテナには絶対に使用しないでください！
@@ -45,7 +45,7 @@ export struct Card
 {
     ECardType CardType;
     // 敵が「ECardType」を出す確率のオフセット
-    int Offset = 0;
+    int Value = 0;
 };
 
 export class ICardService
@@ -73,3 +73,6 @@ export constexpr Card CARD_SCISSORS_4 = {Scissors, 4};
 export constexpr Card CARD_PAPER_2 = {Paper, 2};
 export constexpr Card CARD_PAPER_3 = {Paper, 3};
 export constexpr Card CARD_PAPER_4 = {Paper, 4};
+export constexpr Card CARD_MAGIC_2 = {Magic, 2};
+export constexpr Card CARD_MAGIC_3 = {Magic, 3};
+export constexpr Card CARD_MAGIC_4 = {Magic, 4};

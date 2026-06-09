@@ -8,9 +8,15 @@ import CharacterService;
 import ServiceLocator;
 import Player;
 import Enemy;
+import HealthComponent;
 
 constexpr int PLAYER_DATA_START_X = 400;
 constexpr int PLAYER_DATA_START_Y = 200;
+
+constexpr int PLAYER_HP_X = 100;
+constexpr int PLAYER_HP_Y = 200;
+constexpr int PLAYER_MP_X = 100;
+constexpr int PLAYER_MP_Y = 300;
 
 constexpr int ENEMY_DATA_START_X = 1200;
 constexpr int ENEMY_DATA_START_Y = 300;
@@ -28,10 +34,22 @@ constexpr int THICKNESS = 2;
 export class CharacterView
 {
     Shared<ICharacterService> characterService;
+
 public:
     CharacterView()
     {
         characterService = ServiceLocator::Get<ICharacterService>();
+    }
+
+    void PrintPlayerInfo(uint32_t color = 0xFFFFFF) const
+    {
+        const Player& player = characterService->GetPlayer();
+        const auto playerHealthComp = player.GetHealthComponent();
+        
+        auto message = std::format(L"HP: {}/{}", playerHealthComp.GetHealth(), playerHealthComp.GetMaxHealth());
+        DrawString(PLAYER_HP_X, PLAYER_HP_Y, message.c_str(), color);
+        message = std::format(L"MP: {}/{}", player.GetMp(), player.GetMaxMp());
+        DrawString(PLAYER_MP_X, PLAYER_MP_Y, message.c_str(), color);
     }
 
     void PrintPlayerActions(int focus = 0, uint32_t color = 0xFFFFFF) const
@@ -39,7 +57,6 @@ public:
         const Player& player = characterService->GetPlayer();
         for (int i = 0; i < 4; ++i)
         {
-
             for (int k = 0; k < THICKNESS; ++k)
             {
                 float x1 = PLAYER_DATA_START_X + k;
@@ -49,7 +66,7 @@ public:
 
                 DrawBoxAA(x1, y1, x2, y2, color, FALSE);
             }
-            
+
             if (i == focus)
             {
                 for (int k = 2 * THICKNESS; k < 3 * THICKNESS; ++k)
@@ -77,7 +94,7 @@ public:
                          color, L"Paper:    %d", player.paperAttack);
     }
 
-    void PrintEnemyData(uint32_t color = 0xFFFFFF) const
+    void PrintEnemyInfo(uint32_t color = 0xFFFFFF) const
     {
         const Enemy& enemy = characterService->GetEnemy();
         for (int i = 0; i < 3; ++i)
@@ -94,32 +111,32 @@ public:
         }
 
         std::wstring message;
-        
+
         if (auto offset = enemy.GetRockWeightOffset(); offset == 0)
             message = std::format(L"Rock:     ?");
         else
             message = std::format(L"Rock:     ?+{}", offset);
-        
+
         DrawString(ENEMY_DATA_START_X + TEXT_OFFSET_X,
                    ENEMY_DATA_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
                    message.c_str(), color);
-        
-        
+
+
         if (auto offset = enemy.GetScissorsWeightOffset(); offset == 0)
             message = std::format(L"Scissors: ?");
         else
             message = std::format(L"Scissors: ?+{}", offset);
-        
+
         DrawString(ENEMY_DATA_START_X + TEXT_OFFSET_X,
                    ENEMY_DATA_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                   message.c_str(), color);       
-        
-        
+                   message.c_str(), color);
+
+
         if (auto offset = enemy.GetPaperWeightOffset(); offset == 0)
             message = std::format(L"Paper:    ?");
         else
             message = std::format(L"Paper:    ?+{}", offset);
-        
+
         DrawString(ENEMY_DATA_START_X + TEXT_OFFSET_X,
                    ENEMY_DATA_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
                    message.c_str(), color);

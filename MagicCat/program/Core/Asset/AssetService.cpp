@@ -18,7 +18,9 @@ public:
 
     const Shared<dxe::Sprite> GetImage(EImage e) override
     {
-        return imageMappings[e];
+        if (imageMappings.contains(e))
+            return imageMappings.at(e);
+        return nullptr;
     }
     
     const int GetSpriteHandle(ESprite e) override
@@ -52,6 +54,12 @@ private:
             else
                 imageMappings.insert({EImage::Paper, dxe::Sprite::Create(paper_resource)});
             
+            auto magic_resource = dxe::SpriteResouce::Create(FILE_MAGIC);
+            if (!magic_resource)
+                printfDx(L"%sの読み込みに失敗", FILE_MAGIC.c_str());
+            else
+                imageMappings.insert({EImage::Magic, dxe::Sprite::Create(magic_resource)});
+            
             auto kb_q_resource = dxe::SpriteResouce::Create(FILE_KB_Q);
             if (!kb_q_resource)
                 printfDx(L"%sの読み込みに失敗", FILE_KB_Q.c_str());
@@ -75,6 +83,8 @@ private:
                 printfDx(L"%sの読み込みに失敗", FILE_KB_DOWN.c_str());
             else
                 imageMappings.insert({EImage::KB_DOWN, dxe::Sprite::Create(kb_down_resource)});
+        
+            
             
             auto bunny_resource = LoadGraph(FILE_BUNNY_SHEET.c_str());
             if (!bunny_resource)

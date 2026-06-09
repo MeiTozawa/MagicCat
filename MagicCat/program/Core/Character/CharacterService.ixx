@@ -5,6 +5,9 @@ export module CharacterService;
 import Enemy;
 import Player;
 import EventBus;
+import Character;
+
+
 
 export class ICharacterService
 {

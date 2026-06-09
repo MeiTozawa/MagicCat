@@ -65,7 +65,7 @@ public:
             dxe::Input::eButton::KB_Q,
             dxe::Input::eButton::PAD_X
         };
-        actionMappings[InputContext::InGame][InputAction::IgAttack] = {
+        actionMappings[InputContext::InGame][InputAction::IgCombat] = {
             dxe::Input::eButton::KB_W,
             dxe::Input::eButton::PAD_Y
         };

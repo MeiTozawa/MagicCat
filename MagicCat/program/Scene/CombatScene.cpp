@@ -14,6 +14,7 @@ import InputService;
 import EventBus;
 import DataView;
 import ControlView;
+import Character;
 
 
 class CombatScene : public IScene
@@ -55,6 +56,19 @@ public:
             if (focus < 3)
                 focus++;
         }
+        else if (inputService->IsPressed(InputAction::IgCombat))
+        {
+            if (focus > 0)
+            {
+                EAttackType playerAttackIntent = static_cast<EAttackType>(focus - 1);
+                EAttackType enemyAttackIntent = characterService->GetEnemy().GetAttackIntent();
+                EventBus::Publish(
+                    CombatEvent(playerAttackIntent, enemyAttackIntent,
+                                characterService->GetPlayer().GetDamage(playerAttackIntent),
+                                characterService->GetEnemy().GetDamage(enemyAttackIntent)
+                    ));
+            }
+        }
         else if (inputService->IsPressed(InputAction::IgDrawCard))
         {
             EventBus::Publish(DrawCardEvent());
@@ -63,7 +77,7 @@ public:
         {
             readyToAttack = false;
         }
-        else if (inputService->IsPressed(InputAction::IgAttack))
+        else if (inputService->IsPressed(InputAction::IgCombat))
         {
             readyToAttack = true;
         }

@@ -6,7 +6,7 @@ export module InputService;
 
 export enum class InputAction {
     IgUp, IgDown, IgInteract, IgPlatCard, IgToggleMenu, // IgMouseClick,
-    IgDrawCard, IgAttack, IgCancel,
+    IgDrawCard, IgCombat, IgCancel,
     
     MenuConfirm = 100,
     MenuCancel,

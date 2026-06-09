@@ -20,9 +20,6 @@ public:
           scissorsDamage(scissorsDamage),
           paperDamage(paperDamage)
     {
-        rockWeight = baseWeight;
-        scissorsWeight = baseWeight;
-        paperWeight = baseWeight;
         
         healthComp = std::make_unique<HealthComponent>(this);
 
@@ -61,32 +58,35 @@ public:
             this->scissorsDamage == e.scissorsDamage &&
             this->paperDamage == e.paperDamage;
     }
-
-    const wchar_t* name = L"Unknown";
-
+    
+    [[nodiscard]] int GetRockWeightOffset() const { return rockWeightOffset; }
+    [[nodiscard]] int GetScissorsWeightOffset() const { return scissorsWeightOffset; }
+    [[nodiscard]] int GetPaperWeightOffset() const { return paperWeightOffset; }
+private:
     int baseWeight = 0;
-    int rockWeight = 0;
-    int scissorsWeight = 0;
-    int paperWeight = 0;
+    int rockWeightOffset = 0;
+    int scissorsWeightOffset = 0;
+    int paperWeightOffset = 0;
 
     int rockDamage = 0;
     int scissorsDamage = 0;
     int paperDamage = 0;
 
-private:
+    const wchar_t* name = L"Unknown";
+    
     void AddRockWeight(int weight)
     {
-        rockWeight += weight;
+        rockWeightOffset += weight;
     }
 
     void AddScissorsWeight(int weight)
     {
-        scissorsWeight += weight;
+        scissorsWeightOffset += weight;
     }
 
     void AddPaperWeight(int weight)
     {
-        paperWeight += weight;
+        paperWeightOffset += weight;
     }
 
     void OnEnemyDeath()

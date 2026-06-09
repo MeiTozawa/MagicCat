@@ -35,6 +35,7 @@ public:
         sceneService = ServiceLocator::Get<ISceneService>();
         inputService = ServiceLocator::Get<IInputService>();
         characterService = ServiceLocator::Get<ICharacterService>();
+        characterService->Reset();
         cardService = ServiceLocator::Get<ICardService>();
         assetService = ServiceLocator::Get<IAssetService>();
         assetService->LoadAssets();

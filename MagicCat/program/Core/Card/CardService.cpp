@@ -51,6 +51,7 @@ public:
     {
         EventBus::Unsubscribe(moveFocusToLeftEvent);
         EventBus::Unsubscribe(moveFocusToRightEvent);
+        EventBus::Unsubscribe(drawCardEvent);
     }
 
     const std::vector<Card>& GetHandCards() override
@@ -60,9 +61,6 @@ public:
 
     const std::vector<Card>& DrawCard() override
     {
-        discardPile.insert(discardPile.end(), hand.begin(), hand.end());
-        hand.clear();
-
         if (drawPile.empty())
         {
             drawPile.insert(drawPile.end(), discardPile.begin(), discardPile.end());

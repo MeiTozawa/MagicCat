@@ -69,9 +69,9 @@ public:
     }
 
 
-    void PrintSprites(float delta_time) 
+    void PrintSprites(float deltaTime) 
     {
-        timer += delta_time;
+        timer += deltaTime;
         if (timer >= 1.f / ANIMATION_SPEED)
         {
             frame_index += 1;

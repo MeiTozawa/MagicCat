@@ -12,12 +12,14 @@ import CharacterService;
 import SceneService;
 import InputService;
 import EventBus;
+import DataView;
 
 
 class CombatScene : public IScene
 {
     std::unique_ptr<CardView> cardView;
     std::unique_ptr<CharacterView> characterView;
+    std::unique_ptr<DataView> dataView;
     Shared<ICharacterService> characterService;
     Shared<ISceneService> sceneService;
     Shared<IInputService> inputService;
@@ -30,6 +32,7 @@ public:
     {
         cardView = std::make_unique<CardView>();
         characterView = std::make_unique<CharacterView>();
+        dataView = std::make_unique<DataView>();
         characterService = ServiceLocator::Get<ICharacterService>();
         sceneService = ServiceLocator::Get<ISceneService>();
         inputService = ServiceLocator::Get<IInputService>();
@@ -62,7 +65,9 @@ public:
         cardView->PrintCards();
         cardView->PrintDrawPile();
         cardView->PrintDiscardPile();
-        
+        characterView->PrintSprites(deltaTime);
+        dataView->PrintEnemyData();
+        dataView->PrintPlayerData();
     }
 };
 

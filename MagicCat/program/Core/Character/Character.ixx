@@ -9,7 +9,7 @@ export enum class EAttackType
 
 export struct Character
 {
-    int rockAttack = 0;
-    int scissorsAttack = 0;
-    int paperAttack = 0;
+    int rockAttack = 1;
+    int scissorsAttack = 1;
+    int paperAttack = 1;
 };

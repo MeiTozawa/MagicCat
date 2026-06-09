@@ -13,6 +13,7 @@ import SceneService;
 import InputService;
 import EventBus;
 import DataView;
+import ControlView;
 
 
 class CombatScene : public IScene
@@ -20,6 +21,7 @@ class CombatScene : public IScene
     std::unique_ptr<CardView> cardView;
     std::unique_ptr<SpriteView> spriteView;
     std::unique_ptr<CharacterView> characterView;
+    std::unique_ptr<ControlView> controlView;
     Shared<ICharacterService> characterService;
     Shared<ISceneService> sceneService;
     Shared<IInputService> inputService;
@@ -34,6 +36,7 @@ public:
         cardView = std::make_unique<CardView>();
         spriteView = std::make_unique<SpriteView>();
         characterView = std::make_unique<CharacterView>();
+        controlView = std::make_unique<ControlView>();
         characterService = ServiceLocator::Get<ICharacterService>();
         sceneService = ServiceLocator::Get<ISceneService>();
         inputService = ServiceLocator::Get<IInputService>();
@@ -71,6 +74,7 @@ public:
         spriteView->PrintSprites(deltaTime);
         characterView->PrintEnemyData();
         characterView->PrintPlayerActions(focus);
+        controlView->PrintControl();
     }
 };
 

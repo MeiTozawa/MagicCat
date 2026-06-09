@@ -1,6 +1,5 @@
 ﻿module;
 
-#include <array>
 #include <dxe.h>
 
 export module DataView;
@@ -30,7 +29,10 @@ export class CharacterView
 {
     Shared<ICharacterService> characterService;
 public:
-    CharacterView() : characterService(ServiceLocator::Get<ICharacterService>()){}
+    CharacterView()
+    {
+        characterService = ServiceLocator::Get<ICharacterService>();
+    }
 
     void PrintPlayerActions(int focus = 0, uint32_t color = 0xFFFFFF) const
     {

@@ -7,6 +7,8 @@ export module AssetService;
 export enum class EImage
 {
     Rock = 0, Scissors = 1, Paper = 2, 
+    
+    KB_Q = 100, KB_SPACE, KB_UP, KB_DOWN
 };
 
 export enum class ESprite

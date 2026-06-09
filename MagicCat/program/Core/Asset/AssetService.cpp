@@ -52,7 +52,29 @@ private:
             else
                 imageMappings.insert({EImage::Paper, dxe::Sprite::Create(paper_resource)});
             
+            auto kb_q_resource = dxe::SpriteResouce::Create(FILE_KB_Q);
+            if (!kb_q_resource)
+                printfDx(L"%sの読み込みに失敗", FILE_KB_Q.c_str());
+            else
+                imageMappings.insert({EImage::KB_Q, dxe::Sprite::Create(kb_q_resource)});
             
+            auto kb_space_resource = dxe::SpriteResouce::Create(FILE_KB_SPACE);
+            if (!kb_space_resource)
+                printfDx(L"%sの読み込みに失敗", FILE_KB_SPACE.c_str());
+            else
+                imageMappings.insert({EImage::KB_SPACE, dxe::Sprite::Create(kb_space_resource)});
+            
+            auto kb_up_resource = dxe::SpriteResouce::Create(FILE_KB_UP);
+            if (!kb_up_resource)
+                printfDx(L"%sの読み込みに失敗", FILE_KB_UP.c_str());
+            else
+                imageMappings.insert({EImage::KB_UP, dxe::Sprite::Create(kb_up_resource)});
+            
+            auto kb_down_resource = dxe::SpriteResouce::Create(FILE_KB_DOWN);
+            if (!kb_down_resource)
+                printfDx(L"%sの読み込みに失敗", FILE_KB_DOWN.c_str());
+            else
+                imageMappings.insert({EImage::KB_DOWN, dxe::Sprite::Create(kb_down_resource)});
             
             auto bunny_resource = LoadGraph(FILE_BUNNY_SHEET.c_str());
             if (!bunny_resource)
@@ -65,6 +87,7 @@ private:
                 printfDx(L"%sの読み込みに失敗", FILE_BUNNY_SHEET.c_str());
             else
                 spriteMappings.insert({ESprite::Wolf, wolf_resource});
+            
             
         }
         catch (const std::exception&)

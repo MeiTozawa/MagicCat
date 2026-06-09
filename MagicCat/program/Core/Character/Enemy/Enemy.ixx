@@ -6,26 +6,42 @@ import Character;
 import HealthComponent;
 import EventBus;
 
-class Player;
+export struct AddWeightEvent : IEvent
+{
+    EAttackType AttackType; 
+    int Offset;
+    AddWeightEvent(EAttackType attackType, int offset) : AttackType(attackType), Offset(offset) {}
+};
 
 export class Enemy : public Character
 {
     std::unique_ptr<HealthComponent> healthComp;
+    EventHandle deathEvent;
+    EventHandle addWeightEvent;
 public:
     Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0,
           const wchar_t* name = L"Unknown")
-        : name(name),
-          baseWeight(baseWeight),
+        : baseWeight(baseWeight),
           rockDamage(rockDamage),
           scissorsDamage(scissorsDamage),
-          paperDamage(paperDamage)
+          paperDamage(paperDamage),
+          name(name)
     {
         
         healthComp = std::make_unique<HealthComponent>(this);
 
-        EventBus::Subscribe<DeathEvent>(
-            [this](const DeathEvent&) { OnEnemyDeath(); }
+        deathEvent = EventBus::Subscribe<DeathEvent>(
+            [this](const DeathEvent&e) {if (e.Victim == this) OnEnemyDeath(); }
         );
+        addWeightEvent = EventBus::Subscribe<AddWeightEvent>(
+    [this](const AddWeightEvent& e) { AddWeight(e.AttackType, e.Offset); }
+        );
+    }
+    
+    ~Enemy()
+    {
+        EventBus::Unsubscribe(deathEvent);
+        EventBus::Unsubscribe(addWeightEvent);
     }
 
     void AddWeight(EAttackType t, int weight)

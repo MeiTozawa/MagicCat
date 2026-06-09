@@ -49,6 +49,10 @@ public:
         {
             EventBus::Publish(MoveFocusToRightEvent());
         }
+        else if (inputService->IsPressed(InputAction::IgPlatCard))
+        {
+            EventBus::Publish(PlayCardEvent());
+        }
         else if (inputService->IsPressed(InputAction::IgDrawCard))
         {
             EventBus::Publish(DrawCardEvent());

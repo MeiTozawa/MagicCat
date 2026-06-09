@@ -47,7 +47,7 @@ public:
         assetService = ServiceLocator::Get<IAssetService>();
 
         handUpdateHandle = EventBus::Subscribe<HandUpdatedEvent>([this](const HandUpdatedEvent& e) {
-            cachedHand = e.hand;
+            cachedHand = e.Hand;
         });
     }
 

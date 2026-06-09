@@ -61,16 +61,17 @@ public:
     virtual void ClearRectOfCards() = 0;
     virtual void MoveFocusToRight() = 0;
     virtual void MoveFocusToLeft() = 0;
-    // virtual void PlayCard(Enemy&) = 0; // Decoupled
+    virtual void PlayCard() = 0;
 };
 
 export struct MoveFocusToLeftEvent : IEvent {};
 export struct MoveFocusToRightEvent : IEvent {};
+export struct PlayCardEvent : IEvent {};
 export struct DrawCardEvent : IEvent {};
 export struct HandUpdatedEvent : IEvent
 {
-    std::vector<Card> hand;
-    HandUpdatedEvent(const std::vector<Card>& hand) : hand(hand) {}
+    const std::vector<Card>& Hand;
+    HandUpdatedEvent(const std::vector<Card>& hand) : Hand(hand) {}
 };
 
 

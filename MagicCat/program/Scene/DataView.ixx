@@ -29,19 +29,12 @@ constexpr int THICKNESS = 2;
 export class DataView
 {
     Shared<ICharacterService> characterService;
-    const Enemy& enemy;
-    const Player& player;
-
 public:
-    DataView() : characterService(ServiceLocator::Get<ICharacterService>()),
-                 enemy(characterService->GetEnemy()),
-                 player(characterService->GetPlayer())
-    {
-        characterService->Reset();
-    }
+    DataView() : characterService(ServiceLocator::Get<ICharacterService>()){}
 
     void PrintPlayerData(uint32_t color = 0xFFFFFF) const
     {
+        const Player& player = characterService->GetPlayer();
         for (int i = 0; i < 3; ++i)
         {
             for (int k = 0; k < THICKNESS; ++k)
@@ -68,6 +61,7 @@ public:
 
     void PrintEnemyData(uint32_t color = 0xFFFFFF) const
     {
+        const Enemy& enemy = characterService->GetEnemy();
         for (int i = 0; i < 3; ++i)
         {
             for (int k = 0; k < THICKNESS; ++k)
@@ -82,26 +76,32 @@ public:
         }
 
         std::wstring message;
+        
         if (auto offset = enemy.GetRockWeightOffset(); offset == 0)
             message = std::format(L"Rock:     ?");
         else
             message = std::format(L"Rock:     ?+{:2}", offset);
+        
         DrawString(ENEMY_DATA_START_X + TEXT_OFFSET_X,
                    ENEMY_DATA_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
                    message.c_str(), color);
+        
         
         if (auto offset = enemy.GetScissorsWeightOffset(); offset == 0)
             message = std::format(L"Scissors: ?");
         else
             message = std::format(L"Scissors: ?+{:2}", offset);
+        
         DrawString(ENEMY_DATA_START_X + TEXT_OFFSET_X,
                    ENEMY_DATA_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
                    message.c_str(), color);       
+        
         
         if (auto offset = enemy.GetPaperWeightOffset(); offset == 0)
             message = std::format(L"Paper:    ?");
         else
             message = std::format(L"Paper:    ?+{:2}", offset);
+        
         DrawString(ENEMY_DATA_START_X + TEXT_OFFSET_X,
                    ENEMY_DATA_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
                    message.c_str(), color);

@@ -15,15 +15,21 @@ export class Player : public Character
 {
 private:
     std::unique_ptr<HealthComponent> healthComp;
+    EventHandle deathEvent;
 
 public:
     Player()
     {
         healthComp = std::make_unique<HealthComponent>(this);
 
-        EventBus::Subscribe<DeathEvent>(
+        deathEvent = EventBus::Subscribe<DeathEvent>(
             [this](const DeathEvent&) { OnPlayerDeath(); }
         );
+    }
+    
+    ~Player()
+    {
+        EventBus::Unsubscribe(deathEvent);
     }
 
 private:

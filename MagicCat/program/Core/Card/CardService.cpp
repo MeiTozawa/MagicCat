@@ -18,6 +18,7 @@ class CardService : public ICardService
     EventHandle moveFocusToLeftEvent;
     EventHandle moveFocusToRightEvent;
     EventHandle drawCardEvent;
+    EventHandle playCardEvent;
 
 public:
     CardService()
@@ -45,6 +46,9 @@ public:
         drawCardEvent = EventBus::Subscribe<DrawCardEvent>(
             [this](const DrawCardEvent&) { DrawCard(); }
         );
+        playCardEvent = EventBus::Subscribe<PlayCardEvent>(
+            [this](const PlayCardEvent&) { PlayCard(); }
+        );
     }
 
     ~CardService() override
@@ -52,6 +56,7 @@ public:
         EventBus::Unsubscribe(moveFocusToLeftEvent);
         EventBus::Unsubscribe(moveFocusToRightEvent);
         EventBus::Unsubscribe(drawCardEvent);
+        EventBus::Unsubscribe(playCardEvent);
     }
 
     const std::vector<Card>& GetHandCards() override
@@ -118,22 +123,24 @@ public:
         EventBus::Publish(HandUpdatedEvent{hand});
     }
 
-    // void PlayCard(Enemy& enemy) override
-    // {
-    //     if (hand.empty()) return;
-    //     auto card = hand.begin() + focus;
-    //     int t = card->CardType;
-    //     assert(t >= 0 && t <= 2);
-    //     enemy.AddWeight(static_cast<EAttackType>(t), card->Offset);
-    //
-    //     discardPile.push_back(*card);
-    //     hand.erase(card);
-    //
-    //     if (focus >= hand.size())
-    //         focus--;
-    //     if (!hand.empty())
-    //         hand[focus].is_selected = true;
-    // }
+    void PlayCard() override
+    {
+        if (hand.empty()) return;
+        auto card = hand.begin() + focus;
+        int t = card->CardType;
+        assert(t >= 0 && t <= 2);
+        EventBus::Publish(AddWeightEvent(static_cast<EAttackType>(t), card->Offset));
+
+        discardPile.push_back(*card);
+        hand.erase(card);
+
+        if (focus >= hand.size())
+            focus--;
+        if (!hand.empty())
+            hand[focus].is_selected = true;
+            
+        EventBus::Publish(HandUpdatedEvent(hand));
+    }
 
     const std::vector<Card>& GetDrawCards() override
     {

@@ -19,12 +19,12 @@ public:
 
     Enemy& GetEnemy() override
     {
-        return currentEnemy;
+        return *currentEnemy;
     }
 
     Player& GetPlayer() override
     {
-        return currentPlayer;
+        return *currentPlayer;
     }
 
     void Reset() override
@@ -32,7 +32,7 @@ public:
         enemies.clear();
         SpawnEnemies(ENEMY_NUT, ENEMY_CABBAGE, ENEMY_KNIFE);
 
-        currentPlayer = Player{};
+        currentPlayer = std::make_unique<Player>();
 
         NextEnemy();
     }
@@ -46,14 +46,14 @@ public:
     }
 
 private:
-    std::vector<Enemy> enemies;
-    Enemy currentEnemy;
-    Player currentPlayer;
+    std::vector<std::unique_ptr<Enemy>> enemies;
+    std::unique_ptr<Enemy> currentEnemy;
+    std::unique_ptr<Player> currentPlayer;
     
     template <typename... Tuples>
     void SpawnEnemies(Tuples&&... tuples) {
         (std::apply([&enemies = this->enemies]<typename... T>(T&&... args) {
-            enemies.emplace_back(std::forward<T>(args)...);
+            enemies.push_back(std::make_unique<Enemy>(std::forward<T>(args)...));
         }, std::forward<Tuples>(tuples)), ...);
     }
 };

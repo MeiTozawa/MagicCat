@@ -24,7 +24,7 @@ public:
 
     void Update(float deltaTime) override
     {
-        if (inputService->IsPressed(InputAction::IgConfirm))
+        if (inputService->IsPressed(InputAction::IgPlatCard))
         {
             sceneService->ChangeSceneTo(COMBAT);
         }

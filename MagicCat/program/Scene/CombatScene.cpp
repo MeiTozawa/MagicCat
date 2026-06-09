@@ -21,6 +21,7 @@ class CombatScene : public IScene
     Shared<ICharacterService> characterService;
     Shared<ISceneService> sceneService;
     Shared<IInputService> inputService;
+    bool readyToAttack = false;
 
 public:
     CombatScene() {}
@@ -37,10 +38,6 @@ public:
 
     void Update(float deltaTime) override
     {
-        if (auto p = inputService->OnMouseClick(InputAction::IgMouseClick); p.x >= 0 && p.y >= 0)
-        {
-            // TODO: Handling mouse events
-        }
         if (inputService->IsPressed(InputAction::IgLeft))
         {
             EventBus::Publish(MoveFocusToLeftEvent());
@@ -49,10 +46,23 @@ public:
         {
             EventBus::Publish(MoveFocusToRightEvent());
         }
+        else if (inputService->IsPressed(InputAction::IgDrawCard))
+        {
+            EventBus::Publish(DrawCardEvent());
+        }
+        else if (inputService->IsPressed(InputAction::IgCancel))
+        {
+            readyToAttack = false;
+        }
+        else if (inputService->IsPressed(InputAction::IgAttack))
+        {
+            readyToAttack = true;
+        }
 
         cardView->PrintCards();
         cardView->PrintDrawPile();
         cardView->PrintDiscardPile();
+        
     }
 };
 

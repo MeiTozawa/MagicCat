@@ -13,10 +13,11 @@ import EventBus;
 class CardService : public ICardService
 {
     std::vector<tnl::Rect> rectOfCards = {};
-    
+
 
     EventHandle moveFocusToLeftEvent;
     EventHandle moveFocusToRightEvent;
+    EventHandle drawCardEvent;
 
 public:
     CardService()
@@ -36,12 +37,16 @@ public:
         Random::Shuffle(drawPile);
 
         moveFocusToLeftEvent = EventBus::Subscribe<MoveFocusToLeftEvent>(
-            [this](const MoveFocusToLeftEvent&) { MoveFocusToLeft();}
+            [this](const MoveFocusToLeftEvent&) { MoveFocusToLeft(); }
         );
         moveFocusToRightEvent = EventBus::Subscribe<MoveFocusToRightEvent>(
             [this](const MoveFocusToRightEvent&) { MoveFocusToRight(); }
         );
+        drawCardEvent = EventBus::Subscribe<DrawCardEvent>(
+            [this](const DrawCardEvent&) { DrawCard(); }
+        );
     }
+
     ~CardService() override
     {
         EventBus::Unsubscribe(moveFocusToLeftEvent);
@@ -53,28 +58,27 @@ public:
         return hand;
     }
 
-    const std::vector<Card>& DrawCards(int count = 1) override
+    const std::vector<Card>& DrawCard() override
     {
         discardPile.insert(discardPile.end(), hand.begin(), hand.end());
         hand.clear();
-        for (int i = 0; i < count; ++i)
+
+        if (drawPile.empty())
         {
-            if (drawPile.size() == 0)
-            {
-                drawPile.insert(drawPile.end(), discardPile.begin(), discardPile.end());
-                Random::Shuffle(drawPile);
-            }
-            auto c = drawPile.back();
-
-            drawPile.pop_back();
-
-            if (i == 0)
-            {
-                focus = 0;
-                c.is_selected = true;
-            }
-            hand.push_back(c);
+            drawPile.insert(drawPile.end(), discardPile.begin(), discardPile.end());
+            Random::Shuffle(drawPile);
         }
+        auto c = drawPile.back();
+
+        drawPile.pop_back();
+
+        if (hand.empty())
+        {
+            focus = 0;
+            c.is_selected = true;
+        }
+        hand.push_back(c);
+
         EventBus::Publish(HandUpdatedEvent(hand));
         return hand;
     }

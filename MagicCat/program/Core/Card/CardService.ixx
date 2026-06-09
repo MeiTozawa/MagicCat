@@ -52,7 +52,7 @@ export class ICardService
 {
 public:
     virtual ~ICardService() = default;
-    virtual const std::vector<Card>& DrawCards(int count) = 0;
+    virtual const std::vector<Card>& DrawCard() = 0;
     virtual const std::vector<Card>& GetHandCards() = 0;
     virtual const std::vector<Card>& GetDrawCards() = 0;
     virtual const std::vector<Card>& GetDiscardCards() = 0;
@@ -66,10 +66,11 @@ public:
 
 export struct MoveFocusToLeftEvent : IEvent {};
 export struct MoveFocusToRightEvent : IEvent {};
+export struct DrawCardEvent : IEvent {};
 export struct HandUpdatedEvent : IEvent
 {
     std::vector<Card> hand;
-    HandUpdatedEvent(const std::vector<Card>& hand) : hand(hand) {};
+    HandUpdatedEvent(const std::vector<Card>& hand) : hand(hand) {}
 };
 
 

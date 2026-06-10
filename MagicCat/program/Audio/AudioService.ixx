@@ -1,6 +1,8 @@
-module;
+﻿module;
 
 export module AudioService;
+
+namespace mc {
 
 enum class ESoundEffect
 {
@@ -14,3 +16,5 @@ public:
     
     virtual void PlaySoundEffect(ESoundEffect soundEffect);
 };
+} // namespace mc
+

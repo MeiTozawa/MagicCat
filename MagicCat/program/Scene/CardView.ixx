@@ -7,6 +7,8 @@ import ServiceLocator;
 import AssetService;
 import EventBus;
 
+namespace mc {
+
 // card
 constexpr int CARD_START_X = 400;
 constexpr int CARD_START_Y = 750;
@@ -34,8 +36,8 @@ constexpr float IMAGE_SCALE = 0.3f;
 
 export class CardView
 {
-    Shared<ICardService> cardService;
-    Shared<IAssetService> assetService;
+    ICardService* cardService;
+    IAssetService* assetService;
 
     EventHandle handUpdateHandle;
     std::vector<Card> cachedHand;
@@ -66,7 +68,7 @@ public:
         for (int i = 0; i < hand.size(); ++i)
         {
             message = std::format(L"+{}", hand[i].Value);
-            printACard(hand[i], position, message.c_str());
+            PrintACard(hand[i], position, message.c_str());
             cardService->PushBackRectOfCard({position, {CARD_WIDTH, CARD_HEIGHT}});
             position.x += OFFSET_X;
         }
@@ -75,13 +77,13 @@ public:
     void PrintDrawPile() const
     {
         std::wstring message = std::format(L"山札\n{:2}枚", cardService->GetDrawCards().size());
-        printACard({Null}, {DRAW_PILE_X, DRAW_PILE_Y}, message.c_str(), false);
+        PrintACard({Null}, {DRAW_PILE_X, DRAW_PILE_Y}, message.c_str(), false);
     }
 
     void PrintDiscardPile() const
     {
         std::wstring message = std::format(L"捨札\n{:2}枚", cardService->GetDiscardCards().size());
-        printACard({Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, message.c_str(), false);
+        PrintACard({Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, message.c_str(), false);
     }
 
 private:
@@ -93,7 +95,7 @@ private:
         DrawString(middle_x - textWidth / 2, middle_y - textSize / 2, message, color);
     }
 
-    void printACard(const Card& card, tnl::Vector2i start_position, const wchar_t* message, bool has_icon = true) const
+    void PrintACard(const Card& card, tnl::Vector2i start_position, const wchar_t* message, bool has_icon = true) const
     {
         auto x = start_position.x, y = start_position.y;
         uint32_t color;
@@ -148,3 +150,6 @@ private:
         }
     }
 };
+
+} // namespace mc
+

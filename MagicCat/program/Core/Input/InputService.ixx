@@ -1,12 +1,14 @@
-module;
+﻿module;
 
 #include <tnl_vector2i.h>
 
 export module InputService; 
 
+namespace mc {
+
 export enum class InputAction {
     IgUp, IgDown, IgInteract, IgPlatCard, IgToggleMenu, // IgMouseClick,
-    IgDrawCard, IgAttack, IgCancel,
+    IgDrawCard, IgCombat, IgCancel,
     
     MenuConfirm = 100,
     MenuCancel,
@@ -30,3 +32,8 @@ public:
     virtual void PopContext() = 0;
     virtual void ClearAndSetContext(InputContext context) = 0;
 };
+
+export Shared<IInputService> CreateInputService();
+
+} // namespace mc
+

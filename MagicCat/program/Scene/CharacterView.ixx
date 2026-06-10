@@ -9,6 +9,9 @@ import ServiceLocator;
 import Player;
 import Enemy;
 import HealthComponent;
+import Character;
+
+namespace mc {
 
 constexpr int PLAYER_DATA_START_X = 400;
 constexpr int PLAYER_DATA_START_Y = 200;
@@ -33,7 +36,7 @@ constexpr int THICKNESS = 2;
 
 export class CharacterView
 {
-    Shared<ICharacterService> characterService;
+    ICharacterService* characterService;
 
 public:
     CharacterView()
@@ -85,13 +88,13 @@ public:
                          color, L"  Spells  ");
         DrawFormatString(PLAYER_DATA_START_X + TEXT_OFFSET_X,
                          PLAYER_DATA_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                         color, L"Rock:     %d", player.rockAttack);
+                         color, L"Rock:     %d", player.rockDamage);
         DrawFormatString(PLAYER_DATA_START_X + TEXT_OFFSET_X,
                          PLAYER_DATA_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                         color, L"Scissors: %d", player.scissorsAttack);
+                         color, L"Scissors: %d", player.scissorsDamage);
         DrawFormatString(PLAYER_DATA_START_X + TEXT_OFFSET_X,
                          PLAYER_DATA_START_Y + 3 * OFFSET_Y + TEXT_OFFSET_Y,
-                         color, L"Paper:    %d", player.paperAttack);
+                         color, L"Paper:    %d", player.paperDamage);
     }
 
     void PrintEnemyInfo(uint32_t color = 0xFFFFFF) const
@@ -112,7 +115,7 @@ public:
 
         std::wstring message;
 
-        if (auto offset = enemy.GetRockWeightOffset(); offset == 0)
+        if (auto offset = enemy.GetWeightOffset(EAttackType::Rock); offset == 0)
             message = std::format(L"Rock:     ?");
         else
             message = std::format(L"Rock:     ?+{}", offset);
@@ -122,7 +125,7 @@ public:
                    message.c_str(), color);
 
 
-        if (auto offset = enemy.GetScissorsWeightOffset(); offset == 0)
+        if (auto offset = enemy.GetWeightOffset(EAttackType::Scissors); offset == 0)
             message = std::format(L"Scissors: ?");
         else
             message = std::format(L"Scissors: ?+{}", offset);
@@ -132,7 +135,7 @@ public:
                    message.c_str(), color);
 
 
-        if (auto offset = enemy.GetPaperWeightOffset(); offset == 0)
+        if (auto offset = enemy.GetWeightOffset(EAttackType::Paper); offset == 0)
             message = std::format(L"Paper:    ?");
         else
             message = std::format(L"Paper:    ?+{}", offset);
@@ -142,3 +145,6 @@ public:
                    message.c_str(), color);
     }
 };
+
+} // namespace mc
+

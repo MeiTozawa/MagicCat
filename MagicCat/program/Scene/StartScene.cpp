@@ -8,10 +8,12 @@ import GameService;
 import ServiceLocator;
 import InputService;
 
+namespace mc {
+
 class StartScene : public IScene
 {
-    Shared<IInputService> inputService;
-    Shared<ISceneService> sceneService;
+    IInputService* inputService;
+    ISceneService* sceneService;
 
 public:
     StartScene() {}
@@ -26,23 +28,17 @@ public:
     {
         if (inputService->IsPressed(InputAction::IgPlatCard))
         {
-            sceneService->ChangeSceneTo(COMBAT);
+            sceneService->ChangeSceneTo(Combat);
         }
 
         DrawString(300, 300, L"Press SPACE to Start", 0xFFFFFF, TRUE);
     }
 };
 
-static struct RegisterStartScene
+std::unique_ptr<IScene> CreateStartScene()
 {
-    RegisterStartScene()
-    {
-        SceneRegistry::GetRegistrations().push_back([]()
-        {
-            if (auto uiService = ServiceLocator::Get<ISceneService>())
-            {
-                uiService->RegisterScene(START, std::make_unique<StartScene>());
-            }
-        });
-    }
-} autoRegister_StartScene;
+    return std::make_unique<StartScene>();
+}
+
+} // namespace mc
+

@@ -9,11 +9,15 @@ module SceneService;
 import CardView;
 import CharacterView;
 import CharacterService;
+import CardService;
 import SceneService;
 import InputService;
 import EventBus;
 import DataView;
 import ControlView;
+import Character;
+
+namespace mc {
 
 
 class CombatScene : public IScene
@@ -22,9 +26,9 @@ class CombatScene : public IScene
     std::unique_ptr<SpriteView> spriteView;
     std::unique_ptr<CharacterView> characterView;
     std::unique_ptr<ControlView> controlView;
-    Shared<ICharacterService> characterService;
-    Shared<ISceneService> sceneService;
-    Shared<IInputService> inputService;
+    ICharacterService* characterService;
+    ISceneService* sceneService;
+    IInputService* inputService;
     bool readyToAttack = false;
     int focus = 0;
 
@@ -55,6 +59,19 @@ public:
             if (focus < 3)
                 focus++;
         }
+        else if (inputService->IsPressed(InputAction::IgCombat))
+        {
+            if (focus > 0)
+            {
+                EAttackType playerAttackIntent = static_cast<EAttackType>(focus - 1);
+                EAttackType enemyAttackIntent = characterService->GetEnemy().GetAttackIntent();
+                EventBus::Publish(
+                    CombatEvent(playerAttackIntent, enemyAttackIntent,
+                                characterService->GetPlayer().GetDamage(playerAttackIntent),
+                                characterService->GetEnemy().GetDamage(enemyAttackIntent)
+                    ));
+            }
+        }
         else if (inputService->IsPressed(InputAction::IgDrawCard))
         {
             EventBus::Publish(DrawCardEvent());
@@ -63,7 +80,7 @@ public:
         {
             readyToAttack = false;
         }
-        else if (inputService->IsPressed(InputAction::IgAttack))
+        else if (inputService->IsPressed(InputAction::IgCombat))
         {
             readyToAttack = true;
         }
@@ -79,17 +96,10 @@ public:
     }
 };
 
-static struct RegisterCombatScene
+std::unique_ptr<IScene> CreateCombatScene()
 {
-    RegisterCombatScene()
-    {
-        SceneRegistry::GetRegistrations().push_back([]()
-        {
-            auto manager = ServiceLocator::Get<ISceneService>();
-            if (manager)
-            {
-                manager->RegisterScene(COMBAT, std::make_unique<CombatScene>());
-            }
-        });
-    }
-} autoRegister_CombatScene;
+    return std::make_unique<CombatScene>();
+}
+
+} // namespace mc
+

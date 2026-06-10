@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 #include <RandomUtils.h>
 #include <tnl_rect.h>
@@ -10,107 +10,116 @@ import Character;
 import InputService;
 import EventBus;
 import Player;
+import AssetService;
 
-class CardService : public ICardService
+namespace mc
 {
-    std::vector<tnl::Rect> rectOfCards = {};
-
-    EventHandle drawCardEvent;
-
-public:
-    CardService()
+    class CardService : public ICardService
     {
-        deck.push_back(CARD_ROCK_2);
-        deck.push_back(CARD_ROCK_3);
-        deck.push_back(CARD_ROCK_4);
-        deck.push_back(CARD_SCISSORS_2);
-        deck.push_back(CARD_SCISSORS_3);
-        deck.push_back(CARD_SCISSORS_4);
-        deck.push_back(CARD_PAPER_2);
-        deck.push_back(CARD_PAPER_3);
-        deck.push_back(CARD_PAPER_4);
-        deck.push_back(CARD_MAGIC_2);
-        deck.push_back(CARD_MAGIC_3);
-        deck.push_back(CARD_MAGIC_4);
+        std::vector<tnl::Rect> rectOfCards = {};
 
-        drawPile = std::vector<Card>(deck);
+        EventHandle drawCardEvent;
+        EventHandle cardRectsUpdatedEvent;
 
-        Random::Shuffle(drawPile);
-
-        drawCardEvent = EventBus::Subscribe<DrawCardEvent>(
-            [this](const DrawCardEvent&) { DrawCard(); }
-        );
-    }
-
-    ~CardService() override
-    {
-        EventBus::Unsubscribe(drawCardEvent);
-    }
-
-    const std::vector<Card>& GetHandCards() override
-    {
-        return hand;
-    }
-
-    const void DrawCard() override
-    {
-        if (hand.size() >= HAND_SIZE_MAX)
+    public:
+        CardService()
         {
-            return;
-        }
-        if (drawPile.empty())
-        {
-            drawPile.insert(drawPile.end(), discardPile.begin(), discardPile.end());
+            auto& deckConfig = ServiceLocator::Get<IAssetService>()->GetCardConfigs();
+            for (const auto& c : deckConfig)
+            {
+                Card card = Card{static_cast<ECardType>(c.type), c.value};
+
+                deck.push_back(card);
+            }
+
+            drawPile = std::vector<Card>(deck);
+
             Random::Shuffle(drawPile);
+
+            drawCardEvent = EventBus::Subscribe<DrawCardEvent>(
+                [this](const DrawCardEvent&) { DrawCard(); }
+            );
+            cardRectsUpdatedEvent = EventBus::Subscribe<CardRectsUpdatedEvent>(
+                [this](const CardRectsUpdatedEvent& e) { rectOfCards = e.rects; }
+            );
+
+            EventBus::Publish(DeckUpdatedEvent{drawPile.size(), discardPile.size()});
+            EventBus::Publish(HandUpdatedEvent{hand});
         }
-        auto c = drawPile.back();
 
-        drawPile.pop_back();
-        if (c.CardType == Magic)
-            EventBus::Publish(ChangeMpEvent(c.Value));
-        else if (c.CardType == Rock || c.CardType == Scissors || c.CardType == Paper)
-            EventBus::Publish(AddWeightEvent(static_cast<EAttackType>(c.CardType), c.Value));
+        ~CardService() override
+        {
+            EventBus::Unsubscribe(drawCardEvent);
+            EventBus::Unsubscribe(cardRectsUpdatedEvent);
+        }
 
-        hand.push_back(c);
-    }
+        const std::vector<Card>& GetHandCards() override
+        {
+            return hand;
+        }
 
-    void ClearRectOfCards() override
+        const void DrawCard() override
+        {
+            if (hand.size() >= HAND_SIZE_MAX)
+            {
+                return;
+            }
+            if (drawPile.empty())
+            {
+                drawPile.insert(drawPile.end(), discardPile.begin(), discardPile.end());
+                discardPile.clear(); // Ensure discard pile is cleared when reshuffled
+                Random::Shuffle(drawPile);
+            }
+            assert(drawPile.size() > 0);
+            auto c = drawPile.back();
+
+            drawPile.pop_back();
+            if (c.CardType == Magic)
+                EventBus::Publish(ChangeMpEvent(c.Value));
+            else if (c.CardType == Rock || c.CardType == Scissors || c.CardType == Paper)
+                EventBus::Publish(AddWeightEvent(static_cast<EAttackType>(c.CardType), c.Value));
+
+            hand.push_back(c);
+
+            EventBus::Publish(DeckUpdatedEvent{drawPile.size(), discardPile.size()});
+            EventBus::Publish(HandUpdatedEvent{hand});
+        }
+
+        void ClearRectOfCards() override
+        {
+            rectOfCards.clear();
+        }
+
+        const std::vector<tnl::Rect>& GetRectOfCards() override
+        {
+            return rectOfCards;
+        }
+
+        void PushBackRectOfCard(tnl::Rect r) override
+        {
+            rectOfCards.push_back(r);
+        }
+
+
+        const std::vector<Card>& GetDrawCards() override
+        {
+            return drawPile;
+        }
+
+        const std::vector<Card>& GetDiscardCards() override
+        {
+            return discardPile;
+        }
+
+    private:
+        std::vector<Card> deck = std::vector<Card>();
+        std::vector<Card> hand = std::vector<Card>();
+        std::vector<Card> drawPile = std::vector<Card>();
+        std::vector<Card> discardPile = std::vector<Card>();
+    };
+
+    Shared<ICardService> CreateCardService()
     {
-        rectOfCards.clear();
+        return std::make_shared<CardService>();
     }
-
-    const std::vector<tnl::Rect>& GetRectOfCards() override
-    {
-        return rectOfCards;
-    }
-
-    void PushBackRectOfCard(tnl::Rect r) override
-    {
-        rectOfCards.push_back(r);
-    }
-
-
-    const std::vector<Card>& GetDrawCards() override
-    {
-        return drawPile;
-    }
-
-    const std::vector<Card>& GetDiscardCards() override
-    {
-        return discardPile;
-    }
-
-private:
-    std::vector<Card> deck = std::vector<Card>();
-    std::vector<Card> hand = std::vector<Card>();
-    std::vector<Card> drawPile = std::vector<Card>();
-    std::vector<Card> discardPile = std::vector<Card>();
-};
-
-static struct RegisterCardService
-{
-    RegisterCardService()
-    {
-        ServiceLocator::RegisterSingleton<ICardService, CardService>(std::make_shared<CardService>());
-    }
-} autoRegister_CardService;
+} // namespace mc

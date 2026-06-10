@@ -11,10 +11,12 @@ import HealthComponent;
 import EventBus;
 import CharacterService;
 
+namespace mc {
+
 class SceneService : public ISceneService
 {
     std::unordered_map<ESceneState, std::unique_ptr<IScene>> scenes;
-    ESceneState currentScene = START;
+    ESceneState currentScene = Start;
     bool initialized = false;
     EventHandle characterDiedHandle;
 
@@ -39,7 +41,7 @@ public:
             {
                 if (event.Victim == &characterService->GetPlayer())
                 {
-                    ChangeSceneTo(START);
+                    ChangeSceneTo(Start);
                     characterService->Reset();
                 }
             }
@@ -83,10 +85,10 @@ public:
     }
 };
 
-static struct RegisterSceneManager
+Shared<ISceneService> CreateSceneService()
 {
-    RegisterSceneManager()
-    {
-        ServiceLocator::RegisterSingleton<ISceneService, SceneService>(std::make_shared<SceneService>());
-    }
-} autoRegister_SceneManager;
+    return std::make_shared<SceneService>();
+}
+
+} // namespace mc
+

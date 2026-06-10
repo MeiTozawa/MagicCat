@@ -1,4 +1,4 @@
-module;
+﻿module;
 
 #include <dxe.h>
 
@@ -8,6 +8,8 @@ import Character;
 import HealthComponent;
 import ServiceLocator;
 import EventBus;
+
+namespace mc {
 
 export enum class EPlayerAction
 {
@@ -24,6 +26,7 @@ export class Player : public Character
 {
     std::unique_ptr<HealthComponent> healthComp;
     EventHandle changeMpEvent;
+    EventHandle combatEvent;
     int mp = 0;
     int maxMp = 10;
 
@@ -34,11 +37,22 @@ public:
         changeMpEvent = EventBus::Subscribe<ChangeMpEvent>(
             [this](const ChangeMpEvent& e) { ChangeMp(e.offset); }
         );
+
+        combatEvent = EventBus::Subscribe<CombatEvent>(
+            [this](const CombatEvent& e)
+            {
+                if (Fail(e.playerAttackType, e.enemyAttackType))
+                {
+                    healthComp->TakeDamage(e.enemyAttackDamage);
+                }
+            }
+        );
     }
 
     ~Player()
     {
         EventBus::Unsubscribe(changeMpEvent);
+        EventBus::Unsubscribe(combatEvent);
     }
 
     void ChangeMp(int offset) { mp += offset; }
@@ -49,3 +63,6 @@ public:
 
     const HealthComponent& GetHealthComponent() const { return *healthComp; }
 };
+
+} // namespace mc
+

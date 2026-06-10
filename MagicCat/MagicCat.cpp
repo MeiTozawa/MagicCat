@@ -104,7 +104,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     clock_start = std::chrono::system_clock::now();
 
     // ゲームスタート処理
-    gameStart();
+    GameStart();
 
     // メッセージループ
     while (1)
@@ -136,7 +136,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         dxe::Update(delta_time);
 
         if (dxe::IsRunApplication()) {
-            gameMain(delta_time);
+            GameMain(delta_time);
         }
 
         if (dxe::IsExitApplication()) break;
@@ -161,7 +161,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     const int t_wait = 100;
     // ゲーム側の終了処理
     Sleep(t_wait);
-    gameEnd();
+    GameEnd();
 
     // dxe 解放処理
     dxe::Release();

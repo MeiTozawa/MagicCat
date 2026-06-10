@@ -11,6 +11,8 @@
 
 export module EventBus;
 
+namespace mc {
+
 export struct IEvent
 {
     virtual ~IEvent() = default;
@@ -113,3 +115,6 @@ public:
         }
     }
 };
+
+} // namespace mc
+

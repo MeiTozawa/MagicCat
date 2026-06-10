@@ -1,0 +1,5 @@
+[
+  { "baseWeight": 5, "rockDamage": 3, "scissorsDamage": 1, "paperDamage": 1, "name": "ナッツ" },
+  { "baseWeight": 5, "rockDamage": 1, "scissorsDamage": 1, "paperDamage": 3, "name": "キャベツ" },
+  { "baseWeight": 3, "rockDamage": 1, "scissorsDamage": 5, "paperDamage": 1, "name": "包丁" }
+]

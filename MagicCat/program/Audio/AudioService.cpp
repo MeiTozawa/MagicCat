@@ -1,18 +1,20 @@
 ﻿module;
 
 module AudioService;
-
-class AudioService : public IAudioService
+namespace mc
 {
-public:
-    void PlaySoundEffect(ESoundEffect soundEffect) override
+    class AudioService : public IAudioService
     {
-        //TODO
-    }
-    
-private:
-    void LoadAudios()
-    {
-        //TODO
-    }
-};
+    public:
+        void PlaySoundEffect(ESoundEffect soundEffect) override
+        {
+            //TODO
+        }
+
+    private:
+        void LoadAudios()
+        {
+            //TODO
+        }
+    };
+} // namespace mc

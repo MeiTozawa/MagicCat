@@ -5,6 +5,8 @@ export module IDamageable;
 import EventBus;
 import Character;
 
+namespace mc {
+
 export class IDamageable
 {
 public:
@@ -20,3 +22,6 @@ public:
 
     virtual const Character* GetOwner() const = 0;
 };
+
+} // namespace mc
+

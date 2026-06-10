@@ -16,16 +16,18 @@ import AssetService;
 import CharacterService;
 import Character;
 
+namespace mc {
+
 constexpr int CARD_MAX = 4;
 
 
 class GameService : public IGameService
 {
-    Shared<ISceneService> sceneService = nullptr;
-    Shared<IInputService> inputService = nullptr;
-    Shared<ICharacterService> characterService = nullptr;
-    Shared<IAssetService> assetService;
-    Shared<ICardService> cardService;
+    ISceneService* sceneService = nullptr;
+    IInputService* inputService = nullptr;
+    ICharacterService* characterService = nullptr;
+    IAssetService* assetService = nullptr;
+    ICardService* cardService = nullptr;
 
 public:
     GameService() {}
@@ -34,11 +36,12 @@ public:
     {
         sceneService = ServiceLocator::Get<ISceneService>();
         inputService = ServiceLocator::Get<IInputService>();
+        assetService = ServiceLocator::Get<IAssetService>();
+
         characterService = ServiceLocator::Get<ICharacterService>();
         characterService->Reset();
+        
         cardService = ServiceLocator::Get<ICardService>();
-        assetService = ServiceLocator::Get<IAssetService>();
-        assetService->LoadAssets();
     }
 
     void End() override {}
@@ -49,10 +52,10 @@ public:
     }
 };
 
-static struct RegisterGameService
+Shared<IGameService> CreateGameService()
 {
-    RegisterGameService()
-    {
-        ServiceLocator::RegisterSingleton<IGameService, GameService>(std::make_shared<GameService>());
-    }
-} autoRegister_GameService;
+    return std::make_shared<GameService>();
+}
+
+} // namespace mc
+

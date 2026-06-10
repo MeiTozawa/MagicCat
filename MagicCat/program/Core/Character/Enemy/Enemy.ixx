@@ -1,4 +1,6 @@
-module;
+﻿module;
+
+#include <RandomUtils.h>
 
 export module Enemy;
 
@@ -6,9 +8,11 @@ import Character;
 import HealthComponent;
 import EventBus;
 
+namespace mc {
+
 export struct AddWeightEvent : IEvent
 {
-    EAttackType AttackType; 
+    EAttackType AttackType;
     int Offset;
     AddWeightEvent(EAttackType attackType, int offset) : AttackType(attackType), Offset(offset) {}
 };
@@ -18,6 +22,8 @@ export class Enemy : public Character
     std::unique_ptr<HealthComponent> healthComp;
     EventHandle deathEvent;
     EventHandle addWeightEvent;
+    EventHandle combatEvent;
+
 public:
     Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0,
           const wchar_t* name = L"Unknown")
@@ -27,21 +33,31 @@ public:
           paperDamage(paperDamage),
           name(name)
     {
-        
         healthComp = std::make_unique<HealthComponent>(this);
 
         deathEvent = EventBus::Subscribe<DeathEvent>(
-            [this](const DeathEvent&e) {if (e.Victim == this) OnEnemyDeath(); }
+            [this](const DeathEvent& e) { if (e.Victim == this) OnEnemyDeath(); }
         );
         addWeightEvent = EventBus::Subscribe<AddWeightEvent>(
-    [this](const AddWeightEvent& e) { AddWeight(e.AttackType, e.Offset); }
+            [this](const AddWeightEvent& e) { AddWeight(e.AttackType, e.Offset); }
+        );
+
+        combatEvent = EventBus::Subscribe<CombatEvent>(
+            [this](const CombatEvent& e)
+            {
+                if (Fail(e.enemyAttackType, e.playerAttackType))
+                {
+                    healthComp->TakeDamage(e.playerAttackDamage);
+                }
+            }
         );
     }
-    
+
     ~Enemy()
     {
         EventBus::Unsubscribe(deathEvent);
         EventBus::Unsubscribe(addWeightEvent);
+        EventBus::Unsubscribe(combatEvent);
     }
 
     void AddWeight(EAttackType t, int weight)
@@ -60,10 +76,17 @@ public:
         }
     }
 
-    // EAttackType Attack() const
-    // {
-    //     return static_cast<EAttackType>(0);
-    // }
+    EAttackType GetAttackIntent() const
+    {
+        int rockWeight = baseWeight + rockWeightOffset;
+        int scissorsWeight = baseWeight + scissorsWeightOffset;
+        int paperWeight = baseWeight + paperWeightOffset;
+        int index = Random::RandomSelection(
+            rockWeight, scissorsWeight, paperWeight
+        );
+        auto attackType = static_cast<EAttackType>(index);
+        return attackType;
+    }
 
     bool operator==(const Enemy& e) const
     {
@@ -74,10 +97,35 @@ public:
             this->scissorsDamage == e.scissorsDamage &&
             this->paperDamage == e.paperDamage;
     }
-    
-    [[nodiscard]] int GetRockWeightOffset() const { return rockWeightOffset; }
-    [[nodiscard]] int GetScissorsWeightOffset() const { return scissorsWeightOffset; }
-    [[nodiscard]] int GetPaperWeightOffset() const { return paperWeightOffset; }
+
+    int GetWeightOffset(EAttackType t) const
+    {
+        switch (t)
+        {
+        case EAttackType::Rock:
+            return rockWeightOffset;
+        case EAttackType::Scissors:
+            return scissorsWeightOffset;
+        case EAttackType::Paper:
+            return paperWeightOffset;
+        }
+        return -1;
+    }
+
+    int GetDamage(EAttackType t) const
+    {
+        switch (t)
+        {
+        case EAttackType::Rock:
+            return rockDamage;
+        case EAttackType::Scissors:
+            return scissorsDamage;
+        case EAttackType::Paper:
+            return paperDamage;
+        }
+        return -1;
+    }
+
 private:
     int baseWeight = 0;
     int rockWeightOffset = 0;
@@ -89,7 +137,7 @@ private:
     int paperDamage = 0;
 
     const wchar_t* name = L"Unknown";
-    
+
     void AddRockWeight(int weight)
     {
         rockWeightOffset += weight;
@@ -110,3 +158,6 @@ private:
         // TODO
     }
 };
+
+} // namespace mc
+

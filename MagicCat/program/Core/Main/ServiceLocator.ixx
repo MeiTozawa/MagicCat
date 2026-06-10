@@ -1,9 +1,11 @@
-module;
+﻿module;
 #include <unordered_map>
 #include <typeindex>
 #include <memory>
 
 export module ServiceLocator;
+
+namespace mc {
 
 export class ServiceLocator {
 private:
@@ -21,12 +23,14 @@ public:
     }
 
     template<typename TInterface>
-    static std::shared_ptr<TInterface> Get() {
+    static TInterface* Get() {
         auto& registry = GetRegistry();
         auto it = registry.find(std::type_index(typeid(TInterface)));
         if (it != registry.end()) {
-            return std::static_pointer_cast<TInterface>(it->second);
+            return static_cast<TInterface*>(it->second.get());
         }
         return nullptr;
     }
 };
+} // namespace mc
+

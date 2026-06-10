@@ -1,4 +1,4 @@
-module;
+﻿module;
 
 #include <functional>
 #include <vector>
@@ -7,6 +7,8 @@ export module HealthComponent;
 import IDamageable;
 import EventBus;
 import Character;
+
+namespace mc {
 
 export struct DeathEvent : IEvent
 {
@@ -67,3 +69,6 @@ public:
         return owner;
     }
 };
+
+} // namespace mc
+

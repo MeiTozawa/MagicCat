@@ -1,4 +1,4 @@
-module;
+﻿module;
 
 #include <vector>
 #include <memory>
@@ -11,10 +11,12 @@ import CardService;
 import ServiceLocator;
 import GameService;
 
+namespace mc {
+
 
 export enum ESceneState
 {
-    START, COMBAT, RESULT
+    Start, Combat, Result
 };
 
 export struct SceneRegistry
@@ -30,7 +32,7 @@ export class IView
 {
 public:
     virtual ~IView() = default;
-    virtual void Update(float delta_time) = 0;
+    virtual void Update(float deltaTime) = 0;
 };
 
 export class IScene
@@ -38,7 +40,7 @@ export class IScene
 public:
     virtual ~IScene() = default;
     virtual void Start() = 0;
-    virtual void Update(float delta_time) = 0;
+    virtual void Update(float deltaTime) = 0;
 };
 
 
@@ -49,10 +51,17 @@ public:
 
     virtual void ChangeSceneTo(ESceneState type) = 0;
 
-    virtual void Update(float delta_time) = 0;
+    virtual void Update(float deltaTime) = 0;
 
     virtual void RegisterScene(ESceneState type, std::unique_ptr<IScene>&& scene) = 0;
 
     virtual ESceneState GetCurrentScene() = 0;
     virtual void SetCurrentScene(ESceneState) = 0;
 };
+
+export Shared<ISceneService> CreateSceneService();
+export std::unique_ptr<IScene> CreateStartScene();
+export std::unique_ptr<IScene> CreateCombatScene();
+
+} // namespace mc
+

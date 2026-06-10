@@ -10,6 +10,8 @@ module InputService;
 
 import ServiceLocator;
 
+namespace mc {
+
 class InputService : public IInputService
 {
     Shared<dxe::Input> input;
@@ -20,14 +22,14 @@ class InputService : public IInputService
     {
         if (activeInputModes.empty()) return nullptr;
 
-        // 現在のコンテキストを表示する
+        // ���݂̃R���e�L�X�g��\������
         InputContext currentContext = activeInputModes.back();
 
-        // 現在のコンテキストのマッピングテーブル内で、このアクションが設定されているか確認する
+        // ���݂̃R���e�L�X�g�̃}�b�s���O�e�[�u�����ŁA���̃A�N�V�������ݒ肳��Ă��邩�m�F����
         auto contextIt = actionMappings.find(currentContext);
         if (contextIt == actionMappings.end()) return nullptr;
 
-        // 現在のコンテキストがこのアクションを認識しているかを確認する
+        // ���݂̃R���e�L�X�g�����̃A�N�V������F�����Ă��邩���m�F����
         auto actionIt = contextIt->second.find(action);
         if (actionIt == contextIt->second.end()) return nullptr;
 
@@ -41,7 +43,7 @@ public:
 
         activeInputModes.push_back(InputContext::InGame);
 
-        // Gameplay マッピングを設定する
+        // Gameplay �}�b�s���O��ݒ肷��
         actionMappings[InputContext::InGame][InputAction::IgInteract] = {
             dxe::Input::eButton::KB_E,
             dxe::Input::eButton::PAD_X
@@ -65,7 +67,7 @@ public:
             dxe::Input::eButton::KB_Q,
             dxe::Input::eButton::PAD_X
         };
-        actionMappings[InputContext::InGame][InputAction::IgAttack] = {
+        actionMappings[InputContext::InGame][InputAction::IgCombat] = {
             dxe::Input::eButton::KB_W,
             dxe::Input::eButton::PAD_Y
         };
@@ -74,7 +76,7 @@ public:
             dxe::Input::eButton::PAD_B
         };
 
-        // Menu マッピングを設定する
+        // Menu �}�b�s���O��ݒ肷��
         actionMappings[InputContext::Menu][InputAction::MenuConfirm] = {
             dxe::Input::eButton::KB_SPACE,
             dxe::Input::eButton::PAD_A
@@ -133,7 +135,7 @@ public:
 
     void PushContext(InputContext context) override
     {
-        // 同じContextが連続してスタックにプッシュされるのを防ぐ
+        // ����Context���A�����ăX�^�b�N�Ƀv�b�V�������̂�h��
         if (activeInputModes.empty() || activeInputModes.back() != context)
         {
             activeInputModes.push_back(context);
@@ -142,7 +144,7 @@ public:
 
     void PopContext() override
     {
-        // スタックが空になるのを防ぐ
+        // �X�^�b�N����ɂȂ�̂�h��
         if (activeInputModes.size() > 1)
         {
             activeInputModes.pop_back();
@@ -168,10 +170,10 @@ public:
     }
 };
 
-static struct RegisterInputService
+Shared<IInputService> CreateInputService()
 {
-    RegisterInputService()
-    {
-        ServiceLocator::RegisterSingleton<IInputService, InputService>(std::make_shared<InputService>());
-    }
-} autoRegister_InputService;
+    return std::make_shared<InputService>();
+}
+
+} // namespace mc
+

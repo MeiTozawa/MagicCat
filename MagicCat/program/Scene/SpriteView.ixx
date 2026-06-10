@@ -8,6 +8,8 @@ import EventBus;
 import CharacterService;
 import HealthComponent;
 
+namespace mc {
+
 constexpr int PLAYER_START_X = 800;
 constexpr int PLAYER_START_Y = 450;
 constexpr int ENEMY_START_X = 1000;
@@ -30,7 +32,7 @@ export struct Animation
 
 export class SpriteView
 {
-    Shared<IAssetService> assetService;
+    IAssetService* assetService;
     std::vector<Animation> animations = {};
     
     EventHandle healthUpdateHandle;
@@ -81,9 +83,22 @@ public:
         }
         for (auto animation : animations)
         {
-            int frame = DerivationGraph(frame_index * FRAME_SIZE, 0, FRAME_SIZE, FRAME_SIZE, animation.handle);
-            DrawRotaGraph(animation.x + FRAME_SIZE / 2, animation.y + FRAME_SIZE / 2, 
-                animation.extraRate, 0., frame, TRUE, animation.isFlip);
+            DrawRectRotaGraph(
+                animation.x + FRAME_SIZE / 2, 
+                animation.y + FRAME_SIZE / 2, 
+                frame_index * FRAME_SIZE, 
+                0, 
+                FRAME_SIZE, 
+                FRAME_SIZE, 
+                animation.extraRate, 
+                0., 
+                animation.handle, 
+                TRUE, 
+                animation.isFlip
+            );
         }
     }
 };
+
+} // namespace mc
+

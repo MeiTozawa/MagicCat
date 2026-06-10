@@ -5,6 +5,8 @@ export module ControlView;
 import ServiceLocator;
 import AssetService;
 
+namespace mc {
+
 
 constexpr int KB_Q_X = 100;
 constexpr int KB_UP_X = 500;
@@ -17,7 +19,7 @@ constexpr int TEXT_OFFSET_Y = -15;
 
 export class ControlView
 {
-    Shared<IAssetService> assetService;
+    IAssetService* assetService;
 
 public:
     ControlView()
@@ -44,3 +46,6 @@ public:
         DrawString(KB_SPACE_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"選択する", color);
     }
 };
+
+} // namespace mc
+

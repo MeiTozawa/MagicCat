@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 #include <vector>
 #include <memory>
@@ -11,7 +11,6 @@ import CardService;
 import ServiceLocator;
 import GameService;
 import EventBus;
-import AnimationManager;
 
 namespace mc
 {
@@ -63,8 +62,6 @@ namespace mc
         virtual ESceneState GetCurrentScene() = 0;
 
         virtual void SetCurrentScene(ESceneState) = 0;
-
-        virtual Animation RequestAnimation() = 0;
     };
 
     export Shared<ISceneService> CreateSceneService();

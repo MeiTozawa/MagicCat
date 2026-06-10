@@ -19,14 +19,12 @@ namespace mc
         ESceneState currentScene = Start;
         bool initialized = false;
         EventHandle characterDiedHandle;
-        IAnimationManager* animationManager;
 
         void EnsureInitialized()
         {
             if (!initialized)
             {
                 initialized = true;
-                animationManager = ServiceLocator::Get<IAnimationManager>();
                 for (auto& reg : SceneRegistry::GetRegistrations())
                 {
                     reg();
@@ -67,7 +65,6 @@ namespace mc
             if (scenes.contains(type))
             {
                 currentScene = type;
-                animationManager->ClearAnimations();
                 scenes[currentScene]->Start();
             }
         }

@@ -15,19 +15,28 @@ import EventBus;
 import DataView;
 import ControlView;
 import Character;
-import AnimationManager;
+import AnimationFactory;
+import AssetService;
 
 namespace mc
 {
+    constexpr int PLAYER_START_X = 800;
+    constexpr int PLAYER_START_Y = 450;
+    constexpr int ENEMY_START_X = 1000;
+    constexpr int ENEMY_START_Y = 450;
+    constexpr float EXTRA_RATE = 8.f;
+    
     class CombatScene : public IScene
     {
         std::unique_ptr<CardView> cardView;
-        std::unique_ptr<IAnimationPlayer> spriteAnimation;
+        std::unique_ptr<IAnimationPlayer> playerAnimation;
+        std::unique_ptr<IAnimationPlayer> enemyAnimation;
         std::unique_ptr<CharacterView> characterView;
         std::unique_ptr<ControlView> controlView;
         ICharacterService* characterService = nullptr;
         ISceneService* sceneService = nullptr;
         IInputService* inputService = nullptr;
+        IAssetService* assetService = nullptr;
         bool readyToAttack = false;
         int focus = 0;
 
@@ -42,6 +51,13 @@ namespace mc
             characterService = ServiceLocator::Get<ICharacterService>();
             sceneService = ServiceLocator::Get<ISceneService>();
             inputService = ServiceLocator::Get<IInputService>();
+            assetService = ServiceLocator::Get<IAssetService>();
+            playerAnimation = CreateSpriteAnimation(
+                assetService->GetSpriteHandle(ESprite::Bunny), PLAYER_START_X, PLAYER_START_Y, EXTRA_RATE
+            );
+            enemyAnimation = CreateSpriteAnimation(
+                assetService->GetSpriteHandle(ESprite::Wolf), ENEMY_START_X, ENEMY_START_Y, EXTRA_RATE, true
+            );
         }
 
 
@@ -86,11 +102,12 @@ namespace mc
             cardView->PrintCards();
             cardView->PrintDrawPile();
             cardView->PrintDiscardPile();
-            spriteView->PrintSprites(deltaTime);
             characterView->PrintEnemyInfo();
             characterView->PrintPlayerInfo();
             characterView->PrintPlayerActions(focus);
             controlView->PrintControl();
+            playerAnimation->Update(deltaTime);
+            enemyAnimation->Update(deltaTime);
         }
     };
 

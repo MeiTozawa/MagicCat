@@ -16,7 +16,7 @@ namespace mc
     class AssetService : public IAssetService
     {
     public:
-        void AssetService()
+        AssetService()
         {
             LoadImages();
             LoadGameConfig();

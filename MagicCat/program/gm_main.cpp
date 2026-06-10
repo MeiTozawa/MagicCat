@@ -8,7 +8,6 @@ import CardService;
 import CharacterService;
 import InputService;
 import SceneService;
-import AnimationService;
 
 using namespace mc;
 
@@ -28,8 +27,6 @@ void InitGameServices()
         sceneService->RegisterScene(Start, CreateStartScene());
         sceneService->RegisterScene(Combat, CreateCombatScene());
     }
-
-    ServiceLocator::RegisterSingleton<IAnimationManager>(CreateAnimationService());
 }
 
 void GameStart()

@@ -1,6 +1,6 @@
 ﻿module;
 
-module AnimationManager;
+module AnimationFactory;
 
 import AssetService;
 import ServiceLocator;
@@ -10,7 +10,10 @@ import HealthComponent;
 
 namespace mc
 {
-    class DamageTextAnimation : public IAnimationPlayer {};
+    class DamageTextAnimation : public IAnimationPlayer {
+    public:
+        void Update(float deltaTime) override{}
+    };
 
     std::unique_ptr<IAnimationPlayer> CreateDamageTextAnimation()
     {

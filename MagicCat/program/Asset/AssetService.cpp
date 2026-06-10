@@ -16,7 +16,7 @@ namespace mc
     class AssetService : public IAssetService
     {
     public:
-        void LoadAssets() override
+        void AssetService()
         {
             LoadImages();
             LoadGameConfig();
@@ -159,17 +159,17 @@ namespace mc
                     imageMappings.insert({EImage::KB_DOWN, dxe::Sprite::Create(kb_down_resource)});
 
 
-            auto bunny_resource = LoadGraph(FILE_PATH_PNG_MINIBUNNY);
-            if (bunny_resource == -1)
-                printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_MINIBUNNY);
-            else
-                spriteMappings.insert({ESprite::Bunny, bunny_resource});
-            
-            auto wolf_resource = LoadGraph(FILE_PATH_PNG_MINIWOLF);
-            if (wolf_resource == -1)
-                printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_MINIWOLF);
-            else
-                spriteMappings.insert({ESprite::Wolf, wolf_resource});
+                auto bunny_resource = LoadGraph(FILE_PATH_PNG_MINIBUNNY);
+                if (bunny_resource == -1)
+                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_MINIBUNNY);
+                else
+                    spriteMappings.insert({ESprite::Bunny, bunny_resource});
+
+                auto wolf_resource = LoadGraph(FILE_PATH_PNG_MINIWOLF);
+                if (wolf_resource == -1)
+                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_MINIWOLF);
+                else
+                    spriteMappings.insert({ESprite::Wolf, wolf_resource});
             }
             catch (const std::exception&)
             {

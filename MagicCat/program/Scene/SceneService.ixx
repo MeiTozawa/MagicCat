@@ -10,58 +10,64 @@ export module SceneService;
 import CardService;
 import ServiceLocator;
 import GameService;
+import EventBus;
+import AnimationManager;
 
-namespace mc {
-
-
-export enum ESceneState
+namespace mc
 {
-    Start, Combat, Result
-};
-
-export struct SceneRegistry
-{
-    static std::vector<std::function<void()>>& GetRegistrations()
+    export enum ESceneState
     {
-        static std::vector<std::function<void()>> registrations;
-        return registrations;
-    }
-};
+        Start, Combat, Result
+    };
 
-export class IView
-{
-public:
-    virtual ~IView() = default;
-    virtual void Update(float deltaTime) = 0;
-};
+    export struct SceneRegistry
+    {
+        static std::vector<std::function<void()>>& GetRegistrations()
+        {
+            static std::vector<std::function<void()>> registrations;
+            return registrations;
+        }
+    };
 
-export class IScene
-{
-public:
-    virtual ~IScene() = default;
-    virtual void Start() = 0;
-    virtual void Update(float deltaTime) = 0;
-};
+    export struct EnterCutSceneEvent : IEvent {};
+
+    export struct ExitCutSceneEvent : IEvent {};
+
+    export class IView
+    {
+    public:
+        virtual ~IView() = default;
+        virtual void Update(float deltaTime) = 0;
+    };
+
+    export class IScene
+    {
+    public:
+        virtual ~IScene() = default;
+        virtual void Start() = 0;
+        virtual void Update(float deltaTime) = 0;
+    };
 
 
-export class ISceneService
-{
-public:
-    virtual ~ISceneService() = default;
+    export class ISceneService
+    {
+    public:
+        virtual ~ISceneService() = default;
 
-    virtual void ChangeSceneTo(ESceneState type) = 0;
+        virtual void ChangeSceneTo(ESceneState type) = 0;
 
-    virtual void Update(float deltaTime) = 0;
+        virtual void Update(float deltaTime) = 0;
 
-    virtual void RegisterScene(ESceneState type, std::unique_ptr<IScene>&& scene) = 0;
+        virtual void RegisterScene(ESceneState type, std::unique_ptr<IScene>&& scene) = 0;
 
-    virtual ESceneState GetCurrentScene() = 0;
-    virtual void SetCurrentScene(ESceneState) = 0;
-};
+        virtual ESceneState GetCurrentScene() = 0;
 
-export Shared<ISceneService> CreateSceneService();
-export std::unique_ptr<IScene> CreateStartScene();
-export std::unique_ptr<IScene> CreateCombatScene();
+        virtual void SetCurrentScene(ESceneState) = 0;
 
+        virtual Animation RequestAnimation() = 0;
+    };
+
+    export Shared<ISceneService> CreateSceneService();
+    export std::unique_ptr<IScene> CreateStartScene();
+    export std::unique_ptr<IScene> CreateCombatScene();
 } // namespace mc
-

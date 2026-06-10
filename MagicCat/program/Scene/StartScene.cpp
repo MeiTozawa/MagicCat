@@ -8,37 +8,35 @@ import GameService;
 import ServiceLocator;
 import InputService;
 
-namespace mc {
-
-class StartScene : public IScene
+namespace mc
 {
-    IInputService* inputService;
-    ISceneService* sceneService;
-
-public:
-    StartScene() {}
-
-    void Start() override
+    class StartScene : public IScene
     {
-        inputService = ServiceLocator::Get<IInputService>();
-        sceneService = ServiceLocator::Get<ISceneService>();
-    }
+        IInputService* inputService = nullptr;
+        ISceneService* sceneService = nullptr;
 
-    void Update(float deltaTime) override
-    {
-        if (inputService->IsPressed(InputAction::IgPlatCard))
+    public:
+        StartScene() {}
+
+        void Start() override
         {
-            sceneService->ChangeSceneTo(Combat);
+            inputService = ServiceLocator::Get<IInputService>();
+            sceneService = ServiceLocator::Get<ISceneService>();
         }
 
-        DrawString(300, 300, L"Press SPACE to Start", 0xFFFFFF, TRUE);
+        void Update(float deltaTime) override
+        {
+            if (inputService->IsPressed(InputAction::IgConfirm))
+            {
+                sceneService->ChangeSceneTo(Combat);
+            }
+
+            DrawString(300, 300, L"Press SPACE to Start", 0xFFFFFF, TRUE);
+        }
+    };
+
+    std::unique_ptr<IScene> CreateStartScene()
+    {
+        return std::make_unique<StartScene>();
     }
-};
-
-std::unique_ptr<IScene> CreateStartScene()
-{
-    return std::make_unique<StartScene>();
-}
-
 } // namespace mc
-

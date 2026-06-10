@@ -40,7 +40,6 @@ namespace mc
     {
     public:
         virtual ~IAssetService() = default;
-        virtual void LoadAssets() = 0;
         virtual const Shared<dxe::Sprite> GetImage(EImage) = 0;
         virtual const int GetSpriteHandle(ESprite) = 0;
         virtual const std::vector<CardConfig>& GetCardConfigs() const = 0;

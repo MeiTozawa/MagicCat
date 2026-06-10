@@ -27,7 +27,7 @@ namespace mc
             auto& deckConfig = ServiceLocator::Get<IAssetService>()->GetCardConfigs();
             for (const auto& c : deckConfig)
             {
-                Card card = Card{static_cast<ECardType>(c.type), c.value};
+                auto card = Card{static_cast<ECardType>(c.type), c.value};
 
                 deck.push_back(card);
             }

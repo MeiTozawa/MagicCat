@@ -62,6 +62,7 @@ namespace mc
     };
 
     export struct DrawCardEvent : IEvent {};
+
     export struct CardRectsUpdatedEvent : IEvent
     {
         explicit CardRectsUpdatedEvent(const std::vector<tnl::Rect>& rects)
@@ -79,6 +80,7 @@ namespace mc
         const size_t drawPileCount;
         const size_t discardPileCount;
     };
+
     export struct HandUpdatedEvent : IEvent
     {
         explicit HandUpdatedEvent(const std::vector<Card>& cards)

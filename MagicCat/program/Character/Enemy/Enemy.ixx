@@ -2,6 +2,8 @@
 
 #include <RandomUtils.h>
 
+#include <RandomUtils.h>
+
 export module Enemy;
 
 import Character;

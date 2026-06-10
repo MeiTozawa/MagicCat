@@ -43,10 +43,9 @@ public:
 
         // Gameplay マッピングを設定する
         actionMappings[InputContext::InGame][InputAction::IgInteract] = {
-            dxe::Input::eButton::KB_E,
-            dxe::Input::eButton::PAD_X
+            dxe::Input::eButton::KB_E
         };
-        actionMappings[InputContext::InGame][InputAction::IgPlatCard] = {
+        actionMappings[InputContext::InGame][InputAction::IgPlayCard] = {
             dxe::Input::eButton::KB_SPACE,
             dxe::Input::eButton::PAD_A
         };
@@ -157,7 +156,9 @@ public:
 
     tnl::Vector2i OnMouseClick(InputAction action) const override
     {
-        auto key = CheckInput(action)->at(0);
+        auto keys = CheckInput(action);
+        if (!keys || keys->empty()) return tnl::Vector2i(-1, -1);
+        auto key = keys->at(0);
         if (input->pressed(key))
         {
             int x = 0, y = 0;

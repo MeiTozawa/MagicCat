@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 export module CardView;
 
@@ -62,7 +62,7 @@ public:
         cardService->ClearRectOfCards();
         const auto& hand = cachedHand;
         auto position = tnl::Vector2i{CARD_START_X, CARD_START_Y};
-        for (int i = 0; i < hand.size(); ++i)
+        for (size_t i = 0; i < hand.size(); ++i)
         {
             message = std::format(L"+{}", hand[i].Offset);
             printACard(hand[i], position, message.c_str());

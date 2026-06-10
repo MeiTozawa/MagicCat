@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 #include <dxe.h>
 #include <memory>
@@ -62,7 +62,7 @@ private:
             
             auto wolf_resource = LoadGraph(FILE_WOLF_SHEET.c_str());
             if (!wolf_resource)
-                printfDx(L"%sの読み込みに失敗", FILE_BUNNY_SHEET.c_str());
+                printfDx(L"%sの読み込みに失敗", FILE_WOLF_SHEET.c_str());
             else
                 spriteMappings.insert({ESprite::Wolf, wolf_resource});
             

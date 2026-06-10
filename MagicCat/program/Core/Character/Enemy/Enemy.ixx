@@ -1,5 +1,7 @@
 module;
 
+#include <cwchar>
+
 export module Enemy;
 
 import Character;
@@ -67,8 +69,7 @@ public:
 
     bool operator==(const Enemy& e) const
     {
-        // For simplicity, we just compare pointers for name since they are string literals
-        return this->name == e.name &&
+        return std::wcscmp(this->name, e.name) == 0 &&
             this->baseWeight == e.baseWeight &&
             this->rockDamage == e.rockDamage &&
             this->scissorsDamage == e.scissorsDamage &&

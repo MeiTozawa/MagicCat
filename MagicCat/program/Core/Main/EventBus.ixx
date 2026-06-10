@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 #include <unordered_map>
 #include <typeindex>
@@ -99,7 +99,7 @@ public:
     {
         std::vector<CallbackWrapper> callbacks;
         {
-            std::unique_lock lock(GetMutex());
+            std::shared_lock lock(GetMutex());
             auto& listeners = GetListeners();
             auto it = listeners.find(std::type_index(typeid(TEvent)));
             if (it != listeners.end())

@@ -4,8 +4,8 @@
 
 namespace
 {
-    thread_local std::random_device rd;
-    thread_local std::mt19937 gen(rd());
+    inline thread_local std::random_device rd;
+    inline thread_local std::mt19937 gen(rd());
 }
 
 class Random

@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 #include <RandomUtils.h>
 #include <tnl_rect.h>
@@ -69,8 +69,10 @@ public:
         if (drawPile.empty())
         {
             drawPile.insert(drawPile.end(), discardPile.begin(), discardPile.end());
+            discardPile.clear();
             Random::Shuffle(drawPile);
         }
+        if (drawPile.empty()) return hand;
         auto c = drawPile.back();
 
         drawPile.pop_back();
@@ -115,7 +117,7 @@ public:
     void MoveFocusToLeft() override
     {
         if (hand.empty()) return;
-        if (focus <= 0) return;
+        if (focus == 0) return;
 
         hand[focus].is_selected = false;
         focus--;
@@ -134,10 +136,16 @@ public:
         discardPile.push_back(*card);
         hand.erase(card);
 
-        if (focus >= hand.size())
-            focus--;
         if (!hand.empty())
+        {
+            if (focus >= static_cast<int>(hand.size()))
+                focus = static_cast<int>(hand.size()) - 1;
             hand[focus].is_selected = true;
+        }
+        else
+        {
+            focus = 0;
+        }
             
         EventBus::Publish(HandUpdatedEvent(hand));
     }
@@ -153,10 +161,10 @@ public:
     }
 
 private:
-    std::vector<Card> deck = std::vector<Card>();
-    std::vector<Card> hand = std::vector<Card>();
-    std::vector<Card> drawPile = std::vector<Card>();
-    std::vector<Card> discardPile = std::vector<Card>();
+    std::vector<Card> deck;
+    std::vector<Card> hand;
+    std::vector<Card> drawPile;
+    std::vector<Card> discardPile;
     int focus = 0;
 };
 

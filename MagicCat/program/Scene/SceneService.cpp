@@ -69,7 +69,10 @@ public:
     void Update(float deltaTime) override
     {
         EnsureInitialized();
-        scenes[currentScene]->Update(deltaTime);
+        if (auto it = scenes.find(currentScene); it != scenes.end() && it->second)
+        {
+            it->second->Update(deltaTime);
+        }
     }
 
     ESceneState GetCurrentScene() override

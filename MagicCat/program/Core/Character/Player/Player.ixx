@@ -23,7 +23,7 @@ public:
         healthComp = std::make_unique<HealthComponent>(this);
 
         deathEvent = EventBus::Subscribe<DeathEvent>(
-            [this](const DeathEvent&) { OnPlayerDeath(); }
+            [this](const DeathEvent& e) { if (e.Victim == this) OnPlayerDeath(); }
         );
     }
     

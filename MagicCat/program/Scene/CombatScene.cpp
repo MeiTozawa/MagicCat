@@ -49,7 +49,7 @@ public:
         {
             EventBus::Publish(MoveFocusToRightEvent());
         }
-        else if (inputService->IsPressed(InputAction::IgPlatCard))
+        else if (inputService->IsPressed(InputAction::IgPlayCard))
         {
             EventBus::Publish(PlayCardEvent());
         }

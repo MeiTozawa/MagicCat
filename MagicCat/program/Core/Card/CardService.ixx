@@ -24,6 +24,10 @@ export enum ECardType
 constexpr std::strong_ordering operator<=>(ECardType l, ECardType r)
 {
     if (l == r) return std::strong_ordering::equal;
+    if (l == ECardType::Null || r == ECardType::Null || l == ECardType::Magic || r == ECardType::Magic)
+    {
+        return static_cast<int>(l) <=> static_cast<int>(r);
+    }
 
     int diff = (static_cast<int>(l) - static_cast<int>(r) + 3) % 3;
 

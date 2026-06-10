@@ -4,10 +4,9 @@ module;
 #include <memory>
 #include <unordered_map>
 #include <fstream>
+#include <ResourceConstantHedder.h>
 #include <sstream>
 #include <vector>
-#include "../../common/tnl/json11.hpp"
-#include "FilePaths.h"
 
 module AssetService;
 import ServiceLocator;
@@ -111,64 +110,64 @@ namespace mc
         {
             try
             {
-                auto rock_resource = dxe::SpriteResouce::Create(FILE_ROCK);
+                auto rock_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_STONE);
                 if (!rock_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_ROCK.c_str());
+                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_STONE);
                 else
                     imageMappings.insert({EImage::Rock, dxe::Sprite::Create(rock_resource)});
 
-                auto scissors_resource = dxe::SpriteResouce::Create(FILE_SCISSORS);
+                auto scissors_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_SCISSORS);
                 if (!scissors_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_SCISSORS.c_str());
+                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_SCISSORS);
                 else
                     imageMappings.insert({EImage::Scissors, dxe::Sprite::Create(scissors_resource)});
 
-                auto paper_resource = dxe::SpriteResouce::Create(FILE_PAPER);
+                auto paper_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_PAPER);
                 if (!paper_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_PAPER.c_str());
+                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_PAPER);
                 else
                     imageMappings.insert({EImage::Paper, dxe::Sprite::Create(paper_resource)});
 
-                auto magic_resource = dxe::SpriteResouce::Create(FILE_MAGIC);
+                auto magic_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_POINT);
                 if (!magic_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_MAGIC.c_str());
+                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_POINT);
                 else
                     imageMappings.insert({EImage::Magic, dxe::Sprite::Create(magic_resource)});
 
-                auto kb_q_resource = dxe::SpriteResouce::Create(FILE_KB_Q);
+                auto kb_q_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_KEYBOARD_Q_OUTLINE);
                 if (!kb_q_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_KB_Q.c_str());
+                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_KEYBOARD_Q_OUTLINE);
                 else
                     imageMappings.insert({EImage::KB_Q, dxe::Sprite::Create(kb_q_resource)});
 
-                auto kb_space_resource = dxe::SpriteResouce::Create(FILE_KB_SPACE);
+                auto kb_space_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE);
                 if (!kb_space_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_KB_SPACE.c_str());
+                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE);
                 else
                     imageMappings.insert({EImage::KB_SPACE, dxe::Sprite::Create(kb_space_resource)});
 
-                auto kb_up_resource = dxe::SpriteResouce::Create(FILE_KB_UP);
+                auto kb_up_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE);
                 if (!kb_up_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_KB_UP.c_str());
+                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE);
                 else
                     imageMappings.insert({EImage::KB_UP, dxe::Sprite::Create(kb_up_resource)});
 
-                auto kb_down_resource = dxe::SpriteResouce::Create(FILE_KB_DOWN);
+                auto kb_down_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE);
                 if (!kb_down_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_KB_DOWN.c_str());
+                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE);
                 else
                     imageMappings.insert({EImage::KB_DOWN, dxe::Sprite::Create(kb_down_resource)});
 
 
-            auto bunny_resource = LoadGraph(FILE_BUNNY_SHEET.c_str());
+            auto bunny_resource = LoadGraph(FILE_PATH_PNG_MINIBUNNY);
             if (bunny_resource == -1)
-                printfDx(L"%sの読み込みに失敗", FILE_BUNNY_SHEET.c_str());
+                printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_MINIBUNNY);
             else
                 spriteMappings.insert({ESprite::Bunny, bunny_resource});
             
-            auto wolf_resource = LoadGraph(FILE_WOLF_SHEET.c_str());
+            auto wolf_resource = LoadGraph(FILE_PATH_PNG_MINIWOLF);
             if (wolf_resource == -1)
-                printfDx(L"%sの読み込みに失敗", FILE_WOLF_SHEET.c_str());
+                printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_MINIWOLF);
             else
                 spriteMappings.insert({ESprite::Wolf, wolf_resource});
             }

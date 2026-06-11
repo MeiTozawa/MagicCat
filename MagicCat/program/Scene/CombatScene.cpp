@@ -39,10 +39,10 @@ namespace mc
     class CombatScene : public IScene
     {
         std::unique_ptr<CardView> cardView;
-        std::unique_ptr<IAnimationPlayer> playerAnimation;
-        std::unique_ptr<IAnimationPlayer> enemyAnimation;
-        std::unique_ptr<IAnimationPlayer> playerAttackAnimation = nullptr;
-        std::unique_ptr<IAnimationPlayer> enemyAttackAnimation = nullptr;
+        std::unique_ptr<AnimationPlayer> playerAnimation;
+        std::unique_ptr<AnimationPlayer> enemyAnimation;
+        std::unique_ptr<AnimationPlayer> playerAttackAnimation = nullptr;
+        std::unique_ptr<AnimationPlayer> enemyAttackAnimation = nullptr;
         std::unique_ptr<CharacterView> characterView;
         std::unique_ptr<ControlView> controlView;
         ICharacterService* characterService = nullptr;

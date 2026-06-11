@@ -16,10 +16,17 @@ namespace mc
     class AssetService : public IAssetService
     {
     public:
+
         AssetService()
         {
+            LoadFonts();
             LoadImages();
             LoadGameConfig();
+        }
+        
+        const int GetFontHandle(EFont font) override
+        {
+            return fontMappings.at(font);
         }
 
         const std::vector<CardConfig>& GetCardConfigs() const override
@@ -47,9 +54,17 @@ namespace mc
     private:
         std::unordered_map<EImage, Shared<dxe::Sprite>> imageMappings = {};
         std::unordered_map<ESprite, int> spriteMappings = {};
+        std::unordered_map<EFont, int> fontMappings = {};
         std::vector<CardConfig> cardConfigs;
         std::vector<EnemyConfig> enemyConfigs;
 
+        void LoadFonts()
+        {
+            ChangeFontType(DX_FONTTYPE_NORMAL); 
+            int handle = LoadFontDataToHandle(FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_JA, 16);
+            fontMappings.insert({EFont::ARK_PIXEL_16PX_JP, handle});
+        }
+        
         void LoadGameConfig()
         {
             {

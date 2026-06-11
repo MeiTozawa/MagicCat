@@ -15,6 +15,7 @@ IGameService* gameService;
 
 void InitGameServices()
 {
+    ChangeFontType(DX_FONTTYPE_NORMAL);
     ServiceLocator::RegisterSingleton<IAssetService>(CreateAssetService());
     ServiceLocator::RegisterSingleton<ICardService>(CreateCardService());
     ServiceLocator::RegisterSingleton<ICharacterService>(CreateCharacterService());

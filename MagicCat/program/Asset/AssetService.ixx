@@ -23,6 +23,11 @@ namespace mc
         int type;
         int value;
     };
+    
+    export enum class EFont
+    {
+        ARK_PIXEL_16PX_JP
+    };
 
     export enum class EImage
     {
@@ -41,6 +46,7 @@ namespace mc
     public:
         virtual ~IAssetService() = default;
         virtual const Shared<dxe::Sprite> GetImage(EImage) = 0;
+        virtual const int GetFontHandle(EFont) = 0;
         virtual const int GetSpriteHandle(ESprite) = 0;
         virtual const std::vector<CardConfig>& GetCardConfigs() const = 0;
         virtual const std::vector<EnemyConfig>& GetEnemyConfigs() const = 0;

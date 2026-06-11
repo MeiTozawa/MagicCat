@@ -19,7 +19,6 @@ add_subdirectory(MagicCat)
 
 target_precompile_headers(MagicCat PRIVATE
         <dxe.h>
-        <tweeny-3.2.1.h>
 )
 
 find_program(CCACHE_PROGRAM ccache)

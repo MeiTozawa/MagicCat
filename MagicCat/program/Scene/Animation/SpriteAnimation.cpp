@@ -17,7 +17,7 @@ namespace mc
     constexpr int FRAME_SIZE = 32;
 
 
-    class SpriteAnimation : public IAnimationPlayer
+    class SpriteAnimation : public AnimationPlayer
     {
         float timer = 0;
         int frame_index = 0;
@@ -32,7 +32,8 @@ namespace mc
         SpriteAnimation(int handle, int x, int y, float extraRate = 1.f, bool isFlip = false) :
             handle(handle), x(x), y(y), extraRate(extraRate), isFlip(isFlip) {}
 
-        void Update(float deltaTime) override
+    private:
+        void LogicUpdate(float deltaTime) override
         {
             timer += deltaTime;
             if (timer >= 1.f / ANIMATION_SPEED)
@@ -42,7 +43,10 @@ namespace mc
                     frame_index = 0;
                 timer = 0;
             }
+        }
 
+        void Draw(float deltaTime) override
+        {
             DrawRectRotaGraph(
                 x + FRAME_SIZE / 2,
                 y + FRAME_SIZE / 2,
@@ -57,11 +61,9 @@ namespace mc
                 isFlip
             );
         }
-
-        bool IsPlaying() override { return true; }
     };
 
-    std::unique_ptr<IAnimationPlayer> CreateSpriteAnimation(int handle, int x, int y, float extraRate, bool isFlip)
+    std::unique_ptr<AnimationPlayer> CreateSpriteAnimation(int handle, int x, int y, float extraRate, bool isFlip)
     {
         return std::make_unique<SpriteAnimation>(handle, x, y, extraRate, isFlip);
     }

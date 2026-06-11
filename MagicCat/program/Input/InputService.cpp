@@ -23,14 +23,11 @@ namespace mc
         {
             if (activeInputModes.empty()) return nullptr;
 
-            // ���݂̃R���e�L�X�g��\������
             InputContext currentContext = activeInputModes.back();
 
-            // ���݂̃R���e�L�X�g�̃}�b�s���O�e�[�u�����ŁA���̃A�N�V�������ݒ肳��Ă��邩�m�F����
             auto contextIt = actionMappings.find(currentContext);
             if (contextIt == actionMappings.end()) return nullptr;
 
-            // ���݂̃R���e�L�X�g�����̃A�N�V������F�����Ă��邩���m�F����
             auto actionIt = contextIt->second.find(action);
             if (actionIt == contextIt->second.end()) return nullptr;
 
@@ -44,14 +41,10 @@ namespace mc
 
             activeInputModes.push_back(InputContext::InGame);
 
-            // Gameplay �}�b�s���O��ݒ肷��
             actionMappings[InputContext::InGame][InputAction::IgConfirm] = {
                 dxe::Input::eButton::KB_SPACE,
                 dxe::Input::eButton::PAD_A
             };
-            // _actionMappings[InputContext::InGame][InputAction::IgMouseClick] = {
-            //     dxe::Input::eButton::MOUSE_LEFT
-            // };
             actionMappings[InputContext::InGame][InputAction::IgUp] = {
                 dxe::Input::eButton::KB_UP,
                 dxe::Input::eButton::PAD_UP
@@ -73,7 +66,6 @@ namespace mc
                 dxe::Input::eButton::PAD_B
             };
 
-            // Menu �}�b�s���O��ݒ肷��
             actionMappings[InputContext::Menu][InputAction::MenuConfirm] = {
                 dxe::Input::eButton::KB_SPACE,
                 dxe::Input::eButton::PAD_A
@@ -132,7 +124,7 @@ namespace mc
 
         void PushContext(InputContext context) override
         {
-            // ����Context���A�����ăX�^�b�N�Ƀv�b�V�������̂�h��
+            // 同じContextが連続してスタックにプッシュされるのを防ぐ
             if (activeInputModes.empty() || activeInputModes.back() != context)
             {
                 activeInputModes.push_back(context);
@@ -141,7 +133,7 @@ namespace mc
 
         void PopContext() override
         {
-            // �X�^�b�N����ɂȂ�̂�h��
+            // スタックが空になるのを防ぐ
             if (activeInputModes.size() > 1)
             {
                 activeInputModes.pop_back();

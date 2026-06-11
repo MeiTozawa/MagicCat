@@ -80,9 +80,9 @@ namespace mc
             return currentScene;
         }
 
-        void SetCurrentScene(ESceneState e) override
+        void SetCurrentScene(ESceneState state) override
         {
-            currentScene = e;
+            currentScene = state;
         }
     };
 

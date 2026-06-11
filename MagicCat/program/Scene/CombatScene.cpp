@@ -25,6 +25,12 @@ namespace mc
     constexpr int ENEMY_START_X = 1000;
     constexpr int ENEMY_START_Y = 450;
     constexpr float EXTRA_RATE = 8.f;
+
+    constexpr int ACTION_NONE = 0;
+    constexpr int ACTION_ROCK = 1;
+    constexpr int ACTION_SCISSORS = 2;
+    constexpr int ACTION_PAPER = 3;
+    constexpr int ACTION_MAX = ACTION_PAPER;
     
     class CombatScene : public IScene
     {
@@ -38,7 +44,7 @@ namespace mc
         IInputService* inputService = nullptr;
         IAssetService* assetService = nullptr;
         bool readyToAttack = false;
-        int focus = 0;
+        int selectedActionIndex = ACTION_NONE;
 
     public:
         CombatScene() {}
@@ -65,19 +71,23 @@ namespace mc
         {
             if (inputService->IsPressed(InputAction::IgUp))
             {
-                if (focus > 0)
-                    focus--;
+                if (selectedActionIndex > ACTION_NONE)
+                    selectedActionIndex--;
             }
             else if (inputService->IsPressed(InputAction::IgDown))
             {
-                if (focus < 3)
-                    focus++;
+                if (selectedActionIndex < ACTION_MAX)
+                    selectedActionIndex++;
             }
             else if (inputService->IsPressed(InputAction::IgCombat))
             {
-                if (focus > 0)
+                if (selectedActionIndex > ACTION_NONE)
                 {
-                    auto playerAttackIntent = static_cast<EAttackType>(focus - 1);
+                    EAttackType playerAttackIntent = EAttackType::Rock;
+                    if (selectedActionIndex == ACTION_ROCK) playerAttackIntent = EAttackType::Rock;
+                    else if (selectedActionIndex == ACTION_SCISSORS) playerAttackIntent = EAttackType::Scissors;
+                    else if (selectedActionIndex == ACTION_PAPER) playerAttackIntent = EAttackType::Paper;
+
                     EAttackType enemyAttackIntent = characterService->GetEnemy().GetAttackIntent();
                     EventBus::Publish(
                         CombatEvent(playerAttackIntent, enemyAttackIntent,
@@ -104,7 +114,7 @@ namespace mc
             cardView->PrintDiscardPile();
             characterView->PrintEnemyInfo();
             characterView->PrintPlayerInfo();
-            characterView->PrintPlayerActions(focus);
+            characterView->PrintPlayerActions(selectedActionIndex);
             controlView->PrintControl();
             playerAnimation->Update(deltaTime);
             enemyAnimation->Update(deltaTime);

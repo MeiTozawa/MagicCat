@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 module AudioService;
 namespace mc
@@ -8,13 +8,7 @@ namespace mc
     public:
         void PlaySoundEffect(ESoundEffect soundEffect) override
         {
-            //TODO
-        }
-
-    private:
-        void LoadAudios()
-        {
-            //TODO
+            // TODO
         }
     };
 } // namespace mc

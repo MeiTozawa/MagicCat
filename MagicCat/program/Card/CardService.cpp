@@ -27,7 +27,7 @@ namespace mc
             auto& deckConfig = ServiceLocator::Get<IAssetService>()->GetCardConfigs();
             for (const auto& c : deckConfig)
             {
-                auto card = Card{static_cast<ECardType>(c.type), c.value};
+                auto card = Card{ToCardType(c.type), c.value};
 
                 deck.push_back(card);
             }
@@ -67,7 +67,7 @@ namespace mc
             if (drawPile.empty())
             {
                 drawPile.insert(drawPile.end(), discardPile.begin(), discardPile.end());
-                discardPile.clear(); // Ensure discard pile is cleared when reshuffled
+                discardPile.clear(); // 再シャッフル時に捨て札を確実にクリアする
                 Random::Shuffle(drawPile);
             }
             assert(drawPile.size() > 0);
@@ -77,7 +77,7 @@ namespace mc
             if (c.CardType == Magic)
                 EventBus::Publish(ChangeMpEvent(c.Value));
             else if (c.CardType == Rock || c.CardType == Scissors || c.CardType == Paper)
-                EventBus::Publish(AddWeightEvent(static_cast<EAttackType>(c.CardType), c.Value));
+                EventBus::Publish(AddWeightEvent(ToAttackType(c.CardType), c.Value));
 
             hand.push_back(c);
 
@@ -116,6 +116,29 @@ namespace mc
         std::vector<Card> hand = std::vector<Card>();
         std::vector<Card> drawPile = std::vector<Card>();
         std::vector<Card> discardPile = std::vector<Card>();
+
+        ECardType ToCardType(int type) const
+        {
+            switch (type)
+            {
+            case 0: return Rock;
+            case 1: return Scissors;
+            case 2: return Paper;
+            case 3: return Magic;
+            default: return Null;
+            }
+        }
+
+        EAttackType ToAttackType(ECardType type) const
+        {
+            switch (type)
+            {
+            case Rock: return EAttackType::Rock;
+            case Scissors: return EAttackType::Scissors;
+            case Paper: return EAttackType::Paper;
+            default: return EAttackType::Rock;
+            }
+        }
     };
 
     Shared<ICardService> CreateCardService()

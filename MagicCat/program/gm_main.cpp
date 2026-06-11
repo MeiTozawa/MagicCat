@@ -1,4 +1,4 @@
-﻿#include <dxe.h>
+#include <dxe.h>
 #include "gm_main.h"
 
 import GameService;
@@ -38,15 +38,11 @@ void GameStart()
     gameService->Start();
 }
 
-//------------------------------------------------------------------------------------------------------------
-// 毎フレーム実行されます
 void GameMain(float deltaTime)
 {
     gameService->Update(deltaTime);
 }
 
-//------------------------------------------------------------------------------------------------------------
-// ゲーム終了時に一度だけ実行されます
 void GameEnd()
 {
     gameService->End();

@@ -110,66 +110,47 @@ namespace mc
         {
             try
             {
-                auto rock_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_STONE);
-                if (!rock_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_STONE);
-                else
-                    imageMappings.insert({EImage::Rock, dxe::Sprite::Create(rock_resource)});
+                struct ImageData {
+                    EImage id;
+                    const wchar_t* path;
+                };
+                ImageData images[] = {
+                    {EImage::Rock, FILE_PATH_PNG_STONE},
+                    {EImage::Scissors, FILE_PATH_PNG_SCISSORS},
+                    {EImage::Paper, FILE_PATH_PNG_PAPER},
+                    {EImage::Magic, FILE_PATH_PNG_POINT},
+                    {EImage::KB_Q, FILE_PATH_PNG_KEYBOARD_Q_OUTLINE},
+                    {EImage::KB_SPACE, FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE},
+                    {EImage::KB_UP, FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE},
+                    {EImage::KB_DOWN, FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE}
+                };
 
-                auto scissors_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_SCISSORS);
-                if (!scissors_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_SCISSORS);
-                else
-                    imageMappings.insert({EImage::Scissors, dxe::Sprite::Create(scissors_resource)});
+                for (const auto& img : images)
+                {
+                    auto resource = dxe::SpriteResouce::Create(img.path);
+                    if (!resource)
+                        printfDx(L"%sの読み込みに失敗", img.path);
+                    else
+                        imageMappings.insert({img.id, dxe::Sprite::Create(resource)});
+                }
 
-                auto paper_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_PAPER);
-                if (!paper_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_PAPER);
-                else
-                    imageMappings.insert({EImage::Paper, dxe::Sprite::Create(paper_resource)});
+                struct SpriteData {
+                    ESprite id;
+                    const wchar_t* path;
+                };
+                SpriteData sprites[] = {
+                    {ESprite::Bunny, FILE_PATH_PNG_MINIBUNNY},
+                    {ESprite::Wolf, FILE_PATH_PNG_MINIWOLF}
+                };
 
-                auto magic_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_POINT);
-                if (!magic_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_POINT);
-                else
-                    imageMappings.insert({EImage::Magic, dxe::Sprite::Create(magic_resource)});
-
-                auto kb_q_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_KEYBOARD_Q_OUTLINE);
-                if (!kb_q_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_KEYBOARD_Q_OUTLINE);
-                else
-                    imageMappings.insert({EImage::KB_Q, dxe::Sprite::Create(kb_q_resource)});
-
-                auto kb_space_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE);
-                if (!kb_space_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE);
-                else
-                    imageMappings.insert({EImage::KB_SPACE, dxe::Sprite::Create(kb_space_resource)});
-
-                auto kb_up_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE);
-                if (!kb_up_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE);
-                else
-                    imageMappings.insert({EImage::KB_UP, dxe::Sprite::Create(kb_up_resource)});
-
-                auto kb_down_resource = dxe::SpriteResouce::Create(FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE);
-                if (!kb_down_resource)
-                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE);
-                else
-                    imageMappings.insert({EImage::KB_DOWN, dxe::Sprite::Create(kb_down_resource)});
-
-
-                auto bunny_resource = LoadGraph(FILE_PATH_PNG_MINIBUNNY);
-                if (bunny_resource == -1)
-                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_MINIBUNNY);
-                else
-                    spriteMappings.insert({ESprite::Bunny, bunny_resource});
-
-                auto wolf_resource = LoadGraph(FILE_PATH_PNG_MINIWOLF);
-                if (wolf_resource == -1)
-                    printfDx(L"%sの読み込みに失敗", FILE_PATH_PNG_MINIWOLF);
-                else
-                    spriteMappings.insert({ESprite::Wolf, wolf_resource});
+                for (const auto& spr : sprites)
+                {
+                    auto resource = LoadGraph(spr.path);
+                    if (resource == -1)
+                        printfDx(L"%sの読み込みに失敗", spr.path);
+                    else
+                        spriteMappings.insert({spr.id, resource});
+                }
             }
             catch (const std::exception&)
             {

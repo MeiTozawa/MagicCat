@@ -1,7 +1,5 @@
 module;
 
-#include <dxe.h>
-#include <vector>
 #include <memory>
 
 module SceneService;
@@ -26,25 +24,32 @@ namespace mc
     constexpr int ENEMY_START_Y = 450;
     constexpr float EXTRA_RATE = 8.f;
 
-    constexpr int ACTION_NONE = 0;
+    constexpr float PLAYER_ATTACK_X = 820.f;
+    constexpr float PLAYER_ATTACK_Y = 400.f;
+    constexpr float ENEMY_ATTACK_X = 1020.f;
+    constexpr float ENEMY_ATTACK_Y = 400.f;
+    constexpr float ATTACK_IMAGE_SCALE = 0.2f;
+
+    constexpr int ACTION_MAGIC = 0;
     constexpr int ACTION_ROCK = 1;
     constexpr int ACTION_SCISSORS = 2;
     constexpr int ACTION_PAPER = 3;
     constexpr int ACTION_MAX = ACTION_PAPER;
-    
+
     class CombatScene : public IScene
     {
         std::unique_ptr<CardView> cardView;
         std::unique_ptr<IAnimationPlayer> playerAnimation;
         std::unique_ptr<IAnimationPlayer> enemyAnimation;
+        std::unique_ptr<IAnimationPlayer> playerAttackAnimation = nullptr;
+        std::unique_ptr<IAnimationPlayer> enemyAttackAnimation = nullptr;
         std::unique_ptr<CharacterView> characterView;
         std::unique_ptr<ControlView> controlView;
         ICharacterService* characterService = nullptr;
         ISceneService* sceneService = nullptr;
         IInputService* inputService = nullptr;
         IAssetService* assetService = nullptr;
-        bool readyToAttack = false;
-        int selectedActionIndex = ACTION_NONE;
+        int selectedActionIndex = ACTION_MAGIC;
 
     public:
         CombatScene() {}
@@ -71,7 +76,7 @@ namespace mc
         {
             if (inputService->IsPressed(InputAction::IgUp))
             {
-                if (selectedActionIndex > ACTION_NONE)
+                if (selectedActionIndex > ACTION_MAGIC)
                     selectedActionIndex--;
             }
             else if (inputService->IsPressed(InputAction::IgDown))
@@ -79,14 +84,15 @@ namespace mc
                 if (selectedActionIndex < ACTION_MAX)
                     selectedActionIndex++;
             }
-            else if (inputService->IsPressed(InputAction::IgCombat))
+            else if (inputService->IsPressed(InputAction::IgConfirm))
             {
-                if (selectedActionIndex > ACTION_NONE)
+                if (selectedActionIndex > ACTION_MAGIC)
                 {
-                    EAttackType playerAttackIntent = EAttackType::Rock;
+                    EAttackType playerAttackIntent;
                     if (selectedActionIndex == ACTION_ROCK) playerAttackIntent = EAttackType::Rock;
                     else if (selectedActionIndex == ACTION_SCISSORS) playerAttackIntent = EAttackType::Scissors;
                     else if (selectedActionIndex == ACTION_PAPER) playerAttackIntent = EAttackType::Paper;
+                    else return;
 
                     EAttackType enemyAttackIntent = characterService->GetEnemy().GetAttackIntent();
                     EventBus::Publish(
@@ -94,19 +100,19 @@ namespace mc
                                     characterService->GetPlayer().GetDamage(playerAttackIntent),
                                     characterService->GetEnemy().GetDamage(enemyAttackIntent)
                         ));
+
+                    playerAttackAnimation = CreateAttackAnimation(
+                        PLAYER_ATTACK_X, PLAYER_ATTACK_Y, ATTACK_IMAGE_SCALE, playerAttackIntent
+                    );
+                    enemyAttackAnimation = CreateAttackAnimation(
+                        ENEMY_ATTACK_X, ENEMY_ATTACK_Y, ATTACK_IMAGE_SCALE, enemyAttackIntent
+                    );
+                    inputService->PushContext(InputContext::CutScene);
                 }
             }
             else if (inputService->IsPressed(InputAction::IgDrawCard))
             {
                 EventBus::Publish(DrawCardEvent());
-            }
-            else if (inputService->IsPressed(InputAction::IgCancel))
-            {
-                readyToAttack = false;
-            }
-            else if (inputService->IsPressed(InputAction::IgCombat))
-            {
-                readyToAttack = true;
             }
 
             cardView->PrintCards();
@@ -118,6 +124,21 @@ namespace mc
             controlView->PrintControl();
             playerAnimation->Update(deltaTime);
             enemyAnimation->Update(deltaTime);
+
+            if (playerAttackAnimation != nullptr && enemyAttackAnimation != nullptr)
+            {
+                if (playerAttackAnimation->IsPlaying() == false && enemyAttackAnimation->IsPlaying() == false)
+                {
+                    inputService->PopContext();
+                    playerAttackAnimation = nullptr;
+                    enemyAttackAnimation = nullptr;
+                }
+                else
+                {
+                    playerAttackAnimation->Update(deltaTime);
+                    enemyAttackAnimation->Update(deltaTime);
+                }
+            }
         }
     };
 

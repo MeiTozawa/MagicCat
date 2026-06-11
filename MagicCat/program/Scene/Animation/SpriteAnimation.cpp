@@ -30,8 +30,8 @@ namespace mc
 
     public:
         SpriteAnimation(int handle, int x, int y, float extraRate = 1.f, bool isFlip = false) :
-            handle(handle), x(x), y(y), extraRate(extraRate), isFlip(isFlip){}
-        
+            handle(handle), x(x), y(y), extraRate(extraRate), isFlip(isFlip) {}
+
         void Update(float deltaTime) override
         {
             timer += deltaTime;
@@ -57,10 +57,12 @@ namespace mc
                 isFlip
             );
         }
+
+        bool IsPlaying() override { return true; }
     };
 
     std::unique_ptr<IAnimationPlayer> CreateSpriteAnimation(int handle, int x, int y, float extraRate, bool isFlip)
     {
-        return std::make_unique<SpriteAnimation>(handle, x, y, extraRate , isFlip);
+        return std::make_unique<SpriteAnimation>(handle, x, y, extraRate, isFlip);
     }
 } // namespace mc

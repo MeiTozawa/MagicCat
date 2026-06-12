@@ -20,26 +20,28 @@ import Character;
 
 namespace mc
 {
-    constexpr int PLAYER_DATA_START_X = 400;
-    constexpr int PLAYER_DATA_START_Y = 200;
+    namespace {
+        constexpr int PLAYER_DATA_START_X = 400;
+        constexpr int PLAYER_DATA_START_Y = 200;
 
-    constexpr int PLAYER_HP_X = 100;
-    constexpr int PLAYER_HP_Y = 200;
-    constexpr int PLAYER_MP_X = 100;
-    constexpr int PLAYER_MP_Y = 300;
+        constexpr int PLAYER_HP_X = 100;
+        constexpr int PLAYER_HP_Y = 200;
+        constexpr int PLAYER_MP_X = 100;
+        constexpr int PLAYER_MP_Y = 300;
 
-    constexpr int ENEMY_DATA_START_X = 1200;
-    constexpr int ENEMY_DATA_START_Y = 300;
+        constexpr int ENEMY_DATA_START_X = 1200;
+        constexpr int ENEMY_DATA_START_Y = 300;
 
-    constexpr int TEXT_OFFSET_X = 50;
-    constexpr int TEXT_OFFSET_Y = 37;
+        constexpr int TEXT_OFFSET_X = 50;
+        constexpr int TEXT_OFFSET_Y = 37;
 
-    constexpr int OFFSET_Y = 120;
+        constexpr int OFFSET_Y = 120;
 
-    constexpr int RECT_X = 300;
-    constexpr int RECT_Y = 100;
+        constexpr int RECT_X = 300;
+        constexpr int RECT_Y = 100;
 
-    constexpr int THICKNESS = 2;
+        constexpr int THICKNESS = 2;
+    }
 
     class CharacterDisplayer : public IDisplayer
     {

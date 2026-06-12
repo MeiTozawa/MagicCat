@@ -15,30 +15,36 @@ import EventBus;
 
 namespace mc
 {
-    // card
-    constexpr int CARD_START_X = 400;
-    constexpr int CARD_START_Y = 750;
-    constexpr int DRAW_PILE_X = 50;
-    constexpr int DRAW_PILE_Y = 400;
-    constexpr int DISCARD_PILE_X = 50;
-    constexpr int DISCARD_PILE_Y = 750;
-    constexpr int OFFSET_X = 250;
+    
+    /// かつて、constexprには内部リンク性があり、これは暗黙的にstaticが追加されたのと同じ効果を持っていました。
+    /// しかし、C++20のモジュールスコープにおいて、C++20委員会はconstexprの暗黙的な内部リンク性を廃止し、モジュールリンク性を付与しました。
+    /// これにより、constexprで定義された定数は現在のモジュール内のすべてのファイルで共有されるようになり、その結果、再定義が可能になりました。
+    namespace {
+        // card
+        constexpr int CARD_START_X = 400;
+        constexpr int CARD_START_Y = 750;
+        constexpr int DRAW_PILE_X = 50;
+        constexpr int DRAW_PILE_Y = 400;
+        constexpr int DISCARD_PILE_X = 50;
+        constexpr int DISCARD_PILE_Y = 750;
+        constexpr int OFFSET_X = 250;
 
-    // thickness
-    constexpr int THICKNESS = 5;
-    constexpr int RADIUS = 30;
+        // thickness
+        constexpr int THICKNESS = 5;
+        constexpr int RADIUS = 30;
 
-    // color
-    constexpr uint32_t COLOR_WHITE = 0xFFFFFF;
-    constexpr uint32_t COLOR_BLACK = 0;
-    constexpr uint32_t COLOR_DEFAULT = 0x79D5EE;
-    constexpr uint32_t COLOR_ROCK = 0x555555;
-    constexpr uint32_t COLOR_PAPER = 0xF5F5DC;
-    constexpr uint32_t COLOR_SCISSORS = 0xB0C4DE;
+        // color
+        constexpr uint32_t COLOR_WHITE = 0xFFFFFF;
+        constexpr uint32_t COLOR_BLACK = 0;
+        constexpr uint32_t COLOR_DEFAULT = 0x79D5EE;
+        constexpr uint32_t COLOR_ROCK = 0x555555;
+        constexpr uint32_t COLOR_PAPER = 0xF5F5DC;
+        constexpr uint32_t COLOR_SCISSORS = 0xB0C4DE;
 
-    // image
-    constexpr float IMAGE_OFFSET = 50;
-    constexpr float IMAGE_SCALE = 0.3f;
+        // image
+        constexpr float IMAGE_OFFSET = 50;
+        constexpr float IMAGE_SCALE = 0.3f;
+    }
 
     class CardDisplayer : public IDisplayer
     {

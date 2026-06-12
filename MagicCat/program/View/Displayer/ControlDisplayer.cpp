@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 module Displayer;
 
@@ -7,14 +7,16 @@ import AssetService;
 
 namespace mc
 {
-    constexpr int KB_Q_X = 100;
-    constexpr int KB_UP_X = 500;
-    constexpr int KB_DOWN_X = 560;
-    constexpr int KB_SPACE_X = 620;
-    constexpr int Y = 100;
+    namespace {
+        constexpr int KB_Q_X = 100;
+        constexpr int KB_UP_X = 500;
+        constexpr int KB_DOWN_X = 560;
+        constexpr int KB_SPACE_X = 620;
+        constexpr int Y = 100;
 
-    constexpr int TEXT_OFFSET_X = 40;
-    constexpr int TEXT_OFFSET_Y = -15;
+        constexpr int TEXT_OFFSET_X = 40;
+        constexpr int TEXT_OFFSET_Y = -15;
+    }
 
     class ControlDisplayer : public IDisplayer
     {

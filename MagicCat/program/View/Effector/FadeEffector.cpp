@@ -39,6 +39,7 @@ namespace mc
 
             if (alphaTween.progress() >= 1.0f)
             {
+                currentAlpha = 0;
                 isPlaying = false;
             }
         }

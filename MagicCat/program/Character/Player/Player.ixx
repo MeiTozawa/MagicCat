@@ -34,6 +34,7 @@ public:
     Player()
     {
         healthComp = std::make_unique<HealthComponent>(this);
+        tags.push_back(ETag::Player);
         changeMpEvent = EventBus::Subscribe<ChangeMpEvent>(
             [this](const ChangeMpEvent& e) { ChangeMp(e.offset); }
         );

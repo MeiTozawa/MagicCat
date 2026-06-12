@@ -10,12 +10,12 @@ namespace mc
     class HitFlashEffector : public EffectorPlayer
     {
         bool isPlaying = false;
-        int flashTime = 0;
-        int bright = 0;
+        const int flashTime = 0;
+        int bright = 255;
         tweeny::tween<int> colorTween = {};
 
     public:
-        HitFlashEffector(std::unique_ptr<IDisplayer>&& displayer, int flashTime) :
+        HitFlashEffector(std::unique_ptr<IDisplayer>&& displayer, const int flashTime) :
             EffectorPlayer(std::move(displayer)), flashTime(flashTime) {}
 
         void Play() override
@@ -39,6 +39,7 @@ namespace mc
 
             if (colorTween.progress() >= 1.0f)
             {
+                bright = 255;
                 isPlaying = false;
             }
         }

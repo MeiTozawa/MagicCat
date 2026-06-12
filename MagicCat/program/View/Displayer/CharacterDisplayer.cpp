@@ -118,13 +118,13 @@ namespace mc
                              color, L"  Spells  ");
             DrawFormatString(PLAYER_DATA_START_X + TEXT_OFFSET_X,
                              PLAYER_DATA_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"Rock:     %d", player.rockDamage);
+                             color, L"Rock:     %d", player.GetDamage(EAttackType::Rock));
             DrawFormatString(PLAYER_DATA_START_X + TEXT_OFFSET_X,
                              PLAYER_DATA_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"Scissors: %d", player.scissorsDamage);
+                             color, L"Scissors: %d", player.GetDamage(EAttackType::Scissors));
             DrawFormatString(PLAYER_DATA_START_X + TEXT_OFFSET_X,
                              PLAYER_DATA_START_Y + 3 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"Paper:    %d", player.paperDamage);
+                             color, L"Paper:    %d", player.GetDamage(EAttackType::Paper));
         }
 
         void PrintEnemyInfo(uint32_t color = 0xFFFFFF) const

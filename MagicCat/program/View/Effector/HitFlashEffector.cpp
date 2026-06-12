@@ -51,7 +51,7 @@ namespace mc
         }
     };
 
-    std::unique_ptr<EffectorPlayer> GetHitFlashEffector(
+    std::unique_ptr<EffectorPlayer> CreateHitFlashEffector(
         std::unique_ptr<IDisplayer>&& displayer, int flashTime
     )
     {

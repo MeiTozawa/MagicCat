@@ -1,4 +1,4 @@
-﻿module;
+module;
 #include "tweeny.h"
 
 module EffectorFactory;
@@ -8,7 +8,7 @@ namespace mc
     {
     private:
         tweeny::tween<int> alphaTween;
-        int currentAlpha = 255;
+        int currentAlpha = 0;
         int fadeInTime, holdTime, fadeOutTime;
 
     public:
@@ -18,7 +18,7 @@ namespace mc
 
         void Play() override
         {
-            alphaTween = tweeny::from(currentAlpha)
+            alphaTween = tweeny::from(0)
                          .to(255).during(fadeInTime).via(tweeny::easing::sinusoidalOut)
                          .to(255).during(holdTime)
                          .to(0).during(fadeOutTime).via(tweeny::easing::sinusoidalOut);
@@ -61,7 +61,7 @@ namespace mc
         }
     };
     
-    std::unique_ptr<EffectorPlayer> GetFadeEffector(
+    std::unique_ptr<EffectorPlayer> CreateFadeEffector(
         std::unique_ptr<IDisplayer>&& displayer, int fadeInTime, int holdTime, int fadeOutTime
     )
     {

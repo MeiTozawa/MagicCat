@@ -33,20 +33,18 @@ namespace mc
 
         void Draw(float deltaTime) const override
         {
-            auto icon = assetService->GetImage(EImage::KB_Q);
-            icon->setPosition({KB_Q_X, Y});
-            icon->draw();
+            int icon = assetService->GetImage(EImage::KB_Q);
+            DrawRotaGraphF(KB_Q_X, Y, 1.0, 0.0, icon, TRUE);
             DrawString(KB_Q_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"カードを引く", color);
 
             icon = assetService->GetImage(EImage::KB_UP);
-            icon->setPosition({KB_UP_X, Y});
-            icon->draw();
+            DrawRotaGraphF(KB_UP_X, Y, 1.0, 0.0, icon, TRUE);
+            
             icon = assetService->GetImage(EImage::KB_DOWN);
-            icon->setPosition({KB_DOWN_X, Y});
-            icon->draw();
+            DrawRotaGraphF(KB_DOWN_X, Y, 1.0, 0.0, icon, TRUE);
+            
             icon = assetService->GetImage(EImage::KB_SPACE);
-            icon->setPosition({KB_SPACE_X, Y});
-            icon->draw();
+            DrawRotaGraphF(KB_SPACE_X, Y, 1.0, 0.0, icon, TRUE);
             DrawString(KB_SPACE_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"選択する", color);
         }
     };

@@ -20,10 +20,10 @@ namespace mc
         void Draw(float deltaTime) const override = 0;
     };
 
-    export std::unique_ptr<EffectorPlayer> GetHitFlashEffector(
+    export std::unique_ptr<EffectorPlayer> CreateHitFlashEffector(
         std::unique_ptr<IDisplayer>&& displayer, int flashTime = 300
     );
-    export std::unique_ptr<EffectorPlayer> GetFadeEffector(
+    export std::unique_ptr<EffectorPlayer> CreateFadeEffector(
         std::unique_ptr<IDisplayer>&& displayer, int fadeInTime, int holdTime, int fadeOutTime
     );
 }

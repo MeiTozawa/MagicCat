@@ -39,11 +39,11 @@ namespace mc
             return enemyConfigs;
         }
 
-        const Shared<dxe::Sprite> GetImage(EImage e) override
+        const int GetImage(EImage e) override
         {
             if (imageMappings.contains(e))
                 return imageMappings.at(e);
-            return nullptr;
+            return -1;
         }
 
         const int GetSpriteHandle(ESprite e) override
@@ -52,7 +52,7 @@ namespace mc
         }
 
     private:
-        std::unordered_map<EImage, Shared<dxe::Sprite>> imageMappings = {};
+        std::unordered_map<EImage, int> imageMappings = {};
         std::unordered_map<ESprite, int> spriteMappings = {};
         std::unordered_map<EFont, int> fontMappings = {};
         std::vector<CardConfig> cardConfigs;
@@ -142,11 +142,11 @@ namespace mc
 
                 for (const auto& img : images)
                 {
-                    auto resource = dxe::SpriteResouce::Create(img.path);
-                    if (!resource)
+                    int handle = LoadGraph(img.path);
+                    if (handle == -1)
                         printfDx(L"%sの読み込みに失敗", img.path);
                     else
-                        imageMappings.insert({img.id, dxe::Sprite::Create(resource)});
+                        imageMappings.insert({img.id, handle});
                 }
 
                 struct SpriteData {

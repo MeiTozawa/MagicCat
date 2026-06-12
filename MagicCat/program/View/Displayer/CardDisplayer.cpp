@@ -157,11 +157,10 @@ namespace mc
             int lineCount = 1;
             if (has_icon)
             {
-                if (const auto icon = assetService->GetImage(static_cast<EImage>(card.CardType)))
+                int icon = assetService->GetImage(static_cast<EImage>(card.CardType));
+                if (icon != -1)
                 {
-                    icon->setScaleXY({IMAGE_SCALE, IMAGE_SCALE});
-                    icon->setPosition({(x + CARD_WIDTH / 2.f), (y + CARD_HEIGHT / 3.5f)});
-                    icon->draw();
+                    DrawRotaGraphF(x + CARD_WIDTH / 2.f, y + CARD_HEIGHT / 3.5f, IMAGE_SCALE, 0.0, icon, TRUE);
                 }
 
                 drawCenterText(x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10, lineCount, message, color);

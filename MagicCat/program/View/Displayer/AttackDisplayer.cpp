@@ -1,16 +1,11 @@
-﻿module;
+module;
 
 #include <dxe.h>
 #include <memory>
-#include <vector>
-#include <string>
-#include <format>
-
 module Displayer;
 
 import CardService;
 import ServiceLocator;
-import AssetService;
 import EventBus;
 import Character;
 namespace mc
@@ -18,32 +13,26 @@ namespace mc
     class AttackDisplayer : public IDisplayer
     {
         float x, y, scale;
-        IAssetService* assetService;
-        Shared<dxe::Sprite> icon;
+        const int* handle;
 
     public:
-        AttackDisplayer(const float x, const float y, const float scale, const EAttackType type)
-            : x(x),y(y),scale(scale)
-        {
-            assetService = ServiceLocator::Get<IAssetService>();
-            icon = assetService->GetImage(static_cast<EImage>(type));
-        }
+        AttackDisplayer(const float x, const float y, const float scale, const int* handle)
+            : x(x), y(y), scale(scale), handle(handle) {}
 
 
         void Update(float deltaTime) override {}
+
         void Draw(float deltaTime) const override
         {
-            if (icon != nullptr)
+            if (*handle != -1)
             {
-                icon->setScaleXY({scale, scale});
-                icon->setPosition({x,y});
-                icon->draw();
+                DrawRotaGraphF(x, y, scale, 0.0, *handle, TRUE);
             }
         }
     };
 
-    std::unique_ptr<IDisplayer> CreateAttackDisplayer(float x, float y, float scale, EAttackType type)
+    std::unique_ptr<IDisplayer> CreateAttackDisplayer(float x, float y, float scale, const int* handle)
     {
-        return std::make_unique<AttackDisplayer>(x, y, scale, type);
+        return std::make_unique<AttackDisplayer>(x, y, scale, handle);
     }
 }

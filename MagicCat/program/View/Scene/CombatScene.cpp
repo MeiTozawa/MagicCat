@@ -32,7 +32,7 @@ namespace mc
     constexpr int ACTION_SCISSORS = 2;
     constexpr int ACTION_PAPER = 3;
     constexpr int ACTION_MAX = ACTION_PAPER;
-    
+
     constexpr int FADE_IN_TIME = 100;
     constexpr int HOLD_TIME = 300;
     constexpr int FADE_OUT_TIME = 100;
@@ -44,6 +44,8 @@ namespace mc
         std::unique_ptr<AnimationPlayer> enemyAnimation;
         std::unique_ptr<EffectorPlayer> playerAttackEffector = nullptr;
         std::unique_ptr<EffectorPlayer> enemyAttackEffector = nullptr;
+        int playerAttackImage = -1;
+        int enemyAttackImage = -1;
         ICharacterService* characterService = nullptr;
         ISceneService* sceneService = nullptr;
         IInputService* inputService = nullptr;
@@ -62,16 +64,30 @@ namespace mc
             sceneService = ServiceLocator::Get<ISceneService>();
             inputService = ServiceLocator::Get<IInputService>();
             assetService = ServiceLocator::Get<IAssetService>();
-            
+
             playerAnimation = CreateSpriteAnimation(
                 assetService->GetSpriteHandle(ESprite::Bunny), EXTRA_RATE
             );
             playerAnimation->SetPosition(PLAYER_START_X, PLAYER_START_Y);
-            
+
             enemyAnimation = CreateSpriteAnimation(
                 assetService->GetSpriteHandle(ESprite::Wolf), EXTRA_RATE, true
             );
             enemyAnimation->SetPosition(ENEMY_START_X, ENEMY_START_Y);
+
+            playerAttackEffector = CreateFadeEffector(
+                CreateAttackDisplayer(
+                    PLAYER_ATTACK_X, PLAYER_ATTACK_Y, ATTACK_IMAGE_SCALE,
+                    &playerAttackImage
+                ), FADE_IN_TIME, HOLD_TIME, FADE_OUT_TIME
+            );
+
+            enemyAttackEffector = CreateFadeEffector(
+                CreateAttackDisplayer(
+                    ENEMY_ATTACK_X, ENEMY_ATTACK_Y, ATTACK_IMAGE_SCALE,
+                    &enemyAttackImage
+                ), FADE_IN_TIME, HOLD_TIME, FADE_OUT_TIME
+            );
         }
 
 
@@ -110,15 +126,11 @@ namespace mc
                                     characterService->GetEnemy().GetDamage(enemyAttackIntent)
                         ));
 
-                    playerAttackEffector = GetFadeEffector(CreateAttackDisplayer(
-                        PLAYER_ATTACK_X, PLAYER_ATTACK_Y, ATTACK_IMAGE_SCALE, playerAttackIntent
-                    ), FADE_IN_TIME, HOLD_TIME, FADE_OUT_TIME);
-                    
-                    enemyAttackEffector = GetFadeEffector(CreateAttackDisplayer(
-                        ENEMY_ATTACK_X, ENEMY_ATTACK_Y, ATTACK_IMAGE_SCALE, enemyAttackIntent
-                    ), FADE_IN_TIME, HOLD_TIME, FADE_OUT_TIME);
-                    
-                    inputService->PushContext(InputContext::CutScene);
+                    playerAttackImage = assetService->GetImage(static_cast<EImage>(playerAttackIntent));
+                    enemyAttackImage = assetService->GetImage(static_cast<EImage>(enemyAttackIntent));
+
+                    playerAttackEffector->Play();
+                    enemyAttackEffector->Play();
                 }
             }
             else if (inputService->IsPressed(InputAction::IgDrawCard))
@@ -136,21 +148,12 @@ namespace mc
             enemyAnimation->Update(deltaTime);
             enemyAnimation->Draw(deltaTime);
 
-            if (playerAttackEffector != nullptr && enemyAttackEffector != nullptr)
+            if (playerAttackEffector->IsPlaying() != false || enemyAttackEffector->IsPlaying() != false)
             {
-                if (playerAttackEffector->IsPlaying() == false && enemyAttackEffector->IsPlaying() == false)
-                {
-                    inputService->PopContext();
-                    playerAttackEffector = nullptr;
-                    enemyAttackEffector = nullptr;
-                }
-                else
-                {
-                    playerAttackEffector->Update(deltaTime);
-                    playerAttackEffector->Draw(deltaTime);
-                    enemyAttackEffector->Update(deltaTime);
-                    enemyAttackEffector->Draw(deltaTime);
-                }
+                playerAttackEffector->Update(deltaTime);
+                playerAttackEffector->Draw(deltaTime);
+                enemyAttackEffector->Update(deltaTime);
+                enemyAttackEffector->Draw(deltaTime);
             }
         }
     };

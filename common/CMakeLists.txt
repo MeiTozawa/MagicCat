@@ -71,4 +71,6 @@ target_include_directories(dxe PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/DirectXTK/Inc
     ${DXLIB_DIR}
 )
-target_link_libraries(dxe PUBLIC tnl)
+target_link_libraries(dxe PUBLIC tnl tweeny)
+
+add_subdirectory(tweeny)

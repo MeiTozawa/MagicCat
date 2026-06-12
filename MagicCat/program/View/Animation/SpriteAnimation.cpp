@@ -23,17 +23,14 @@ namespace mc
         int frame_index = 0;
 
         int handle;
-        int x;
-        int y;
         float extraRate;
         bool isFlip;
 
     public:
-        SpriteAnimation(int handle, int x, int y, float extraRate = 1.f, bool isFlip = false) :
-            handle(handle), x(x), y(y), extraRate(extraRate), isFlip(isFlip) {}
+        SpriteAnimation(int handle, float extraRate = 1.f, bool isFlip = false) :
+            handle(handle), extraRate(extraRate), isFlip(isFlip) {}
 
-    private:
-        void LogicUpdate(float deltaTime) override
+        void Update(float deltaTime) override
         {
             timer += deltaTime;
             if (timer >= 1.f / ANIMATION_SPEED)
@@ -45,7 +42,7 @@ namespace mc
             }
         }
 
-        void Draw(float deltaTime) override
+        void Draw(float deltaTime) const override
         {
             DrawRectRotaGraph(
                 x + FRAME_SIZE / 2,
@@ -63,8 +60,8 @@ namespace mc
         }
     };
 
-    std::unique_ptr<AnimationPlayer> CreateSpriteAnimation(int handle, int x, int y, float extraRate, bool isFlip)
+    std::unique_ptr<AnimationPlayer> CreateSpriteAnimation(int handle, float extraRate, bool isFlip)
     {
-        return std::make_unique<SpriteAnimation>(handle, x, y, extraRate, isFlip);
+        return std::make_unique<SpriteAnimation>(handle, extraRate, isFlip);
     }
 } // namespace mc

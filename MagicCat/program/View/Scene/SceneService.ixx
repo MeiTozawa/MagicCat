@@ -32,6 +32,14 @@ namespace mc
 
     export struct ExitCutSceneEvent : IEvent {};
 
+    export struct ActionSelectionEvent : IEvent
+    {
+        ActionSelectionEvent(const int selected_index)
+            : selectedIndex(selected_index) {}
+
+        int selectedIndex;
+    };
+
     export class IView
     {
     public:

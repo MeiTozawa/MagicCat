@@ -1,9 +1,16 @@
-﻿module;
+module;
 
 #include <dxe.h>
 
-export module DataView;
+#include <memory>
+#include <string>
+#include <format>
+#include <cstdint>
 
+module Displayer;
+
+import SceneService;
+import EventBus;
 import CharacterService;
 import ServiceLocator;
 import Player;
@@ -34,16 +41,37 @@ constexpr int RECT_Y = 100;
 
 constexpr int THICKNESS = 2;
 
-export class CharacterView
-{
-    ICharacterService* characterService;
-
-public:
-    CharacterView()
+    class CharacterDisplayer : public IDisplayer
     {
-        characterService = ServiceLocator::Get<ICharacterService>();
+        ICharacterService* characterService;
+        int currentFocus = 0;
+        EventHandle actionSelectionHandle;
+
+    public:
+        CharacterDisplayer()
+        {
+            characterService = ServiceLocator::Get<ICharacterService>();
+            actionSelectionHandle = EventBus::Subscribe<ActionSelectionEvent>([this](const ActionSelectionEvent& e)
+            {
+                currentFocus = e.selectedIndex;
+            });
+        }
+
+        ~CharacterDisplayer() override
+        {
+            EventBus::Unsubscribe(actionSelectionHandle);
+        }
+
+    void Update(float deltaTime) override {}
+
+    void Draw(float deltaTime) const override
+    {
+        PrintPlayerInfo();
+        PrintEnemyInfo();
+        PrintPlayerActions(currentFocus);
     }
 
+private:
     void PrintPlayerInfo(uint32_t color = 0xFFFFFF) const
     {
         const Player& player = characterService->GetPlayer();
@@ -145,6 +173,11 @@ public:
                    message.c_str(), color);
     }
 };
+
+    std::unique_ptr<IDisplayer> CreateCharacterDisplayer()
+    {
+        return std::make_unique<CharacterDisplayer>();
+    }
 
 } // namespace mc
 

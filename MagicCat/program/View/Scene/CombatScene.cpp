@@ -4,18 +4,15 @@ module;
 
 module SceneService;
 
-import CardView;
 import CharacterService;
 import CardService;
-import SceneService;
 import InputService;
 import EventBus;
-import DataView;
-import ControlView;
+import Displayer;
 import Character;
 import AnimationFactory;
 import AssetService;
-
+import EffectorFactory;
 namespace mc
 {
     constexpr int PLAYER_START_X = 800;
@@ -35,16 +32,18 @@ namespace mc
     constexpr int ACTION_SCISSORS = 2;
     constexpr int ACTION_PAPER = 3;
     constexpr int ACTION_MAX = ACTION_PAPER;
+    
+    constexpr int FADE_IN_TIME = 100;
+    constexpr int HOLD_TIME = 300;
+    constexpr int FADE_OUT_TIME = 100;
 
     class CombatScene : public IScene
     {
-        std::unique_ptr<CardView> cardView;
+        std::vector<std::unique_ptr<IDisplayer>> displayers;
         std::unique_ptr<AnimationPlayer> playerAnimation;
         std::unique_ptr<AnimationPlayer> enemyAnimation;
-        std::unique_ptr<AnimationPlayer> playerAttackAnimation = nullptr;
-        std::unique_ptr<AnimationPlayer> enemyAttackAnimation = nullptr;
-        std::unique_ptr<CharacterView> characterView;
-        std::unique_ptr<ControlView> controlView;
+        std::unique_ptr<EffectorPlayer> playerAttackEffector = nullptr;
+        std::unique_ptr<EffectorPlayer> enemyAttackEffector = nullptr;
         ICharacterService* characterService = nullptr;
         ISceneService* sceneService = nullptr;
         IInputService* inputService = nullptr;
@@ -56,19 +55,23 @@ namespace mc
 
         void Start() override
         {
-            cardView = std::make_unique<CardView>();
-            characterView = std::make_unique<CharacterView>();
-            controlView = std::make_unique<ControlView>();
+            displayers.push_back(CreateCardDisplayer());
+            displayers.push_back(CreateCharacterDisplayer());
+            displayers.push_back(CreateControlDisplayer());
             characterService = ServiceLocator::Get<ICharacterService>();
             sceneService = ServiceLocator::Get<ISceneService>();
             inputService = ServiceLocator::Get<IInputService>();
             assetService = ServiceLocator::Get<IAssetService>();
+            
             playerAnimation = CreateSpriteAnimation(
-                assetService->GetSpriteHandle(ESprite::Bunny), PLAYER_START_X, PLAYER_START_Y, EXTRA_RATE
+                assetService->GetSpriteHandle(ESprite::Bunny), EXTRA_RATE
             );
+            playerAnimation->SetPosition(PLAYER_START_X, PLAYER_START_Y);
+            
             enemyAnimation = CreateSpriteAnimation(
-                assetService->GetSpriteHandle(ESprite::Wolf), ENEMY_START_X, ENEMY_START_Y, EXTRA_RATE, true
+                assetService->GetSpriteHandle(ESprite::Wolf), EXTRA_RATE, true
             );
+            enemyAnimation->SetPosition(ENEMY_START_X, ENEMY_START_Y);
         }
 
 
@@ -77,12 +80,18 @@ namespace mc
             if (inputService->IsPressed(InputAction::IgUp))
             {
                 if (selectedActionIndex > ACTION_MAGIC)
+                {
                     selectedActionIndex--;
+                    EventBus::Publish(ActionSelectionEvent(selectedActionIndex));
+                }
             }
             else if (inputService->IsPressed(InputAction::IgDown))
             {
                 if (selectedActionIndex < ACTION_MAX)
+                {
                     selectedActionIndex++;
+                    EventBus::Publish(ActionSelectionEvent(selectedActionIndex));
+                }
             }
             else if (inputService->IsPressed(InputAction::IgConfirm))
             {
@@ -101,12 +110,14 @@ namespace mc
                                     characterService->GetEnemy().GetDamage(enemyAttackIntent)
                         ));
 
-                    playerAttackAnimation = CreateAttackAnimation(
+                    playerAttackEffector = GetFadeEffector(CreateAttackDisplayer(
                         PLAYER_ATTACK_X, PLAYER_ATTACK_Y, ATTACK_IMAGE_SCALE, playerAttackIntent
-                    );
-                    enemyAttackAnimation = CreateAttackAnimation(
+                    ), FADE_IN_TIME, HOLD_TIME, FADE_OUT_TIME);
+                    
+                    enemyAttackEffector = GetFadeEffector(CreateAttackDisplayer(
                         ENEMY_ATTACK_X, ENEMY_ATTACK_Y, ATTACK_IMAGE_SCALE, enemyAttackIntent
-                    );
+                    ), FADE_IN_TIME, HOLD_TIME, FADE_OUT_TIME);
+                    
                     inputService->PushContext(InputContext::CutScene);
                 }
             }
@@ -115,28 +126,30 @@ namespace mc
                 EventBus::Publish(DrawCardEvent());
             }
 
-            cardView->PrintCards();
-            cardView->PrintDrawPile();
-            cardView->PrintDiscardPile();
-            characterView->PrintEnemyInfo();
-            characterView->PrintPlayerInfo();
-            characterView->PrintPlayerActions(selectedActionIndex);
-            controlView->PrintControl();
-            playerAnimation->Update(deltaTime);
-            enemyAnimation->Update(deltaTime);
-
-            if (playerAttackAnimation != nullptr && enemyAttackAnimation != nullptr)
+            for (auto& displayer : displayers)
             {
-                if (playerAttackAnimation->IsPlaying() == false && enemyAttackAnimation->IsPlaying() == false)
+                displayer->Update(deltaTime);
+                displayer->Draw(deltaTime);
+            }
+            playerAnimation->Update(deltaTime);
+            playerAnimation->Draw(deltaTime);
+            enemyAnimation->Update(deltaTime);
+            enemyAnimation->Draw(deltaTime);
+
+            if (playerAttackEffector != nullptr && enemyAttackEffector != nullptr)
+            {
+                if (playerAttackEffector->IsPlaying() == false && enemyAttackEffector->IsPlaying() == false)
                 {
                     inputService->PopContext();
-                    playerAttackAnimation = nullptr;
-                    enemyAttackAnimation = nullptr;
+                    playerAttackEffector = nullptr;
+                    enemyAttackEffector = nullptr;
                 }
                 else
                 {
-                    playerAttackAnimation->Update(deltaTime);
-                    enemyAttackAnimation->Update(deltaTime);
+                    playerAttackEffector->Update(deltaTime);
+                    playerAttackEffector->Draw(deltaTime);
+                    enemyAttackEffector->Update(deltaTime);
+                    enemyAttackEffector->Draw(deltaTime);
                 }
             }
         }

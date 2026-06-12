@@ -1,6 +1,12 @@
-﻿module;
+module;
 
-export module CardView;
+#include <dxe.h>
+#include <memory>
+#include <vector>
+#include <string>
+#include <format>
+
+module Displayer;
 
 import CardService;
 import ServiceLocator;
@@ -34,8 +40,8 @@ constexpr uint32_t COLOR_SCISSORS = 0xB0C4DE;
 constexpr float IMAGE_OFFSET = 50;
 constexpr float IMAGE_SCALE = 0.3f;
 
-export class CardView
-{
+    class CardDisplayer : public IDisplayer
+    {
     ICardService* cardService;
     IAssetService* assetService;
 
@@ -43,7 +49,7 @@ export class CardView
     std::vector<Card> cachedHand;
 
 public:
-    CardView()
+    CardDisplayer()
     {
         cardService = ServiceLocator::Get<ICardService>();
         assetService = ServiceLocator::Get<IAssetService>();
@@ -54,11 +60,21 @@ public:
         });
     }
 
-    ~CardView()
+    ~CardDisplayer()
     {
         EventBus::Unsubscribe(handUpdateHandle);
     }
 
+    void Update(float deltaTime) override {}
+
+    void Draw(float deltaTime) const override
+    {
+        PrintCards();
+        PrintDrawPile();
+        PrintDiscardPile();
+    }
+
+private:
     void PrintCards() const
     {
         std::wstring message;
@@ -150,6 +166,11 @@ private:
         }
     }
 };
+
+    std::unique_ptr<IDisplayer> CreateCardDisplayer()
+    {
+        return std::make_unique<CardDisplayer>();
+    }
 
 } // namespace mc
 

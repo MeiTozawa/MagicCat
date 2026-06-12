@@ -35,8 +35,8 @@ namespace mc
     constexpr int ACTION_PAPER = 3;
     constexpr int ACTION_MAX = ACTION_PAPER;
 
-    constexpr int FADE_IN_TIME = 100;
-    constexpr int HOLD_TIME = 300;
+    constexpr int FADE_IN_TIME = 200;
+    constexpr int HOLD_TIME = 600;
     constexpr int FADE_OUT_TIME = 100;
 
     class CombatScene : public IScene
@@ -52,7 +52,7 @@ namespace mc
         ISceneService* sceneService = nullptr;
         IInputService* inputService = nullptr;
         IAssetService* assetService = nullptr;
-        int selectedActionIndex = ACTION_MAGIC;
+        int selectedActionIndex = -1;
         EventHandle healthChangedEvent = -1;
 
     public:
@@ -60,6 +60,13 @@ namespace mc
 
         void Start() override
         {
+            if (healthChangedEvent != -1)
+            {
+                EventBus::Unsubscribe(healthChangedEvent);
+                healthChangedEvent = -1;
+            }
+            displayers.clear();
+            selectedActionIndex = 0;
             displayers.push_back(CreateCardDisplayer());
             displayers.push_back(CreateCharacterDisplayer());
             displayers.push_back(CreateControlDisplayer());

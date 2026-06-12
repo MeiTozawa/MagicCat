@@ -26,6 +26,8 @@ namespace mc
 
         constexpr int PLAYER_HP_X = 100;
         constexpr int PLAYER_HP_Y = 200;
+        constexpr int ENEMY_HP_X = 1250;
+        constexpr int ENEMY_HP_Y = 230;
         constexpr int PLAYER_MP_X = 100;
         constexpr int PLAYER_MP_Y = 300;
 
@@ -129,7 +131,12 @@ namespace mc
 
         void PrintEnemyInfo(uint32_t color = 0xFFFFFF) const
         {
+            
             const Enemy& enemy = characterService->GetEnemy();
+            const auto enemyHealthComp = enemy.GetHealthComponent();
+
+            auto message = std::format(L"HP: {}/{}", enemyHealthComp.GetHealth(), enemyHealthComp.GetMaxHealth());
+            DrawString(ENEMY_HP_X, ENEMY_HP_Y, message.c_str(), color);
             for (int i = 0; i < 3; ++i)
             {
                 for (int k = 0; k < THICKNESS; ++k)
@@ -142,8 +149,6 @@ namespace mc
                     DrawBoxAA(x1, y1, x2, y2, color, FALSE);
                 }
             }
-
-            std::wstring message;
 
             if (auto offset = enemy.GetWeightOffset(EAttackType::Rock); offset == 0)
                 message = std::format(L"Rock:     ?");

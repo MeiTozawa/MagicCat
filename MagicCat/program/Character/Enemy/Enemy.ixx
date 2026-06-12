@@ -114,20 +114,7 @@ namespace mc
             return -1;
         }
 
-        int GetDamage(EAttackType t) const
-        {
-            switch (t)
-            {
-            case EAttackType::Rock:
-                return rockDamage;
-            case EAttackType::Scissors:
-                return scissorsDamage;
-            case EAttackType::Paper:
-                return paperDamage;
-            }
-            return -1;
-        }
-
+        const HealthComponent& GetHealthComponent() const { return *healthComp; }
     private:
         int baseWeight = 0;
         int rockWeightOffset = 0;
@@ -159,5 +146,6 @@ namespace mc
         {
             // TODO
         }
+
     };
 } // namespace mc

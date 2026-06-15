@@ -18,6 +18,7 @@ namespace mc
     class CardService : public ICardService
     {
         EventHandle drawCardEvent;
+        EventHandle combatEvent;
 
     public:
         CardService()
@@ -38,6 +39,15 @@ namespace mc
                 [this](const DrawCardEvent&) { DrawCard(); }
             );
 
+            combatEvent = EventBus::Subscribe<CombatEvent>(
+                [this](const CombatEvent&)
+                {
+                    discardPile.insert(discardPile.end(), hand.begin(), hand.end());
+                    hand.clear();
+                    EventBus::Publish(HandUpdatedEvent{hand});
+                }
+            );
+
             EventBus::Publish(DeckUpdatedEvent{drawPile.size(), discardPile.size()});
             EventBus::Publish(HandUpdatedEvent{hand});
         }
@@ -45,6 +55,7 @@ namespace mc
         ~CardService() override
         {
             EventBus::Unsubscribe(drawCardEvent);
+            EventBus::Unsubscribe(combatEvent);
         }
 
         const std::vector<Card>& GetHandCards() override
@@ -79,8 +90,6 @@ namespace mc
             EventBus::Publish(DeckUpdatedEvent{drawPile.size(), discardPile.size()});
             EventBus::Publish(HandUpdatedEvent{hand});
         }
-
-
 
 
         const std::vector<Card>& GetDrawCards() override

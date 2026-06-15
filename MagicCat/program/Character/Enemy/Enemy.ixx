@@ -51,6 +51,10 @@ namespace mc
                     {
                         healthComp->TakeDamage(e.playerAttackDamage);
                     }
+                    
+                    rockWeightOffset = 0;
+                    scissorsWeightOffset = 0;
+                    paperWeightOffset = 0;
                 }
             );
         }

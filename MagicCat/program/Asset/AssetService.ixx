@@ -8,21 +8,7 @@ export module AssetService;
 
 namespace mc
 {
-    export struct EnemyConfig
-    {
-        int baseWeight;
-        int rockDamage;
-        int scissorsDamage;
-        int paperDamage;
-        std::wstring name;
-    };
 
-
-    export struct CardConfig
-    {
-        int type;
-        int value;
-    };
 
     export enum class EFont
     {
@@ -56,8 +42,7 @@ namespace mc
         virtual const int GetFontHandle(EFont) = 0;
         virtual const int GetSpriteHandle(ESprite) = 0;
         virtual const int GetSoundHandle(ESound) = 0;
-        virtual const std::vector<CardConfig>& GetCardConfigs() const = 0;
-        virtual const std::vector<EnemyConfig>& GetEnemyConfigs() const = 0;
+
     };
 
     export Shared<IAssetService> CreateAssetService();

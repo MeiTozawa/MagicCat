@@ -3,6 +3,7 @@
 
 import GameService;
 import ServiceLocator;
+import ConfigService;
 import AssetService;
 import CardService;
 import CharacterService;
@@ -16,6 +17,7 @@ IGameService* gameService;
 void InitGameServices()
 {
     ChangeFontType(DX_FONTTYPE_NORMAL);
+    ServiceLocator::RegisterSingleton<IConfigService>(CreateConfigService());
     ServiceLocator::RegisterSingleton<IAssetService>(CreateAssetService());
     ServiceLocator::RegisterSingleton<ICardService>(CreateCardService());
     ServiceLocator::RegisterSingleton<ICharacterService>(CreateCharacterService());

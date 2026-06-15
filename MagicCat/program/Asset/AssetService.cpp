@@ -3,9 +3,7 @@ module;
 #include <dxe.h>
 #include <memory>
 #include <unordered_map>
-#include <fstream>
 #include <ResourceConstantHedder.h>
-#include <sstream>
 #include <vector>
 
 module AssetService;
@@ -21,7 +19,6 @@ namespace mc
             LoadFonts();
             LoadImages();
             LoadSounds();
-            LoadGameConfig();
         }
 
         const int GetFontHandle(EFont e) override
@@ -31,15 +28,7 @@ namespace mc
             return -1;
         }
 
-        const std::vector<CardConfig>& GetCardConfigs() const override
-        {
-            return cardConfigs;
-        }
 
-        const std::vector<EnemyConfig>& GetEnemyConfigs() const override
-        {
-            return enemyConfigs;
-        }
 
         const int GetImageHandle(EImage e) override
         {
@@ -67,8 +56,6 @@ namespace mc
         std::unordered_map<ESprite, int> spriteMappings = {};
         std::unordered_map<EFont, int> fontMappings = {};
         std::unordered_map<ESound, int> soundMappings = {};
-        std::vector<CardConfig> cardConfigs;
-        std::vector<EnemyConfig> enemyConfigs;
 
         void LoadFonts()
         {
@@ -77,61 +64,7 @@ namespace mc
             fontMappings.insert({EFont::ARK_PIXEL_16PX_JP, handle});
         }
 
-        void LoadGameConfig()
-        {
-            {
-                std::ifstream ifs("resource/json/card_config.json");
-                if (ifs.is_open())
-                {
-                    std::stringstream ss;
-                    ss << ifs.rdbuf();
-                    std::string err;
-                    auto json = json11::Json::parse(ss.str(), err);
-                    if (err.empty())
-                    {
-                        cardConfigs.clear();
-                        for (auto& item : json.array_items())
-                        {
-                            CardConfig c;
-                            c.type = item["type"].int_value();
-                            c.value = item["value"].int_value();
-                            cardConfigs.push_back(c);
-                        }
-                    }
-                }
-            }
-            {
-                std::ifstream ifs("resource/json/enemy_config.json");
-                if (ifs.is_open())
-                {
-                    std::stringstream ss;
-                    ss << ifs.rdbuf();
-                    std::string err;
-                    auto json = json11::Json::parse(ss.str(), err);
-                    if (err.empty())
-                    {
-                        enemyConfigs.clear();
-                        for (auto& item : json.array_items())
-                        {
-                            EnemyConfig e;
-                            e.baseWeight = item["baseWeight"].int_value();
-                            e.rockDamage = item["rockDamage"].int_value();
-                            e.scissorsDamage = item["scissorsDamage"].int_value();
-                            e.paperDamage = item["paperDamage"].int_value();
-                            std::string s = item["name"].string_value();
-                            size_t len = mbstowcs(nullptr, s.c_str(), 0);
-                            if (len != static_cast<size_t>(-1))
-                            {
-                                std::vector<wchar_t> buf(len + 1);
-                                mbstowcs(buf.data(), s.c_str(), len + 1);
-                                e.name = buf.data();
-                            }
-                            enemyConfigs.push_back(e);
-                        }
-                    }
-                }
-            }
-        }
+
 
         void LoadImages()
         {

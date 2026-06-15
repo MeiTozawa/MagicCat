@@ -13,6 +13,7 @@ import Character;
 import AnimationFactory;
 import AssetService;
 import EffectorFactory;
+import CombatController;
 import HealthComponent;
 import Character;
 namespace mc
@@ -29,11 +30,7 @@ namespace mc
     constexpr float ENEMY_ATTACK_Y = 400.f;
     constexpr float ATTACK_IMAGE_SCALE = 0.2f;
 
-    constexpr int ACTION_MAGIC = 0;
-    constexpr int ACTION_ROCK = 1;
-    constexpr int ACTION_SCISSORS = 2;
-    constexpr int ACTION_PAPER = 3;
-    constexpr int ACTION_MAX = ACTION_PAPER;
+
 
     constexpr int FADE_IN_TIME = 200;
     constexpr int HOLD_TIME = 600;
@@ -50,10 +47,10 @@ namespace mc
         int enemyAttackImageHandle = -1;
         ICharacterService* characterService = nullptr;
         ISceneService* sceneService = nullptr;
-        IInputService* inputService = nullptr;
         IAssetService* assetService = nullptr;
-        int selectedActionIndex = -1;
+        std::unique_ptr<ICombatController> combatController;
         EventHandle healthChangedEvent = -1;
+        EventHandle combatEventHandle = -1;
 
     public:
         CombatScene() {}
@@ -66,15 +63,15 @@ namespace mc
                 healthChangedEvent = -1;
             }
             displayers.clear();
-            
-            selectedActionIndex = 0;
             displayers.push_back(CreateCardDisplayer());
             displayers.push_back(CreateCharacterDisplayer());
             displayers.push_back(CreateControlDisplayer());
+
             characterService = ServiceLocator::Get<ICharacterService>();
             sceneService = ServiceLocator::Get<ISceneService>();
-            inputService = ServiceLocator::Get<IInputService>();
             assetService = ServiceLocator::Get<IAssetService>();
+            combatController = CreateCombatController();
+            combatController->Reset();
 
             auto playerAnimation = CreateSpriteAnimation(
                 assetService->GetSpriteHandle(ESprite::Bunny), EXTRA_RATE
@@ -110,60 +107,27 @@ namespace mc
                 else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
                     enemyAnimationEffector->Play();
             });
+
+            combatEventHandle = EventBus::Subscribe<CombatEvent>([this](const CombatEvent& event)
+            {
+                playerAttackImageHandle = assetService->GetImageHandle(static_cast<EImage>(event.playerAttackType));
+                enemyAttackImageHandle = assetService->GetImageHandle(static_cast<EImage>(event.enemyAttackType));
+
+                playerAttackEffector->Play();
+                enemyAttackEffector->Play();
+            });
         }
         
         ~CombatScene() override
         {
-            EventBus::Unsubscribe(healthChangedEvent);
+            if (healthChangedEvent != -1) EventBus::Unsubscribe(healthChangedEvent);
+            if (combatEventHandle != -1) EventBus::Unsubscribe(combatEventHandle);
         }
 
 
         void Update(float deltaTime) override
         {
-            if (inputService->IsPressed(InputAction::IgUp))
-            {
-                if (selectedActionIndex > ACTION_MAGIC)
-                {
-                    selectedActionIndex--;
-                    EventBus::Publish(ActionSelectionEvent(selectedActionIndex));
-                }
-            }
-            else if (inputService->IsPressed(InputAction::IgDown))
-            {
-                if (selectedActionIndex < ACTION_MAX)
-                {
-                    selectedActionIndex++;
-                    EventBus::Publish(ActionSelectionEvent(selectedActionIndex));
-                }
-            }
-            else if (inputService->IsPressed(InputAction::IgConfirm))
-            {
-                if (selectedActionIndex > ACTION_MAGIC)
-                {
-                    EAttackType playerAttackIntent;
-                    if (selectedActionIndex == ACTION_ROCK) playerAttackIntent = EAttackType::Rock;
-                    else if (selectedActionIndex == ACTION_SCISSORS) playerAttackIntent = EAttackType::Scissors;
-                    else if (selectedActionIndex == ACTION_PAPER) playerAttackIntent = EAttackType::Paper;
-                    else return;
-
-                    EAttackType enemyAttackIntent = characterService->GetEnemy().GetAttackIntent();
-                    EventBus::Publish(
-                        CombatEvent(playerAttackIntent, enemyAttackIntent,
-                                    characterService->GetPlayer().GetDamage(playerAttackIntent),
-                                    characterService->GetEnemy().GetDamage(enemyAttackIntent)
-                        ));
-
-                    playerAttackImageHandle = assetService->GetImageHandle(static_cast<EImage>(playerAttackIntent));
-                    enemyAttackImageHandle = assetService->GetImageHandle(static_cast<EImage>(enemyAttackIntent));
-
-                    playerAttackEffector->Play();
-                    enemyAttackEffector->Play();
-                }
-            }
-            else if (inputService->IsPressed(InputAction::IgDrawCard))
-            {
-                EventBus::Publish(DrawCardEvent());
-            }
+            combatController->Update(deltaTime);
 
             for (auto& displayer : displayers)
             {

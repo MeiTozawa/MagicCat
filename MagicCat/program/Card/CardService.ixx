@@ -56,21 +56,11 @@ namespace mc
         virtual const std::vector<Card>& GetHandCards() = 0;
         virtual const std::vector<Card>& GetDrawCards() = 0;
         virtual const std::vector<Card>& GetDiscardCards() = 0;
-        virtual void PushBackRectOfCard(tnl::Rect) = 0;
-        virtual const std::vector<tnl::Rect>& GetRectOfCards() = 0;
-        virtual void ClearRectOfCards() = 0;
     };
 
     export struct DrawCardEvent : IEvent {};
     export struct ShuffleEvent : IEvent {};
 
-    export struct CardRectsUpdatedEvent : IEvent
-    {
-        explicit CardRectsUpdatedEvent(const std::vector<tnl::Rect>& rects)
-            : rects(rects) {}
-
-        const std::vector<tnl::Rect>& rects;
-    };
 
     export struct DeckUpdatedEvent : IEvent
     {

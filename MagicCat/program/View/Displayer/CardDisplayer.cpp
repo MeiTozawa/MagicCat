@@ -82,14 +82,12 @@ namespace mc
         void PrintCards() const
         {
             std::wstring message;
-            cardService->ClearRectOfCards();
             const auto& hand = cachedHand;
             auto position = tnl::Vector2i{CARD_START_X, CARD_START_Y};
             for (int i = 0; i < hand.size(); ++i)
             {
                 message = std::format(L"+{}", hand[i].Value);
                 PrintACard(hand[i], position, message.c_str());
-                cardService->PushBackRectOfCard({position, {CARD_WIDTH, CARD_HEIGHT}});
                 position.x += OFFSET_X;
             }
         }

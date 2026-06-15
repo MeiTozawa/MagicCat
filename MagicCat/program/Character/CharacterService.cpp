@@ -8,6 +8,7 @@ module CharacterService;
 import ServiceLocator;
 import Enemy;
 import AssetService;
+import ConfigService;
 
 namespace mc {
 
@@ -29,7 +30,7 @@ public:
     void Reset() override
     {
         enemies.clear();
-        auto& config = ServiceLocator::Get<IAssetService>()->GetEnemyConfigs();
+        auto& config = ServiceLocator::Get<IConfigService>()->GetEnemyConfigs();
         for (const auto& e : config)
         {
             enemies.push_back(std::make_unique<Enemy>(e.baseWeight, e.rockDamage, e.scissorsDamage, e.paperDamage, e.name.c_str()));

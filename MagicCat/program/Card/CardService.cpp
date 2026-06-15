@@ -11,20 +11,18 @@ import InputService;
 import EventBus;
 import Player;
 import AssetService;
+import ConfigService;
 
 namespace mc
 {
     class CardService : public ICardService
     {
-        std::vector<tnl::Rect> rectOfCards = {};
-
         EventHandle drawCardEvent;
-        EventHandle cardRectsUpdatedEvent;
 
     public:
         CardService()
         {
-            auto& deckConfig = ServiceLocator::Get<IAssetService>()->GetCardConfigs();
+            auto& deckConfig = ServiceLocator::Get<IConfigService>()->GetCardConfigs();
             for (const auto& c : deckConfig)
             {
                 auto card = Card{ToCardType(c.type), c.value};
@@ -39,9 +37,6 @@ namespace mc
             drawCardEvent = EventBus::Subscribe<DrawCardEvent>(
                 [this](const DrawCardEvent&) { DrawCard(); }
             );
-            cardRectsUpdatedEvent = EventBus::Subscribe<CardRectsUpdatedEvent>(
-                [this](const CardRectsUpdatedEvent& e) { rectOfCards = e.rects; }
-            );
 
             EventBus::Publish(DeckUpdatedEvent{drawPile.size(), discardPile.size()});
             EventBus::Publish(HandUpdatedEvent{hand});
@@ -50,7 +45,6 @@ namespace mc
         ~CardService() override
         {
             EventBus::Unsubscribe(drawCardEvent);
-            EventBus::Unsubscribe(cardRectsUpdatedEvent);
         }
 
         const std::vector<Card>& GetHandCards() override
@@ -86,20 +80,7 @@ namespace mc
             EventBus::Publish(HandUpdatedEvent{hand});
         }
 
-        void ClearRectOfCards() override
-        {
-            rectOfCards.clear();
-        }
 
-        const std::vector<tnl::Rect>& GetRectOfCards() override
-        {
-            return rectOfCards;
-        }
-
-        void PushBackRectOfCard(tnl::Rect r) override
-        {
-            rectOfCards.push_back(r);
-        }
 
 
         const std::vector<Card>& GetDrawCards() override

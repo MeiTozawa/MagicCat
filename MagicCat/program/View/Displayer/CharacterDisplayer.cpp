@@ -70,13 +70,13 @@ namespace mc
 
         void Draw(float deltaTime) const override
         {
-            PrintPlayerInfo();
-            PrintEnemyInfo();
+            PrintPlayerInfo(0xFFFFFF);
+            PrintEnemyInfo(0xFFFFFF);
             PrintPlayerActions(currentFocus);
         }
 
     private:
-        void PrintPlayerInfo(uint32_t color = 0xFFFFFF) const
+        void PrintPlayerInfo(uint32_t color) const
         {
             const Player& player = characterService->GetPlayer();
             const auto playerHealthComp = player.GetHealthComponent();
@@ -117,19 +117,19 @@ namespace mc
             }
             DrawFormatString(PLAYER_DATA_START_X + TEXT_OFFSET_X,
                              PLAYER_DATA_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"  Spells  ");
+                             color, L"　　魔法　　");
             DrawFormatString(PLAYER_DATA_START_X + TEXT_OFFSET_X,
                              PLAYER_DATA_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"Rock:     %d", player.GetDamage(EAttackType::Rock));
+                             color, L"グー：　　%d", player.GetDamage(EAttackType::Rock));
             DrawFormatString(PLAYER_DATA_START_X + TEXT_OFFSET_X,
                              PLAYER_DATA_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"Scissors: %d", player.GetDamage(EAttackType::Scissors));
+                             color, L"チョキ：　%d", player.GetDamage(EAttackType::Scissors));
             DrawFormatString(PLAYER_DATA_START_X + TEXT_OFFSET_X,
                              PLAYER_DATA_START_Y + 3 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"Paper:    %d", player.GetDamage(EAttackType::Paper));
+                             color, L"パー：　　%d", player.GetDamage(EAttackType::Paper));
         }
 
-        void PrintEnemyInfo(uint32_t color = 0xFFFFFF) const
+        void PrintEnemyInfo(uint32_t color) const
         {
             
             const Enemy& enemy = characterService->GetEnemy();
@@ -151,9 +151,9 @@ namespace mc
             }
 
             if (auto offset = enemy.GetWeightOffset(EAttackType::Rock); offset == 0)
-                message = std::format(L"Rock:     ?");
+                message = std::format(L"グー：　　?");
             else
-                message = std::format(L"Rock:     ?+{}", offset);
+                message = std::format(L"グー：　　?+{}", offset);
 
             DrawString(ENEMY_DATA_START_X + TEXT_OFFSET_X,
                        ENEMY_DATA_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
@@ -161,9 +161,9 @@ namespace mc
 
 
             if (auto offset = enemy.GetWeightOffset(EAttackType::Scissors); offset == 0)
-                message = std::format(L"Scissors: ?");
+                message = std::format(L"チョキ：　?");
             else
-                message = std::format(L"Scissors: ?+{}", offset);
+                message = std::format(L"チョキ：　?+{}", offset);
 
             DrawString(ENEMY_DATA_START_X + TEXT_OFFSET_X,
                        ENEMY_DATA_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
@@ -171,9 +171,9 @@ namespace mc
 
 
             if (auto offset = enemy.GetWeightOffset(EAttackType::Paper); offset == 0)
-                message = std::format(L"Paper:    ?");
+                message = std::format(L"パー：　　?");
             else
-                message = std::format(L"Paper:    ?+{}", offset);
+                message = std::format(L"パー：　　?+{}", offset);
 
             DrawString(ENEMY_DATA_START_X + TEXT_OFFSET_X,
                        ENEMY_DATA_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,

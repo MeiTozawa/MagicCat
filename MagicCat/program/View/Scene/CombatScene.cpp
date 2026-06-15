@@ -50,7 +50,7 @@ namespace mc
         IAssetService* assetService = nullptr;
         std::unique_ptr<ICombatController> combatController;
         EventHandle healthChangedEvent = -1;
-        EventHandle combatEventHandle = -1;
+        EventHandle combatEvent = -1;
 
     public:
         CombatScene() {}
@@ -108,7 +108,7 @@ namespace mc
                     enemyAnimationEffector->Play();
             });
 
-            combatEventHandle = EventBus::Subscribe<CombatEvent>([this](const CombatEvent& event)
+            combatEvent = EventBus::Subscribe<CombatEvent>([this](const CombatEvent& event)
             {
                 playerAttackImageHandle = assetService->GetImageHandle(static_cast<EImage>(event.playerAttackType));
                 enemyAttackImageHandle = assetService->GetImageHandle(static_cast<EImage>(event.enemyAttackType));
@@ -121,7 +121,7 @@ namespace mc
         ~CombatScene() override
         {
             if (healthChangedEvent != -1) EventBus::Unsubscribe(healthChangedEvent);
-            if (combatEventHandle != -1) EventBus::Unsubscribe(combatEventHandle);
+            if (combatEvent != -1) EventBus::Unsubscribe(combatEvent);
         }
 
 

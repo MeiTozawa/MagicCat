@@ -17,8 +17,7 @@ namespace mc
 
     export bool Fail(EAttackType l, EAttackType r)
     {
-        return l == r ||
-            (l == EAttackType::Rock && r == EAttackType::Paper) ||
+        return (l == EAttackType::Rock && r == EAttackType::Paper) ||
             (l == EAttackType::Scissors && r == EAttackType::Rock) ||
             (l == EAttackType::Paper && r == EAttackType::Scissors);
     }

@@ -31,7 +31,7 @@ namespace mc
                 sceneService->ChangeSceneTo(Combat);
             }
 
-            DrawString(300, 300, L"Press SPACE to Start", 0xFFFFFF, TRUE);
+            DrawString(300, 300, L"Enterキーを押してゲームをスタートする！", 0xFFFFFF, TRUE);
         }
     };
 

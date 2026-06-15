@@ -66,6 +66,7 @@ namespace mc
                 healthChangedEvent = -1;
             }
             displayers.clear();
+            
             selectedActionIndex = 0;
             displayers.push_back(CreateCardDisplayer());
             displayers.push_back(CreateCharacterDisplayer());
@@ -152,8 +153,8 @@ namespace mc
                                     characterService->GetEnemy().GetDamage(enemyAttackIntent)
                         ));
 
-                    playerAttackImageHandle = assetService->GetImage(static_cast<EImage>(playerAttackIntent));
-                    enemyAttackImageHandle = assetService->GetImage(static_cast<EImage>(enemyAttackIntent));
+                    playerAttackImageHandle = assetService->GetImageHandle(static_cast<EImage>(playerAttackIntent));
+                    enemyAttackImageHandle = assetService->GetImageHandle(static_cast<EImage>(enemyAttackIntent));
 
                     playerAttackEffector->Play();
                     enemyAttackEffector->Play();

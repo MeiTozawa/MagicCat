@@ -155,7 +155,7 @@ namespace mc
             int lineCount = 1;
             if (has_icon)
             {
-                int icon = assetService->GetImage(static_cast<EImage>(card.CardType));
+                int icon = assetService->GetImageHandle(static_cast<EImage>(card.CardType));
                 if (icon != -1)
                 {
                     DrawRotaGraphF(x + CARD_WIDTH / 2.f, y + CARD_HEIGHT / 3.5f, IMAGE_SCALE, 0.0, icon, TRUE);

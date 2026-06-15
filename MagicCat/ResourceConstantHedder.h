@@ -11,13 +11,13 @@
 // 
 
 
-constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_JA = L"resource/font/ark-pixel-16px-proportional-ja.ttf"; 
-constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_KO = L"resource/font/ark-pixel-16px-proportional-ko.ttf"; 
-constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_LATIN = L"resource/font/ark-pixel-16px-proportional-latin.ttf"; 
-constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_ZH_CN = L"resource/font/ark-pixel-16px-proportional-zh_cn.ttf"; 
-constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_ZH_HK = L"resource/font/ark-pixel-16px-proportional-zh_hk.ttf"; 
-constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_ZH_TR = L"resource/font/ark-pixel-16px-proportional-zh_tr.ttf"; 
-constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_ZH_TW = L"resource/font/ark-pixel-16px-proportional-zh_tw.ttf"; 
+constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_JA = L"resource/Fonts/ark-pixel-16px-proportional-ja.ttf"; 
+constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_KO = L"resource/Fonts/ark-pixel-16px-proportional-ko.ttf"; 
+constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_LATIN = L"resource/Fonts/ark-pixel-16px-proportional-latin.ttf"; 
+constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_ZH_CN = L"resource/Fonts/ark-pixel-16px-proportional-zh_cn.ttf"; 
+constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_ZH_HK = L"resource/Fonts/ark-pixel-16px-proportional-zh_hk.ttf"; 
+constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_ZH_TR = L"resource/Fonts/ark-pixel-16px-proportional-zh_tr.ttf"; 
+constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_ZH_TW = L"resource/Fonts/ark-pixel-16px-proportional-zh_tw.ttf"; 
 
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE = L"resource/Images/Keyboard/keyboard_arrow_down_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE = L"resource/Images/Keyboard/keyboard_arrow_up_outline.png"; 
@@ -32,9 +32,19 @@ constexpr const wchar_t* FILE_PATH_PNG_POINT = L"resource/Images/RPS/point.png";
 constexpr const wchar_t* FILE_PATH_PNG_SCISSORS = L"resource/Images/RPS/scissors.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_STONE = L"resource/Images/RPS/stone.png"; 
 
-constexpr const wchar_t* FILE_PATH_JSON_CARD_CONFIG = L"resource/json/card_config.json"; 
-constexpr const wchar_t* FILE_PATH_JSON_ENEMY_CONFIG = L"resource/json/enemy_config.json"; 
-constexpr const wchar_t* FILE_PATH_JSON_EXAMPLE = L"resource/json/example.json"; 
+constexpr const wchar_t* FILE_PATH_JSON_CARD_CONFIG = L"resource/Json/card_config.json"; 
+constexpr const wchar_t* FILE_PATH_JSON_ENEMY_CONFIG = L"resource/Json/enemy_config.json"; 
+constexpr const wchar_t* FILE_PATH_JSON_EXAMPLE = L"resource/Json/example.json"; 
+
+constexpr const wchar_t* FILE_PATH_MP3_CONFIRM = L"resource/Sounds/Confirm.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_DRAWCARD = L"resource/Sounds/DrawCard.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_ENEMYHURT = L"resource/Sounds/EnemyHurt.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_FAIL = L"resource/Sounds/Fail.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_PLAYERHURT = L"resource/Sounds/PlayerHurt.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_SELECT = L"resource/Sounds/Select.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_SHUFFLE = L"resource/Sounds/Shuffle.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_WARNING = L"resource/Sounds/Warning.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_WIN = L"resource/Sounds/Win.mp3"; 
 
 
 
@@ -44,7 +54,7 @@ constexpr const wchar_t* FILE_PATH_JSON_EXAMPLE = L"resource/json/example.json";
 // 
 
 
-const std::vector<const wchar_t*> FILE_PATH_TBL_FONT = {
+const std::vector<const wchar_t*> FILE_PATH_TBL_FONTS = {
     FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_JA,
     FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_KO,
     FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_LATIN,
@@ -73,6 +83,17 @@ const std::vector<const wchar_t*> FILE_PATH_TBL_JSON = {
     FILE_PATH_JSON_CARD_CONFIG,
     FILE_PATH_JSON_ENEMY_CONFIG,
     FILE_PATH_JSON_EXAMPLE,
+};
+const std::vector<const wchar_t*> FILE_PATH_TBL_SOUNDS = {
+    FILE_PATH_MP3_CONFIRM,
+    FILE_PATH_MP3_DRAWCARD,
+    FILE_PATH_MP3_ENEMYHURT,
+    FILE_PATH_MP3_FAIL,
+    FILE_PATH_MP3_PLAYERHURT,
+    FILE_PATH_MP3_SELECT,
+    FILE_PATH_MP3_SHUFFLE,
+    FILE_PATH_MP3_WARNING,
+    FILE_PATH_MP3_WIN,
 };
 
 
@@ -103,6 +124,15 @@ const std::unordered_map<std::wstring, const wchar_t*> FILE_PATH_DICTIONARY = {
     { std::wstring( L"card_config.json" ), FILE_PATH_JSON_CARD_CONFIG },
     { std::wstring( L"enemy_config.json" ), FILE_PATH_JSON_ENEMY_CONFIG },
     { std::wstring( L"example.json" ), FILE_PATH_JSON_EXAMPLE },
+    { std::wstring( L"Confirm.mp3" ), FILE_PATH_MP3_CONFIRM },
+    { std::wstring( L"DrawCard.mp3" ), FILE_PATH_MP3_DRAWCARD },
+    { std::wstring( L"EnemyHurt.mp3" ), FILE_PATH_MP3_ENEMYHURT },
+    { std::wstring( L"Fail.mp3" ), FILE_PATH_MP3_FAIL },
+    { std::wstring( L"PlayerHurt.mp3" ), FILE_PATH_MP3_PLAYERHURT },
+    { std::wstring( L"Select.mp3" ), FILE_PATH_MP3_SELECT },
+    { std::wstring( L"Shuffle.mp3" ), FILE_PATH_MP3_SHUFFLE },
+    { std::wstring( L"Warning.mp3" ), FILE_PATH_MP3_WARNING },
+    { std::wstring( L"Win.mp3" ), FILE_PATH_MP3_WIN },
 };
 
 
@@ -137,6 +167,16 @@ constexpr const wchar_t* FILE_NAME_JSON_CARD_CONFIG = L"card_config.json";
 constexpr const wchar_t* FILE_NAME_JSON_ENEMY_CONFIG = L"enemy_config.json"; 
 constexpr const wchar_t* FILE_NAME_JSON_EXAMPLE = L"example.json"; 
 
+constexpr const wchar_t* FILE_NAME_MP3_CONFIRM = L"Confirm.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_DRAWCARD = L"DrawCard.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_ENEMYHURT = L"EnemyHurt.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_FAIL = L"Fail.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_PLAYERHURT = L"PlayerHurt.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_SELECT = L"Select.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_SHUFFLE = L"Shuffle.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_WARNING = L"Warning.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_WIN = L"Win.mp3"; 
+
 
 
 //------------------------------------------------------------------------------------------------------------------
@@ -145,7 +185,7 @@ constexpr const wchar_t* FILE_NAME_JSON_EXAMPLE = L"example.json";
 // 
 
 
-const std::vector<const wchar_t*> FILE_NAME_TBL_FONT = {
+const std::vector<const wchar_t*> FILE_NAME_TBL_FONTS = {
     FILE_NAME_TTF_ARK_PIXEL_16PX_PROPORTIONAL_JA,
     FILE_NAME_TTF_ARK_PIXEL_16PX_PROPORTIONAL_KO,
     FILE_NAME_TTF_ARK_PIXEL_16PX_PROPORTIONAL_LATIN,
@@ -174,6 +214,17 @@ const std::vector<const wchar_t*> FILE_NAME_TBL_JSON = {
     FILE_NAME_JSON_CARD_CONFIG,
     FILE_NAME_JSON_ENEMY_CONFIG,
     FILE_NAME_JSON_EXAMPLE,
+};
+const std::vector<const wchar_t*> FILE_NAME_TBL_SOUNDS = {
+    FILE_NAME_MP3_CONFIRM,
+    FILE_NAME_MP3_DRAWCARD,
+    FILE_NAME_MP3_ENEMYHURT,
+    FILE_NAME_MP3_FAIL,
+    FILE_NAME_MP3_PLAYERHURT,
+    FILE_NAME_MP3_SELECT,
+    FILE_NAME_MP3_SHUFFLE,
+    FILE_NAME_MP3_WARNING,
+    FILE_NAME_MP3_WIN,
 };
 
 
@@ -216,11 +267,11 @@ const std::vector<const wchar_t*> FONT_NAME_TABLE = {
 
 
 const std::unordered_map<std::wstring, const wchar_t*> FONT_NAME_TO_PATH_DICTIONARY = { 
-     { std::wstring( FONT_NAME_ARK_PIXEL_16PX_PROP_JA ), L"resource/font/ark-pixel-16px-proportional-ja.ttf" },
-     { std::wstring( FONT_NAME_ARK_PIXEL_16PX_PROP_KO ), L"resource/font/ark-pixel-16px-proportional-ko.ttf" },
-     { std::wstring( FONT_NAME_ARK_PIXEL_16PX_PROP_LATIN ), L"resource/font/ark-pixel-16px-proportional-latin.ttf" },
-     { std::wstring( FONT_NAME_ARK_PIXEL_16PX_PROP_ZH_CN ), L"resource/font/ark-pixel-16px-proportional-zh_cn.ttf" },
-     { std::wstring( FONT_NAME_ARK_PIXEL_16PX_PROP_ZH_HK ), L"resource/font/ark-pixel-16px-proportional-zh_hk.ttf" },
-     { std::wstring( FONT_NAME_ARK_PIXEL_16PX_PROP_ZH_TR ), L"resource/font/ark-pixel-16px-proportional-zh_tr.ttf" },
-     { std::wstring( FONT_NAME_ARK_PIXEL_16PX_PROP_ZH_TW ), L"resource/font/ark-pixel-16px-proportional-zh_tw.ttf" },
+     { std::wstring( FONT_NAME_ARK_PIXEL_16PX_PROP_JA ), L"resource/Fonts/ark-pixel-16px-proportional-ja.ttf" },
+     { std::wstring( FONT_NAME_ARK_PIXEL_16PX_PROP_KO ), L"resource/Fonts/ark-pixel-16px-proportional-ko.ttf" },
+     { std::wstring( FONT_NAME_ARK_PIXEL_16PX_PROP_LATIN ), L"resource/Fonts/ark-pixel-16px-proportional-latin.ttf" },
+     { std::wstring( FONT_NAME_ARK_PIXEL_16PX_PROP_ZH_CN ), L"resource/Fonts/ark-pixel-16px-proportional-zh_cn.ttf" },
+     { std::wstring( FONT_NAME_ARK_PIXEL_16PX_PROP_ZH_HK ), L"resource/Fonts/ark-pixel-16px-proportional-zh_hk.ttf" },
+     { std::wstring( FONT_NAME_ARK_PIXEL_16PX_PROP_ZH_TR ), L"resource/Fonts/ark-pixel-16px-proportional-zh_tr.ttf" },
+     { std::wstring( FONT_NAME_ARK_PIXEL_16PX_PROP_ZH_TW ), L"resource/Fonts/ark-pixel-16px-proportional-zh_tw.ttf" },
 };

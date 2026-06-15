@@ -16,17 +16,19 @@ namespace mc
     class AssetService : public IAssetService
     {
     public:
-
         AssetService()
         {
             LoadFonts();
             LoadImages();
+            LoadSounds();
             LoadGameConfig();
         }
-        
-        const int GetFontHandle(EFont font) override
+
+        const int GetFontHandle(EFont e) override
         {
-            return fontMappings.at(font);
+            if (fontMappings.contains(e))
+                return fontMappings.at(e);
+            return -1;
         }
 
         const std::vector<CardConfig>& GetCardConfigs() const override
@@ -39,7 +41,7 @@ namespace mc
             return enemyConfigs;
         }
 
-        const int GetImage(EImage e) override
+        const int GetImageHandle(EImage e) override
         {
             if (imageMappings.contains(e))
                 return imageMappings.at(e);
@@ -48,23 +50,33 @@ namespace mc
 
         const int GetSpriteHandle(ESprite e) override
         {
-            return spriteMappings[e];
+            if (spriteMappings.contains(e))
+                return spriteMappings[e];
+            return -1;
+        }
+
+        const int GetSoundHandle(ESound e) override
+        {
+            if (soundMappings.contains(e))
+                return soundMappings.at(e);
+            return -1;
         }
 
     private:
         std::unordered_map<EImage, int> imageMappings = {};
         std::unordered_map<ESprite, int> spriteMappings = {};
         std::unordered_map<EFont, int> fontMappings = {};
+        std::unordered_map<ESound, int> soundMappings = {};
         std::vector<CardConfig> cardConfigs;
         std::vector<EnemyConfig> enemyConfigs;
 
         void LoadFonts()
         {
-            ChangeFontType(DX_FONTTYPE_NORMAL); 
+            ChangeFontType(DX_FONTTYPE_NORMAL);
             int handle = LoadFontDataToHandle(FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_JA, 16);
             fontMappings.insert({EFont::ARK_PIXEL_16PX_JP, handle});
         }
-        
+
         void LoadGameConfig()
         {
             {
@@ -125,7 +137,8 @@ namespace mc
         {
             try
             {
-                struct ImageData {
+                struct ImageData
+                {
                     EImage id;
                     const wchar_t* path;
                 };
@@ -149,7 +162,8 @@ namespace mc
                         imageMappings.insert({img.id, handle});
                 }
 
-                struct SpriteData {
+                struct SpriteData
+                {
                     ESprite id;
                     const wchar_t* path;
                 };
@@ -170,6 +184,42 @@ namespace mc
             catch (const std::exception&)
             {
                 printfDx(L"画像の読み込みに失敗");
+            }
+        }
+
+        void LoadSounds()
+        {
+            try
+            {
+                struct SoundData
+                {
+                    ESound id;
+                    const wchar_t* path;
+                };
+                SoundData sounds[] = {
+                    {ESound::Confirm, FILE_PATH_MP3_CONFIRM},
+                    {ESound::DrawCard, FILE_PATH_MP3_DRAWCARD},
+                    {ESound::EnemyHurt, FILE_PATH_MP3_ENEMYHURT},
+                    {ESound::Fail, FILE_PATH_MP3_FAIL},
+                    {ESound::PlayerHurt, FILE_PATH_MP3_PLAYERHURT},
+                    {ESound::Select, FILE_PATH_MP3_SELECT},
+                    {ESound::Shuffle, FILE_PATH_MP3_SHUFFLE},
+                    {ESound::Warning, FILE_PATH_MP3_WARNING},
+                    {ESound::Win, FILE_PATH_MP3_WIN}
+                };
+
+                for (const auto& snd : sounds)
+                {
+                    int handle = LoadSoundMem(snd.path);
+                    if (handle == -1)
+                        printfDx(L"%sの読み込みに失敗", snd.path);
+                    else
+                        soundMappings.insert({snd.id, handle});
+                }
+            }
+            catch (const std::exception&)
+            {
+                printfDx(L"音声の読み込みに失敗");
             }
         }
     };

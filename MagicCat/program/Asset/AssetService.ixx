@@ -23,7 +23,7 @@ namespace mc
         int type;
         int value;
     };
-    
+
     export enum class EFont
     {
         ARK_PIXEL_16PX_JP
@@ -36,6 +36,13 @@ namespace mc
         KB_Q = 100, KB_SPACE, KB_UP, KB_DOWN
     };
 
+    export enum class ESound
+    {
+        Confirm, DrawCard, EnemyHurt, 
+        Fail, PlayerHurt, Select, 
+        Shuffle, Warning, Win
+    };
+
     export enum class ESprite
     {
         Bunny, Wolf
@@ -45,9 +52,10 @@ namespace mc
     {
     public:
         virtual ~IAssetService() = default;
-        virtual const int GetImage(EImage) = 0;
+        virtual const int GetImageHandle(EImage) = 0;
         virtual const int GetFontHandle(EFont) = 0;
         virtual const int GetSpriteHandle(ESprite) = 0;
+        virtual const int GetSoundHandle(ESound) = 0;
         virtual const std::vector<CardConfig>& GetCardConfigs() const = 0;
         virtual const std::vector<EnemyConfig>& GetEnemyConfigs() const = 0;
     };

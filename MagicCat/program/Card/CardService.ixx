@@ -62,6 +62,7 @@ namespace mc
     };
 
     export struct DrawCardEvent : IEvent {};
+    export struct ShuffleEvent : IEvent {};
 
     export struct CardRectsUpdatedEvent : IEvent
     {

@@ -8,7 +8,7 @@ import CardService;
 import CharacterService;
 import InputService;
 import SceneService;
-
+import AudioService;
 using namespace mc;
 
 IGameService* gameService;
@@ -20,6 +20,7 @@ void InitGameServices()
     ServiceLocator::RegisterSingleton<ICardService>(CreateCardService());
     ServiceLocator::RegisterSingleton<ICharacterService>(CreateCharacterService());
     ServiceLocator::RegisterSingleton<IInputService>(CreateInputService());
+    ServiceLocator::RegisterSingleton<IAudioService>(CreateAudioService());
     ServiceLocator::RegisterSingleton<IGameService>(CreateGameService());
 
     ServiceLocator::RegisterSingleton<ISceneService>(CreateSceneService());

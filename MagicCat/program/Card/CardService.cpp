@@ -69,6 +69,7 @@ namespace mc
                 drawPile.insert(drawPile.end(), discardPile.begin(), discardPile.end());
                 discardPile.clear(); // 再シャッフル時に捨て札を確実にクリアする
                 Random::Shuffle(drawPile);
+                EventBus::Publish(ShuffleEvent());
             }
             assert(drawPile.size() > 0);
             auto c = drawPile.back();
@@ -117,7 +118,7 @@ namespace mc
         std::vector<Card> drawPile = std::vector<Card>();
         std::vector<Card> discardPile = std::vector<Card>();
 
-        ECardType ToCardType(int type) const
+        static ECardType ToCardType(int type)
         {
             switch (type)
             {
@@ -129,7 +130,7 @@ namespace mc
             }
         }
 
-        EAttackType ToAttackType(ECardType type) const
+        static EAttackType ToAttackType(ECardType type)
         {
             switch (type)
             {

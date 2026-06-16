@@ -43,6 +43,7 @@ namespace mc
 
             actionMappings[InputContext::InGame][InputAction::IgConfirm] = {
                 dxe::Input::eButton::KB_SPACE,
+                dxe::Input::eButton::KB_RETURN,
                 dxe::Input::eButton::PAD_A
             };
             actionMappings[InputContext::InGame][InputAction::IgUp] = {
@@ -57,13 +58,14 @@ namespace mc
                 dxe::Input::eButton::KB_Q,
                 dxe::Input::eButton::PAD_X
             };
-            actionMappings[InputContext::InGame][InputAction::IgCancel] = {
+            actionMappings[InputContext::InGame][InputAction::IgShowRules] = {
                 dxe::Input::eButton::KB_R,
                 dxe::Input::eButton::PAD_B
             };
 
             actionMappings[InputContext::Menu][InputAction::MenuConfirm] = {
                 dxe::Input::eButton::KB_SPACE,
+                dxe::Input::eButton::KB_RETURN,
                 dxe::Input::eButton::PAD_A
             };
             actionMappings[InputContext::Menu][InputAction::MenuCancel] = {

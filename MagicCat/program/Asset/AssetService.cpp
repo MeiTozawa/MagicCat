@@ -5,6 +5,7 @@ module;
 #include <unordered_map>
 #include <ResourceConstantHedder.h>
 #include <vector>
+#include <windows.h>
 
 module AssetService;
 import ServiceLocator;
@@ -27,7 +28,6 @@ namespace mc
                 return fontMappings.at(e);
             return -1;
         }
-
 
 
         const int GetImageHandle(EImage e) override
@@ -60,10 +60,11 @@ namespace mc
         void LoadFonts()
         {
             ChangeFontType(DX_FONTTYPE_NORMAL);
-            int handle = LoadFontDataToHandle(FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_JA, 16);
+            AddFontResourceEx(FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_JA, FR_PRIVATE, nullptr);
+            int handle = CreateFontToHandle(FONT_NAME_ARK_PIXEL_16PX_PROP_JA, 16, -1, DX_FONTTYPE_NORMAL, SHIFTJIS_CHARSET);
+            if (handle == -1) printfDx(L"Failed to load font!\n");
             fontMappings.insert({EFont::ARK_PIXEL_16PX_JP, handle});
         }
-
 
 
         void LoadImages()
@@ -81,6 +82,7 @@ namespace mc
                     {EImage::Paper, FILE_PATH_PNG_PAPER},
                     {EImage::Magic, FILE_PATH_PNG_POINT},
                     {EImage::KB_Q, FILE_PATH_PNG_KEYBOARD_Q_OUTLINE},
+                    {EImage::KB_R, FILE_PATH_PNG_KEYBOARD_R_OUTLINE},
                     {EImage::KB_SPACE, FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE},
                     {EImage::KB_UP, FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE},
                     {EImage::KB_DOWN, FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE}

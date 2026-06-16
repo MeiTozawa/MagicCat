@@ -74,6 +74,10 @@ namespace mc
             {
                 EventBus::Publish(DrawCardEvent());
             }
+            else if (inputService->IsPressed(InputAction::IgShowRules))
+            {
+                ServiceLocator::Get<ISceneService>()->PushScene(Rules);
+            }
         }
     };
 

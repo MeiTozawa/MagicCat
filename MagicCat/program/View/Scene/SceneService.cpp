@@ -16,7 +16,7 @@ namespace mc
     class SceneService : public ISceneService
     {
         std::unordered_map<ESceneState, std::unique_ptr<IScene>> scenes;
-        ESceneState currentScene = Start;
+        std::vector<ESceneState> sceneStack = {};
         bool initialized = false;
         EventHandle characterDiedHandle;
 
@@ -29,7 +29,8 @@ namespace mc
                 {
                     reg();
                 }
-                scenes[currentScene]->Start();
+                sceneStack.push_back(Start);
+                scenes[Start]->Start();
             }
         }
 
@@ -42,7 +43,8 @@ namespace mc
                 {
                     if (event.Victim == &characterService->GetPlayer())
                     {
-                        ChangeSceneTo(Start);
+                        sceneStack = {Start};
+                        scenes[Start]->Start();
                         characterService->Reset();
                     }
                 }
@@ -59,30 +61,43 @@ namespace mc
             scenes[type] = std::move(scene);
         }
 
-        void ChangeSceneTo(ESceneState type) override
+        void PushScene(ESceneState type) override
         {
             EnsureInitialized();
             if (scenes.contains(type))
             {
-                currentScene = type;
-                scenes[currentScene]->Start();
+                sceneStack.push_back(type);
+                scenes[type]->Start();
+            }
+        }
+
+        void PopScene() override
+        {
+            EnsureInitialized();
+            if (sceneStack.size() > 1)
+            {
+                sceneStack.pop_back();
             }
         }
 
         void Update(float deltaTime) override
         {
             EnsureInitialized();
-            scenes[currentScene]->Update(deltaTime);
+            if (!sceneStack.empty())
+            {
+                scenes[sceneStack.back()]->Update(deltaTime);
+            }
         }
 
         ESceneState GetCurrentScene() override
         {
-            return currentScene;
+            return sceneStack.empty() ? Start : sceneStack.back();
         }
 
         void SetCurrentScene(ESceneState state) override
         {
-            currentScene = state;
+            sceneStack.clear();
+            sceneStack.push_back(state);
         }
     };
 

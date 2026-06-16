@@ -30,6 +30,7 @@ void InitGameServices()
     {
         sceneService->RegisterScene(Start, CreateStartScene());
         sceneService->RegisterScene(Combat, CreateCombatScene());
+        sceneService->RegisterScene(Rules, CreateRulesScene());
     }
 }
 

@@ -19,7 +19,7 @@ namespace mc
     {
         Rock = 0, Scissors = 1, Paper = 2, Magic = 3,
 
-        KB_Q = 100, KB_SPACE, KB_UP, KB_DOWN
+        KB_Q = 100, KB_R, KB_SPACE, KB_UP, KB_DOWN
     };
 
     export enum class ESound

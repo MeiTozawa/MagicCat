@@ -28,7 +28,7 @@ namespace mc
         {
             if (inputService->IsPressed(InputAction::IgConfirm))
             {
-                sceneService->ChangeSceneTo(Combat);
+                sceneService->PushScene(Combat);
             }
 
             DrawString(300, 300, L"Enterキーを押してゲームをスタートする！", 0xFFFFFF, TRUE);

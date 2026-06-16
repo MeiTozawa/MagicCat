@@ -9,7 +9,7 @@ namespace mc
     export enum class InputAction
     {
         IgUp, IgDown, IgConfirm, IgToggleMenu, // IgMouseClick,
-        IgDrawCard, IgCancel,
+        IgDrawCard, IgShowRules,
 
         MenuConfirm = 100,
         MenuCancel,

@@ -16,7 +16,7 @@ namespace mc
 {
     export enum ESceneState
     {
-        Start, Combat, Result
+        Start, Combat, Result, Rules
     };
 
     export struct SceneRegistry
@@ -61,9 +61,10 @@ namespace mc
     public:
         virtual ~ISceneService() = default;
 
-        virtual void ChangeSceneTo(ESceneState type) = 0;
-
         virtual void Update(float deltaTime) = 0;
+
+        virtual void PushScene(ESceneState type) = 0;
+        virtual void PopScene() = 0;
 
         virtual void RegisterScene(ESceneState type, std::unique_ptr<IScene>&& scene) = 0;
 
@@ -75,4 +76,5 @@ namespace mc
     export Shared<ISceneService> CreateSceneService();
     export std::unique_ptr<IScene> CreateStartScene();
     export std::unique_ptr<IScene> CreateCombatScene();
+    export std::unique_ptr<IScene> CreateRulesScene();
 } // namespace mc

@@ -22,6 +22,7 @@ constexpr const wchar_t* FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_ZH_TW = L"res
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE = L"resource/Images/Keyboard/keyboard_arrow_down_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE = L"resource/Images/Keyboard/keyboard_arrow_up_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_Q_OUTLINE = L"resource/Images/Keyboard/keyboard_q_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_R_OUTLINE = L"resource/Images/Keyboard/keyboard_r_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE = L"resource/Images/Keyboard/keyboard_space_outline.png"; 
 
 constexpr const wchar_t* FILE_PATH_PNG_MINIBUNNY = L"resource/Images/MiniAnimals/MiniBunny.png"; 
@@ -67,6 +68,7 @@ const std::vector<const wchar_t*> FILE_PATH_TBL_IMAGES_KEYBOARD = {
     FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE,
     FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE,
     FILE_PATH_PNG_KEYBOARD_Q_OUTLINE,
+    FILE_PATH_PNG_KEYBOARD_R_OUTLINE,
     FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE,
 };
 const std::vector<const wchar_t*> FILE_PATH_TBL_IMAGES_MINIANIMALS = {
@@ -114,6 +116,7 @@ const std::unordered_map<std::wstring, const wchar_t*> FILE_PATH_DICTIONARY = {
     { std::wstring( L"keyboard_arrow_down_outline.png" ), FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE },
     { std::wstring( L"keyboard_arrow_up_outline.png" ), FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE },
     { std::wstring( L"keyboard_q_outline.png" ), FILE_PATH_PNG_KEYBOARD_Q_OUTLINE },
+    { std::wstring( L"keyboard_r_outline.png" ), FILE_PATH_PNG_KEYBOARD_R_OUTLINE },
     { std::wstring( L"keyboard_space_outline.png" ), FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE },
     { std::wstring( L"MiniBunny.png" ), FILE_PATH_PNG_MINIBUNNY },
     { std::wstring( L"MiniWolf.png" ), FILE_PATH_PNG_MINIWOLF },
@@ -153,6 +156,7 @@ constexpr const wchar_t* FILE_NAME_TTF_ARK_PIXEL_16PX_PROPORTIONAL_ZH_TW = L"ark
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ARROW_DOWN_OUTLINE = L"keyboard_arrow_down_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ARROW_UP_OUTLINE = L"keyboard_arrow_up_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_Q_OUTLINE = L"keyboard_q_outline.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_R_OUTLINE = L"keyboard_r_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_SPACE_OUTLINE = L"keyboard_space_outline.png"; 
 
 constexpr const wchar_t* FILE_NAME_PNG_MINIBUNNY = L"MiniBunny.png"; 
@@ -198,6 +202,7 @@ const std::vector<const wchar_t*> FILE_NAME_TBL_IMAGES_KEYBOARD = {
     FILE_NAME_PNG_KEYBOARD_ARROW_DOWN_OUTLINE,
     FILE_NAME_PNG_KEYBOARD_ARROW_UP_OUTLINE,
     FILE_NAME_PNG_KEYBOARD_Q_OUTLINE,
+    FILE_NAME_PNG_KEYBOARD_R_OUTLINE,
     FILE_NAME_PNG_KEYBOARD_SPACE_OUTLINE,
 };
 const std::vector<const wchar_t*> FILE_NAME_TBL_IMAGES_MINIANIMALS = {

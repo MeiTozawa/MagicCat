@@ -57,6 +57,10 @@ namespace mc
 
         void Start() override
         {
+            characterService = ServiceLocator::Get<ICharacterService>();
+            sceneService = ServiceLocator::Get<ISceneService>();
+            assetService = ServiceLocator::Get<IAssetService>();
+            characterService->NextEnemy();
             if (healthChangedEvent != -1)
             {
                 EventBus::Unsubscribe(healthChangedEvent);
@@ -67,9 +71,7 @@ namespace mc
             displayers.push_back(CreateCharacterDisplayer());
             displayers.push_back(CreateControlDisplayer());
 
-            characterService = ServiceLocator::Get<ICharacterService>();
-            sceneService = ServiceLocator::Get<ISceneService>();
-            assetService = ServiceLocator::Get<IAssetService>();
+
             combatController = CreateCombatController();
             combatController->Reset();
 

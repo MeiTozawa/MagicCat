@@ -2,6 +2,7 @@ module;
 
 #include <vector>
 #include <memory>
+#include <RandomUtils.h>
 
 module CharacterService;
 
@@ -15,7 +16,11 @@ namespace mc {
 class CharacterService : public ICharacterService
 {
 public:
-    CharacterService() {}
+    CharacterService() {        
+       enemies = ServiceLocator::Get<IConfigService>()->GetEnemyConfigs();
+
+        currentPlayer = std::make_unique<Player>();
+    }
 
     Enemy& GetEnemy() override
     {
@@ -27,30 +32,18 @@ public:
         return *currentPlayer;
     }
 
-    void Reset() override
-    {
-        enemies.clear();
-        auto& config = ServiceLocator::Get<IConfigService>()->GetEnemyConfigs();
-        for (const auto& e : config)
-        {
-            enemies.push_back(std::make_unique<Enemy>(e.baseWeight, e.rockDamage, e.scissorsDamage, e.paperDamage, e.name.c_str()));
-        }
-
-        currentPlayer = std::make_unique<Player>();
-
-        NextEnemy();
-    }
-
     bool NextEnemy() override
     {
         if (enemies.empty()) return false;
-        currentEnemy = std::move(enemies.back());
+        Random::Shuffle(enemies);
+        auto e = enemies.front();
+        currentEnemy = std::make_unique<Enemy>(e.baseWeight, e.rockDamage, e.scissorsDamage, e.paperDamage, e.name.c_str());
         enemies.pop_back();
         return true;
     }
 
 private:
-    std::vector<std::unique_ptr<Enemy>> enemies;
+    std::vector<EnemyConfig> enemies;
     std::unique_ptr<Enemy> currentEnemy;
     std::unique_ptr<Player> currentPlayer;
 };

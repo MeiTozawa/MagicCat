@@ -18,7 +18,6 @@ public:
     virtual Enemy& GetEnemy() = 0;
     virtual bool NextEnemy() = 0;
     virtual Player& GetPlayer() = 0;
-    virtual void Reset() = 0;
 };
 
 export Shared<ICharacterService> CreateCharacterService();

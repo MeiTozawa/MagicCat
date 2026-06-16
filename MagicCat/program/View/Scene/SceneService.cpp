@@ -45,7 +45,7 @@ namespace mc
                     {
                         sceneStack = {Start};
                         scenes[Start]->Start();
-                        characterService->Start();
+                        characterService->NextEnemy();
                     }
                 }
             });

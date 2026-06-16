@@ -39,7 +39,6 @@ public:
         assetService = ServiceLocator::Get<IAssetService>();
 
         characterService = ServiceLocator::Get<ICharacterService>();
-        characterService->Start();
         
         cardService = ServiceLocator::Get<ICardService>();
     }

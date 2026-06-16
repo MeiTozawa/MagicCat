@@ -33,6 +33,7 @@ export class Player : public Character
 public:
     Player()
     {
+        name = L"Player";
         healthComp = std::make_unique<HealthComponent>(this);
         tags.push_back(ETag::Player);
         changeMpEvent = EventBus::Subscribe<ChangeMpEvent>(

@@ -2,8 +2,6 @@ module;
 
 #include <RandomUtils.h>
 
-#include <RandomUtils.h>
-
 export module Enemy;
 
 import Character;
@@ -27,14 +25,14 @@ namespace mc
         EventHandle combatEvent;
 
     public:
-        Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0,
-              const wchar_t* name = L"Unknown")
+        Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0, const std::wstring& name = L"Unknown")
             : baseWeight(baseWeight),
               rockDamage(rockDamage),
               scissorsDamage(scissorsDamage),
-              paperDamage(paperDamage),
-              name(name)
+              paperDamage(paperDamage)
+
         {
+            Character::name = name;
             healthComp = std::make_unique<HealthComponent>(this);
             tags.push_back(ETag::Enemy);
             deathEvent = EventBus::Subscribe<DeathEvent>(
@@ -51,7 +49,7 @@ namespace mc
                     {
                         healthComp->TakeDamage(e.playerAttackDamage);
                     }
-                    
+
                     rockWeightOffset = 0;
                     scissorsWeightOffset = 0;
                     paperWeightOffset = 0;
@@ -119,6 +117,7 @@ namespace mc
         }
 
         const HealthComponent& GetHealthComponent() const { return *healthComp; }
+
     private:
         int baseWeight = 0;
         int rockWeightOffset = 0;
@@ -128,8 +127,6 @@ namespace mc
         int rockDamage = 0;
         int scissorsDamage = 0;
         int paperDamage = 0;
-
-        const wchar_t* name = L"Unknown";
 
         void AddRockWeight(int weight)
         {
@@ -150,6 +147,5 @@ namespace mc
         {
             // TODO
         }
-
     };
 } // namespace mc

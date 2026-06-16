@@ -38,6 +38,7 @@ namespace mc
     export class Character
     {
     protected:
+        std::wstring name;
         int rockDamage = 1;
         int scissorsDamage = 1;
         int paperDamage = 1;
@@ -45,6 +46,7 @@ namespace mc
         std::vector<ETag> tags;
 
     public:
+        std::wstring GetName() const { return name; }
         int GetDamage(EAttackType t) const
         {
             switch (t)

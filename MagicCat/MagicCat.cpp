@@ -43,7 +43,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     SetAlwaysRunFlag(ALLWAYS_RUN_FLAG);
 
     // 起動時のウインドウ位置設定
-    SetWindowPosition(220, 0);
+    SetWindowPosition(0, 0);
 
     // 画面モード変更時( とウインドウモード変更時 )にグラフィックスシステムの設定やグラフィックハンドルを
     // リセットするかどうかを設定する

@@ -12,7 +12,7 @@ namespace mc
 
     export enum class EFont
     {
-        ARK_PIXEL_16PX_JP
+        UNIFONT_17
     };
 
     export enum class EImage

@@ -21,21 +21,23 @@ import Character;
 namespace mc
 {
     namespace {
-        constexpr int PLAYER_DATA_START_X = 400;
-        constexpr int PLAYER_DATA_START_Y = 200;
+        constexpr int PLAYER_DAMAGE_START_X = 400;
+        constexpr int PLAYER_DAMAGE_START_Y = 200;
 
-        constexpr int PLAYER_HP_X = 100;
+        constexpr int PLAYER_HP_X = 60;
         constexpr int PLAYER_HP_Y = 200;
-        constexpr int ENEMY_HP_X = 1250;
+        constexpr int ENEMY_HP_X = 1240;
         constexpr int ENEMY_HP_Y = 230;
-        constexpr int PLAYER_MP_X = 100;
+        constexpr int PLAYER_MP_X = 60;
         constexpr int PLAYER_MP_Y = 300;
 
-        constexpr int ENEMY_DATA_START_X = 1200;
-        constexpr int ENEMY_DATA_START_Y = 300;
+        constexpr int ENEMY_WEIGHT_START_X = 1150;
+        constexpr int ENEMY_WEIGHT_START_Y = 300;
+        constexpr int ENEMY_DAMAGE_START_X = 1500;
+        constexpr int ENEMY_DAMAGE_START_Y = 300;
 
-        constexpr int TEXT_OFFSET_X = 50;
-        constexpr int TEXT_OFFSET_Y = 37;
+        constexpr int TEXT_OFFSET_X = 40;
+        constexpr int TEXT_OFFSET_Y = 30;
 
         constexpr int OFFSET_Y = 120;
 
@@ -94,10 +96,10 @@ namespace mc
             {
                 for (int k = 0; k < THICKNESS; ++k)
                 {
-                    float x1 = PLAYER_DATA_START_X + k;
-                    float y1 = PLAYER_DATA_START_Y + k + i * OFFSET_Y;
-                    float x2 = PLAYER_DATA_START_X + RECT_X - k;
-                    float y2 = PLAYER_DATA_START_Y + RECT_Y - k + i * OFFSET_Y;
+                    float x1 = PLAYER_DAMAGE_START_X + k;
+                    float y1 = PLAYER_DAMAGE_START_Y + k + i * OFFSET_Y;
+                    float x2 = PLAYER_DAMAGE_START_X + RECT_X - k;
+                    float y2 = PLAYER_DAMAGE_START_Y + RECT_Y - k + i * OFFSET_Y;
 
                     DrawBoxAA(x1, y1, x2, y2, color, FALSE);
                 }
@@ -106,27 +108,27 @@ namespace mc
                 {
                     for (int k = 2 * THICKNESS; k < 3 * THICKNESS; ++k)
                     {
-                        float x1 = PLAYER_DATA_START_X + k;
-                        float y1 = PLAYER_DATA_START_Y + k + i * OFFSET_Y;
-                        float x2 = PLAYER_DATA_START_X + RECT_X - k;
-                        float y2 = PLAYER_DATA_START_Y + RECT_Y - k + i * OFFSET_Y;
+                        float x1 = PLAYER_DAMAGE_START_X + k;
+                        float y1 = PLAYER_DAMAGE_START_Y + k + i * OFFSET_Y;
+                        float x2 = PLAYER_DAMAGE_START_X + RECT_X - k;
+                        float y2 = PLAYER_DAMAGE_START_Y + RECT_Y - k + i * OFFSET_Y;
 
                         DrawBoxAA(x1, y1, x2, y2, color, FALSE);
                     }
                 }
             }
-            DrawFormatString(PLAYER_DATA_START_X + TEXT_OFFSET_X,
-                             PLAYER_DATA_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"　　魔法　　");
-            DrawFormatString(PLAYER_DATA_START_X + TEXT_OFFSET_X,
-                             PLAYER_DATA_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"グー：　　%d", player.GetDamage(EAttackType::Rock));
-            DrawFormatString(PLAYER_DATA_START_X + TEXT_OFFSET_X,
-                             PLAYER_DATA_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"チョキ：　%d", player.GetDamage(EAttackType::Scissors));
-            DrawFormatString(PLAYER_DATA_START_X + TEXT_OFFSET_X,
-                             PLAYER_DATA_START_Y + 3 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"パー：　　%d", player.GetDamage(EAttackType::Paper));
+            DrawFormatString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                             PLAYER_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
+                             color, L"  魔法");
+            DrawFormatString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                             PLAYER_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
+                             color, L"✊ ⚔：%d", player.GetDamage(EAttackType::Rock));
+            DrawFormatString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                             PLAYER_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
+                             color, L"✌ ⚔：%d", player.GetDamage(EAttackType::Scissors));
+            DrawFormatString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                             PLAYER_DAMAGE_START_Y + 3 * OFFSET_Y + TEXT_OFFSET_Y,
+                             color, L"✋ ⚔：%d", player.GetDamage(EAttackType::Paper));
         }
 
         void PrintEnemyInfo(uint32_t color) const
@@ -141,43 +143,64 @@ namespace mc
             {
                 for (int k = 0; k < THICKNESS; ++k)
                 {
-                    float x1 = ENEMY_DATA_START_X + k;
-                    float y1 = ENEMY_DATA_START_Y + k + i * OFFSET_Y;
-                    float x2 = ENEMY_DATA_START_X + RECT_X - k;
-                    float y2 = ENEMY_DATA_START_Y + RECT_Y - k + i * OFFSET_Y;
+                    float x1 = ENEMY_WEIGHT_START_X + k;
+                    float y1 = ENEMY_WEIGHT_START_Y + k + i * OFFSET_Y;
+                    float x2 = ENEMY_WEIGHT_START_X + RECT_X - k;
+                    float y2 = ENEMY_WEIGHT_START_Y + RECT_Y - k + i * OFFSET_Y;
 
                     DrawBoxAA(x1, y1, x2, y2, color, FALSE);
                 }
             }
 
             if (auto offset = enemy.GetWeightOffset(EAttackType::Rock); offset == 0)
-                message = std::format(L"グー：　　?");
+                message = std::format(L"✊ ⚖：?");
             else
-                message = std::format(L"グー：　　?+{}", offset);
-
-            DrawString(ENEMY_DATA_START_X + TEXT_OFFSET_X,
-                       ENEMY_DATA_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
+                message = std::format(L"✊ ⚖：?+{}", offset);
+            DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
+                       ENEMY_WEIGHT_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
                        message.c_str(), color);
 
 
             if (auto offset = enemy.GetWeightOffset(EAttackType::Scissors); offset == 0)
-                message = std::format(L"チョキ：　?");
+                message = std::format(L"✌ ⚖：?");
             else
-                message = std::format(L"チョキ：　?+{}", offset);
+                message = std::format(L"✌ ⚖：?+{}", offset);
 
-            DrawString(ENEMY_DATA_START_X + TEXT_OFFSET_X,
-                       ENEMY_DATA_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
+            DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
+                       ENEMY_WEIGHT_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
                        message.c_str(), color);
 
+            message =L"✋ ⚖：?";
+            if (auto offset = enemy.GetWeightOffset(EAttackType::Paper); offset != 0)
+                message += std::format(L"{}", offset);
 
-            if (auto offset = enemy.GetWeightOffset(EAttackType::Paper); offset == 0)
-                message = std::format(L"パー：　　?");
-            else
-                message = std::format(L"パー：　　?+{}", offset);
-
-            DrawString(ENEMY_DATA_START_X + TEXT_OFFSET_X,
-                       ENEMY_DATA_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
+            DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
+                       ENEMY_WEIGHT_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
                        message.c_str(), color);
+            
+            
+            for (int i = 0; i < 3; ++i)
+            {
+                for (int k = 0; k < THICKNESS; ++k)
+                {
+                    float x1 = ENEMY_DAMAGE_START_X + k;
+                    float y1 = ENEMY_DAMAGE_START_Y + k + i * OFFSET_Y;
+                    float x2 = ENEMY_DAMAGE_START_X + RECT_X - k;
+                    float y2 = ENEMY_DAMAGE_START_Y + RECT_Y - k + i * OFFSET_Y;
+
+                    DrawBoxAA(x1, y1, x2, y2, color, FALSE);
+                }
+            }
+            
+            DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                 ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
+                 color, L"✊ ⚔：%d", enemy.GetDamage(EAttackType::Rock));
+            DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                             ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
+                             color, L"✌ ⚔：%d", enemy.GetDamage(EAttackType::Scissors));
+            DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                             ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
+                             color, L"✋ ⚔：%d", enemy.GetDamage(EAttackType::Paper));
         }
     };
 

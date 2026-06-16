@@ -1,5 +1,8 @@
 #include <dxe.h>
 #include "gm_main.h"
+#include <windows.h>
+
+#include <ResourceConstantHedder.h>
 
 import GameService;
 import ServiceLocator;
@@ -37,7 +40,11 @@ void InitGameServices()
 void GameStart()
 {
     InitGameServices();
-    SetFontSize(32);
+    AddFontResourceEx(FILE_PATH_OTF_UNIFONT_17, FR_PRIVATE, nullptr);
+    ChangeFont(FONT_NAME_UNIFONT); 
+    SetFontSize(48);
+    ChangeFontType(DX_FONTTYPE_NORMAL);
+    SetFontThickness(1);
     SetBackgroundColor(7, 31, 56);
     gameService = ServiceLocator::Get<IGameService>();
     gameService->Start();

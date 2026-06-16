@@ -60,10 +60,9 @@ namespace mc
         void LoadFonts()
         {
             ChangeFontType(DX_FONTTYPE_NORMAL);
-            AddFontResourceEx(FILE_PATH_TTF_ARK_PIXEL_16PX_PROPORTIONAL_JA, FR_PRIVATE, nullptr);
-            int handle = CreateFontToHandle(FONT_NAME_ARK_PIXEL_16PX_PROP_JA, 16, -1, DX_FONTTYPE_NORMAL, SHIFTJIS_CHARSET);
-            if (handle == -1) printfDx(L"Failed to load font!\n");
-            fontMappings.insert({EFont::ARK_PIXEL_16PX_JP, handle});
+            int handle = CreateFontToHandle(FILE_NAME_OTF_UNIFONT_17, 16, -1, DX_FONTTYPE_NORMAL);
+            if (handle == -1) printfDx(L"フォントの読み込みに失敗\n");
+            fontMappings.insert({EFont::UNIFONT_17, handle});
         }
 
 

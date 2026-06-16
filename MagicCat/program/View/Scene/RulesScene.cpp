@@ -23,18 +23,18 @@ namespace mc
         constexpr int TEXT_START_OFFSET_Y = 50;
         
         constexpr int CONTENT_START_OFFSET_Y = 140;
-        constexpr int LINE_SPACING = 50;
+        constexpr int LINE_SPACING = 70;
         
         constexpr int INDENT_LEVEL_1 = 50;
         constexpr int INDENT_LEVEL_2 = 80;
         constexpr int INDENT_LEVEL_3 = 100;
         
-        constexpr int SECTION_SPACING = 200;
+        constexpr int SECTION_SPACING = 300;
 
-        constexpr int ICON_OFFSET_X = 280;
+        constexpr int ICON_OFFSET_X = 320;
         constexpr int ICON_OFFSET_Y = 80;
-        constexpr int ICON_TEXT_OFFSET_X = 210;
-        constexpr int ICON_TEXT_OFFSET_Y = 65;
+        constexpr int ICON_TEXT_OFFSET_X = 250;
+        constexpr int ICON_TEXT_OFFSET_Y = 72;
 
         constexpr uint32_t COLOR_OVERLAY = 0x000000;
         constexpr uint32_t COLOR_BOX_BG = 0x1E1E28;

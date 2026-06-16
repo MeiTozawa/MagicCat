@@ -1,8 +1,9 @@
 module;
 
-export module Displayer;
-
 #include <memory>
+#include <functional>
+
+export module Displayer;
 
 namespace mc
 {
@@ -18,4 +19,29 @@ namespace mc
     export std::unique_ptr<IDisplayer> CreateControlDisplayer(uint32_t color = 0xFFFFFF);
     export std::unique_ptr<IDisplayer> CreateCardDisplayer();
     export std::unique_ptr<IDisplayer> CreateCharacterDisplayer();
+
+    export class LambdaDisplayer : public IDisplayer
+    {
+        std::function<void(float)> drawFunc;
+        std::function<void(float)> updateFunc;
+    public:
+        LambdaDisplayer(std::function<void(float)> drawFunc, std::function<void(float)> updateFunc)
+            : drawFunc(std::move(drawFunc)), updateFunc(std::move(updateFunc)) {}
+
+        void Update(float deltaTime) override
+        {
+            if (updateFunc) updateFunc(deltaTime);
+        }
+        void Draw(float deltaTime) const override
+        {
+            if (drawFunc) drawFunc(deltaTime);
+        }
+    };
+
+    export std::unique_ptr<IDisplayer> CreateLambdaDisplayer(
+        std::function<void(float)> drawFunc,
+        std::function<void(float)> updateFunc = nullptr)
+    {
+        return std::make_unique<LambdaDisplayer>(std::move(drawFunc), std::move(updateFunc));
+    }
 }

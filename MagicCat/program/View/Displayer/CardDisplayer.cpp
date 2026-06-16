@@ -126,7 +126,7 @@ namespace mc
                 
                 // If this is the newest card, wrap it in HitFlashEffector
                 if (isDraw && i == cachedHand.size() - 1) {
-                    auto flashEffector = CreateHitFlashEffector(std::move(cardDisp), 300, 0xFFFFFF);
+                    auto flashEffector = CreateHitFlashEffector(std::move(cardDisp), 0x000000, 300);
                     flashEffector->Play();
                     cardDisplayers.push_back(std::move(flashEffector));
                 } else {

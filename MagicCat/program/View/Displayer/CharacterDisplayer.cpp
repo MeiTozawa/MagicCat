@@ -17,10 +17,12 @@ import Player;
 import Enemy;
 import HealthComponent;
 import Character;
+import EffectorFactory;
 
 namespace mc
 {
-    namespace {
+    namespace
+    {
         constexpr int PLAYER_DAMAGE_START_X = 400;
         constexpr int PLAYER_DAMAGE_START_Y = 200;
 
@@ -45,51 +47,69 @@ namespace mc
         constexpr int RECT_Y = 100;
 
         constexpr int THICKNESS = 2;
+        constexpr uint32_t COLOR_WHITE = 0xFFFFFF;
     }
 
     class CharacterDisplayer : public IDisplayer
     {
         ICharacterService* characterService;
         int currentFocus = 0;
-        EventHandle actionSelectionHandle;
+        EventHandle actionSelectionEvent;
+        EventHandle addWeightEvent;
+        std::vector<std::unique_ptr<EffectorPlayer>> enemyWeightEffectors;
 
     public:
         CharacterDisplayer()
         {
             characterService = ServiceLocator::Get<ICharacterService>();
-            actionSelectionHandle = EventBus::Subscribe<ActionSelectionEvent>([this](const ActionSelectionEvent& e)
+            InitEnemyWeightEffectors();
+            actionSelectionEvent = EventBus::Subscribe<ActionSelectionEvent>([this](const ActionSelectionEvent& e)
             {
                 currentFocus = e.selectedIndex;
+            });
+            addWeightEvent = EventBus::Subscribe<AddWeightEvent>([this](const AddWeightEvent& e)
+            {
+                InitEnemyWeightEffectors();
+                enemyWeightEffectors[static_cast<int>(e.AttackType)]->Play();
             });
         }
 
         ~CharacterDisplayer() override
         {
-            EventBus::Unsubscribe(actionSelectionHandle);
+            EventBus::Unsubscribe(actionSelectionEvent);
+            EventBus::Unsubscribe(addWeightEvent);
         }
 
-        void Update(float deltaTime) override {}
+        void Update(float deltaTime) override
+        {
+            for (auto& eff : enemyWeightEffectors)
+                eff->Update(deltaTime);
+        }
 
         void Draw(float deltaTime) const override
         {
-            PrintPlayerInfo(0xFFFFFF);
-            PrintEnemyInfo(0xFFFFFF);
+            PrintPlayerInfo();
+            PrintEnemyInfoWithoutWeight();
             PrintPlayerActions(currentFocus);
+
+            for (auto& eff : enemyWeightEffectors)
+                eff->Draw(deltaTime);
         }
 
     private:
-        void PrintPlayerInfo(uint32_t color) const
+        void PrintPlayerInfo() const
         {
+            
             const Player& player = characterService->GetPlayer();
             const auto playerHealthComp = player.GetHealthComponent();
 
             auto message = std::format(L"HP: {}/{}", playerHealthComp.GetHealth(), playerHealthComp.GetMaxHealth());
-            DrawString(PLAYER_HP_X, PLAYER_HP_Y, message.c_str(), color);
+            DrawString(PLAYER_HP_X, PLAYER_HP_Y, message.c_str(), COLOR_WHITE);
             message = std::format(L"MP: {}/{}", player.GetMp(), player.GetMaxMp());
-            DrawString(PLAYER_MP_X, PLAYER_MP_Y, message.c_str(), color);
+            DrawString(PLAYER_MP_X, PLAYER_MP_Y, message.c_str(), COLOR_WHITE);
         }
 
-        void PrintPlayerActions(int focus = 0, uint32_t color = 0xFFFFFF) const
+        void PrintPlayerActions(int focus) const
         {
             const Player& player = characterService->GetPlayer();
             for (int i = 0; i < 4; ++i)
@@ -101,7 +121,7 @@ namespace mc
                     float x2 = PLAYER_DAMAGE_START_X + RECT_X - k;
                     float y2 = PLAYER_DAMAGE_START_Y + RECT_Y - k + i * OFFSET_Y;
 
-                    DrawBoxAA(x1, y1, x2, y2, color, FALSE);
+                    DrawBoxAA(x1, y1, x2, y2, COLOR_WHITE, FALSE);
                 }
 
                 if (i == focus)
@@ -113,32 +133,78 @@ namespace mc
                         float x2 = PLAYER_DAMAGE_START_X + RECT_X - k;
                         float y2 = PLAYER_DAMAGE_START_Y + RECT_Y - k + i * OFFSET_Y;
 
-                        DrawBoxAA(x1, y1, x2, y2, color, FALSE);
+                        DrawBoxAA(x1, y1, x2, y2, COLOR_WHITE, FALSE);
                     }
                 }
             }
             DrawFormatString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                              PLAYER_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"  魔法");
+                             COLOR_WHITE, L"  魔法");
             DrawFormatString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                              PLAYER_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"✊ ⚔：%d", player.GetDamage(EAttackType::Rock));
+                             COLOR_WHITE, L"✊ ⚔：%d", player.GetDamage(EAttackType::Rock));
             DrawFormatString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                              PLAYER_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"✌ ⚔：%d", player.GetDamage(EAttackType::Scissors));
+                             COLOR_WHITE, L"✌ ⚔：%d", player.GetDamage(EAttackType::Scissors));
             DrawFormatString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                              PLAYER_DAMAGE_START_Y + 3 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"✋ ⚔：%d", player.GetDamage(EAttackType::Paper));
+                             COLOR_WHITE, L"✋ ⚔：%d", player.GetDamage(EAttackType::Paper));
         }
 
-        void PrintEnemyInfo(uint32_t color) const
+        void InitEnemyWeightEffectors()
         {
-            
+            enemyWeightEffectors.clear();
+
+            auto rockWeightDisplayer = CreateLambdaDisplayer([this](float)
+            {
+                const Enemy& enemy = characterService->GetEnemy();
+                std::wstring message = L"✊ ⚖：?";
+                if (auto offset = enemy.GetWeightOffset(EAttackType::Rock); offset != 0)
+                    message += std::format(L"+{}", offset);
+
+                DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
+                           ENEMY_WEIGHT_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
+                           message.c_str(), COLOR_WHITE);
+            });
+
+            enemyWeightEffectors.push_back(CreateHitFlashEffector(std::move(rockWeightDisplayer), 0xFF0000, 300));
+
+            auto scissorsWeightDisplayer = CreateLambdaDisplayer([this](float)
+            {
+                const Enemy& enemy = characterService->GetEnemy();
+                std::wstring message = L"✌ ⚖：?";
+                if (auto offset = enemy.GetWeightOffset(EAttackType::Scissors); offset != 0)
+                    message += std::format(L"+{}", offset);
+
+                DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
+                           ENEMY_WEIGHT_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
+                           message.c_str(), COLOR_WHITE);
+            });
+
+            enemyWeightEffectors.push_back(CreateHitFlashEffector(std::move(scissorsWeightDisplayer), 0xFF0000, 300));
+
+            auto paperWeightDisplayer = CreateLambdaDisplayer([this](float)
+            {
+                const Enemy& enemy = characterService->GetEnemy();
+                std::wstring message = L"✋ ⚖：?";
+                if (auto offset = enemy.GetWeightOffset(EAttackType::Paper); offset != 0)
+                    message += std::format(L"+{}", offset);
+
+                DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
+                           ENEMY_WEIGHT_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
+                           message.c_str(), COLOR_WHITE);
+            });
+
+            enemyWeightEffectors.push_back(CreateHitFlashEffector(std::move(paperWeightDisplayer), 0xFF0000, 300));
+        }
+
+        void PrintEnemyInfoWithoutWeight() const
+        {
             const Enemy& enemy = characterService->GetEnemy();
             const auto enemyHealthComp = enemy.GetHealthComponent();
 
             auto message = std::format(L"HP: {}/{}", enemyHealthComp.GetHealth(), enemyHealthComp.GetMaxHealth());
-            DrawString(ENEMY_HP_X, ENEMY_HP_Y, message.c_str(), color);
+            DrawString(ENEMY_HP_X, ENEMY_HP_Y, message.c_str(), COLOR_WHITE);
             for (int i = 0; i < 3; ++i)
             {
                 for (int k = 0; k < THICKNESS; ++k)
@@ -148,37 +214,10 @@ namespace mc
                     float x2 = ENEMY_WEIGHT_START_X + RECT_X - k;
                     float y2 = ENEMY_WEIGHT_START_Y + RECT_Y - k + i * OFFSET_Y;
 
-                    DrawBoxAA(x1, y1, x2, y2, color, FALSE);
+                    DrawBoxAA(x1, y1, x2, y2, COLOR_WHITE, FALSE);
                 }
             }
 
-            if (auto offset = enemy.GetWeightOffset(EAttackType::Rock); offset == 0)
-                message = std::format(L"✊ ⚖：?");
-            else
-                message = std::format(L"✊ ⚖：?+{}", offset);
-            DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
-                       ENEMY_WEIGHT_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                       message.c_str(), color);
-
-
-            if (auto offset = enemy.GetWeightOffset(EAttackType::Scissors); offset == 0)
-                message = std::format(L"✌ ⚖：?");
-            else
-                message = std::format(L"✌ ⚖：?+{}", offset);
-
-            DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
-                       ENEMY_WEIGHT_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                       message.c_str(), color);
-
-            message =L"✋ ⚖：?";
-            if (auto offset = enemy.GetWeightOffset(EAttackType::Paper); offset != 0)
-                message += std::format(L"{}", offset);
-
-            DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
-                       ENEMY_WEIGHT_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                       message.c_str(), color);
-            
-            
             for (int i = 0; i < 3; ++i)
             {
                 for (int k = 0; k < THICKNESS; ++k)
@@ -188,19 +227,19 @@ namespace mc
                     float x2 = ENEMY_DAMAGE_START_X + RECT_X - k;
                     float y2 = ENEMY_DAMAGE_START_Y + RECT_Y - k + i * OFFSET_Y;
 
-                    DrawBoxAA(x1, y1, x2, y2, color, FALSE);
+                    DrawBoxAA(x1, y1, x2, y2, COLOR_WHITE, FALSE);
                 }
             }
-            
+
             DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                 ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                 color, L"✊ ⚔：%d", enemy.GetDamage(EAttackType::Rock));
+                             ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
+                             COLOR_WHITE, L"✊ ⚔：%d", enemy.GetDamage(EAttackType::Rock));
             DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
                              ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"✌ ⚔：%d", enemy.GetDamage(EAttackType::Scissors));
+                             COLOR_WHITE, L"✌ ⚔：%d", enemy.GetDamage(EAttackType::Scissors));
             DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
                              ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                             color, L"✋ ⚔：%d", enemy.GetDamage(EAttackType::Paper));
+                             COLOR_WHITE, L"✋ ⚔：%d", enemy.GetDamage(EAttackType::Paper));
         }
     };
 

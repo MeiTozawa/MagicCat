@@ -21,7 +21,7 @@ namespace mc
     };
 
     export std::unique_ptr<EffectorPlayer> CreateHitFlashEffector(
-        std::unique_ptr<IDisplayer>&& displayer, int flashTime = 300
+        std::unique_ptr<IDisplayer>&& displayer, uint32_t color, int flashTime = 300
     );
     export std::unique_ptr<EffectorPlayer> CreateFadeEffector(
         std::unique_ptr<IDisplayer>&& displayer, int fadeInTime, int holdTime, int fadeOutTime

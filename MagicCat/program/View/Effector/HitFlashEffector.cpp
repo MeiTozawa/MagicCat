@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 #include "tweeny.h"
 
@@ -13,10 +13,11 @@ namespace mc
         const int flashTime = 0;
         int bright = 255;
         tweeny::tween<int> colorTween = {};
+        uint32_t flashColor = 0xFF0000;
 
     public:
-        HitFlashEffector(std::unique_ptr<IDisplayer>&& displayer, const int flashTime) :
-            EffectorPlayer(std::move(displayer)), flashTime(flashTime) {}
+        HitFlashEffector(std::unique_ptr<IDisplayer>&& displayer, const int flashTime, uint32_t color) :
+            EffectorPlayer(std::move(displayer)), flashTime(flashTime), flashColor(color) {}
 
         void Play() override
         {
@@ -46,16 +47,24 @@ namespace mc
 
         void Draw(float deltaTime) const override
         {
-            SetDrawBright(255, bright, bright);
+            int flashR = (flashColor >> 16) & 0xFF;
+            int flashG = (flashColor >> 8) & 0xFF;
+            int flashB = flashColor & 0xFF;
+
+            int curR = flashR + (255 - flashR) * bright / 255;
+            int curG = flashG + (255 - flashG) * bright / 255;
+            int curB = flashB + (255 - flashB) * bright / 255;
+
+            SetDrawBright(curR, curG, curB);
             displayer->Draw(deltaTime);
             SetDrawBright(255, 255, 255);
         }
     };
 
     std::unique_ptr<EffectorPlayer> CreateHitFlashEffector(
-        std::unique_ptr<IDisplayer>&& displayer, int flashTime
+        std::unique_ptr<IDisplayer>&& displayer, uint32_t color, int flashTime
     )
     {
-        return std::make_unique<HitFlashEffector>(std::move(displayer), flashTime);
+        return std::make_unique<HitFlashEffector>(std::move(displayer), flashTime, color);
     }
 }

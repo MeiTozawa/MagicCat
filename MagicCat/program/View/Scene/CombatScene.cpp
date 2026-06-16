@@ -76,13 +76,13 @@ namespace mc
             combatController->Reset();
 
             auto playerAnimation = CreateSpriteAnimation(
-                assetService->GetSpriteHandle(ESprite::Bunny), EXTRA_RATE
+                characterService->GetPlayer().GetSprite(), EXTRA_RATE
             );
             playerAnimation->SetPosition(PLAYER_START_X, PLAYER_START_Y);
             playerAnimationEffector = CreateHitFlashEffector(std::move(playerAnimation), 0xFF0000);
 
             auto enemyAnimation = CreateSpriteAnimation(
-                assetService->GetSpriteHandle(ESprite::Wolf), EXTRA_RATE, true
+                characterService->GetEnemy().GetSprite(), EXTRA_RATE, true
             );
             enemyAnimation->SetPosition(ENEMY_START_X, ENEMY_START_Y);
             enemyAnimationEffector = CreateHitFlashEffector(std::move(enemyAnimation), 0xFF0000);

@@ -31,7 +31,30 @@ namespace mc
 
     export enum class ESprite
     {
-        Bunny, Wolf
+        Null = -1,
+        Bunny, Wolf,
+        
+        CluckingChicken = 100,
+        CoralCrab,
+        CroakingToad,
+        DaintyPig,
+        HonkingGoose,
+        LeapingFrog,
+        MadBoar,
+        MeowingCat,
+        PasturingSheep,
+        SlowTurtle,
+        SnowFox,
+        SpikeyPorcupine,
+        StinkySkunk,
+        TimberWolf,
+        TinyChick
+    };
+    
+    export struct SpriteInfo
+    {
+        tnl::Vector2i size;
+        size_t frame;
     };
 
     export class IAssetService
@@ -41,6 +64,7 @@ namespace mc
         virtual const int GetImageHandle(EImage) = 0;
         virtual const int GetFontHandle(EFont) = 0;
         virtual const int GetSpriteHandle(ESprite) = 0;
+        virtual const SpriteInfo GetSpriteInfo(ESprite) = 0;
         virtual const int GetSoundHandle(ESound) = 0;
 
     };

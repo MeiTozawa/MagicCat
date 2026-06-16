@@ -3,6 +3,7 @@
 export module AnimationFactory;
 import Character;
 import Displayer;
+import AssetService;
 
 namespace mc
 {
@@ -38,6 +39,6 @@ namespace mc
     };
 
     export std::unique_ptr<AnimationPlayer> CreateSpriteAnimation(
-        int handle, float extraRate = 1.f, bool isFlip = false
+        ESprite sprite, float extraRate = 1.f, bool isFlip = false
     );
 }

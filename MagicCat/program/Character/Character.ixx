@@ -2,6 +2,7 @@ module;
 
 export module Character;
 import EventBus;
+import AssetService;
 
 namespace mc
 {
@@ -42,10 +43,12 @@ namespace mc
         int rockDamage = 1;
         int scissorsDamage = 1;
         int paperDamage = 1;
+        ESprite sprite = ESprite::Null;
 
         std::vector<ETag> tags;
 
     public:
+        ESprite GetSprite() const { return sprite; }
         std::wstring GetName() const { return name; }
         int GetDamage(EAttackType t) const
         {

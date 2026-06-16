@@ -7,6 +7,7 @@ export module Enemy;
 import Character;
 import HealthComponent;
 import EventBus;
+import AssetService;
 
 namespace mc
 {
@@ -20,24 +21,22 @@ namespace mc
     export class Enemy : public Character
     {
         std::unique_ptr<HealthComponent> healthComp;
-        EventHandle deathEvent;
         EventHandle addWeightEvent;
         EventHandle combatEvent;
 
     public:
-        Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0, const std::wstring& name = L"Unknown")
-            : baseWeight(baseWeight),
-              rockDamage(rockDamage),
-              scissorsDamage(scissorsDamage),
-              paperDamage(paperDamage)
+        Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0, 
+            const std::wstring& name = L"Unknown", ESprite sprite = ESprite::Null)
+            : baseWeight(baseWeight)
 
         {
             Character::name = name;
+            Character::sprite = sprite;
+            Character::rockDamage = rockDamage;
+            Character::scissorsDamage = scissorsDamage;
+            Character::paperDamage = paperDamage;
             healthComp = std::make_unique<HealthComponent>(this);
             tags.push_back(ETag::Enemy);
-            deathEvent = EventBus::Subscribe<DeathEvent>(
-                [this](const DeathEvent& e) { if (e.Victim == this) OnEnemyDeath(); }
-            );
             addWeightEvent = EventBus::Subscribe<AddWeightEvent>(
                 [this](const AddWeightEvent& e) { AddWeight(e.AttackType, e.Offset); }
             );
@@ -59,7 +58,6 @@ namespace mc
 
         ~Enemy()
         {
-            EventBus::Unsubscribe(deathEvent);
             EventBus::Unsubscribe(addWeightEvent);
             EventBus::Unsubscribe(combatEvent);
         }
@@ -124,10 +122,6 @@ namespace mc
         int scissorsWeightOffset = 0;
         int paperWeightOffset = 0;
 
-        int rockDamage = 0;
-        int scissorsDamage = 0;
-        int paperDamage = 0;
-
         void AddRockWeight(int weight)
         {
             rockWeightOffset += weight;
@@ -141,11 +135,6 @@ namespace mc
         void AddPaperWeight(int weight)
         {
             paperWeightOffset += weight;
-        }
-
-        void OnEnemyDeath()
-        {
-            // TODO
         }
     };
 } // namespace mc

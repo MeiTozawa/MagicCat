@@ -6,29 +6,35 @@ import ServiceLocator;
 import EventBus;
 import CharacterService;
 import HealthComponent;
+import AssetService;
 
 namespace mc
 {
-    constexpr int SPRITE_SIZE = 256;
 
-
-    constexpr int ANIMATION_SPEED = 10;
-    constexpr int FRAME_COUNT = 4;
-    constexpr int FRAME_SIZE = 32;
-
+    constexpr int ANIMATION_SPEED = 6;
 
     class SpriteAnimation : public AnimationPlayer
     {
+        IAssetService* assetService;
         float timer = 0;
         int frame_index = 0;
-
-        int handle;
         float extraRate;
         bool isFlip;
+        
+        size_t frame;
+        tnl::Vector2i size;
+        int handle;
 
     public:
-        SpriteAnimation(int handle, float extraRate = 1.f, bool isFlip = false) :
-            handle(handle), extraRate(extraRate), isFlip(isFlip) {}
+        SpriteAnimation(ESprite sprite, float extraRate = 1.f, bool isFlip = false) :
+            extraRate(extraRate), isFlip(isFlip)
+        {
+            assetService = ServiceLocator::Get<IAssetService>();
+            handle = assetService->GetSpriteHandle(sprite);
+            auto info = assetService->GetSpriteInfo(sprite);
+            frame = info.frame;
+            size = info.size;
+        }
 
         void Update(float deltaTime) override
         {
@@ -36,7 +42,7 @@ namespace mc
             if (timer >= 1.f / ANIMATION_SPEED)
             {
                 frame_index += 1;
-                if (frame_index >= FRAME_COUNT)
+                if (frame_index >= frame)
                     frame_index = 0;
                 timer = 0;
             }
@@ -45,12 +51,12 @@ namespace mc
         void Draw(float deltaTime) const override
         {
             DrawRectRotaGraph(
-                x + FRAME_SIZE / 2,
-                y + FRAME_SIZE / 2,
-                frame_index * FRAME_SIZE,
+                x + size.x / 2,
+                y + size.y / 2,
+                frame_index * size.x,
                 0,
-                FRAME_SIZE,
-                FRAME_SIZE,
+                size.x,
+                size.y,
                 extraRate,
                 0.,
                 handle,
@@ -60,8 +66,8 @@ namespace mc
         }
     };
 
-    std::unique_ptr<AnimationPlayer> CreateSpriteAnimation(int handle, float extraRate, bool isFlip)
+    std::unique_ptr<AnimationPlayer> CreateSpriteAnimation(ESprite sprite, float extraRate, bool isFlip)
     {
-        return std::make_unique<SpriteAnimation>(handle, extraRate, isFlip);
+        return std::make_unique<SpriteAnimation>(sprite, extraRate, isFlip);
     }
 } // namespace mc

@@ -44,6 +44,15 @@ namespace mc
             return -1;
         }
 
+        const SpriteInfo GetSpriteInfo(ESprite e) override
+        {
+            if (static_cast<int>(e) < 100)
+            {
+                return {{32, 32}, 4};
+            }
+            return {{16, 16}, 4};
+        }
+
         const int GetSoundHandle(ESound e) override
         {
             if (soundMappings.contains(e))
@@ -113,6 +122,17 @@ namespace mc
                         printfDx(L"%sの読み込みに失敗", spr.path);
                     else
                         spriteMappings.insert({spr.id, resource});
+                }
+
+                ESprite animalEnumStart = ESprite::CluckingChicken;
+                for (size_t i = 0; i < FILE_PATH_TBL_IMAGES_BASICANIMALS.size(); ++i)
+                {
+                    ESprite id = static_cast<ESprite>(static_cast<int>(animalEnumStart) + i);
+                    auto resource = LoadGraph(FILE_PATH_TBL_IMAGES_BASICANIMALS[i]);
+                    if (resource == -1)
+                        printfDx(L"%sの読み込みに失敗", FILE_PATH_TBL_IMAGES_BASICANIMALS[i]);
+                    else
+                        spriteMappings.insert({id, resource});
                 }
             }
             catch (const std::exception&)

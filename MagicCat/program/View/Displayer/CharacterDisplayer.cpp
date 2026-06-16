@@ -28,7 +28,9 @@ namespace mc
 
         constexpr int PLAYER_HP_X = 60;
         constexpr int PLAYER_HP_Y = 200;
-        constexpr int ENEMY_HP_X = 1240;
+        constexpr int ENEMY_NAME_X = 1150;
+        constexpr int ENEMY_NAME_Y = 230;
+        constexpr int ENEMY_HP_X = 1500;
         constexpr int ENEMY_HP_Y = 230;
         constexpr int PLAYER_MP_X = 60;
         constexpr int PLAYER_MP_Y = 300;
@@ -99,7 +101,6 @@ namespace mc
     private:
         void PrintPlayerInfo() const
         {
-            
             const Player& player = characterService->GetPlayer();
             const auto playerHealthComp = player.GetHealthComponent();
 
@@ -203,8 +204,12 @@ namespace mc
             const Enemy& enemy = characterService->GetEnemy();
             const auto enemyHealthComp = enemy.GetHealthComponent();
 
-            auto message = std::format(L"HP: {}/{}", enemyHealthComp.GetHealth(), enemyHealthComp.GetMaxHealth());
+            auto message = enemy.GetName();
+            DrawString(ENEMY_NAME_X, ENEMY_NAME_Y, message.c_str(), COLOR_WHITE);
+
+            message = std::format(L"HP: {}/{}", enemyHealthComp.GetHealth(), enemyHealthComp.GetMaxHealth());
             DrawString(ENEMY_HP_X, ENEMY_HP_Y, message.c_str(), COLOR_WHITE);
+
             for (int i = 0; i < 3; ++i)
             {
                 for (int k = 0; k < THICKNESS; ++k)

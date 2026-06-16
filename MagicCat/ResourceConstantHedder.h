@@ -13,6 +13,22 @@
 
 constexpr const wchar_t* FILE_PATH_OTF_UNIFONT_17 = L"resource/Fonts/unifont-17.otf"; 
 
+constexpr const wchar_t* FILE_PATH_PNG_CLUCKINGCHICKEN = L"resource/Images/BasicAnimals/CluckingChicken.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_CORALCRAB = L"resource/Images/BasicAnimals/CoralCrab.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_CROAKINGTOAD = L"resource/Images/BasicAnimals/CroakingToad.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_DAINTYPIG = L"resource/Images/BasicAnimals/DaintyPig.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_HONKINGGOOSE = L"resource/Images/BasicAnimals/HonkingGoose.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_LEAPINGFROG = L"resource/Images/BasicAnimals/LeapingFrog.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_MADBOAR = L"resource/Images/BasicAnimals/MadBoar.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_MEOWINGCAT = L"resource/Images/BasicAnimals/MeowingCat.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_PASTURINGSHEEP = L"resource/Images/BasicAnimals/PasturingSheep.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_SLOWTURTLE = L"resource/Images/BasicAnimals/SlowTurtle.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_SNOWFOX = L"resource/Images/BasicAnimals/SnowFox.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_SPIKEYPORCUPINE = L"resource/Images/BasicAnimals/SpikeyPorcupine.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_STINKYSKUNK = L"resource/Images/BasicAnimals/StinkySkunk.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_TIMBERWOLF = L"resource/Images/BasicAnimals/TimberWolf.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_TINYCHICK = L"resource/Images/BasicAnimals/TinyChick.png"; 
+
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE = L"resource/Images/Keyboard/keyboard_arrow_down_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE = L"resource/Images/Keyboard/keyboard_arrow_up_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_Q_OUTLINE = L"resource/Images/Keyboard/keyboard_q_outline.png"; 
@@ -51,6 +67,23 @@ constexpr const wchar_t* FILE_PATH_MP3_WIN = L"resource/Sounds/Win.mp3";
 
 const std::vector<const wchar_t*> FILE_PATH_TBL_FONTS = {
     FILE_PATH_OTF_UNIFONT_17,
+};
+const std::vector<const wchar_t*> FILE_PATH_TBL_IMAGES_BASICANIMALS = {
+    FILE_PATH_PNG_CLUCKINGCHICKEN,
+    FILE_PATH_PNG_CORALCRAB,
+    FILE_PATH_PNG_CROAKINGTOAD,
+    FILE_PATH_PNG_DAINTYPIG,
+    FILE_PATH_PNG_HONKINGGOOSE,
+    FILE_PATH_PNG_LEAPINGFROG,
+    FILE_PATH_PNG_MADBOAR,
+    FILE_PATH_PNG_MEOWINGCAT,
+    FILE_PATH_PNG_PASTURINGSHEEP,
+    FILE_PATH_PNG_SLOWTURTLE,
+    FILE_PATH_PNG_SNOWFOX,
+    FILE_PATH_PNG_SPIKEYPORCUPINE,
+    FILE_PATH_PNG_STINKYSKUNK,
+    FILE_PATH_PNG_TIMBERWOLF,
+    FILE_PATH_PNG_TINYCHICK,
 };
 const std::vector<const wchar_t*> FILE_PATH_TBL_IMAGES_KEYBOARD = {
     FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE,
@@ -95,6 +128,21 @@ const std::vector<const wchar_t*> FILE_PATH_TBL_SOUNDS = {
 
 const std::unordered_map<std::wstring, const wchar_t*> FILE_PATH_DICTIONARY = { 
     { std::wstring( L"unifont-17.otf" ), FILE_PATH_OTF_UNIFONT_17 },
+    { std::wstring( L"CluckingChicken.png" ), FILE_PATH_PNG_CLUCKINGCHICKEN },
+    { std::wstring( L"CoralCrab.png" ), FILE_PATH_PNG_CORALCRAB },
+    { std::wstring( L"CroakingToad.png" ), FILE_PATH_PNG_CROAKINGTOAD },
+    { std::wstring( L"DaintyPig.png" ), FILE_PATH_PNG_DAINTYPIG },
+    { std::wstring( L"HonkingGoose.png" ), FILE_PATH_PNG_HONKINGGOOSE },
+    { std::wstring( L"LeapingFrog.png" ), FILE_PATH_PNG_LEAPINGFROG },
+    { std::wstring( L"MadBoar.png" ), FILE_PATH_PNG_MADBOAR },
+    { std::wstring( L"MeowingCat.png" ), FILE_PATH_PNG_MEOWINGCAT },
+    { std::wstring( L"PasturingSheep.png" ), FILE_PATH_PNG_PASTURINGSHEEP },
+    { std::wstring( L"SlowTurtle.png" ), FILE_PATH_PNG_SLOWTURTLE },
+    { std::wstring( L"SnowFox.png" ), FILE_PATH_PNG_SNOWFOX },
+    { std::wstring( L"SpikeyPorcupine.png" ), FILE_PATH_PNG_SPIKEYPORCUPINE },
+    { std::wstring( L"StinkySkunk.png" ), FILE_PATH_PNG_STINKYSKUNK },
+    { std::wstring( L"TimberWolf.png" ), FILE_PATH_PNG_TIMBERWOLF },
+    { std::wstring( L"TinyChick.png" ), FILE_PATH_PNG_TINYCHICK },
     { std::wstring( L"keyboard_arrow_down_outline.png" ), FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE },
     { std::wstring( L"keyboard_arrow_up_outline.png" ), FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE },
     { std::wstring( L"keyboard_q_outline.png" ), FILE_PATH_PNG_KEYBOARD_Q_OUTLINE },
@@ -128,6 +176,22 @@ const std::unordered_map<std::wstring, const wchar_t*> FILE_PATH_DICTIONARY = {
 
 
 constexpr const wchar_t* FILE_NAME_OTF_UNIFONT_17 = L"unifont-17.otf"; 
+
+constexpr const wchar_t* FILE_NAME_PNG_CLUCKINGCHICKEN = L"CluckingChicken.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_CORALCRAB = L"CoralCrab.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_CROAKINGTOAD = L"CroakingToad.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_DAINTYPIG = L"DaintyPig.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_HONKINGGOOSE = L"HonkingGoose.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_LEAPINGFROG = L"LeapingFrog.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_MADBOAR = L"MadBoar.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_MEOWINGCAT = L"MeowingCat.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_PASTURINGSHEEP = L"PasturingSheep.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_SLOWTURTLE = L"SlowTurtle.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_SNOWFOX = L"SnowFox.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_SPIKEYPORCUPINE = L"SpikeyPorcupine.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_STINKYSKUNK = L"StinkySkunk.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_TIMBERWOLF = L"TimberWolf.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_TINYCHICK = L"TinyChick.png"; 
 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ARROW_DOWN_OUTLINE = L"keyboard_arrow_down_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ARROW_UP_OUTLINE = L"keyboard_arrow_up_outline.png"; 
@@ -167,6 +231,23 @@ constexpr const wchar_t* FILE_NAME_MP3_WIN = L"Win.mp3";
 
 const std::vector<const wchar_t*> FILE_NAME_TBL_FONTS = {
     FILE_NAME_OTF_UNIFONT_17,
+};
+const std::vector<const wchar_t*> FILE_NAME_TBL_IMAGES_BASICANIMALS = {
+    FILE_NAME_PNG_CLUCKINGCHICKEN,
+    FILE_NAME_PNG_CORALCRAB,
+    FILE_NAME_PNG_CROAKINGTOAD,
+    FILE_NAME_PNG_DAINTYPIG,
+    FILE_NAME_PNG_HONKINGGOOSE,
+    FILE_NAME_PNG_LEAPINGFROG,
+    FILE_NAME_PNG_MADBOAR,
+    FILE_NAME_PNG_MEOWINGCAT,
+    FILE_NAME_PNG_PASTURINGSHEEP,
+    FILE_NAME_PNG_SLOWTURTLE,
+    FILE_NAME_PNG_SNOWFOX,
+    FILE_NAME_PNG_SPIKEYPORCUPINE,
+    FILE_NAME_PNG_STINKYSKUNK,
+    FILE_NAME_PNG_TIMBERWOLF,
+    FILE_NAME_PNG_TINYCHICK,
 };
 const std::vector<const wchar_t*> FILE_NAME_TBL_IMAGES_KEYBOARD = {
     FILE_NAME_PNG_KEYBOARD_ARROW_DOWN_OUTLINE,

@@ -8,6 +8,7 @@ import Character;
 import HealthComponent;
 import ServiceLocator;
 import EventBus;
+import AssetService;
 
 namespace mc {
 
@@ -34,6 +35,7 @@ public:
     Player()
     {
         name = L"Player";
+        sprite = ESprite::MeowingCat;
         healthComp = std::make_unique<HealthComponent>(this);
         tags.push_back(ETag::Player);
         changeMpEvent = EventBus::Subscribe<ChangeMpEvent>(

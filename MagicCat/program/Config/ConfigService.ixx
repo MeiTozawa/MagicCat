@@ -16,6 +16,7 @@ namespace mc
         int scissorsDamage;
         int paperDamage;
         std::wstring name;
+        std::string spriteName;
     };
 
     export struct CardConfig

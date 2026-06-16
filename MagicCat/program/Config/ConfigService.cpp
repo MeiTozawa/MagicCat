@@ -5,6 +5,7 @@ module;
 #include <sstream>
 #include <vector>
 #include <string>
+#include <windows.h>
 #include "json11.hpp"
 
 module ConfigService;
@@ -75,12 +76,13 @@ namespace mc
                             e.rockDamage = item["rockDamage"].int_value();
                             e.scissorsDamage = item["scissorsDamage"].int_value();
                             e.paperDamage = item["paperDamage"].int_value();
+                            e.spriteName = item["sprite"].string_value();
                             std::string s = item["name"].string_value();
-                            size_t len = mbstowcs(nullptr, s.c_str(), 0);
-                            if (len != static_cast<size_t>(-1))
+                            int len = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, NULL, 0);
+                            if (len > 0)
                             {
-                                std::vector<wchar_t> buf(len + 1);
-                                mbstowcs(buf.data(), s.c_str(), len + 1);
+                                std::vector<wchar_t> buf(len);
+                                MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, buf.data(), len);
                                 e.name = buf.data();
                             }
                             enemyConfigs.push_back(e);

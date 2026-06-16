@@ -115,21 +115,22 @@ namespace mc
             }
         };
 
-        void RebuildDisplayers()
+        void RebuildDisplayers(bool isDraw = false)
         {
             cardDisplayers.clear();
             auto position = tnl::Vector2i{CARD_START_X, CARD_START_Y};
             for (size_t i = 0; i < cachedHand.size(); ++i)
             {
                 std::wstring msg = std::format(L"+{}", cachedHand[i].Value);
-                auto cardDisplayer = std::make_unique<PrintACardDisplayer>(cachedHand[i], position, msg);
+                auto cardDisp = std::make_unique<PrintACardDisplayer>(cachedHand[i], position, msg);
                 
-                if (i == cachedHand.size() - 1) {
-                    auto flashEffector = CreateHitFlashEffector(std::move(cardDisplayer), 0x000000, 600);
+                // If this is the newest card, wrap it in HitFlashEffector
+                if (isDraw && i == cachedHand.size() - 1) {
+                    auto flashEffector = CreateHitFlashEffector(std::move(cardDisp), 300, 0xFFFFFF);
                     flashEffector->Play();
                     cardDisplayers.push_back(std::move(flashEffector));
                 } else {
-                    cardDisplayers.push_back(std::move(cardDisplayer));
+                    cardDisplayers.push_back(std::move(cardDisp));
                 }
                 
                 position.x += OFFSET_X;
@@ -143,12 +144,13 @@ namespace mc
             assetService = ServiceLocator::Get<IAssetService>();
 
             cachedHand = cardService->GetHandCards();
-            RebuildDisplayers();
+            RebuildDisplayers(false);
 
-            handUpdateHandle = EventBus::Subscribe<DrawCardEvent>([this](const DrawCardEvent& e)
+            handUpdateHandle = EventBus::Subscribe<HandUpdatedEvent>([this](const HandUpdatedEvent& e)
             {
-                cachedHand = cardService->GetHandCards();
-                RebuildDisplayers();
+                bool isDraw = e.cards.size() > cachedHand.size();
+                cachedHand = e.cards;
+                RebuildDisplayers(isDraw);
             });
         }
 

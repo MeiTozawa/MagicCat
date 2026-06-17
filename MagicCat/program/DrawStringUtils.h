@@ -22,13 +22,13 @@ namespace mc {
     static constexpr uint32_t COLOR_CARD_PAPER = 0xF5F5DC;
     static constexpr uint32_t COLOR_CARD_SCISSORS = 0xB0C4DE;
 	
-	static int GetWindowX() {
-		static int x = (int) dxe::GetWindowWidthF();
+	inline int GetWindowWidth() {
+		static const int x = (int) dxe::GetWindowWidthF();
 		return x;
 	}
 	
-	static int GetWindowY() {
-		static int y = (int) dxe::GetWindowWidthF();
+	inline int GetWindowHeight() {
+		static const int y = (int) dxe::GetWindowHeightF();
 		return y;
 	}
 

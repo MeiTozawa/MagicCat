@@ -52,6 +52,7 @@ namespace mc
     {
     public:
         virtual ~ICardService() = default;
+        virtual void Start() = 0;
         virtual const void DrawCard() = 0;
         virtual const std::vector<Card>& GetHandCards() = 0;
         virtual const std::vector<Card>& GetDrawCards() = 0;

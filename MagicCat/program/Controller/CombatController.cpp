@@ -54,7 +54,11 @@ namespace mc
             }
             else if (inputService->IsPressed(InputAction::IgConfirm))
             {
-                if (selectedActionIndex > ACTION_MAGIC)
+                if (selectedActionIndex == ACTION_MAGIC)
+                {
+                    characterService->GetPlayer().UseMagic(EMagic::Perspective);
+                }
+                else
                 {
                     EAttackType playerAttackIntent;
                     if (selectedActionIndex == ACTION_ROCK) playerAttackIntent = EAttackType::Rock;

@@ -30,11 +30,6 @@ namespace mc
 
                 deck.push_back(card);
             }
-
-            drawPile = std::vector<Card>(deck);
-
-            Random::Shuffle(drawPile);
-
             drawCardEvent = EventBus::Subscribe<DrawCardEvent>(
                 [this](const DrawCardEvent&) { DrawCard(); }
             );
@@ -47,9 +42,16 @@ namespace mc
                     EventBus::Publish(HandUpdatedEvent{hand});
                 }
             );
+        }
 
+        void Start() override
+        {
+            drawPile = std::vector(deck);
+            discardPile.clear();
+            hand.clear();
+
+            Random::Shuffle(drawPile);
             EventBus::Publish(DeckUpdatedEvent{drawPile.size(), discardPile.size()});
-            EventBus::Publish(HandUpdatedEvent{hand});
         }
 
         ~CardService() override

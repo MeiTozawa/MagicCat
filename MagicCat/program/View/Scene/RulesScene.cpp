@@ -1,7 +1,7 @@
 module;
 
 #include <memory>
-#include <dxe.h>
+#include <DrawStringUtils.h>
 
 module SceneService;
 
@@ -12,8 +12,6 @@ import ServiceLocator;
 namespace mc
 {
     namespace {
-        constexpr int SCREEN_W = 1920;
-        constexpr int SCREEN_H = 1080;
         constexpr int OVERLAY_ALPHA = 200;
 
         constexpr int BOX_MARGIN_X = 200;
@@ -36,14 +34,8 @@ namespace mc
         constexpr int ICON_TEXT_OFFSET_X = 250;
         constexpr int ICON_TEXT_OFFSET_Y = 72;
 
-        constexpr uint32_t COLOR_OVERLAY = 0x000000;
         constexpr uint32_t COLOR_BOX_BG = 0x1E1E28;
         constexpr uint32_t COLOR_BOX_BORDER = 0xC8C8C8;
-        constexpr uint32_t COLOR_TEXT_NORMAL = 0xC8C8C8;
-        constexpr uint32_t COLOR_TEXT_WHITE = 0xFFFFFF;
-        constexpr uint32_t COLOR_TEXT_BLUE = 0x96C8FF;
-        constexpr uint32_t COLOR_TEXT_RED = 0xFF9696;
-        constexpr uint32_t COLOR_TEXT_GREEN = 0xC8FFC8;
     }
 
     class RulesScene : public IScene
@@ -73,18 +65,18 @@ namespace mc
             int kbrHandle = assetService->GetImageHandle(EImage::KB_R);
 
             SetDrawBlendMode(DX_BLENDMODE_ALPHA, OVERLAY_ALPHA);
-            DrawBox(0, 0, SCREEN_W, SCREEN_H, COLOR_OVERLAY, TRUE);
+            DrawBox(0, 0, GetWindowX(), GetWindowY(), COLOR_BLACK, TRUE);
             SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
             constexpr int boxX1 = BOX_MARGIN_X;
             constexpr int boxY1 = BOX_MARGIN_Y;
-            constexpr int boxX2 = SCREEN_W - BOX_MARGIN_X;
-            constexpr int boxY2 = SCREEN_H - BOX_MARGIN_Y;
+            const int boxX2 = GetWindowX() - BOX_MARGIN_X;
+            const int boxY2 = GetWindowY() - BOX_MARGIN_Y;
 
             DrawBox(boxX1, boxY1, boxX2, boxY2, COLOR_BOX_BG, TRUE);
             DrawBox(boxX1, boxY1, boxX2, boxY2, COLOR_BOX_BORDER, FALSE);
 
-            DrawString(boxX1 + TEXT_START_OFFSET_X, boxY1 + TEXT_START_OFFSET_Y, L"【ルール説明】", COLOR_TEXT_WHITE);
+            DrawString(boxX1 + TEXT_START_OFFSET_X, boxY1 + TEXT_START_OFFSET_Y, L"【ルール説明】", COLOR_WHITE);
 
             int textY = boxY1 + CONTENT_START_OFFSET_Y;
             DrawString(boxX1 + INDENT_LEVEL_1, textY, L"1. カードを引くと即座に効果が発動します。", COLOR_TEXT_NORMAL);

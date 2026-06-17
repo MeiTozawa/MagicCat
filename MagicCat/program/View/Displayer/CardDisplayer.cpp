@@ -5,6 +5,7 @@ module;
 #include <vector>
 #include <string>
 #include <format>
+#include <DrawStringUtils.h>
 
 module Displayer;
 
@@ -34,13 +35,6 @@ namespace mc
         constexpr int THICKNESS = 5;
         constexpr int RADIUS = 30;
 
-        // color
-        constexpr uint32_t COLOR_WHITE = 0xFFFFFF;
-        constexpr uint32_t COLOR_DEFAULT = 0x79D5EE;
-        constexpr uint32_t COLOR_ROCK = 0x555555;
-        constexpr uint32_t COLOR_PAPER = 0xF5F5DC;
-        constexpr uint32_t COLOR_SCISSORS = 0xB0C4DE;
-
         // image
         constexpr float IMAGE_SCALE = 0.3f;
     }
@@ -69,16 +63,16 @@ namespace mc
                 switch (card.CardType)
                 {
                 case Rock:
-                    color = COLOR_ROCK;
+                    color = COLOR_CARD_ROCK;
                     break;
                 case Paper:
-                    color = COLOR_PAPER;
+                    color = COLOR_CARD_PAPER;
                     break;
                 case Scissors:
-                    color = COLOR_SCISSORS;
+                    color = COLOR_CARD_SCISSORS;
                     break;
                 default:
-                    color = COLOR_DEFAULT;
+                    color = COLOR_CARD_DEFAULT;
                 }
 
                 for (int i = 0; i < thickness; ++i)

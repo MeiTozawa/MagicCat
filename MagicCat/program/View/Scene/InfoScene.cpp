@@ -2,6 +2,7 @@ module;
 
 #include <dxe.h>
 #include <memory>
+#include <DrawStringUtils.h>
 
 module SceneService;
 import GameService;
@@ -22,29 +23,7 @@ namespace mc
         uint32_t infoColor;
         int winCount = 0;
         int failCount = 0;
-
-        static void DrawCenterString(int x, int y, const std::wstring& text, uint32_t color)
-        {
-            int textWidth = GetDrawStringWidth(text.c_str(), text.size());
-
-            int textHeight = GetFontSize();
-
-            int drawX = x - (textWidth / 2);
-            int drawY = y - (textHeight / 2);
-
-            DrawString(drawX, drawY, text.c_str(), color);
-        }
-
-        static void DrawRightString(int x, int y, const std::wstring& text, uint32_t color)
-        {
-            int textWidth = GetDrawStringWidth(text.c_str(), text.size());
-
-            int drawX = x - textWidth;
-            int drawY = y;
-
-            DrawString(drawX, drawY, text.c_str(), color);
-        }
-
+    
     public:
         InfoScene()
         {
@@ -89,11 +68,11 @@ namespace mc
             }
 
             DrawString(0, 20,
-                       std::format(L" 勝利回数: {} ", winCount).c_str(), 0xFFFFFF);
+                       std::format(L" 勝利回数: {} ", winCount).c_str(), COLOR_WHITE);
             DrawRightString(dxe::GetWindowWidthF(1.f), 20,
-                            std::format(L" 失敗回数: {} ", failCount).c_str(), 0xFFFFFF);
+                            std::format(L" 失敗回数: {} ", failCount).c_str(), COLOR_WHITE);
             DrawCenterString(dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.8f),
-                             L"Enterキーを押してゲームをスタートする！", 0xFFFFFF);
+                             L"Enterキーを押してゲームをスタートする！", COLOR_WHITE);
         }
     };
 

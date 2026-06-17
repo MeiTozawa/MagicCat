@@ -5,7 +5,7 @@ module;
 #include <memory>
 #include <string>
 #include <format>
-#include <cstdint>
+#include <DrawStringUtils.h>
 
 module Displayer;
 
@@ -49,7 +49,6 @@ namespace mc
         constexpr int RECT_Y = 100;
 
         constexpr int THICKNESS = 2;
-        constexpr uint32_t COLOR_WHITE = 0xFFFFFF;
     }
 
     class CharacterDisplayer : public IDisplayer
@@ -168,7 +167,7 @@ namespace mc
                            message.c_str(), COLOR_WHITE);
             });
 
-            enemyWeightEffectors.push_back(CreateHitFlashEffector(std::move(rockWeightDisplayer), 0xFF0000, 300));
+            enemyWeightEffectors.push_back(CreateHitFlashEffector(std::move(rockWeightDisplayer), COLOR_RED, 300));
 
             auto scissorsWeightDisplayer = CreateLambdaDisplayer([this](float)
             {
@@ -182,7 +181,7 @@ namespace mc
                            message.c_str(), COLOR_WHITE);
             });
 
-            enemyWeightEffectors.push_back(CreateHitFlashEffector(std::move(scissorsWeightDisplayer), 0xFF0000, 300));
+            enemyWeightEffectors.push_back(CreateHitFlashEffector(std::move(scissorsWeightDisplayer), COLOR_RED, 300));
 
             auto paperWeightDisplayer = CreateLambdaDisplayer([this](float)
             {
@@ -196,7 +195,7 @@ namespace mc
                            message.c_str(), COLOR_WHITE);
             });
 
-            enemyWeightEffectors.push_back(CreateHitFlashEffector(std::move(paperWeightDisplayer), 0xFF0000, 300));
+            enemyWeightEffectors.push_back(CreateHitFlashEffector(std::move(paperWeightDisplayer), COLOR_RED, 300));
         }
 
         void PrintEnemyInfoWithoutWeight() const

@@ -60,7 +60,7 @@ namespace mc
             characterService = ServiceLocator::Get<ICharacterService>();
             sceneService = ServiceLocator::Get<ISceneService>();
             assetService = ServiceLocator::Get<IAssetService>();
-            characterService->NextEnemy();
+            characterService->Start();
             if (healthChangedEvent != -1)
             {
                 EventBus::Unsubscribe(healthChangedEvent);

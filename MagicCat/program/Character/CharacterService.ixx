@@ -7,20 +7,16 @@ import Player;
 import EventBus;
 import Character;
 
-namespace mc {
-
-
-
-export class ICharacterService
+namespace mc
 {
-public:
-    virtual ~ICharacterService() = default;
-    virtual Enemy& GetEnemy() = 0;
-    virtual bool NextEnemy() = 0;
-    virtual Player& GetPlayer() = 0;
-};
+    export class ICharacterService
+    {
+    public:
+        virtual ~ICharacterService() = default;
+        virtual void Start() =0;
+        virtual Enemy& GetEnemy() = 0;
+        virtual Player& GetPlayer() = 0;
+    };
 
-export Shared<ICharacterService> CreateCharacterService();
-
+    export Shared<ICharacterService> CreateCharacterService();
 } // namespace mc
-

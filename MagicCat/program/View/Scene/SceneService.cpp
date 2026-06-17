@@ -45,7 +45,6 @@ namespace mc
                     {
                         sceneStack = {Info};
                         scenes[Info]->Start();
-                        characterService->NextEnemy();
                     }
                 }
             });

@@ -14,7 +14,7 @@ namespace mc {
 
 export enum class EPlayerAction
 {
-    Magic, Rock, Scissors, Paper,
+    Rock, Scissors, Paper, Magic
 };
 
 export struct ChangeMpEvent : IEvent

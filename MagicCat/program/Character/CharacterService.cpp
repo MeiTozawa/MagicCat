@@ -50,7 +50,11 @@ namespace mc
         CharacterService()
         {
             enemies = ServiceLocator::Get<IConfigService>()->GetEnemyConfigs();
+        }
 
+        void Start() override
+        {
+            NextEnemy();
             currentPlayer = std::make_unique<Player>();
         }
 
@@ -64,9 +68,10 @@ namespace mc
             return *currentPlayer;
         }
 
-        bool NextEnemy() override
+    private:
+        void NextEnemy()
         {
-            if (enemies.empty()) return false;
+            if (enemies.empty()) return;
             Random::Shuffle(enemies);
             auto e = enemies.front();
             ESprite sprite = ParseSprite(e.spriteName);
@@ -74,11 +79,8 @@ namespace mc
                 e.baseWeight, e.rockDamage, e.scissorsDamage, e.paperDamage,
                 e.name.c_str(), sprite
             );
-            enemies.pop_back();
-            return true;
         }
 
-    private:
         std::vector<EnemyConfig> enemies;
         std::unique_ptr<Enemy> currentEnemy;
         std::unique_ptr<Player> currentPlayer;

@@ -36,14 +36,21 @@ namespace mc
         MagicEvent(EMagic magic) : magic(magic) {}
     };
 
+    /**
+     * @brief プレイヤーキャラクターを表すクラス。
+     * MPの管理や、プレイヤー専用の魔法（Clairvoyance: 透視）などを扱います。
+     */
     export class Player : public Character
     {
+        static constexpr int DEFAULT_MAX_MP = 10;
+        static constexpr int CLAIRVOYANCE_MP_COST = 5;
+
         std::unique_ptr<HealthComponent> healthComp;
         EventHandle changeMpEvent;
         EventHandle combatEvent;
-        bool isUsedClairvoyance = false;
-        int mp = 0;
-        int maxMp = 10;
+        bool hasUsedClairvoyance = false;
+        int mp = DEFAULT_MAX_MP;
+        int maxMp = DEFAULT_MAX_MP;
 
     public:
         Player()
@@ -65,7 +72,7 @@ namespace mc
             combatEvent = EventBus::Subscribe<CombatEvent>(
                 [this](const CombatEvent& e)
                 {
-                    if (Fail(e.playerAttackType, e.enemyAttackType))
+                    if (LosesTo(e.playerAttackType, e.enemyAttackType))
                     {
                         healthComp->TakeDamage(e.enemyAttackDamage);
                     }
@@ -79,28 +86,39 @@ namespace mc
             EventBus::Unsubscribe(combatEvent);
         }
 
+        /**
+         * @brief プレイヤーのMPを増減させます。
+         * 限界値（0未満、または最大MP以上）は自動でクランプされます。
+         * @param offset MPの増減量（負の数で消費、正の数で回復）
+         */
         void ChangeMp(int offset)
         {
             mp += offset;
             if (mp > maxMp)
                 mp = maxMp;
+            if (mp < 0)
+                mp = 0;
         }
 
         int GetMp() const { return mp; }
 
         int GetMaxMp() const { return maxMp; }
 
+        /**
+         * @brief 魔法を使用します。
+         * @param e 使用する魔法の種類
+         */
         void UseMagic(EMagic e)
         {
             switch (e)
             {
             case EMagic::Clairvoyance:
-                if (isUsedClairvoyance)
+                if (hasUsedClairvoyance)
                     return;
-                if (mp >= 5)
+                if (mp >= CLAIRVOYANCE_MP_COST)
                 {
-                    ChangeMp(-5);
-                    isUsedClairvoyance = true;
+                    ChangeMp(-CLAIRVOYANCE_MP_COST);
+                    hasUsedClairvoyance = true;
                     EventBus::Publish<MagicEvent>({EMagic::Clairvoyance});
                 }
                 else

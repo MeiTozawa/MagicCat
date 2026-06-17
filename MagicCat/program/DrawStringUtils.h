@@ -54,4 +54,20 @@ namespace mc {
         DrawString(drawX, drawY, text.c_str(), color);
     }
 
+    /**
+     * @brief 中空の矩形（枠線）を太さを指定して描画します。
+     * @param x1 左上のX座標
+     * @param y1 左上のY座標
+     * @param x2 右下のX座標
+     * @param y2 右下のY座標
+     * @param thickness 枠線の太さ（ピクセル）
+     * @param color 描画する色
+     */
+    inline void DrawHollowBox(float x1, float y1, float x2, float y2, int thickness, uint32_t color)
+    {
+        for (int k = 0; k < thickness; ++k)
+        {
+            DrawBoxAA(x1 + k, y1 + k, x2 - k, y2 - k, color, FALSE);
+        }
+    }
 }

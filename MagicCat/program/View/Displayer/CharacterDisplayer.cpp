@@ -114,27 +114,20 @@ namespace mc
             const Player& player = characterService->GetPlayer();
             for (int i = 0; i < 4; ++i)
             {
-                for (int k = 0; k < THICKNESS; ++k)
-                {
-                    float x1 = PLAYER_DAMAGE_START_X + k;
-                    float y1 = PLAYER_DAMAGE_START_Y + k + i * OFFSET_Y;
-                    float x2 = PLAYER_DAMAGE_START_X + RECT_X - k;
-                    float y2 = PLAYER_DAMAGE_START_Y + RECT_Y - k + i * OFFSET_Y;
+                float x1 = PLAYER_DAMAGE_START_X;
+                float y1 = PLAYER_DAMAGE_START_Y + i * OFFSET_Y;
+                float x2 = PLAYER_DAMAGE_START_X + RECT_X;
+                float y2 = PLAYER_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y;
 
-                    DrawBoxAA(x1, y1, x2, y2, COLOR_WHITE, FALSE);
-                }
+                // 通常の枠線を描画
+                mc::DrawHollowBox(x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
 
                 if (i == focus)
                 {
-                    for (int k = 2 * THICKNESS; k < 3 * THICKNESS; ++k)
-                    {
-                        float x1 = PLAYER_DAMAGE_START_X + k;
-                        float y1 = PLAYER_DAMAGE_START_Y + k + i * OFFSET_Y;
-                        float x2 = PLAYER_DAMAGE_START_X + RECT_X - k;
-                        float y2 = PLAYER_DAMAGE_START_Y + RECT_Y - k + i * OFFSET_Y;
-
-                        DrawBoxAA(x1, y1, x2, y2, COLOR_WHITE, FALSE);
-                    }
+                    // 選択中の場合は少し内側に追加の枠線を描画して太く（または二重に）見せる
+                    mc::DrawHollowBox(x1 + 2 * THICKNESS, y1 + 2 * THICKNESS, 
+                                      x2 - 2 * THICKNESS, y2 - 2 * THICKNESS, 
+                                      THICKNESS, COLOR_WHITE);
                 }
             }
             DrawFormatString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,

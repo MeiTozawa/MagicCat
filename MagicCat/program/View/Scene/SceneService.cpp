@@ -20,6 +20,12 @@ namespace mc
         bool initialized = false;
         EventHandle characterDiedHandle;
 
+        /**
+         * @brief 依存関係の遅延初期化（Lazy Initialization）を行います。
+         * SceneServiceのコンストラクタ実行時点では、ServiceLocatorにすべてのサービス
+         * （例: CharacterService, InputServiceなど）が登録されていない可能性があるため、
+         * 実際にシーンが操作されるタイミングで一度だけ初期化を実行します。
+         */
         void EnsureInitialized()
         {
             if (!initialized)

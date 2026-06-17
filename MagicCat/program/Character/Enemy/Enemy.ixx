@@ -55,7 +55,7 @@ namespace mc
             combatEvent = EventBus::Subscribe<CombatEvent>(
                 [this](const CombatEvent& e)
                 {
-                    if (Fail(e.enemyAttackType, e.playerAttackType))
+                    if (LosesTo(e.enemyAttackType, e.playerAttackType))
                     {
                         healthComp->TakeDamage(e.playerAttackDamage);
                     }

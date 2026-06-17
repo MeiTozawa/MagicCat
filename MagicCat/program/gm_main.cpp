@@ -13,6 +13,7 @@ import CharacterService;
 import InputService;
 import SceneService;
 import AudioService;
+import RenderService;
 using namespace mc;
 
 IGameService* gameService;
@@ -20,7 +21,8 @@ IGameService* gameService;
 void InitGameServices()
 {
     ChangeFontType(DX_FONTTYPE_NORMAL);
-    ServiceLocator::RegisterSingleton<IConfigService>(CreateConfigService());
+    ServiceLocator::RegisterSingleton<IRenderService>(CreateRenderService());
+    ServiceLocator::RegisterSingleton<IConfigService>(CreateConfigService("resource/json/card_config.json", "resource/json/enemy_config.json"));
     ServiceLocator::RegisterSingleton<IAssetService>(CreateAssetService());
     ServiceLocator::RegisterSingleton<ICardService>(CreateCardService());
     ServiceLocator::RegisterSingleton<ICharacterService>(CreateCharacterService());

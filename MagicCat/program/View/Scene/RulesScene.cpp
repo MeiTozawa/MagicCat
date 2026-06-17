@@ -1,11 +1,12 @@
 module;
 
 #include <memory>
-#include <DrawStringUtils.h>
+#include <RenderUtils.h>
 
 module SceneService;
 
 import InputService;
+import RenderService;
 import AssetService;
 import ServiceLocator;
 
@@ -34,7 +35,6 @@ namespace mc
         constexpr int ICON_TEXT_OFFSET_Y = 72;
 
         constexpr uint32_t COLOR_BOX_BG = 0x1E1E28;
-        constexpr uint32_t COLOR_BOX_BORDER = 0xC8C8C8;
     }
 
     class RulesScene : public IScene
@@ -73,7 +73,7 @@ namespace mc
             const int boxY2 = GetWindowHeight() - BOX_MARGIN_Y;
 
             DrawBox(boxX1, boxY1, boxX2, boxY2, COLOR_BOX_BG, TRUE);
-            DrawBox(boxX1, boxY1, boxX2, boxY2, COLOR_BOX_BORDER, FALSE);
+            DrawHollowBox(*ServiceLocator::Get<IRenderService>(), boxX1, boxY1, boxX2, boxY2, 3, COLOR_WHITE);
 
             DrawString(boxX1 + TEXT_START_OFFSET_X, boxY1 + TEXT_START_OFFSET_Y, L"【ルール説明】", COLOR_WHITE);
 

@@ -5,11 +5,14 @@ module;
 #include <memory>
 #include <string>
 #include <format>
-#include <DrawStringUtils.h>
+#include <RenderUtils.h>
+#include <format>
 
 module Displayer;
 
 import SceneService;
+import GameService;
+import RenderService;
 import EventBus;
 import CharacterService;
 import ServiceLocator;
@@ -120,28 +123,28 @@ namespace mc
                 float y2 = PLAYER_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y;
 
                 // 通常の枠線を描画
-                mc::DrawHollowBox(x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
+                DrawHollowBox(*ServiceLocator::Get<IRenderService>(), x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
 
                 if (i == focus)
                 {
                     // 選択中の場合は少し内側に追加の枠線を描画して太く（または二重に）見せる
-                    mc::DrawHollowBox(x1 + 2 * THICKNESS, y1 + 2 * THICKNESS, 
+                    DrawHollowBox(*ServiceLocator::Get<IRenderService>(), x1 + 2 * THICKNESS, y1 + 2 * THICKNESS, 
                                       x2 - 2 * THICKNESS, y2 - 2 * THICKNESS, 
                                       THICKNESS, COLOR_WHITE);
                 }
             }
-            DrawFormatString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+            DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                              PLAYER_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                             COLOR_WHITE, L"  魔法");
-            DrawFormatString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                             L"  魔法", COLOR_WHITE);
+            DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                              PLAYER_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                             COLOR_WHITE, L"✊ ⚔：%d", player.GetDamage(EAttackType::Rock));
-            DrawFormatString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                             std::format(L"✊ ⚔：{}", player.GetDamage(EAttackType::Rock)).c_str(), COLOR_WHITE);
+            DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                              PLAYER_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                             COLOR_WHITE, L"✌ ⚔：%d", player.GetDamage(EAttackType::Scissors));
-            DrawFormatString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                             std::format(L"✌ ⚔：{}", player.GetDamage(EAttackType::Scissors)).c_str(), COLOR_WHITE);
+            DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                              PLAYER_DAMAGE_START_Y + 3 * OFFSET_Y + TEXT_OFFSET_Y,
-                             COLOR_WHITE, L"✋ ⚔：%d", player.GetDamage(EAttackType::Paper));
+                             std::format(L"✋ ⚔：{}", player.GetDamage(EAttackType::Paper)).c_str(), COLOR_WHITE);
         }
 
         void InitEnemyWeightEffectors()
@@ -216,53 +219,47 @@ namespace mc
 
             for (int i = 0; i < 3; ++i)
             {
-                for (int k = 0; k < THICKNESS; ++k)
-                {
-                    float x1 = ENEMY_WEIGHT_START_X + k;
-                    float y1 = ENEMY_WEIGHT_START_Y + k + i * OFFSET_Y;
-                    float x2 = ENEMY_WEIGHT_START_X + RECT_X - k;
-                    float y2 = ENEMY_WEIGHT_START_Y + RECT_Y - k + i * OFFSET_Y;
+                float x1 = ENEMY_WEIGHT_START_X;
+                float y1 = ENEMY_WEIGHT_START_Y + i * OFFSET_Y;
+                float x2 = ENEMY_WEIGHT_START_X + RECT_X;
+                float y2 = ENEMY_WEIGHT_START_Y + RECT_Y + i * OFFSET_Y;
 
-                    DrawBoxAA(x1, y1, x2, y2, COLOR_WHITE, FALSE);
-                }
+                DrawHollowBox(*ServiceLocator::Get<IRenderService>(), x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
             }
 
             for (int i = 0; i < 3; ++i)
             {
-                for (int k = 0; k < THICKNESS; ++k)
-                {
-                    float x1 = ENEMY_DAMAGE_START_X + k;
-                    float y1 = ENEMY_DAMAGE_START_Y + k + i * OFFSET_Y;
-                    float x2 = ENEMY_DAMAGE_START_X + RECT_X - k;
-                    float y2 = ENEMY_DAMAGE_START_Y + RECT_Y - k + i * OFFSET_Y;
+                float x1 = ENEMY_DAMAGE_START_X;
+                float y1 = ENEMY_DAMAGE_START_Y + i * OFFSET_Y;
+                float x2 = ENEMY_DAMAGE_START_X + RECT_X;
+                float y2 = ENEMY_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y;
 
-                    DrawBoxAA(x1, y1, x2, y2, COLOR_WHITE, FALSE);
-                }
+                DrawHollowBox(*ServiceLocator::Get<IRenderService>(), x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
             }
 
             if (enemy.IsExposed())
             {
-                DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
                                  ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                                 COLOR_WHITE, L"✊ ⚔：%d", enemy.GetDamage(EAttackType::Rock));
-                DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                                 std::format(L"✊ ⚔：{}", enemy.GetDamage(EAttackType::Rock)).c_str(), COLOR_WHITE);
+                DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
                                  ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                                 COLOR_WHITE, L"✌ ⚔：%d", enemy.GetDamage(EAttackType::Scissors));
-                DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                                 std::format(L"✌ ⚔：{}", enemy.GetDamage(EAttackType::Scissors)).c_str(), COLOR_WHITE);
+                DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
                                  ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                                 COLOR_WHITE, L"✋ ⚔：%d", enemy.GetDamage(EAttackType::Paper));
+                                 std::format(L"✋ ⚔：{}", enemy.GetDamage(EAttackType::Paper)).c_str(), COLOR_WHITE);
             }
             else
             {
-                DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
                                  ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                                 COLOR_WHITE, L"✊ ⚔：?");
-                DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                                 L"✊ ⚔：？", COLOR_WHITE);
+                DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
                                  ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                                 COLOR_WHITE, L"✌ ⚔：?");
-                DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                                 L"✌ ⚔：？", COLOR_WHITE);
+                DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
                                  ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                                 COLOR_WHITE, L"✋ ⚔：?");
+                                 L"✋ ⚔：？", COLOR_WHITE);
             }
         }
     };

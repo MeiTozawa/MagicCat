@@ -2,12 +2,13 @@ module;
 
 #include <dxe.h>
 #include <memory>
-#include <DrawStringUtils.h>
+#include <RenderUtils.h>
 
 module SceneService;
 import GameService;
 import ServiceLocator;
 import InputService;
+import RenderService;
 import EventBus;
 import HealthComponent;
 import Character;
@@ -62,16 +63,16 @@ namespace mc
             if (!info.empty())
             {
                 SetFontSize(320);
-                DrawCenterString(dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
+                DrawCenterString(*ServiceLocator::Get<IRenderService>(), dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
                                  info, infoColor);
                 SetFontSize(48);
             }
 
             DrawString(0, 20,
                        std::format(L" 勝利回数: {} ", winCount).c_str(), COLOR_WHITE);
-            DrawRightString(dxe::GetWindowWidthF(1.f), 20,
+            DrawRightString(*ServiceLocator::Get<IRenderService>(), dxe::GetWindowWidthF(1.f), 20,
                             std::format(L" 失敗回数: {} ", failCount).c_str(), COLOR_WHITE);
-            DrawCenterString(dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.8f),
+            DrawCenterString(*ServiceLocator::Get<IRenderService>(), dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.8f),
                              L"Enterキーを押してゲームをスタートする！", COLOR_WHITE);
         }
     };

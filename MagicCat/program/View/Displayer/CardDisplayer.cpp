@@ -5,7 +5,7 @@ module;
 #include <vector>
 #include <string>
 #include <format>
-#include <DrawStringUtils.h>
+#include <RenderUtils.h>
 
 module Displayer;
 
@@ -14,6 +14,7 @@ import ServiceLocator;
 import AssetService;
 import EventBus;
 import EffectorFactory;
+import RenderService;
 
 namespace mc
 {
@@ -48,14 +49,25 @@ namespace mc
         std::vector<Card> cachedHand;
         std::vector<std::unique_ptr<IDisplayer>> cardDisplayers;
 
-        class PrintACardDisplayer : public IDisplayer {
+        class PrintACardDisplayer : public IDisplayer
+        {
         public:
-            Card card; tnl::Vector2i start_position; std::wstring message; bool has_icon;
+            Card card;
+            tnl::Vector2i start_position;
+            std::wstring message;
+            bool has_icon;
+            IRenderService* renderService;
+
             PrintACardDisplayer(Card card, tnl::Vector2i start_position, std::wstring message, bool has_icon = true) :
-                card(card), start_position(start_position), message(std::move(message)), has_icon(has_icon) {}
+                card(card), start_position(start_position), message(std::move(message)), has_icon(has_icon)
+            {
+                renderService = ServiceLocator::Get<IRenderService>();
+            }
 
             void Update(float deltaTime) override {}
-            void Draw(float deltaTime) const override {
+
+            void Draw(float deltaTime) const override
+            {
                 auto x = start_position.x, y = start_position.y;
                 uint32_t color;
                 int thickness = THICKNESS;
@@ -89,8 +101,6 @@ namespace mc
                                     currentRadius, currentRadius,
                                     32, color, FALSE);
                 }
-
-                int lineCount = 1;
                 if (has_icon)
                 {
                     int icon = ServiceLocator::Get<IAssetService>()->GetImageHandle(static_cast<EImage>(card.CardType));
@@ -98,13 +108,13 @@ namespace mc
                     {
                         DrawRotaGraphF(x + CARD_WIDTH / 2.f, y + CARD_HEIGHT / 3.5f, IMAGE_SCALE, 0.0, icon, TRUE);
                     }
-
-                    drawCenterText(x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10, lineCount, message.c_str(), color);
+                    DrawCenterString(*renderService, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10,
+                                     message.c_str(), color);
                 }
                 else
                 {
-                    lineCount += 1;
-                    drawCenterText(x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2, lineCount, message.c_str(), color);
+                    DrawCenterString(*renderService, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 - 30,
+                                     message.c_str(), color);
                 }
             }
         };
@@ -116,17 +126,20 @@ namespace mc
             for (size_t i = 0; i < cachedHand.size(); ++i)
             {
                 std::wstring msg = std::format(L"+{}", cachedHand[i].Value);
-                auto cardDisp = std::make_unique<PrintACardDisplayer>(cachedHand[i], position, msg);
-                
+                auto cardDisplay = std::make_unique<PrintACardDisplayer>(cachedHand[i], position, msg);
+
                 // If this is the newest card, wrap it in HitFlashEffector
-                if (isDraw && i == cachedHand.size() - 1) {
-                    auto flashEffector = CreateHitFlashEffector(std::move(cardDisp), 0x000000, 300);
+                if (isDraw && i == cachedHand.size() - 1)
+                {
+                    auto flashEffector = CreateHitFlashEffector(std::move(cardDisplay), 0x000000, 300);
                     flashEffector->Play();
                     cardDisplayers.push_back(std::move(flashEffector));
-                } else {
-                    cardDisplayers.push_back(std::move(cardDisp));
                 }
-                
+                else
+                {
+                    cardDisplayers.push_back(std::move(cardDisplay));
+                }
+
                 position.x += OFFSET_X;
             }
         }
@@ -153,7 +166,7 @@ namespace mc
             EventBus::Unsubscribe(handUpdateHandle);
         }
 
-        void Update(float deltaTime) override 
+        void Update(float deltaTime) override
         {
             for (auto& display : cardDisplayers)
             {
@@ -183,17 +196,6 @@ namespace mc
             std::wstring message = std::format(L"捨札\n{:2}枚", cardService->GetDiscardCards().size());
             PrintACardDisplayer({Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, message, false).Draw(deltaTime);
         }
-
-    private:
-        static void drawCenterText(int middle_x, int middle_y, int lineCount, const wchar_t* message,
-                                   int color = COLOR_WHITE)
-        {
-            auto textSize = GetFontSize();
-            auto textWidth = GetDrawStringSize(&textSize, &textSize, &lineCount, message, -1);
-            DrawString(middle_x - textWidth / 2, middle_y - textSize / 2, message, color);
-        }
-
-
     };
 
     std::unique_ptr<IDisplayer> CreateCardDisplayer()

@@ -56,7 +56,7 @@ namespace mc
             {
                 if (selectedActionIndex == ACTION_MAGIC)
                 {
-                    characterService->GetPlayer().UseMagic(EMagic::Perspective);
+                    characterService->GetPlayer().UseMagic(EMagic::Clairvoyance);
                 }
                 else
                 {

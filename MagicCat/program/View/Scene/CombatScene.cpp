@@ -48,6 +48,7 @@ namespace mc
         ICharacterService* characterService = nullptr;
         ISceneService* sceneService = nullptr;
         IAssetService* assetService = nullptr;
+        ICardService* cardService = nullptr;
         std::unique_ptr<ICombatController> combatController;
         EventHandle healthChangedEvent = -1;
         EventHandle combatEvent = -1;
@@ -60,7 +61,9 @@ namespace mc
             characterService = ServiceLocator::Get<ICharacterService>();
             sceneService = ServiceLocator::Get<ISceneService>();
             assetService = ServiceLocator::Get<IAssetService>();
+            cardService = ServiceLocator::Get<ICardService>();
             characterService->Start();
+            cardService->Start();
             if (healthChangedEvent != -1)
             {
                 EventBus::Unsubscribe(healthChangedEvent);

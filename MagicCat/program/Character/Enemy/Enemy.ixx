@@ -8,6 +8,7 @@ import Character;
 import HealthComponent;
 import EventBus;
 import AssetService;
+import Player;
 
 namespace mc
 {
@@ -23,12 +24,13 @@ namespace mc
         std::unique_ptr<HealthComponent> healthComp;
         EventHandle addWeightEvent;
         EventHandle combatEvent;
+        EventHandle magicEvent;
+        bool isExposed = false;
 
     public:
-        Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0, 
-            const std::wstring& name = L"Unknown", ESprite sprite = ESprite::Null)
+        Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0,
+              const std::wstring& name = L"Unknown", ESprite sprite = ESprite::Null)
             : baseWeight(baseWeight)
-
         {
             Character::name = name;
             Character::sprite = sprite;
@@ -37,8 +39,17 @@ namespace mc
             Character::paperDamage = paperDamage;
             healthComp = std::make_unique<HealthComponent>(this);
             tags.push_back(ETag::Enemy);
+
             addWeightEvent = EventBus::Subscribe<AddWeightEvent>(
                 [this](const AddWeightEvent& e) { AddWeight(e.AttackType, e.Offset); }
+            );
+
+            magicEvent = EventBus::Subscribe<MagicEvent>(
+                [this](const MagicEvent& e)
+                {
+                    if (e.magic == EMagic::Clairvoyance)
+                        isExposed = true;
+                }
             );
 
             combatEvent = EventBus::Subscribe<CombatEvent>(
@@ -113,6 +124,10 @@ namespace mc
             }
             return -1;
         }
+
+        bool IsExposed() const { return isExposed; }
+        
+        int GetBaseWeight() const { return baseWeight; }
 
         const HealthComponent& GetHealthComponent() const { return *healthComp; }
 

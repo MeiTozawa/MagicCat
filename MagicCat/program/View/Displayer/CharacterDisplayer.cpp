@@ -158,7 +158,11 @@ namespace mc
             auto rockWeightDisplayer = CreateLambdaDisplayer([this](float)
             {
                 const Enemy& enemy = characterService->GetEnemy();
-                std::wstring message = L"✊ ⚖：?";
+                std::wstring message = L"✊ ⚖：";
+                if (enemy.IsExposed())
+                    message += std::to_wstring(enemy.GetBaseWeight());
+                else
+                    message += L"?";
                 if (auto offset = enemy.GetWeightOffset(EAttackType::Rock); offset != 0)
                     message += std::format(L"+{}", offset);
 
@@ -172,7 +176,11 @@ namespace mc
             auto scissorsWeightDisplayer = CreateLambdaDisplayer([this](float)
             {
                 const Enemy& enemy = characterService->GetEnemy();
-                std::wstring message = L"✌ ⚖：?";
+                std::wstring message = L"✌ ⚖：";
+                if (enemy.IsExposed())
+                    message += std::to_wstring(enemy.GetBaseWeight());
+                else
+                    message += L"?";
                 if (auto offset = enemy.GetWeightOffset(EAttackType::Scissors); offset != 0)
                     message += std::format(L"+{}", offset);
 
@@ -186,7 +194,11 @@ namespace mc
             auto paperWeightDisplayer = CreateLambdaDisplayer([this](float)
             {
                 const Enemy& enemy = characterService->GetEnemy();
-                std::wstring message = L"✋ ⚖：?";
+                std::wstring message = L"✋ ⚖：";
+                if (enemy.IsExposed())
+                    message += std::to_wstring(enemy.GetBaseWeight());
+                else
+                    message += L"?";
                 if (auto offset = enemy.GetWeightOffset(EAttackType::Paper); offset != 0)
                     message += std::format(L"+{}", offset);
 
@@ -235,15 +247,30 @@ namespace mc
                 }
             }
 
-            DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                             ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                             COLOR_WHITE, L"✊ ⚔：%d", enemy.GetDamage(EAttackType::Rock));
-            DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                             ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                             COLOR_WHITE, L"✌ ⚔：%d", enemy.GetDamage(EAttackType::Scissors));
-            DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                             ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                             COLOR_WHITE, L"✋ ⚔：%d", enemy.GetDamage(EAttackType::Paper));
+            if (enemy.IsExposed())
+            {
+                DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                                 ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
+                                 COLOR_WHITE, L"✊ ⚔：%d", enemy.GetDamage(EAttackType::Rock));
+                DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                                 ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
+                                 COLOR_WHITE, L"✌ ⚔：%d", enemy.GetDamage(EAttackType::Scissors));
+                DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                                 ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
+                                 COLOR_WHITE, L"✋ ⚔：%d", enemy.GetDamage(EAttackType::Paper));
+            }
+            else
+            {
+                DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                                 ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
+                                 COLOR_WHITE, L"✊ ⚔：?");
+                DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                                 ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
+                                 COLOR_WHITE, L"✌ ⚔：?");
+                DrawFormatString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                                 ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
+                                 COLOR_WHITE, L"✋ ⚔：?");
+            }
         }
     };
 

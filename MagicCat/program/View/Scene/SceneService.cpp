@@ -41,7 +41,8 @@ namespace mc
             {
                 if (auto characterService = ServiceLocator::Get<ICharacterService>())
                 {
-                    if (event.Victim == &characterService->GetPlayer())
+                    if (event.Victim == &characterService->GetPlayer() || 
+                        event.Victim == &characterService->GetEnemy())
                     {
                         sceneStack = {Info};
                         scenes[Info]->Start();

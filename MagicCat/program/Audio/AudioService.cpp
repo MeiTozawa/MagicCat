@@ -65,6 +65,16 @@ namespace mc
                 PlaySoundMem(assetService->GetSoundHandle(ESound::Confirm), DX_PLAYTYPE_BACK);
             }));
 
+            eventHandles.push_back(EventBus::Subscribe<MagicEvent>([this](const MagicEvent& e)
+            {
+                PlaySoundMem(assetService->GetSoundHandle(ESound::Magic), DX_PLAYTYPE_BACK);
+            }));
+            
+            eventHandles.push_back(EventBus::Subscribe<LackOfMpEvent>([this](const LackOfMpEvent& e)
+            {
+                PlaySoundMem(assetService->GetSoundHandle(ESound::Beep), DX_PLAYTYPE_BACK);
+            }));
+
             eventHandles.push_back(EventBus::Subscribe<DeathEvent>([this](const DeathEvent& e)
             {
                 auto tags = e.Victim->GetTags();

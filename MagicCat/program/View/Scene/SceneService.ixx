@@ -2,7 +2,6 @@ module;
 
 #include <vector>
 #include <memory>
-#include <string>
 #include <functional>
 
 export module SceneService;
@@ -16,7 +15,7 @@ namespace mc
 {
     export enum ESceneState
     {
-        Start, Combat, Result, Rules
+        Info, Combat, Rules
     };
 
     export struct SceneRegistry
@@ -74,7 +73,7 @@ namespace mc
     };
 
     export Shared<ISceneService> CreateSceneService();
-    export std::unique_ptr<IScene> CreateStartScene();
+    export std::unique_ptr<IScene> CreateInfoScene();
     export std::unique_ptr<IScene> CreateCombatScene();
     export std::unique_ptr<IScene> CreateRulesScene();
 } // namespace mc

@@ -31,7 +31,7 @@ void InitGameServices()
     ServiceLocator::RegisterSingleton<ISceneService>(CreateSceneService());
     if (auto sceneService = ServiceLocator::Get<ISceneService>())
     {
-        sceneService->RegisterScene(Start, CreateStartScene());
+        sceneService->RegisterScene(Info, CreateInfoScene());
         sceneService->RegisterScene(Combat, CreateCombatScene());
         sceneService->RegisterScene(Rules, CreateRulesScene());
     }

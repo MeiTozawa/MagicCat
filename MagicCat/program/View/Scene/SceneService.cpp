@@ -29,8 +29,8 @@ namespace mc
                 {
                     reg();
                 }
-                sceneStack.push_back(Start);
-                scenes[Start]->Start();
+                sceneStack.push_back(Info);
+                scenes[Info]->Start();
             }
         }
 
@@ -43,8 +43,8 @@ namespace mc
                 {
                     if (event.Victim == &characterService->GetPlayer())
                     {
-                        sceneStack = {Start};
-                        scenes[Start]->Start();
+                        sceneStack = {Info};
+                        scenes[Info]->Start();
                         characterService->NextEnemy();
                     }
                 }
@@ -91,7 +91,7 @@ namespace mc
 
         ESceneState GetCurrentScene() override
         {
-            return sceneStack.empty() ? Start : sceneStack.back();
+            return sceneStack.empty() ? Info : sceneStack.back();
         }
 
         void SetCurrentScene(ESceneState state) override

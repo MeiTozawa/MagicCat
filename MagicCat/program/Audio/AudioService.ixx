@@ -1,16 +1,16 @@
 module;
 
+#include <ResourceConstantHedder.h>
+
 export module AudioService;
 
-enum class ESoundEffect
+namespace mc
 {
-    PlayACard, EnterTheGame, 
-};
+    export class IAudioService
+    {
+    public:
+        virtual ~IAudioService() = default;
+    };
 
-export class IAudioService
-{
-public:
-    virtual ~IAudioService() = default;
-    
-    virtual void PlaySoundEffect(ESoundEffect soundEffect);
-};
+    export Shared<IAudioService> CreateAudioService();
+} // namespace mc

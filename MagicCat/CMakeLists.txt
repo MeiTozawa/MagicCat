@@ -10,6 +10,11 @@ add_executable(MagicCat WIN32
     ${MAGICCAT_SOURCES}
 )
 
+# DxLib.hはwindows.hをインクルードしているため、以下のマクロの競合が発生し、tweenyライブラリ内のstd::minおよびstd::maxが使用できなくなってしまいました
+# #define min(a,b) (((a) < (b)) ? (a) : (b))
+# #define max(a,b) (((a) > (b)) ? (a) : (b))
+target_compile_definitions(MagicCat PRIVATE NOMINMAX)
+
 set_target_properties(MagicCat PROPERTIES UNITY_BUILD ON)
 
 target_sources(MagicCat

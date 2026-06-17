@@ -1,34 +1,61 @@
-#include <time.h>
-#include <string>
-#include <fstream>
 #include <dxe.h>
 #include "gm_main.h"
+#include <windows.h>
+
+#include <ResourceConstantHedder.h>
 
 import GameService;
 import ServiceLocator;
+import ConfigService;
+import AssetService;
+import CardService;
+import CharacterService;
+import InputService;
+import SceneService;
+import AudioService;
+using namespace mc;
 
+IGameService* gameService;
 
-Shared<IGameService> gameService;
-
-void gameStart()
+void InitGameServices()
 {
-    SetFontSize(32);
-    SetBackgroundColor(7 , 31, 56);
+    ChangeFontType(DX_FONTTYPE_NORMAL);
+    ServiceLocator::RegisterSingleton<IConfigService>(CreateConfigService());
+    ServiceLocator::RegisterSingleton<IAssetService>(CreateAssetService());
+    ServiceLocator::RegisterSingleton<ICardService>(CreateCardService());
+    ServiceLocator::RegisterSingleton<ICharacterService>(CreateCharacterService());
+    ServiceLocator::RegisterSingleton<IInputService>(CreateInputService());
+    ServiceLocator::RegisterSingleton<IAudioService>(CreateAudioService());
+    ServiceLocator::RegisterSingleton<IGameService>(CreateGameService());
+
+    ServiceLocator::RegisterSingleton<ISceneService>(CreateSceneService());
+    if (auto sceneService = ServiceLocator::Get<ISceneService>())
+    {
+        sceneService->RegisterScene(Info, CreateInfoScene());
+        sceneService->RegisterScene(Combat, CreateCombatScene());
+        sceneService->RegisterScene(Rules, CreateRulesScene());
+    }
+}
+
+void GameStart()
+{
+    InitGameServices();
+    AddFontResourceEx(FILE_PATH_OTF_UNIFONT_17, FR_PRIVATE, nullptr);
+    ChangeFont(FONT_NAME_UNIFONT); 
+    SetFontSize(48);
+    ChangeFontType(DX_FONTTYPE_NORMAL);
+    SetFontThickness(1);
+    SetBackgroundColor(7, 31, 56);
     gameService = ServiceLocator::Get<IGameService>();
     gameService->Start();
 }
 
-//------------------------------------------------------------------------------------------------------------
-// 毎フレーム実行されます
-void gameMain(float delta_time)
+void GameMain(float deltaTime)
 {
-    gameService->Update(delta_time);
+    gameService->Update(deltaTime);
 }
 
-//------------------------------------------------------------------------------------------------------------
-// ゲーム終了時に一度だけ実行されます
-void gameEnd()
+void GameEnd()
 {
     gameService->End();
 }
-

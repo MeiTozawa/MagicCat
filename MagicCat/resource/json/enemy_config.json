@@ -1,0 +1,26 @@
+[
+  {
+    "baseWeight": 5,
+    "rockDamage": 3,
+    "scissorsDamage": 1,
+    "paperDamage": 1,
+    "name": "イノシシ",
+    "sprite": "MadBoar"
+  },
+  {
+    "baseWeight": 5,
+    "rockDamage": 1,
+    "scissorsDamage": 1,
+    "paperDamage": 3,
+    "name": "ヒツジ",
+    "sprite": "PasturingSheep"
+  },
+  {
+    "baseWeight": 3,
+    "rockDamage": 1,
+    "scissorsDamage": 5,
+    "paperDamage": 1,
+    "name": "オオカミ",
+    "sprite": "TimberWolf"
+  }
+]

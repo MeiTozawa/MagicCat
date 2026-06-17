@@ -1,6 +1,8 @@
-#pragma once
+﻿#pragma once
 #include <cassert>
 #include <random>
+
+namespace mc {
 
 namespace
 {
@@ -50,3 +52,6 @@ public:
         std::shuffle(std::ranges::begin(container), std::ranges::end(container), GetEngine());
     }
 };
+
+} // namespace mc
+

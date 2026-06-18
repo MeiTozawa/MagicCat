@@ -16,6 +16,7 @@ import EffectorFactory;
 import CombatController;
 import HealthComponent;
 import Character;
+import ViewEnumMapper;
 namespace mc
 {
     constexpr int PLAYER_START_X = 800;
@@ -115,8 +116,8 @@ namespace mc
 
             combatEvent = EventBus::Subscribe<CombatEvent>([this](const CombatEvent& event)
             {
-                playerAttackImageHandle = assetService->GetImageHandle(static_cast<EImage>(event.playerAttackType));
-                enemyAttackImageHandle = assetService->GetImageHandle(static_cast<EImage>(event.enemyAttackType));
+                playerAttackImageHandle = assetService->GetImageHandle(ToImage(event.playerAttackType));
+                enemyAttackImageHandle = assetService->GetImageHandle(ToImage(event.enemyAttackType));
 
                 playerAttackEffector->Play();
                 enemyAttackEffector->Play();

@@ -16,6 +16,7 @@ import AssetService;
 import EventBus;
 import EffectorFactory;
 import RenderService;
+import ViewEnumMapper;
 
 namespace mc
 {
@@ -56,11 +57,10 @@ namespace mc
             Card card;
             tnl::Vector2i start_position;
             std::wstring message;
-            bool has_icon;
             IRenderService* renderService;
 
-            PrintACardDisplayer(Card card, tnl::Vector2i start_position, std::wstring message, bool has_icon = true) :
-                card(card), start_position(start_position), message(std::move(message)), has_icon(has_icon)
+            PrintACardDisplayer(Card card, tnl::Vector2i start_position, std::wstring message) :
+                card(card), start_position(start_position), message(std::move(message))
             {
                 renderService = ServiceLocator::Get<IRenderService>();
             }
@@ -72,7 +72,7 @@ namespace mc
                 auto x = start_position.x, y = start_position.y;
                 uint32_t color;
                 int thickness = THICKNESS;
-
+                bool has_icon = true;
                 switch (card.CardType)
                 {
                 case Rock:
@@ -85,7 +85,7 @@ namespace mc
                     color = COLOR_CARD_SCISSORS;
                     break;
                 default:
-                    assert(false && "未知のカードタイプを描画しようとしています");
+                    has_icon = false;
                     color = COLOR_CARD_DEFAULT;
                     break;
                 }
@@ -106,7 +106,7 @@ namespace mc
                 }
                 if (has_icon)
                 {
-                    int icon = ServiceLocator::Get<IAssetService>()->GetImageHandle(static_cast<EImage>(card.CardType));
+                    int icon = ServiceLocator::Get<IAssetService>()->GetImageHandle(ToImage(card.CardType));
                     if (icon != -1)
                     {
                         DrawRotaGraphF(x + CARD_WIDTH / 2.f, y + CARD_HEIGHT / 3.5f, IMAGE_SCALE, 0.0, icon, TRUE);
@@ -191,13 +191,13 @@ namespace mc
         void InitDrawPile(float deltaTime) const
         {
             std::wstring message = std::format(L"山札\n{:2}枚", cardService->GetDrawCards().size());
-            PrintACardDisplayer({Null}, {DRAW_PILE_X, DRAW_PILE_Y}, message, false).Draw(deltaTime);
+            PrintACardDisplayer({Null}, {DRAW_PILE_X, DRAW_PILE_Y}, message).Draw(deltaTime);
         }
 
         void InitDiscardPile(float deltaTime) const
         {
             std::wstring message = std::format(L"捨札\n{:2}枚", cardService->GetDiscardCards().size());
-            PrintACardDisplayer({Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, message, false).Draw(deltaTime);
+            PrintACardDisplayer({Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, message).Draw(deltaTime);
         }
     };
 

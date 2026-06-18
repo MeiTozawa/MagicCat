@@ -101,8 +101,9 @@ namespace mc
             int index = Random::RandomSelection(
                 rockWeight, scissorsWeight, paperWeight
             );
-            auto attackType = static_cast<EAttackType>(index);
-            return attackType;
+            assert(index >= 0 && index <= 2 && "ランダム攻撃のインデックスが範囲外です");
+            constexpr EAttackType mappedTypes[] = { EAttackType::Rock, EAttackType::Scissors, EAttackType::Paper };
+            return mappedTypes[index];
         }
 
         bool operator==(const Enemy& e) const

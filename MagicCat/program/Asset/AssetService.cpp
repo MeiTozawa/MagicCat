@@ -121,7 +121,23 @@ namespace mc
                 };
                 SpriteData sprites[] = {
                     {ESprite::Bunny, FILE_PATH_PNG_MINIBUNNY},
-                    {ESprite::Wolf, FILE_PATH_PNG_MINIWOLF}
+                    {ESprite::Wolf, FILE_PATH_PNG_MINIWOLF},
+                    
+                    {ESprite::CluckingChicken, FILE_PATH_PNG_CLUCKINGCHICKEN},
+                    {ESprite::CoralCrab, FILE_PATH_PNG_CORALCRAB},
+                    {ESprite::CroakingToad, FILE_PATH_PNG_CROAKINGTOAD},
+                    {ESprite::DaintyPig, FILE_PATH_PNG_DAINTYPIG},
+                    {ESprite::HonkingGoose, FILE_PATH_PNG_HONKINGGOOSE},
+                    {ESprite::LeapingFrog, FILE_PATH_PNG_LEAPINGFROG},
+                    {ESprite::MadBoar, FILE_PATH_PNG_MADBOAR},
+                    {ESprite::MeowingCat, FILE_PATH_PNG_MEOWINGCAT},
+                    {ESprite::PasturingSheep, FILE_PATH_PNG_PASTURINGSHEEP},
+                    {ESprite::SlowTurtle, FILE_PATH_PNG_SLOWTURTLE},
+                    {ESprite::SnowFox, FILE_PATH_PNG_SNOWFOX},
+                    {ESprite::SpikeyPorcupine, FILE_PATH_PNG_SPIKEYPORCUPINE},
+                    {ESprite::StinkySkunk, FILE_PATH_PNG_STINKYSKUNK},
+                    {ESprite::TimberWolf, FILE_PATH_PNG_TIMBERWOLF},
+                    {ESprite::TinyChick, FILE_PATH_PNG_TINYCHICK}
                 };
 
                 for (const auto& spr : sprites)
@@ -131,17 +147,6 @@ namespace mc
                         printfDx(L"%sの読み込みに失敗", spr.path);
                     else
                         spriteMappings.insert({spr.id, resource});
-                }
-
-                ESprite animalEnumStart = ESprite::CluckingChicken;
-                for (size_t i = 0; i < FILE_PATH_TBL_IMAGES_BASICANIMALS.size(); ++i)
-                {
-                    ESprite id = static_cast<ESprite>(static_cast<int>(animalEnumStart) + i);
-                    auto resource = LoadGraph(FILE_PATH_TBL_IMAGES_BASICANIMALS[i]);
-                    if (resource == -1)
-                        printfDx(L"%sの読み込みに失敗", FILE_PATH_TBL_IMAGES_BASICANIMALS[i]);
-                    else
-                        spriteMappings.insert({id, resource});
                 }
             }
             catch (const std::exception&)

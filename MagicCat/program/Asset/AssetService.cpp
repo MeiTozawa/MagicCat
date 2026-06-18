@@ -6,6 +6,7 @@ module;
 #include <ResourceConstantHedder.h>
 #include <vector>
 #include <windows.h>
+#include <cassert>
 
 module AssetService;
 import ServiceLocator;
@@ -24,23 +25,29 @@ namespace mc
 
         const int GetFontHandle(EFont e) override
         {
+            if (e == EFont::Null) return -1;
             if (fontMappings.contains(e))
                 return fontMappings.at(e);
+            assert(false && "未登録のフォントにアクセスしようとしています");
             return -1;
         }
 
 
         const int GetImageHandle(EImage e) override
         {
+            if (e == EImage::Null) return -1;
             if (imageMappings.contains(e))
                 return imageMappings.at(e);
+            assert(false && "未登録の画像にアクセスしようとしています");
             return -1;
         }
 
         const int GetSpriteHandle(ESprite e) override
         {
+            if (e == ESprite::Null) return -1;
             if (spriteMappings.contains(e))
                 return spriteMappings[e];
+            assert(false && "未登録のスプライトにアクセスしようとしています");
             return -1;
         }
 
@@ -55,8 +62,10 @@ namespace mc
 
         const int GetSoundHandle(ESound e) override
         {
+            if (e == ESound::Null) return -1;
             if (soundMappings.contains(e))
                 return soundMappings.at(e);
+            assert(false && "未登録の音声にアクセスしようとしています");
             return -1;
         }
 

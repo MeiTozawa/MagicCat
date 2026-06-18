@@ -5,6 +5,7 @@ module;
 #include <vector>
 #include <string>
 #include <format>
+#include <cassert>
 #include <RenderUtils.h>
 
 module Displayer;
@@ -84,7 +85,9 @@ namespace mc
                     color = COLOR_CARD_SCISSORS;
                     break;
                 default:
+                    assert(false && "未知のカードタイプを描画しようとしています");
                     color = COLOR_CARD_DEFAULT;
+                    break;
                 }
 
                 for (int i = 0; i < thickness; ++i)

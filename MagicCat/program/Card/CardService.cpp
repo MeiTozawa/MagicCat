@@ -1,7 +1,8 @@
 module;
 
 #include <RandomUtils.h>
-#include <tnl_rect.h>
+#include <cassert>
+#include <stdexcept>
 
 module CardService;
 
@@ -78,7 +79,7 @@ namespace mc
                 Random::Shuffle(drawPile);
                 EventBus::Publish(ShuffleEvent());
             }
-            assert(drawPile.size() > 0);
+            assert(drawPile.size() > 0 && "山札が空です");
             auto c = drawPile.back();
 
             drawPile.pop_back();
@@ -109,7 +110,7 @@ namespace mc
         std::vector<Card> hand = std::vector<Card>();
         std::vector<Card> drawPile = std::vector<Card>();
         std::vector<Card> discardPile = std::vector<Card>();
-
+        
         static ECardType ToCardType(int type)
         {
             switch (type)
@@ -118,10 +119,12 @@ namespace mc
             case 1: return Scissors;
             case 2: return Paper;
             case 3: return Magic;
-            default: return Null;
+            default:
+                assert(false && "外部設定から不正なカードタイプが読み込まれました");
+                return Null;
             }
         }
-
+        
         static EAttackType ToAttackType(ECardType type)
         {
             switch (type)
@@ -129,7 +132,9 @@ namespace mc
             case Rock: return EAttackType::Rock;
             case Scissors: return EAttackType::Scissors;
             case Paper: return EAttackType::Paper;
-            default: return EAttackType::Rock;
+            default:
+                assert(false && "不正なカードタイプからの変換です");
+                throw std::invalid_argument("不正なカードタイプからの変換です");
             }
         }
     };

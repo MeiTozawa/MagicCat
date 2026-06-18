@@ -1,4 +1,5 @@
 module;
+#include <cassert>
 
 #include <dxe.h>
 
@@ -14,11 +15,13 @@ namespace mc
 {
     export enum class EPlayerAction
     {
+        Null = -1,
         Rock, Scissors, Paper, Magic
     };
 
     export enum class EMagic
     {
+        Null = -1,
         Clairvoyance,
     };
 
@@ -112,6 +115,8 @@ namespace mc
         {
             switch (e)
             {
+            case EMagic::Null:
+                return;
             case EMagic::Clairvoyance:
                 if (hasUsedClairvoyance)
                     return;
@@ -125,7 +130,10 @@ namespace mc
                 {
                     EventBus::Publish<LackOfMpEvent>({});
                 }
-            default: ;
+                break;
+            default:
+                assert(false && "未実装、または未知の魔法タイプです");
+                break;
             }
         }
 

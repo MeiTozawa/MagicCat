@@ -1,4 +1,5 @@
 module;
+#include <cassert>
 
 #include <RandomUtils.h>
 
@@ -86,6 +87,9 @@ namespace mc
             case EAttackType::Paper:
                 AddPaperWeight(weight);
                 break;
+            default:
+                assert(false && "未知の攻撃タイプです");
+                break;
             }
         }
 
@@ -121,8 +125,10 @@ namespace mc
                 return scissorsWeightOffset;
             case EAttackType::Paper:
                 return paperWeightOffset;
+            default:
+                assert(false && "未知の攻撃タイプです");
+                return 0;
             }
-            return -1;
         }
 
         bool IsExposed() const { return isExposed; }

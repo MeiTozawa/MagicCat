@@ -1,4 +1,5 @@
 module;
+#include <cassert>
 
 export module Character;
 import EventBus;
@@ -78,8 +79,10 @@ namespace mc
                 return scissorsDamage;
             case EAttackType::Paper:
                 return paperDamage;
+            default:
+                assert(false && "未知の攻撃タイプです");
+                return 0;
             }
-            return -1;
         }
 
         const std::vector<ETag>& GetTags() const { return tags; }

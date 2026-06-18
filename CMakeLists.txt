@@ -17,7 +17,7 @@ endif ()
 add_subdirectory(common)
 add_subdirectory(MagicCat)
 
-target_precompile_headers(MagicCat PRIVATE
+target_precompile_headers(MagicCatCore PUBLIC
         <dxe.h>
 )
 
@@ -26,4 +26,21 @@ if (CCACHE_PROGRAM)
     set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
 endif ()
 
-target_link_options(MagicCat PRIVATE "-fuse-ld=lld")
+find_program(LLD_LINKER lld-link)
+if (LLD_LINKER)
+    target_link_options(MagicCat PRIVATE "-fuse-ld=lld")
+endif()
+
+# Setup Testing
+enable_testing()
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+add_subdirectory(tests)

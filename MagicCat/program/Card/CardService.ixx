@@ -17,8 +17,8 @@ namespace mc
 
     export enum ECardType
     {
-        Rock = 0, Scissors = 1, Paper = 2, Magic = 3,
         Null = -1,
+        Rock = 0, Scissors = 1, Paper = 2, Magic = 3,
     };
 
     // ⚠️ 警告：伝達性が損なわれているため、ソートや関連付けコンテナには絶対に使用しないでください！

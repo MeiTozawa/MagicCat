@@ -1,4 +1,5 @@
 module;
+#include <cassert>
 
 export module Character;
 import EventBus;
@@ -6,17 +7,31 @@ import AssetService;
 
 namespace mc
 {
+    /**
+     * @brief 攻撃の属性を定義する列挙型。
+     * じゃんけんのルール（グー、チョキ、パー）に基づいて設定されます。
+     */
     export enum class EAttackType
     {
         Rock = 0, Scissors = 1, Paper = 2,
     };
 
+    /**
+     * @brief キャラクターのタグを定義する列挙型。
+     * 衝突判定やイベントの対象者を区別するために使用されます。
+     */
     export enum class ETag
     {
         Player, Enemy
     };
 
-    export bool Fail(EAttackType l, EAttackType r)
+    /**
+     * @brief 攻撃が相手の攻撃に対して「負ける（不利である）」かどうかを判定します。
+     * @param l 自分（判定対象）の攻撃属性
+     * @param r 相手の攻撃属性
+     * @return 自分の攻撃が相手の攻撃に負ける場合は true、それ以外は false。
+     */
+    export bool LosesTo(EAttackType l, EAttackType r)
     {
         return (l == EAttackType::Rock && r == EAttackType::Paper) ||
             (l == EAttackType::Scissors && r == EAttackType::Rock) ||
@@ -36,6 +51,10 @@ namespace mc
             playerAttackDamage(playerAttackDamage), enemyAttackDamage(enemyAttackDamage) {}
     };
 
+    /**
+     * @brief ゲーム内のすべてのキャラクターの基底クラス。
+     * 共通のプロパティ（名前、属性ごとのダメージ量、スプライト、タグ）を管理します。
+     */
     export class Character
     {
     protected:
@@ -60,8 +79,10 @@ namespace mc
                 return scissorsDamage;
             case EAttackType::Paper:
                 return paperDamage;
+            default:
+                assert(false && "未知の攻撃タイプです");
+                return 0;
             }
-            return -1;
         }
 
         const std::vector<ETag>& GetTags() const { return tags; }

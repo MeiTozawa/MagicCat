@@ -19,9 +19,9 @@ namespace mc
         std::vector<EnemyConfig> enemyConfigs;
 
     public:
-        ConfigService()
+        ConfigService(const std::string& cardConfigPath, const std::string& enemyConfigPath)
         {
-            LoadGameConfig();
+            LoadGameConfig(cardConfigPath, enemyConfigPath);
         }
 
         const std::vector<CardConfig>& GetCardConfigs() const override
@@ -35,10 +35,10 @@ namespace mc
         }
 
     private:
-        void LoadGameConfig()
+        void LoadGameConfig(const std::string& cardConfigPath, const std::string& enemyConfigPath)
         {
             {
-                std::ifstream ifs("resource/json/card_config.json");
+                std::ifstream ifs(cardConfigPath);
                 if (ifs.is_open())
                 {
                     std::stringstream ss;
@@ -59,7 +59,7 @@ namespace mc
                 }
             }
             {
-                std::ifstream ifs("resource/json/enemy_config.json");
+                std::ifstream ifs(enemyConfigPath);
                 if (ifs.is_open())
                 {
                     std::stringstream ss;
@@ -93,8 +93,8 @@ namespace mc
         }
     };
 
-    Shared<IConfigService> CreateConfigService()
+    Shared<IConfigService> CreateConfigService(const std::string& cardConfigPath, const std::string& enemyConfigPath)
     {
-        return std::make_shared<ConfigService>();
+        return std::make_shared<ConfigService>(cardConfigPath, enemyConfigPath);
     }
 } // namespace mc

@@ -33,5 +33,5 @@ namespace mc
         virtual const std::vector<EnemyConfig>& GetEnemyConfigs() const = 0;
     };
 
-    export Shared<IConfigService> CreateConfigService();
+    export Shared<IConfigService> CreateConfigService(const std::string& cardConfigPath, const std::string& enemyConfigPath);
 } // namespace mc

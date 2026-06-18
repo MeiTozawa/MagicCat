@@ -1,4 +1,5 @@
 module;
+#include <cassert>
 
 #include <RandomUtils.h>
 
@@ -55,7 +56,7 @@ namespace mc
             combatEvent = EventBus::Subscribe<CombatEvent>(
                 [this](const CombatEvent& e)
                 {
-                    if (Fail(e.enemyAttackType, e.playerAttackType))
+                    if (LosesTo(e.enemyAttackType, e.playerAttackType))
                     {
                         healthComp->TakeDamage(e.playerAttackDamage);
                     }
@@ -86,6 +87,9 @@ namespace mc
             case EAttackType::Paper:
                 AddPaperWeight(weight);
                 break;
+            default:
+                assert(false && "未知の攻撃タイプです");
+                break;
             }
         }
 
@@ -97,8 +101,9 @@ namespace mc
             int index = Random::RandomSelection(
                 rockWeight, scissorsWeight, paperWeight
             );
-            auto attackType = static_cast<EAttackType>(index);
-            return attackType;
+            assert(index >= 0 && index <= 2 && "ランダム攻撃のインデックスが範囲外です");
+            constexpr EAttackType mappedTypes[] = { EAttackType::Rock, EAttackType::Scissors, EAttackType::Paper };
+            return mappedTypes[index];
         }
 
         bool operator==(const Enemy& e) const
@@ -121,8 +126,10 @@ namespace mc
                 return scissorsWeightOffset;
             case EAttackType::Paper:
                 return paperWeightOffset;
+            default:
+                assert(false && "未知の攻撃タイプです");
+                return 0;
             }
-            return -1;
         }
 
         bool IsExposed() const { return isExposed; }

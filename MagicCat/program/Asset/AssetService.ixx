@@ -12,11 +12,13 @@ namespace mc
 
     export enum class EFont
     {
+        Null = -1,
         UNIFONT_17
     };
 
     export enum class EImage
     {
+        Null = -1,
         Rock = 0, Scissors = 1, Paper = 2, Magic = 3,
 
         KB_Q = 100, KB_R, KB_SPACE, KB_UP, KB_DOWN
@@ -24,7 +26,8 @@ namespace mc
 
     export enum class ESound
     {
-        Confirm, DrawCard, EnemyHurt, 
+        Null = -1,
+        Confirm = 0, DrawCard, EnemyHurt, 
         Fail, PlayerHurt, Select, 
         Shuffle, Warning, Win,
         Beep, Magic

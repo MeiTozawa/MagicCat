@@ -24,6 +24,7 @@ namespace mc {
     static constexpr uint32_t COLOR_CARD_ROCK = 0x555555;
     static constexpr uint32_t COLOR_CARD_PAPER = 0xF5F5DC;
     static constexpr uint32_t COLOR_CARD_SCISSORS = 0xB0C4DE;
+    static constexpr uint32_t COLOR_CARD_MAGIC = 0x9370DB;
 	
     /**
      * @brief ウィンドウの幅を取得します。

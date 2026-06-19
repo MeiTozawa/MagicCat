@@ -84,6 +84,9 @@ namespace mc
                 case Scissors:
                     color = COLOR_CARD_SCISSORS;
                     break;
+                case Magic:
+                    color = COLOR_CARD_MAGIC;
+                    break;
                 default:
                     has_icon = false;
                     color = COLOR_CARD_DEFAULT;

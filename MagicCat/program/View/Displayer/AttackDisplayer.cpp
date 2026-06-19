@@ -4,10 +4,7 @@ module;
 #include <memory>
 module Displayer;
 
-import CardService;
-import ServiceLocator;
-import EventBus;
-import Character;
+
 namespace mc
 {
     class AttackDisplayer : public IDisplayer

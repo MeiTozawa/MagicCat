@@ -7,9 +7,12 @@ module;
 export module SceneService;
 
 import CardService;
-import ServiceLocator;
-import GameService;
+
 import EventBus;
+import InputService;
+import AssetService;
+import CharacterService;
+import RenderService;
 
 namespace mc
 {
@@ -18,14 +21,7 @@ namespace mc
         Info, Combat, Rules
     };
 
-    export struct SceneRegistry
-    {
-        static std::vector<std::function<void()>>& GetRegistrations()
-        {
-            static std::vector<std::function<void()>> registrations;
-            return registrations;
-        }
-    };
+
 
     export struct EnterCutSceneEvent : IEvent {};
 
@@ -72,8 +68,9 @@ namespace mc
         virtual void SetCurrentScene(ESceneState) = 0;
     };
 
-    export Shared<ISceneService> CreateSceneService();
-    export std::unique_ptr<IScene> CreateInfoScene();
-    export std::unique_ptr<IScene> CreateCombatScene();
-    export std::unique_ptr<IScene> CreateRulesScene();
+    export Shared<ISceneService> CreateSceneService(ICharacterService* characterService);
+    // InfoScene, CombatScene, RulesScene factories should now take their dependencies:
+    export std::unique_ptr<IScene> CreateInfoScene(IInputService* inputService, ISceneService* sceneService, IRenderService* renderService);
+    export std::unique_ptr<IScene> CreateCombatScene(ICharacterService* characterService, ISceneService* sceneService, IAssetService* assetService, ICardService* cardService, IInputService* inputService, IRenderService* renderService);
+    export std::unique_ptr<IScene> CreateRulesScene(IInputService* inputService, ISceneService* sceneService, IAssetService* assetService, IRenderService* renderService);
 } // namespace mc

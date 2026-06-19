@@ -5,8 +5,7 @@ module;
 #include <RenderUtils.h>
 
 module SceneService;
-import GameService;
-import ServiceLocator;
+import SceneService;
 import InputService;
 import RenderService;
 import EventBus;
@@ -19,14 +18,17 @@ namespace mc
     {
         IInputService* inputService = nullptr;
         ISceneService* sceneService = nullptr;
+        IRenderService* renderService = nullptr;
         EventHandle deathEvent;
         std::wstring info = {};
         uint32_t infoColor;
         int winCount = 0;
         int failCount = 0;
+        float blinkTimer = 0;
     
     public:
-        InfoScene()
+        InfoScene(IInputService* input, ISceneService* scene, IRenderService* render)
+            : inputService(input), sceneService(scene), renderService(render)
         {
             info = L"MagicCat";
             infoColor = 0xF259FF;
@@ -48,14 +50,11 @@ namespace mc
             });
         }
 
-        void Start() override
-        {
-            inputService = ServiceLocator::Get<IInputService>();
-            sceneService = ServiceLocator::Get<ISceneService>();
-        }
+        void Start() override {}
 
         void Update(float deltaTime) override
         {
+            blinkTimer += deltaTime * 60;
             if (inputService->IsPressed(InputAction::IgConfirm))
             {
                 sceneService->PushScene(Combat);
@@ -63,22 +62,22 @@ namespace mc
             if (!info.empty())
             {
                 SetFontSize(320);
-                DrawCenterString(*ServiceLocator::Get<IRenderService>(), dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
+                DrawCenterString(renderService, dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
                                  info, infoColor);
                 SetFontSize(48);
             }
 
-            DrawString(0, 20,
+            DrawLeftString(renderService, 20, 20,
                        std::format(L" 勝利回数: {} ", winCount).c_str(), COLOR_WHITE);
-            DrawRightString(*ServiceLocator::Get<IRenderService>(), dxe::GetWindowWidthF(1.f), 20,
+            DrawRightString(renderService, dxe::GetWindowWidthF(1.f), 20,
                             std::format(L" 失敗回数: {} ", failCount).c_str(), COLOR_WHITE);
-            DrawCenterString(*ServiceLocator::Get<IRenderService>(), dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.8f),
+            DrawCenterString(renderService, dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.8f),
                              L"Enterキーを押してゲームをスタートする！", COLOR_WHITE);
         }
     };
 
-    std::unique_ptr<IScene> CreateInfoScene()
+    std::unique_ptr<IScene> CreateInfoScene(IInputService* inputService, ISceneService* sceneService, IRenderService* renderService)
     {
-        return std::make_unique<InfoScene>();
+        return std::make_unique<InfoScene>(inputService, sceneService, renderService);
     }
 } // namespace mc

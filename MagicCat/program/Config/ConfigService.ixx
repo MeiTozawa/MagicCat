@@ -5,8 +5,6 @@ module;
 
 export module ConfigService;
 
-import ServiceLocator;
-
 namespace mc
 {
     export struct EnemyConfig

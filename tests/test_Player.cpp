@@ -72,13 +72,11 @@ namespace {
         EventBus::Unsubscribe(handle);
     }
 
-    TEST_F(PlayerTest, CombatEvent_TakesDamageWhenLosing) {
+    TEST_F(PlayerTest, TakeDamage_ReducesHealth) {
         Player player;
         int initialHealth = player.GetHealthComponent().GetHealth();
 
-        // Send a combat event where player loses (Rock loses to Paper)
-        // CombatEvent(playerAttackType, enemyAttackType, playerAttackDamage, enemyAttackDamage)
-        EventBus::Publish<CombatEvent>({EAttackType::Rock, EAttackType::Paper, 1, 3});
+        player.TakeDamage(3);
 
         int currentHealth = player.GetHealthComponent().GetHealth();
         EXPECT_EQ(currentHealth, initialHealth - 3);

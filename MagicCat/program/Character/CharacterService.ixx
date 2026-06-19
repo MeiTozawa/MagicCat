@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 export module CharacterService;
 
@@ -6,6 +6,7 @@ import Enemy;
 import Player;
 import EventBus;
 import Character;
+import ConfigService;
 
 namespace mc
 {
@@ -18,5 +19,5 @@ namespace mc
         virtual Player& GetPlayer() = 0;
     };
 
-    export Shared<ICharacterService> CreateCharacterService();
+    export Shared<ICharacterService> CreateCharacterService(IConfigService* configService);
 } // namespace mc

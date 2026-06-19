@@ -7,7 +7,9 @@ module;
 export module CardService;
 
 import Enemy;
+import Character;
 import EventBus;
+import ConfigService;
 
 namespace mc
 {
@@ -40,6 +42,17 @@ namespace mc
         return (l <=> r) == std::strong_ordering::equal;
     }
 
+    export EAttackType ToAttackType(ECardType type)
+    {
+        switch (type)
+        {
+        case Rock: return EAttackType::Rock;
+        case Scissors: return EAttackType::Scissors;
+        case Paper: return EAttackType::Paper;
+        default: return EAttackType::Rock;
+        }
+    }
+
 
     export struct Card
     {
@@ -53,7 +66,8 @@ namespace mc
     public:
         virtual ~ICardService() = default;
         virtual void Start() = 0;
-        virtual const void DrawCard() = 0;
+        virtual const Card DrawCard() = 0;
+        virtual void DiscardHand() = 0;
         virtual const std::vector<Card>& GetHandCards() = 0;
         virtual const std::vector<Card>& GetDrawCards() = 0;
         virtual const std::vector<Card>& GetDiscardCards() = 0;
@@ -94,5 +108,5 @@ namespace mc
     export constexpr Card CARD_MAGIC_3 = {Magic, 3};
     export constexpr Card CARD_MAGIC_4 = {Magic, 4};
 
-    export Shared<ICardService> CreateCardService();
+    export Shared<ICardService> CreateCardService(IConfigService* configService);
 } // namespace mc

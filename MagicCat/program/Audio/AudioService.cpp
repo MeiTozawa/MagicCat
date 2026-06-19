@@ -5,7 +5,6 @@ import EventBus;
 import HealthComponent;
 import Character;
 import AssetService;
-import ServiceLocator;
 import CardService;
 import SceneService;
 import CharacterService;
@@ -15,12 +14,13 @@ namespace mc
     class AudioService : public IAudioService
     {
         IAssetService* assetService;
+        ICharacterService* characterService;
         std::vector<EventHandle> eventHandles;
 
     public:
-        AudioService()
+        AudioService(IAssetService* asset, ICharacterService* character)
+            : assetService(asset), characterService(character)
         {
-            assetService = ServiceLocator::Get<IAssetService>();
 
             eventHandles.push_back(EventBus::Subscribe<HealthChangedEvent>([this](const HealthChangedEvent& e)
             {
@@ -29,7 +29,7 @@ namespace mc
                 {
                     PlaySoundMem(assetService->GetSoundHandle(ESound::PlayerHurt), DX_PLAYTYPE_BACK);
 
-                    if (auto characterService = ServiceLocator::Get<ICharacterService>())
+                    if (characterService)
                     {
                         const auto& player = characterService->GetPlayer();
                         const auto& healthComp = player.GetHealthComponent();
@@ -98,8 +98,8 @@ namespace mc
         }
     };
 
-    Shared<IAudioService> CreateAudioService()
+    Shared<IAudioService> CreateAudioService(IAssetService* assetService, ICharacterService* characterService)
     {
-        return std::make_shared<AudioService>();
+        return std::make_shared<AudioService>(assetService, characterService);
     }
 } // namespace mc

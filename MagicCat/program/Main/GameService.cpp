@@ -7,7 +7,6 @@ module GameService;
 
 import SceneService;
 import InputService;
-import ServiceLocator;
 import Player;
 import HealthComponent;
 import Enemy;
@@ -24,23 +23,12 @@ constexpr int CARD_MAX = 4;
 class GameService : public IGameService
 {
     ISceneService* sceneService = nullptr;
-    IInputService* inputService = nullptr;
-    ICharacterService* characterService = nullptr;
-    IAssetService* assetService = nullptr;
-    ICardService* cardService = nullptr;
 
 public:
-    GameService() {}
+    GameService(ISceneService* sceneService) : sceneService(sceneService) {}
 
     void Start() override
     {
-        sceneService = ServiceLocator::Get<ISceneService>();
-        inputService = ServiceLocator::Get<IInputService>();
-        assetService = ServiceLocator::Get<IAssetService>();
-
-        characterService = ServiceLocator::Get<ICharacterService>();
-        
-        cardService = ServiceLocator::Get<ICardService>();
     }
 
     void End() override {}
@@ -51,9 +39,9 @@ public:
     }
 };
 
-Shared<IGameService> CreateGameService()
+Shared<IGameService> CreateGameService(ISceneService* sceneService)
 {
-    return std::make_shared<GameService>();
+    return std::make_shared<GameService>(sceneService);
 }
 
 } // namespace mc

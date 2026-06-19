@@ -5,8 +5,6 @@ module;
 #include "DxLib.h"
 
 module RenderService;
-import ServiceLocator;
-
 namespace mc
 {
     class DxLibRenderService : public IRenderService

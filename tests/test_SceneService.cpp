@@ -16,10 +16,7 @@ namespace {
     };
 
     class SceneServiceTest : public ::testing::Test {
-    protected:
         void SetUp() override {
-            // Prevent actual scenes from loading, which would require extensive mocking
-            SceneRegistry::GetRegistrations().clear();
         }
 
         void TearDown() override {
@@ -27,7 +24,7 @@ namespace {
     };
 
     TEST_F(SceneServiceTest, PushScene_ChangesCurrentScene) {
-        auto sceneService = CreateSceneService();
+        auto sceneService = CreateSceneService(nullptr);
         
         auto infoSceneRaw = new DummyScene();
         auto combatSceneRaw = new DummyScene();
@@ -45,7 +42,7 @@ namespace {
     }
 
     TEST_F(SceneServiceTest, PopScene_ReturnsToPreviousScene) {
-        auto sceneService = CreateSceneService();
+        auto sceneService = CreateSceneService(nullptr);
         
         sceneService->RegisterScene(ESceneState::Info, std::make_unique<DummyScene>());
         sceneService->RegisterScene(ESceneState::Combat, std::make_unique<DummyScene>());

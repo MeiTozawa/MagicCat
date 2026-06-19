@@ -51,15 +51,31 @@ namespace mc {
      * @param text 描画する文字列
      * @param color 描画する色
      */
-    inline void DrawCenterString(IRenderService& renderer, int x, int y, const std::wstring& text, uint32_t color)
+    inline void DrawCenterString(IRenderService* renderer, int x, int y, const std::wstring& text, uint32_t color)
     {
-        int textWidth = renderer.GetDrawStringWidth(text.c_str());
-        int textHeight = renderer.GetFontSize();
+        int textWidth = renderer->GetDrawStringWidth(text.c_str());
+        int textHeight = renderer->GetFontSize();
 
         int drawX = x - (textWidth / 2);
         int drawY = y - (textHeight / 2);
 
-        renderer.DrawString(drawX, drawY, text.c_str(), color);
+        renderer->DrawString(drawX, drawY, text.c_str(), color);
+    }
+
+    /**
+     * @brief 文字列を左揃えで描画します。
+     * @param renderer 描画サービス
+     * @param x 左端となるX座標
+     * @param y 上端となるY座標
+     * @param text 描画する文字列
+     * @param color 描画する色
+     */
+    inline void DrawLeftString(IRenderService* renderer, int x, int y, const std::wstring& text, uint32_t color)
+    {
+        int textHeight = renderer->GetFontSize();
+        int drawY = y - (textHeight / 2);
+
+        renderer->DrawString(x, drawY, text.c_str(), color);
     }
 
     /**
@@ -70,14 +86,15 @@ namespace mc {
      * @param text 描画する文字列
      * @param color 描画する色
      */
-    inline void DrawRightString(IRenderService& renderer, int x, int y, const std::wstring& text, uint32_t color)
+    inline void DrawRightString(IRenderService* renderer, int x, int y, const std::wstring& text, uint32_t color)
     {
-        int textWidth = renderer.GetDrawStringWidth(text.c_str());
+        int textWidth = renderer->GetDrawStringWidth(text.c_str());
+        int textHeight = renderer->GetFontSize();
 
         int drawX = x - textWidth;
-        int drawY = y;
+        int drawY = y - (textHeight / 2);
 
-        renderer.DrawString(drawX, drawY, text.c_str(), color);
+        renderer->DrawString(drawX, drawY, text.c_str(), color);
     }
 
     /**
@@ -90,11 +107,11 @@ namespace mc {
      * @param thickness 枠線の太さ（ピクセル）
      * @param color 描画する色
      */
-    inline void DrawHollowBox(IRenderService& renderer, float x1, float y1, float x2, float y2, int thickness, uint32_t color)
+    inline void DrawHollowBox(IRenderService* renderer, int x1, int y1, int x2, int y2, int thickness, uint32_t color)
     {
-        for (int k = 0; k < thickness; ++k)
-        {
-            renderer.DrawBoxAA(x1 + k, y1 + k, x2 - k, y2 - k, color, false);
-        }
+        renderer->DrawBoxAA(x1, y1, x2, y1 + thickness, color, TRUE);
+        renderer->DrawBoxAA(x1, y2 - thickness, x2, y2, color, TRUE);
+        renderer->DrawBoxAA(x1, y1, x1 + thickness, y2, color, TRUE);
+        renderer->DrawBoxAA(x2 - thickness, y1, x2, y2, color, TRUE);
     }
 }

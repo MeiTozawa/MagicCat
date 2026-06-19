@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 export module AnimationFactory;
 import Character;
@@ -39,6 +39,6 @@ namespace mc
     };
 
     export std::unique_ptr<AnimationPlayer> CreateSpriteAnimation(
-        ESprite sprite, float extraRate = 1.f, bool isFlip = false
+        IAssetService* assetService, ESprite sprite, float extraRate = 1.f, bool isFlip = false
     );
 }

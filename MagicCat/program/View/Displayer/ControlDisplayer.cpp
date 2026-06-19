@@ -1,9 +1,12 @@
 module;
 
+#include <memory>
+#include <DxLib.h>
+
 module Displayer;
 
-import ServiceLocator;
 import AssetService;
+import RenderService;
 
 namespace mc
 {
@@ -23,12 +26,13 @@ namespace mc
     class ControlDisplayer : public IDisplayer
     {
         IAssetService* assetService;
+        IRenderService* renderService;
         uint32_t color;
 
     public:
-        ControlDisplayer(uint32_t color) : color(color)
+        ControlDisplayer(IAssetService* asset, IRenderService* render, uint32_t c = 0xFFFFFF)
+            : assetService(asset), renderService(render), color(c)
         {
-            assetService = ServiceLocator::Get<IAssetService>();
         }
 
         void Update(float deltaTime) override {}
@@ -37,11 +41,11 @@ namespace mc
         {
             int icon = assetService->GetImageHandle(EImage::KB_Q);
             DrawRotaGraphF(KB_Q_X, Y, 1.0, 0.0, icon, TRUE);
-            DrawString(KB_Q_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"カードを引く", color);
+            renderService->DrawString(KB_Q_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"カードを引く", color);
 
             icon = assetService->GetImageHandle(EImage::KB_R);
             DrawRotaGraphF(KB_R_X, Y, 1.0, 0.0, icon, TRUE);
-            DrawString(KB_R_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"ルールを見る", color);
+            renderService->DrawString(KB_R_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"ルールを見る", color);
 
             icon = assetService->GetImageHandle(EImage::KB_UP);
             DrawRotaGraphF(KB_UP_X, Y, 1.0, 0.0, icon, TRUE);
@@ -51,12 +55,12 @@ namespace mc
 
             icon = assetService->GetImageHandle(EImage::KB_SPACE);
             DrawRotaGraphF(KB_SPACE_X, Y, 1.0, 0.0, icon, TRUE);
-            DrawString(KB_SPACE_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"選択する", color);
+            renderService->DrawString(KB_SPACE_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"選択する", color);
         }
     };
 
-    std::unique_ptr<IDisplayer> CreateControlDisplayer(uint32_t color)
+    std::unique_ptr<IDisplayer> CreateControlDisplayer(IAssetService* assetService, IRenderService* renderService, uint32_t color)
     {
-        return std::make_unique<ControlDisplayer>(color);
+        return std::make_unique<ControlDisplayer>(assetService, renderService, color);
     }
 } // namespace mc

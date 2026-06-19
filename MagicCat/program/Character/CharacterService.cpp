@@ -8,7 +8,6 @@ module;
 
 module CharacterService;
 
-import ServiceLocator;
 import Enemy;
 import AssetService;
 import ConfigService;
@@ -47,9 +46,9 @@ namespace mc
     class CharacterService : public ICharacterService
     {
     public:
-        CharacterService()
+        CharacterService(IConfigService* configService)
         {
-            enemies = ServiceLocator::Get<IConfigService>()->GetEnemyConfigs();
+            enemies = configService->GetEnemyConfigs();
         }
 
         void Start() override
@@ -86,8 +85,8 @@ namespace mc
         std::unique_ptr<Player> currentPlayer;
     };
 
-    Shared<ICharacterService> CreateCharacterService()
+    Shared<ICharacterService> CreateCharacterService(IConfigService* configService)
     {
-        return std::make_shared<CharacterService>();
+        return std::make_shared<CharacterService>(configService);
     }
 } // namespace mc

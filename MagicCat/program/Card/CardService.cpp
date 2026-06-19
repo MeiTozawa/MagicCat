@@ -6,7 +6,6 @@ module;
 
 module CardService;
 
-import ServiceLocator;
 import Character;
 import InputService;
 import EventBus;
@@ -18,31 +17,15 @@ namespace mc
 {
     class CardService : public ICardService
     {
-        EventHandle drawCardEvent;
-        EventHandle combatEvent;
-
     public:
-        CardService()
+        CardService(IConfigService* configService)
         {
-            auto& deckConfig = ServiceLocator::Get<IConfigService>()->GetCardConfigs();
+            auto& deckConfig = configService->GetCardConfigs();
             for (const auto& c : deckConfig)
             {
                 auto card = Card{ToCardType(c.type), c.value};
-
                 deck.push_back(card);
             }
-            drawCardEvent = EventBus::Subscribe<DrawCardEvent>(
-                [this](const DrawCardEvent&) { DrawCard(); }
-            );
-
-            combatEvent = EventBus::Subscribe<CombatEvent>(
-                [this](const CombatEvent&)
-                {
-                    discardPile.insert(discardPile.end(), hand.begin(), hand.end());
-                    hand.clear();
-                    EventBus::Publish(HandUpdatedEvent{hand});
-                }
-            );
         }
 
         void Start() override
@@ -57,8 +40,6 @@ namespace mc
 
         ~CardService() override
         {
-            EventBus::Unsubscribe(drawCardEvent);
-            EventBus::Unsubscribe(combatEvent);
         }
 
         const std::vector<Card>& GetHandCards() override
@@ -66,14 +47,22 @@ namespace mc
             return hand;
         }
 
-        const void DrawCard() override
+        void DiscardHand() override
+        {
+            discardPile.insert(discardPile.end(), hand.begin(), hand.end());
+            hand.clear();
+            EventBus::Publish(HandUpdatedEvent{hand});
+        }
+
+        const Card DrawCard() override
         {
             if (hand.size() >= HAND_SIZE_MAX)
             {
-                return;
+                return Card{ECardType::Null, 0};
             }
             if (drawPile.empty())
             {
+                if (discardPile.empty()) return Card{ECardType::Null, 0};
                 drawPile.insert(drawPile.end(), discardPile.begin(), discardPile.end());
                 discardPile.clear(); // 再シャッフル時に捨て札を確実にクリアする
                 Random::Shuffle(drawPile);
@@ -83,15 +72,13 @@ namespace mc
             auto c = drawPile.back();
 
             drawPile.pop_back();
-            if (c.CardType == Magic)
-                EventBus::Publish(ChangeMpEvent(c.Value));
-            else if (c.CardType == Rock || c.CardType == Scissors || c.CardType == Paper)
-                EventBus::Publish(AddWeightEvent(ToAttackType(c.CardType), c.Value));
 
             hand.push_back(c);
 
             EventBus::Publish(DeckUpdatedEvent{drawPile.size(), discardPile.size()});
             EventBus::Publish(HandUpdatedEvent{hand});
+
+            return c;
         }
 
 
@@ -124,23 +111,11 @@ namespace mc
                 return Null;
             }
         }
-        
-        static EAttackType ToAttackType(ECardType type)
-        {
-            switch (type)
-            {
-            case Rock: return EAttackType::Rock;
-            case Scissors: return EAttackType::Scissors;
-            case Paper: return EAttackType::Paper;
-            default:
-                assert(false && "不正なカードタイプからの変換です");
-                throw std::invalid_argument("不正なカードタイプからの変換です");
-            }
-        }
+
     };
 
-    Shared<ICardService> CreateCardService()
+    Shared<ICardService> CreateCardService(IConfigService* configService)
     {
-        return std::make_shared<CardService>();
+        return std::make_shared<CardService>(configService);
     }
 } // namespace mc

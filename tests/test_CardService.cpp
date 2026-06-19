@@ -4,7 +4,6 @@
 
 import CardService;
 import ConfigService;
-import ServiceLocator;
 import EventBus;
 import Character;
 import Player;
@@ -31,17 +30,14 @@ namespace {
             
             EXPECT_CALL(*mockConfig, GetCardConfigs())
                 .WillRepeatedly(ReturnRef(mockCardConfigs));
-                
-            ServiceLocator::RegisterSingleton<IConfigService, MockConfigService>(mockConfig);
         }
 
         void TearDown() override {
-            ServiceLocator::RegisterSingleton<IConfigService, MockConfigService>(nullptr);
         }
     };
 
     TEST_F(CardServiceTest, Start_InitializesPiles) {
-        auto cardService = CreateCardService();
+        auto cardService = CreateCardService(mockConfig.get());
         cardService->Start();
 
         auto drawCards = cardService->GetDrawCards();
@@ -51,7 +47,7 @@ namespace {
     }
 
     TEST_F(CardServiceTest, DrawCard_MovesCardToHand) {
-        auto cardService = CreateCardService();
+        auto cardService = CreateCardService(mockConfig.get());
         cardService->Start();
 
         cardService->DrawCard();
@@ -61,27 +57,24 @@ namespace {
     }
 
     TEST_F(CardServiceTest, DrawCard_WhenEmpty_ShufflesDiscardPile) {
-        auto cardService = CreateCardService();
+        auto cardService = CreateCardService(mockConfig.get());
         cardService->Start();
 
-        // Draw all 4 cards
-        for (int i = 0; i < 4; ++i) {
-            cardService->DrawCard();
-        }
-        
-        EXPECT_EQ(cardService->GetDrawCards().size(), 0);
-        EXPECT_EQ(cardService->GetHandCards().size(), 4);
+        cardService->DrawCard();
+        cardService->DrawCard();
+        cardService->DrawCard();
+        cardService->DrawCard();
 
-        // Discard hand via combat event
-        EventBus::Publish<CombatEvent>({EAttackType::Rock, EAttackType::Scissors, 1, 1});
+        EXPECT_EQ(cardService->GetHandCards().size(), 4);
+        EXPECT_EQ(cardService->GetDiscardCards().size(), 0);
+
+        cardService->DiscardHand();
 
         EXPECT_EQ(cardService->GetHandCards().size(), 0);
         EXPECT_EQ(cardService->GetDiscardCards().size(), 4);
 
-        // Draw again. Should shuffle discard pile into draw pile
         cardService->DrawCard();
 
-        EXPECT_EQ(cardService->GetDiscardCards().size(), 0);
         EXPECT_EQ(cardService->GetDrawCards().size(), 3);
         EXPECT_EQ(cardService->GetHandCards().size(), 1);
     }

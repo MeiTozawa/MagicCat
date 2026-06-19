@@ -3,7 +3,6 @@
 #include <filesystem>
 
 import ConfigService;
-import ServiceLocator;
 
 namespace mc {
 namespace {

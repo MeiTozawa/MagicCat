@@ -6,7 +6,6 @@ module;
 module SceneService;
 
 import GameService;
-import ServiceLocator;
 import HealthComponent;
 import EventBus;
 import CharacterService;
@@ -31,21 +30,20 @@ namespace mc
             if (!initialized)
             {
                 initialized = true;
-                for (auto& reg : SceneRegistry::GetRegistrations())
+                if (!scenes.empty() && scenes.contains(Info))
                 {
-                    reg();
+                    sceneStack.push_back(Info);
+                    scenes[Info]->Start();
                 }
-                sceneStack.push_back(Info);
-                scenes[Info]->Start();
             }
         }
 
     public:
-        SceneService()
+        SceneService(ICharacterService* characterService)
         {
-            characterDiedHandle = EventBus::Subscribe<DeathEvent>([this](const DeathEvent& event)
+            characterDiedHandle = EventBus::Subscribe<DeathEvent>([this, characterService](const DeathEvent& event)
             {
-                if (auto characterService = ServiceLocator::Get<ICharacterService>())
+                if (characterService)
                 {
                     if (event.Victim == &characterService->GetPlayer() || 
                         event.Victim == &characterService->GetEnemy())
@@ -107,8 +105,8 @@ namespace mc
         }
     };
 
-    Shared<ISceneService> CreateSceneService()
+    Shared<ISceneService> CreateSceneService(ICharacterService* characterService)
     {
-        return std::make_shared<SceneService>();
+        return std::make_shared<SceneService>(characterService);
     }
 } // namespace mc

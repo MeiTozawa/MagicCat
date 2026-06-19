@@ -56,7 +56,8 @@ namespace mc
             {
                 if (selectedActionIndex == ACTION_MAGIC)
                 {
-                    if (characterService->GetPlayer().UseMagic(EMagic::Clairvoyance))
+                    bool success = characterService->GetPlayer().UseMagic(EMagic::Clairvoyance);
+                    if (success)
                     {
                         characterService->GetEnemy().SetExposed(true);
                     }

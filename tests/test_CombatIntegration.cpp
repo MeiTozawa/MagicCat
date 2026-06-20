@@ -96,7 +96,7 @@ namespace {
 
     TEST_F(CombatIntegrationTest, Combat_PlayerDeath_FiresEvent) {
         bool deathFired = false;
-        EventBus::Subscribe<DeathEvent>([&](const DeathEvent&) {
+        auto handle = EventBus::Subscribe<DeathEvent>([&](const DeathEvent&) {
             deathFired = true;
         });
         
@@ -112,6 +112,8 @@ namespace {
         characterService->GetPlayer().TakeDamage(1000); 
         
         EXPECT_TRUE(deathFired);
+        
+        EventBus::Unsubscribe(handle);
     }
 
 } // namespace

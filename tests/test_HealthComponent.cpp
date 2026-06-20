@@ -66,5 +66,24 @@ namespace {
         EventBus::Unsubscribe(handle);
     }
 
+    TEST(HealthComponentTest, TakeDamage_WhenAlreadyDead_DoesNothing) {
+        DummyCharacter character;
+        HealthComponent health(&character);
+
+        health.TakeDamage(10); // Kill the character
+        ASSERT_TRUE(health.IsDead());
+        EXPECT_EQ(health.GetHealth(), 0);
+
+        health.TakeDamage(5); // Should be ignored after death
+        EXPECT_EQ(health.GetHealth(), 0); // HP should not go negative
+    }
+
+    TEST(HealthComponentTest, GetMaxHealth_ReturnsDefaultTen) {
+        DummyCharacter character;
+        HealthComponent health(&character);
+
+        EXPECT_EQ(health.GetMaxHealth(), 10);
+    }
+
 } // namespace
 } // namespace mc

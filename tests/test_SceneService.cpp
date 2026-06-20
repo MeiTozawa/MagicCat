@@ -54,5 +54,26 @@ namespace {
         EXPECT_EQ(sceneService->GetCurrentScene(), ESceneState::Info);
     }
 
+    TEST_F(SceneServiceTest, PopScene_WhenStackHasOnlyDefaultScene_DoesNotCrash) {
+        auto sceneService = CreateSceneService(nullptr);
+
+        sceneService->RegisterScene(ESceneState::Info, std::make_unique<DummyScene>());
+
+        // Pop when nothing is on the stack above the default — must not crash
+        EXPECT_NO_FATAL_FAILURE(sceneService->PopScene());
+    }
+
+    TEST_F(SceneServiceTest, Update_DelegatesToCurrentScene) {
+        auto sceneService = CreateSceneService(nullptr);
+
+        auto* dummyRaw = new DummyScene();
+        sceneService->RegisterScene(ESceneState::Info, std::unique_ptr<IScene>(dummyRaw));
+
+        sceneService->Update(0.016f);
+        sceneService->Update(0.016f);
+
+        EXPECT_EQ(dummyRaw->updateCount, 2);
+    }
+
 } // namespace
 } // namespace mc

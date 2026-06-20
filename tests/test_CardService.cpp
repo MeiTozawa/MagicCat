@@ -79,5 +79,70 @@ namespace {
         EXPECT_EQ(cardService->GetHandCards().size(), 1);
     }
 
+    TEST_F(CardServiceTest, DrawCard_WhenHandFull_ReturnsNullCard) {
+        auto cardService = CreateCardService(mockConfig.get());
+        cardService->Start();
+
+        // Fill the hand to HAND_SIZE_MAX (4)
+        for (int i = 0; i < HAND_SIZE_MAX; i++) {
+            cardService->DrawCard();
+        }
+        ASSERT_EQ(static_cast<int>(cardService->GetHandCards().size()), HAND_SIZE_MAX);
+
+        Card extra = cardService->DrawCard();
+
+        EXPECT_EQ(extra.CardType, ECardType::Null);
+        // Hand size must not exceed the maximum
+        EXPECT_EQ(static_cast<int>(cardService->GetHandCards().size()), HAND_SIZE_MAX);
+    }
+
+    TEST_F(CardServiceTest, DrawCard_WhenBothPilesEmpty_ReturnsNullCard) {
+        auto cardService = CreateCardService(mockConfig.get());
+        cardService->Start();
+
+        // Fill hand, discard, then fill hand again to exhaust draw pile
+        for (int i = 0; i < HAND_SIZE_MAX; i++) cardService->DrawCard();
+        cardService->DiscardHand();
+        // Draw pile is empty; drawing reshuffles from discard
+        for (int i = 0; i < HAND_SIZE_MAX; i++) cardService->DrawCard();
+        // Now hand is full, draw pile empty, discard empty
+        ASSERT_EQ(cardService->GetDiscardCards().size(), 0uz);
+        ASSERT_EQ(cardService->GetDrawCards().size(),    0uz);
+
+        Card result = cardService->DrawCard(); // hand is full — must return Null
+        EXPECT_EQ(result.CardType, ECardType::Null);
+    }
+
+    TEST_F(CardServiceTest, DrawCard_FiresHandUpdatedEvent) {
+        auto cardService = CreateCardService(mockConfig.get());
+        cardService->Start();
+
+        bool eventFired = false;
+        auto handle = EventBus::Subscribe<HandUpdatedEvent>([&](const HandUpdatedEvent&) {
+            eventFired = true;
+        });
+
+        cardService->DrawCard();
+
+        EXPECT_TRUE(eventFired);
+        EventBus::Unsubscribe(handle);
+    }
+
+    TEST_F(CardServiceTest, DiscardHand_FiresHandUpdatedEvent) {
+        auto cardService = CreateCardService(mockConfig.get());
+        cardService->Start();
+        cardService->DrawCard(); // put a card in hand first
+
+        bool eventFired = false;
+        auto handle = EventBus::Subscribe<HandUpdatedEvent>([&](const HandUpdatedEvent&) {
+            eventFired = true;
+        });
+
+        cardService->DiscardHand();
+
+        EXPECT_TRUE(eventFired);
+        EventBus::Unsubscribe(handle);
+    }
+
 } // namespace
 } // namespace mc

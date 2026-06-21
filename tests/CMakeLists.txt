@@ -6,8 +6,11 @@ add_executable(MagicCatTests
     test_Enemy.cpp
     test_EventBus.cpp
     test_CardService.cpp
+    test_CardServiceUtils.cpp
     test_ConfigService.cpp
     test_SceneService.cpp
+    test_CombatIntegration.cpp
+    test_GameFlowIntegration.cpp
 )
 
 target_compile_features(MagicCatTests PRIVATE cxx_std_23)

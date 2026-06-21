@@ -15,7 +15,6 @@ import GameService;
 import RenderService;
 import EventBus;
 import CharacterService;
-import ServiceLocator;
 import Player;
 import Enemy;
 import HealthComponent;
@@ -57,15 +56,16 @@ namespace mc
     class CharacterDisplayer : public IDisplayer
     {
         ICharacterService* characterService;
+        IRenderService* renderService;
         int currentFocus = 0;
         EventHandle actionSelectionEvent;
         EventHandle addWeightEvent;
         std::vector<std::unique_ptr<EffectorPlayer>> enemyWeightEffectors;
 
     public:
-        CharacterDisplayer()
+        CharacterDisplayer(ICharacterService* character, IRenderService* render)
+            : characterService(character), renderService(render)
         {
-            characterService = ServiceLocator::Get<ICharacterService>();
             InitEnemyWeightEffectors();
             actionSelectionEvent = EventBus::Subscribe<ActionSelectionEvent>([this](const ActionSelectionEvent& e)
             {
@@ -122,13 +122,13 @@ namespace mc
                 float x2 = PLAYER_DAMAGE_START_X + RECT_X;
                 float y2 = PLAYER_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y;
 
-                // 通常の枠線を描画
-                DrawHollowBox(*ServiceLocator::Get<IRenderService>(), x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
+
+                DrawHollowBox(renderService, x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
 
                 if (i == focus)
                 {
                     // 選択中の場合は少し内側に追加の枠線を描画して太く（または二重に）見せる
-                    DrawHollowBox(*ServiceLocator::Get<IRenderService>(), x1 + 2 * THICKNESS, y1 + 2 * THICKNESS, 
+                    DrawHollowBox(renderService, x1 + 2 * THICKNESS, y1 + 2 * THICKNESS, 
                                       x2 - 2 * THICKNESS, y2 - 2 * THICKNESS, 
                                       THICKNESS, COLOR_WHITE);
                 }
@@ -224,7 +224,7 @@ namespace mc
                 float x2 = ENEMY_WEIGHT_START_X + RECT_X;
                 float y2 = ENEMY_WEIGHT_START_Y + RECT_Y + i * OFFSET_Y;
 
-                DrawHollowBox(*ServiceLocator::Get<IRenderService>(), x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
+                DrawHollowBox(renderService, x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
             }
 
             for (int i = 0; i < 3; ++i)
@@ -234,7 +234,7 @@ namespace mc
                 float x2 = ENEMY_DAMAGE_START_X + RECT_X;
                 float y2 = ENEMY_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y;
 
-                DrawHollowBox(*ServiceLocator::Get<IRenderService>(), x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
+                DrawHollowBox(renderService, x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
             }
 
             if (enemy.IsExposed())
@@ -264,8 +264,8 @@ namespace mc
         }
     };
 
-    std::unique_ptr<IDisplayer> CreateCharacterDisplayer()
+    std::unique_ptr<IDisplayer> CreateCharacterDisplayer(ICharacterService* characterService, IRenderService* renderService)
     {
-        return std::make_unique<CharacterDisplayer>();
+        return std::make_unique<CharacterDisplayer>(characterService, renderService);
     }
 } // namespace mc

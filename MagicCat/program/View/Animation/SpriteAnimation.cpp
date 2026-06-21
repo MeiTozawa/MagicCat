@@ -2,7 +2,6 @@ module;
 
 module AnimationFactory;
 
-import ServiceLocator;
 import EventBus;
 import CharacterService;
 import HealthComponent;
@@ -26,10 +25,9 @@ namespace mc
         int handle;
 
     public:
-        SpriteAnimation(ESprite sprite, float extraRate = 1.f, bool isFlip = false) :
-            extraRate(extraRate), isFlip(isFlip)
+        SpriteAnimation(IAssetService* assetService, ESprite sprite, float extraRate = 1.f, bool isFlip = false) :
+            assetService(assetService), extraRate(extraRate), isFlip(isFlip)
         {
-            assetService = ServiceLocator::Get<IAssetService>();
             handle = assetService->GetSpriteHandle(sprite);
             auto info = assetService->GetSpriteInfo(sprite);
             frame = info.frame;
@@ -66,8 +64,10 @@ namespace mc
         }
     };
 
-    std::unique_ptr<AnimationPlayer> CreateSpriteAnimation(ESprite sprite, float extraRate, bool isFlip)
+    std::unique_ptr<AnimationPlayer> CreateSpriteAnimation(
+        IAssetService* assetService, ESprite sprite, float extraRate, bool isFlip
+    )
     {
-        return std::make_unique<SpriteAnimation>(sprite, extraRate, isFlip);
+        return std::make_unique<SpriteAnimation>(assetService, sprite, extraRate, isFlip);
     }
 } // namespace mc

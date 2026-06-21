@@ -11,18 +11,15 @@ module;
 module Displayer;
 
 import CardService;
-import ServiceLocator;
+import RenderService;
 import AssetService;
 import EventBus;
 import EffectorFactory;
-import RenderService;
 import ViewEnumMapper;
 
 namespace mc
 {
-    /// かつて、constexprには内部リンク性があり、これは暗黙的にstaticが追加されたのと同じ効果を持っていました。
-    /// しかし、C++20のモジュールスコープにおいて、C++20委員会はconstexprの暗黙的な内部リンク性を廃止し、モジュールリンク性を付与しました。
-    /// これにより、constexprで定義された定数は現在のモジュール内のすべてのファイルで共有されるようになり、その結果、再定義が可能になりました。
+
     namespace
     {
         // card
@@ -46,6 +43,7 @@ namespace mc
     {
         ICardService* cardService;
         IAssetService* assetService;
+        IRenderService* renderService;
 
         EventHandle handUpdateHandle;
         std::vector<Card> cachedHand;
@@ -58,11 +56,11 @@ namespace mc
             tnl::Vector2i start_position;
             std::wstring message;
             IRenderService* renderService;
+            IAssetService* assetService;
 
-            PrintACardDisplayer(Card card, tnl::Vector2i start_position, std::wstring message) :
-                card(card), start_position(start_position), message(std::move(message))
+            PrintACardDisplayer(Card card, tnl::Vector2i start_position, std::wstring message, IRenderService* renderService, IAssetService* assetService) :
+                card(card), start_position(start_position), message(std::move(message)), renderService(renderService), assetService(assetService)
             {
-                renderService = ServiceLocator::Get<IRenderService>();
             }
 
             void Update(float deltaTime) override {}
@@ -75,14 +73,17 @@ namespace mc
                 bool has_icon = true;
                 switch (card.CardType)
                 {
-                case Rock:
+                case ECardType::Rock:
                     color = COLOR_CARD_ROCK;
                     break;
-                case Paper:
+                case ECardType::Paper:
                     color = COLOR_CARD_PAPER;
                     break;
-                case Scissors:
+                case ECardType::Scissors:
                     color = COLOR_CARD_SCISSORS;
+                    break;
+                case ECardType::Magic:
+                    color = COLOR_CARD_MAGIC;
                     break;
                 default:
                     has_icon = false;
@@ -106,17 +107,17 @@ namespace mc
                 }
                 if (has_icon)
                 {
-                    int icon = ServiceLocator::Get<IAssetService>()->GetImageHandle(ToImage(card.CardType));
+                    int icon = assetService->GetImageHandle(ToImage(card.CardType));
                     if (icon != -1)
                     {
                         DrawRotaGraphF(x + CARD_WIDTH / 2.f, y + CARD_HEIGHT / 3.5f, IMAGE_SCALE, 0.0, icon, TRUE);
                     }
-                    DrawCenterString(*renderService, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10,
+                    DrawCenterString(renderService, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10,
                                      message.c_str(), color);
                 }
                 else
                 {
-                    DrawCenterString(*renderService, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 - 30,
+                    DrawCenterString(renderService, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 - 30,
                                      message.c_str(), color);
                 }
             }
@@ -128,8 +129,8 @@ namespace mc
             auto position = tnl::Vector2i{CARD_START_X, CARD_START_Y};
             for (size_t i = 0; i < cachedHand.size(); ++i)
             {
-                std::wstring msg = std::format(L"+{}", cachedHand[i].Value);
-                auto cardDisplay = std::make_unique<PrintACardDisplayer>(cachedHand[i], position, msg);
+                std::wstring msg = std::format(L"+{}", cachedHand[i].Power);
+                auto cardDisplay = std::make_unique<PrintACardDisplayer>(cachedHand[i], position, msg, renderService, assetService);
 
                 // If this is the newest card, wrap it in HitFlashEffector
                 if (isDraw && i == cachedHand.size() - 1)
@@ -148,11 +149,9 @@ namespace mc
         }
 
     public:
-        CardDisplayer()
+        CardDisplayer(ICardService* card, IAssetService* asset, IRenderService* render)
+            : cardService(card), assetService(asset), renderService(render)
         {
-            cardService = ServiceLocator::Get<ICardService>();
-            assetService = ServiceLocator::Get<IAssetService>();
-
             cachedHand = cardService->GetHandCards();
             RebuildDisplayers(false);
 
@@ -191,18 +190,18 @@ namespace mc
         void InitDrawPile(float deltaTime) const
         {
             std::wstring message = std::format(L"山札\n{:2}枚", cardService->GetDrawCards().size());
-            PrintACardDisplayer({Null}, {DRAW_PILE_X, DRAW_PILE_Y}, message).Draw(deltaTime);
+            PrintACardDisplayer({ECardType::Null}, {DRAW_PILE_X, DRAW_PILE_Y}, message, renderService, assetService).Draw(deltaTime);
         }
 
         void InitDiscardPile(float deltaTime) const
         {
             std::wstring message = std::format(L"捨札\n{:2}枚", cardService->GetDiscardCards().size());
-            PrintACardDisplayer({Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, message).Draw(deltaTime);
+            PrintACardDisplayer({ECardType::Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, message, renderService, assetService).Draw(deltaTime);
         }
     };
 
-    std::unique_ptr<IDisplayer> CreateCardDisplayer()
+    std::unique_ptr<IDisplayer> CreateCardDisplayer(ICardService* cardService, IAssetService* assetService, IRenderService* renderService)
     {
-        return std::make_unique<CardDisplayer>();
+        return std::make_unique<CardDisplayer>(cardService, assetService, renderService);
     }
 } // namespace mc

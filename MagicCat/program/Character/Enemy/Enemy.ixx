@@ -23,9 +23,6 @@ namespace mc
     export class Enemy : public Character
     {
         std::unique_ptr<HealthComponent> healthComp;
-        EventHandle addWeightEvent;
-        EventHandle combatEvent;
-        EventHandle magicEvent;
         bool isExposed = false;
 
     public:
@@ -41,37 +38,11 @@ namespace mc
             healthComp = std::make_unique<HealthComponent>(this);
             tags.push_back(ETag::Enemy);
 
-            addWeightEvent = EventBus::Subscribe<AddWeightEvent>(
-                [this](const AddWeightEvent& e) { AddWeight(e.AttackType, e.Offset); }
-            );
 
-            magicEvent = EventBus::Subscribe<MagicEvent>(
-                [this](const MagicEvent& e)
-                {
-                    if (e.magic == EMagic::Clairvoyance)
-                        isExposed = true;
-                }
-            );
-
-            combatEvent = EventBus::Subscribe<CombatEvent>(
-                [this](const CombatEvent& e)
-                {
-                    if (LosesTo(e.enemyAttackType, e.playerAttackType))
-                    {
-                        healthComp->TakeDamage(e.playerAttackDamage);
-                    }
-
-                    rockWeightOffset = 0;
-                    scissorsWeightOffset = 0;
-                    paperWeightOffset = 0;
-                }
-            );
         }
 
         ~Enemy()
         {
-            EventBus::Unsubscribe(addWeightEvent);
-            EventBus::Unsubscribe(combatEvent);
         }
 
         void AddWeight(EAttackType t, int weight)
@@ -137,6 +108,23 @@ namespace mc
         int GetBaseWeight() const { return baseWeight; }
 
         const HealthComponent& GetHealthComponent() const { return *healthComp; }
+
+        void TakeDamage(int amount)
+        {
+            healthComp->TakeDamage(amount);
+        }
+
+        void ResetWeights()
+        {
+            rockWeightOffset = 0;
+            scissorsWeightOffset = 0;
+            paperWeightOffset = 0;
+        }
+
+        void SetExposed(bool exposed)
+        {
+            isExposed = exposed;
+        }
 
     private:
         int baseWeight = 0;

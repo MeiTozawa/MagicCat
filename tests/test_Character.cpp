@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 import Character;
+import AssetService;
 
 namespace mc {
 namespace {
@@ -36,6 +37,31 @@ namespace {
         EXPECT_EQ(c.GetDamage(EAttackType::Rock), 1);
         EXPECT_EQ(c.GetDamage(EAttackType::Scissors), 2);
         EXPECT_EQ(c.GetDamage(EAttackType::Paper), 3);
+    }
+
+    TEST(CharacterTest, GetName_ReturnsCorrectName) {
+        DummyCharacter c;
+        EXPECT_EQ(c.GetName(), L"Dummy");
+    }
+
+    TEST(CharacterTest, GetTags_IsEmptyForBaseCharacter) {
+        DummyCharacter c;
+        // Base DummyCharacter adds no tags
+        EXPECT_TRUE(c.GetTags().empty());
+    }
+
+    TEST(CharacterTest, LosesTo_DrawCases_ReturnFalse) {
+        // Same type is a draw — should never lose to itself
+        EXPECT_FALSE(LosesTo(EAttackType::Rock,     EAttackType::Rock));
+        EXPECT_FALSE(LosesTo(EAttackType::Scissors, EAttackType::Scissors));
+        EXPECT_FALSE(LosesTo(EAttackType::Paper,    EAttackType::Paper));
+    }
+
+    TEST(CharacterTest, LosesTo_WinCases_ReturnFalse) {
+        // Winning cases: should return false (these do NOT lose)
+        EXPECT_FALSE(LosesTo(EAttackType::Rock,     EAttackType::Scissors));
+        EXPECT_FALSE(LosesTo(EAttackType::Scissors, EAttackType::Paper));
+        EXPECT_FALSE(LosesTo(EAttackType::Paper,    EAttackType::Rock));
     }
 
 } // namespace

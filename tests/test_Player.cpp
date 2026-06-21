@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <algorithm>
 
 import Player;
 import Character;
@@ -72,16 +73,54 @@ namespace {
         EventBus::Unsubscribe(handle);
     }
 
-    TEST_F(PlayerTest, CombatEvent_TakesDamageWhenLosing) {
+    TEST_F(PlayerTest, TakeDamage_ReducesHealth) {
         Player player;
         int initialHealth = player.GetHealthComponent().GetHealth();
 
-        // Send a combat event where player loses (Rock loses to Paper)
-        // CombatEvent(playerAttackType, enemyAttackType, playerAttackDamage, enemyAttackDamage)
-        EventBus::Publish<CombatEvent>({EAttackType::Rock, EAttackType::Paper, 1, 3});
+        player.TakeDamage(3);
 
         int currentHealth = player.GetHealthComponent().GetHealth();
         EXPECT_EQ(currentHealth, initialHealth - 3);
+    }
+
+    TEST_F(PlayerTest, UseMagic_Clairvoyance_CannotBeUsedTwice) {
+        Player player;
+
+        // Ensure we have enough MP for first cast
+        player.ChangeMp(100);
+
+        bool firstResult  = player.UseMagic(EMagic::Clairvoyance);
+        bool secondResult = player.UseMagic(EMagic::Clairvoyance);
+
+        EXPECT_TRUE(firstResult);
+        EXPECT_FALSE(secondResult); // Already used — must be blocked
+    }
+
+    TEST_F(PlayerTest, UseMagic_NullMagic_ReturnsFalse) {
+        Player player;
+
+        bool result = player.UseMagic(EMagic::Null);
+
+        EXPECT_FALSE(result);
+    }
+
+    TEST_F(PlayerTest, Player_HasPlayerTag) {
+        Player player;
+
+        const auto& tags = player.GetTags();
+        auto it = std::find(tags.begin(), tags.end(), ETag::Player);
+        EXPECT_NE(it, tags.end());
+    }
+
+    TEST_F(PlayerTest, ChangeMp_NormalOffset_ChangesMp) {
+        Player player;
+        int initialMp = player.GetMp();
+
+        player.ChangeMp(-3);
+        EXPECT_EQ(player.GetMp(), initialMp - 3);
+
+        player.ChangeMp(2);
+        EXPECT_EQ(player.GetMp(), initialMp - 1);
     }
 
 } // namespace

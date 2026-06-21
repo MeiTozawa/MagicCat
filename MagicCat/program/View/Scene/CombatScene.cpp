@@ -39,6 +39,13 @@ namespace mc
 
     class CombatScene : public IScene
     {
+        ICharacterService* characterService = nullptr;
+        ISceneService* sceneService = nullptr;
+        IAssetService* assetService = nullptr;
+        ICardService* cardService = nullptr;
+        IInputService* inputService = nullptr;
+        IRenderService* renderService = nullptr;
+        
         std::vector<std::unique_ptr<IDisplayer>> displayers;
         std::unique_ptr<EffectorPlayer> playerAnimationEffector;
         std::unique_ptr<EffectorPlayer> enemyAnimationEffector;
@@ -46,23 +53,17 @@ namespace mc
         std::unique_ptr<EffectorPlayer> enemyAttackEffector = nullptr;
         int playerAttackImageHandle = -1;
         int enemyAttackImageHandle = -1;
-        ICharacterService* characterService = nullptr;
-        ISceneService* sceneService = nullptr;
-        IAssetService* assetService = nullptr;
-        ICardService* cardService = nullptr;
         std::unique_ptr<ICombatController> combatController;
         EventHandle healthChangedEvent = -1;
         EventHandle combatEvent = -1;
 
     public:
-        CombatScene() {}
+        CombatScene(ICharacterService* character, ISceneService* scene, IAssetService* asset, ICardService* card, IInputService* input, IRenderService* render)
+            : characterService(character), sceneService(scene), assetService(asset), cardService(card), inputService(input), renderService(render)
+        {}
 
         void Start() override
         {
-            characterService = ServiceLocator::Get<ICharacterService>();
-            sceneService = ServiceLocator::Get<ISceneService>();
-            assetService = ServiceLocator::Get<IAssetService>();
-            cardService = ServiceLocator::Get<ICardService>();
             characterService->Start();
             cardService->Start();
             if (healthChangedEvent != -1)
@@ -71,22 +72,21 @@ namespace mc
                 healthChangedEvent = -1;
             }
             displayers.clear();
-            displayers.push_back(CreateCardDisplayer());
-            displayers.push_back(CreateCharacterDisplayer());
-            displayers.push_back(CreateControlDisplayer());
+            displayers.push_back(CreateCardDisplayer(cardService, assetService, renderService));
+            displayers.push_back(CreateCharacterDisplayer(characterService, renderService));
+            displayers.push_back(CreateControlDisplayer(assetService, renderService));
 
-
-            combatController = CreateCombatController();
+            combatController = CreateCombatController(inputService, characterService, sceneService, cardService);
             combatController->Reset();
 
             auto playerAnimation = CreateSpriteAnimation(
-                characterService->GetPlayer().GetSprite(), EXTRA_RATE
+                assetService, characterService->GetPlayer().GetSprite(), EXTRA_RATE
             );
             playerAnimation->SetPosition(PLAYER_START_X, PLAYER_START_Y);
             playerAnimationEffector = CreateHitFlashEffector(std::move(playerAnimation), 0xFF0000);
 
             auto enemyAnimation = CreateSpriteAnimation(
-                characterService->GetEnemy().GetSprite(), EXTRA_RATE, true
+                assetService, characterService->GetEnemy().GetSprite(), EXTRA_RATE, true
             );
             enemyAnimation->SetPosition(ENEMY_START_X, ENEMY_START_Y);
             enemyAnimationEffector = CreateHitFlashEffector(std::move(enemyAnimation), 0xFF0000);
@@ -151,8 +151,8 @@ namespace mc
         }
     };
 
-    std::unique_ptr<IScene> CreateCombatScene()
+    std::unique_ptr<IScene> CreateCombatScene(ICharacterService* characterService, ISceneService* sceneService, IAssetService* assetService, ICardService* cardService, IInputService* inputService, IRenderService* renderService)
     {
-        return std::make_unique<CombatScene>();
+        return std::make_unique<CombatScene>(characterService, sceneService, assetService, cardService, inputService, renderService);
     }
 } // namespace mc

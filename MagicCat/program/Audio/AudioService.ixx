@@ -4,6 +4,9 @@ module;
 
 export module AudioService;
 
+import AssetService;
+import CharacterService;
+
 namespace mc
 {
     export class IAudioService
@@ -12,5 +15,5 @@ namespace mc
         virtual ~IAudioService() = default;
     };
 
-    export Shared<IAudioService> CreateAudioService();
+    export Shared<IAudioService> CreateAudioService(IAssetService* assetService, ICharacterService* characterService);
 } // namespace mc

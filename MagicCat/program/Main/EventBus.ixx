@@ -29,9 +29,9 @@ private:
         std::function<void(const IEvent&)> Callback;
     };
 
-    static std::unordered_map<std::type_index, std::vector<CallbackWrapper>>& GetListeners()
+    static std::unordered_map<std::type_index, std::shared_ptr<std::vector<CallbackWrapper>>>& GetListeners()
     {
-        static std::unordered_map<std::type_index, std::vector<CallbackWrapper>> listeners;
+        static std::unordered_map<std::type_index, std::shared_ptr<std::vector<CallbackWrapper>>> listeners;
         return listeners;
     }
 
@@ -59,9 +59,17 @@ public:
     {
         std::unique_lock lock(GetMutex());
         EventHandle handle = GetNextHandle()++;
-        auto& listeners = GetListeners()[std::type_index(typeid(TEvent))];
+        auto& listenersMap = GetListeners();
+        std::type_index typeId = std::type_index(typeid(TEvent));
 
-        listeners.push_back({
+        auto oldVecPtr = listenersMap[typeId];
+        auto newVecPtr = std::make_shared<std::vector<CallbackWrapper>>();
+        if (oldVecPtr)
+        {
+            *newVecPtr = *oldVecPtr;
+        }
+
+        newVecPtr->push_back({
             handle,
             [callback](const IEvent& e)
             {
@@ -69,7 +77,7 @@ public:
             }
         });
 
-        std::type_index typeId = std::type_index(typeid(TEvent));
+        listenersMap[typeId] = newVecPtr;
         GetHandleToTypeMap().insert_or_assign(handle, typeId);
 
         return handle;
@@ -77,21 +85,27 @@ public:
 
     static void Unsubscribe(EventHandle handle)
     {
+        std::unique_lock lock(GetMutex());
         auto& map = GetHandleToTypeMap();
         auto itMap = map.find(handle);
         if (itMap == map.end()) return;
 
         std::type_index typeId = itMap->second;
-        auto& listeners = GetListeners()[typeId];
+        auto& listenersMap = GetListeners();
+        auto oldVecPtr = listenersMap[typeId];
+        if (!oldVecPtr) return;
 
-        auto it = std::ranges::remove_if(listeners,
+        auto newVecPtr = std::make_shared<std::vector<CallbackWrapper>>(*oldVecPtr);
+
+        auto it = std::ranges::remove_if(*newVecPtr,
                                          [handle](const CallbackWrapper& w) { return w.Handle == handle; }).begin();
 
-        if (it != listeners.end())
+        if (it != newVecPtr->end())
         {
-            listeners.erase(it, listeners.end());
+            newVecPtr->erase(it, newVecPtr->end());
         }
 
+        listenersMap[typeId] = newVecPtr;
         map.erase(itMap);
     }
 
@@ -99,7 +113,7 @@ public:
     template <std::derived_from<IEvent> TEvent>
     static void Publish(const TEvent& event)
     {
-        std::vector<CallbackWrapper> callbacks;
+        std::shared_ptr<std::vector<CallbackWrapper>> callbacks;
         {
             std::shared_lock lock(GetMutex());
             auto& listeners = GetListeners();
@@ -109,9 +123,12 @@ public:
                 callbacks = it->second;
             }
         }
-        for (const auto& wrapper : callbacks)
+        if (callbacks)
         {
-            wrapper.Callback(event);
+            for (const auto& wrapper : *callbacks)
+            {
+                wrapper.Callback(event);
+            }
         }
     }
 };

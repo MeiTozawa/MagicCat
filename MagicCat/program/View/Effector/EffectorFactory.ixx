@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 export module EffectorFactory;
 import AnimationFactory;
@@ -12,7 +12,7 @@ namespace mc
         bool isPlaying = false;
 
     public:
-        EffectorPlayer(std::unique_ptr<IDisplayer>&& displayer) : displayer(std::move(displayer)) {}
+        explicit EffectorPlayer(std::unique_ptr<IDisplayer>&& displayer) : displayer(std::move(displayer)) {}
         ~EffectorPlayer() override = default;
         virtual void Play() = 0;
         virtual bool IsPlaying() final { return isPlaying; }

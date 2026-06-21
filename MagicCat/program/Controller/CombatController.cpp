@@ -4,7 +4,6 @@ module;
 
 module CombatController;
 
-import ServiceLocator;
 import InputService;
 import CharacterService;
 import EventBus;
@@ -17,15 +16,16 @@ namespace mc
 {
     class CombatController : public ICombatController
     {
-        IInputService* inputService = nullptr;
-        ICharacterService* characterService = nullptr;
+        IInputService* inputService;
+        ICharacterService* characterService;
+        ISceneService* sceneService;
+        ICardService* cardService;
         int selectedActionIndex = 0;
 
     public:
-        CombatController()
+        CombatController(IInputService* input, ICharacterService* character, ISceneService* scene, ICardService* card)
+            : inputService(input), characterService(character), sceneService(scene), cardService(card)
         {
-            inputService = ServiceLocator::Get<IInputService>();
-            characterService = ServiceLocator::Get<ICharacterService>();
         }
 
         void Reset() override
@@ -56,7 +56,11 @@ namespace mc
             {
                 if (selectedActionIndex == ACTION_MAGIC)
                 {
-                    characterService->GetPlayer().UseMagic(EMagic::Clairvoyance);
+                    bool success = characterService->GetPlayer().UseMagic(EMagic::Clairvoyance);
+                    if (success)
+                    {
+                        characterService->GetEnemy().SetExposed(true);
+                    }
                 }
                 else
                 {
@@ -67,26 +71,49 @@ namespace mc
                     else return;
 
                     EAttackType enemyAttackIntent = characterService->GetEnemy().GetAttackIntent();
+                    
+                    int playerDamage = characterService->GetPlayer().GetDamage(playerAttackIntent);
+                    int enemyDamage = characterService->GetEnemy().GetDamage(enemyAttackIntent);
+
+                    if (LosesTo(playerAttackIntent, enemyAttackIntent))
+                    {
+                        characterService->GetPlayer().TakeDamage(enemyDamage);
+                    }
+                    if (LosesTo(enemyAttackIntent, playerAttackIntent))
+                    {
+                        characterService->GetEnemy().TakeDamage(playerDamage);
+                    }
+
+                    characterService->GetEnemy().ResetWeights();
+                    cardService->DiscardHand();
+
                     EventBus::Publish(
-                        CombatEvent(playerAttackIntent, enemyAttackIntent,
-                                    characterService->GetPlayer().GetDamage(playerAttackIntent),
-                                    characterService->GetEnemy().GetDamage(enemyAttackIntent)
-                        ));
+                        CombatEvent(playerAttackIntent, enemyAttackIntent, playerDamage, enemyDamage)
+                    );
                 }
             }
             else if (inputService->IsPressed(InputAction::IgDrawCard))
             {
+                auto c = cardService->DrawCard();
+                if (c.CardType == ECardType::Magic)
+                {
+                    characterService->GetPlayer().ChangeMp(c.Power);
+                }
+                else if (c.CardType == ECardType::Rock || c.CardType == ECardType::Scissors || c.CardType == ECardType::Paper)
+                {
+                    characterService->GetEnemy().AddWeight(ToAttackType(c.CardType), c.Power);
+                }
                 EventBus::Publish(DrawCardEvent());
             }
             else if (inputService->IsPressed(InputAction::IgShowRules))
             {
-                ServiceLocator::Get<ISceneService>()->PushScene(Rules);
+                sceneService->PushScene(ESceneState::Rules);
             }
         }
     };
 
-    std::unique_ptr<ICombatController> CreateCombatController()
+    std::unique_ptr<ICombatController> CreateCombatController(IInputService* inputService, ICharacterService* characterService, ISceneService* sceneService, ICardService* cardService)
     {
-        return std::make_unique<CombatController>();
+        return std::make_unique<CombatController>(inputService, characterService, sceneService, cardService);
     }
 }

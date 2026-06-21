@@ -7,7 +7,6 @@ export module Player;
 
 import Character;
 import HealthComponent;
-import ServiceLocator;
 import EventBus;
 import AssetService;
 
@@ -28,7 +27,7 @@ namespace mc
     export struct ChangeMpEvent : IEvent
     {
         int offset;
-        ChangeMpEvent(int offset) : offset(offset) {}
+        explicit ChangeMpEvent(int offset) : offset(offset) {}
     };
 
     export struct LackOfMpEvent : IEvent {};
@@ -36,7 +35,7 @@ namespace mc
     export struct MagicEvent : IEvent
     {
         EMagic magic;
-        MagicEvent(EMagic magic) : magic(magic) {}
+        explicit MagicEvent(EMagic magic) : magic(magic) {}
     };
 
     /**
@@ -49,8 +48,6 @@ namespace mc
         static constexpr int CLAIRVOYANCE_MP_COST = 5;
 
         std::unique_ptr<HealthComponent> healthComp;
-        EventHandle changeMpEvent;
-        EventHandle combatEvent;
         bool hasUsedClairvoyance = false;
         int mp = DEFAULT_MAX_MP;
         int maxMp = DEFAULT_MAX_MP;
@@ -68,25 +65,11 @@ namespace mc
 #endif
             healthComp = std::make_unique<HealthComponent>(this);
             tags.push_back(ETag::Player);
-            changeMpEvent = EventBus::Subscribe<ChangeMpEvent>(
-                [this](const ChangeMpEvent& e) { ChangeMp(e.offset); }
-            );
 
-            combatEvent = EventBus::Subscribe<CombatEvent>(
-                [this](const CombatEvent& e)
-                {
-                    if (LosesTo(e.playerAttackType, e.enemyAttackType))
-                    {
-                        healthComp->TakeDamage(e.enemyAttackDamage);
-                    }
-                }
-            );
         }
 
         ~Player()
         {
-            EventBus::Unsubscribe(changeMpEvent);
-            EventBus::Unsubscribe(combatEvent);
         }
 
         /**
@@ -111,32 +94,38 @@ namespace mc
          * @brief 魔法を使用します。
          * @param e 使用する魔法の種類
          */
-        void UseMagic(EMagic e)
+        bool UseMagic(EMagic e)
         {
             switch (e)
             {
             case EMagic::Null:
-                return;
+                return false;
             case EMagic::Clairvoyance:
                 if (hasUsedClairvoyance)
-                    return;
+                    return false;
                 if (mp >= CLAIRVOYANCE_MP_COST)
                 {
                     ChangeMp(-CLAIRVOYANCE_MP_COST);
                     hasUsedClairvoyance = true;
-                    EventBus::Publish<MagicEvent>({EMagic::Clairvoyance});
+                    EventBus::Publish<MagicEvent>(MagicEvent{EMagic::Clairvoyance});
+                    return true;
                 }
                 else
                 {
                     EventBus::Publish<LackOfMpEvent>({});
+                    return false;
                 }
-                break;
             default:
                 assert(false && "未実装、または未知の魔法タイプです");
-                break;
+                return false;
             }
         }
 
         const HealthComponent& GetHealthComponent() const { return *healthComp; }
+
+        void TakeDamage(int amount) const
+        {
+            healthComp->TakeDamage(amount);
+        }
     };
 } // namespace mc

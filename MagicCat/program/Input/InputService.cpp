@@ -8,8 +8,6 @@ module;
 
 module InputService;
 
-import ServiceLocator;
-
 namespace mc
 {
     class InputService : public IInputService
@@ -146,7 +144,9 @@ namespace mc
 
         tnl::Vector2i OnMouseClick(InputAction action) const override
         {
-            auto key = CheckInput(action)->at(0);
+            auto keys = CheckInput(action);
+            if (!keys || keys->empty()) return tnl::Vector2i(-1, -1);
+            auto key = keys->at(0);
             if (input->pressed(key))
             {
                 int x = 0, y = 0;

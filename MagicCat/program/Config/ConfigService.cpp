@@ -9,7 +9,6 @@ module;
 #include "json11.hpp"
 
 module ConfigService;
-import ServiceLocator;
 
 namespace mc
 {
@@ -56,6 +55,14 @@ namespace mc
                             cardConfigs.push_back(c);
                         }
                     }
+                    else
+                    {
+                        assert(false && "Card JSON の解析に失敗しました");
+                    }
+                }
+                else
+                {
+                    assert(false && "Card JSON ファイルが開けませんでした");
                 }
             }
             {
@@ -88,6 +95,14 @@ namespace mc
                             enemyConfigs.push_back(e);
                         }
                     }
+                    else
+                    {
+                        assert(false && "Enemy JSON の解析に失敗しました");
+                    }
+                }
+                else
+                {
+                    assert(false && "Enemy JSON ファイルが開けませんでした");
                 }
             }
         }

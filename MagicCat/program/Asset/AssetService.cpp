@@ -9,7 +9,6 @@ module;
 #include <cassert>
 
 module AssetService;
-import ServiceLocator;
 
 namespace mc
 {

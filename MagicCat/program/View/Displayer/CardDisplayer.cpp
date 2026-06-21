@@ -75,16 +75,16 @@ namespace mc
                 bool has_icon = true;
                 switch (card.CardType)
                 {
-                case Rock:
+                case ECardType::Rock:
                     color = COLOR_CARD_ROCK;
                     break;
-                case Paper:
+                case ECardType::Paper:
                     color = COLOR_CARD_PAPER;
                     break;
-                case Scissors:
+                case ECardType::Scissors:
                     color = COLOR_CARD_SCISSORS;
                     break;
-                case Magic:
+                case ECardType::Magic:
                     color = COLOR_CARD_MAGIC;
                     break;
                 default:
@@ -192,13 +192,13 @@ namespace mc
         void InitDrawPile(float deltaTime) const
         {
             std::wstring message = std::format(L"山札\n{:2}枚", cardService->GetDrawCards().size());
-            PrintACardDisplayer({Null}, {DRAW_PILE_X, DRAW_PILE_Y}, message, renderService, assetService).Draw(deltaTime);
+            PrintACardDisplayer({ECardType::Null}, {DRAW_PILE_X, DRAW_PILE_Y}, message, renderService, assetService).Draw(deltaTime);
         }
 
         void InitDiscardPile(float deltaTime) const
         {
             std::wstring message = std::format(L"捨札\n{:2}枚", cardService->GetDiscardCards().size());
-            PrintACardDisplayer({Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, message, renderService, assetService).Draw(deltaTime);
+            PrintACardDisplayer({ECardType::Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, message, renderService, assetService).Draw(deltaTime);
         }
     };
 

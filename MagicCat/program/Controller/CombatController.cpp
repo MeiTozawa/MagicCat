@@ -95,11 +95,11 @@ namespace mc
             else if (inputService->IsPressed(InputAction::IgDrawCard))
             {
                 auto c = cardService->DrawCard();
-                if (c.CardType == Magic)
+                if (c.CardType == ECardType::Magic)
                 {
                     characterService->GetPlayer().ChangeMp(c.Value);
                 }
-                else if (c.CardType == Rock || c.CardType == Scissors || c.CardType == Paper)
+                else if (c.CardType == ECardType::Rock || c.CardType == ECardType::Scissors || c.CardType == ECardType::Paper)
                 {
                     characterService->GetEnemy().AddWeight(ToAttackType(c.CardType), c.Value);
                 }
@@ -107,7 +107,7 @@ namespace mc
             }
             else if (inputService->IsPressed(InputAction::IgShowRules))
             {
-                sceneService->PushScene(Rules);
+                sceneService->PushScene(ESceneState::Rules);
             }
         }
     };

@@ -54,7 +54,7 @@ namespace mc
             EventBus::Publish(HandUpdatedEvent{hand});
         }
 
-        const Card DrawCard() override
+        Card DrawCard() override
         {
             if (hand.size() >= HAND_SIZE_MAX)
             {
@@ -102,13 +102,13 @@ namespace mc
         {
             switch (type)
             {
-            case 0: return Rock;
-            case 1: return Scissors;
-            case 2: return Paper;
-            case 3: return Magic;
+            case 0: return ECardType::Rock;
+            case 1: return ECardType::Scissors;
+            case 2: return ECardType::Paper;
+            case 3: return ECardType::Magic;
             default:
                 assert(false && "外部設定から不正なカードタイプが読み込まれました");
-                return Null;
+                return ECardType::Null;
             }
         }
 

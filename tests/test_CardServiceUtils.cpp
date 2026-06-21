@@ -18,14 +18,12 @@ namespace {
         EXPECT_EQ(ToAttackType(ECardType::Paper), EAttackType::Paper);
     }
 
-    TEST(ToAttackTypeTest, Magic_FallsBackTo_AttackTypeRock) {
-        // Magic has no EAttackType counterpart; implementation falls back to Rock
-        EXPECT_EQ(ToAttackType(ECardType::Magic), EAttackType::Rock);
+    TEST(ToAttackTypeTest, Magic_ThrowsInvalidArgument) {
+        EXPECT_THROW(ToAttackType(ECardType::Magic), std::invalid_argument);
     }
 
-    TEST(ToAttackTypeTest, Null_FallsBackTo_AttackTypeRock) {
-        // Null has no EAttackType counterpart; implementation falls back to Rock
-        EXPECT_EQ(ToAttackType(ECardType::Null), EAttackType::Rock);
+    TEST(ToAttackTypeTest, Null_ThrowsInvalidArgument) {
+        EXPECT_THROW(ToAttackType(ECardType::Null), std::invalid_argument);
     }
 
 } // namespace

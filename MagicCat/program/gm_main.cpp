@@ -47,9 +47,9 @@ void InitGameServices()
     sceneService = CreateSceneService(characterService.get());
 
     // 5. Register Scenes with their dependencies
-    sceneService->RegisterScene(Info, CreateInfoScene(inputService.get(), sceneService.get(), renderService.get()));
-    sceneService->RegisterScene(Combat, CreateCombatScene(characterService.get(), sceneService.get(), assetService.get(), cardService.get(), inputService.get(), renderService.get()));
-    sceneService->RegisterScene(Rules, CreateRulesScene(inputService.get(), sceneService.get(), assetService.get(), renderService.get()));
+    sceneService->RegisterScene(ESceneState::Info, CreateInfoScene(inputService.get(), sceneService.get(), renderService.get()));
+    sceneService->RegisterScene(ESceneState::Combat, CreateCombatScene(characterService.get(), sceneService.get(), assetService.get(), cardService.get(), inputService.get(), renderService.get()));
+    sceneService->RegisterScene(ESceneState::Rules, CreateRulesScene(inputService.get(), sceneService.get(), assetService.get(), renderService.get()));
 
     // 6. Game Service needs SceneService
     gameService = CreateGameService(sceneService.get());

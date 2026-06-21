@@ -30,10 +30,10 @@ namespace mc
             if (!initialized)
             {
                 initialized = true;
-                if (!scenes.empty() && scenes.contains(Info))
+                if (!scenes.empty() && scenes.contains(ESceneState::Info))
                 {
-                    sceneStack.push_back(Info);
-                    scenes[Info]->Start();
+                    sceneStack.push_back(ESceneState::Info);
+                    scenes[ESceneState::Info]->Start();
                 }
             }
         }
@@ -48,8 +48,8 @@ namespace mc
                     if (event.Victim == &characterService->GetPlayer() || 
                         event.Victim == &characterService->GetEnemy())
                     {
-                        sceneStack = {Info};
-                        scenes[Info]->Start();
+                        sceneStack = {ESceneState::Info};
+                        scenes[ESceneState::Info]->Start();
                     }
                 }
             });
@@ -95,7 +95,7 @@ namespace mc
 
         ESceneState GetCurrentScene() override
         {
-            return sceneStack.empty() ? Info : sceneStack.back();
+            return sceneStack.empty() ? ESceneState::Info : sceneStack.back();
         }
 
         void SetCurrentScene(ESceneState state) override

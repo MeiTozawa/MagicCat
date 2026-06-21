@@ -16,7 +16,7 @@ import RenderService;
 
 namespace mc
 {
-    export enum ESceneState
+    export enum class ESceneState
     {
         Info, Combat, Rules
     };

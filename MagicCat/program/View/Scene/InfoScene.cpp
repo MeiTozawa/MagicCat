@@ -56,12 +56,12 @@ namespace mc
             blinkTimer += deltaTime * 60;
             if (inputService->IsPressed(InputAction::IgConfirm))
             {
-                sceneService->PushScene(Combat);
+                sceneService->PushScene(ESceneState::Combat);
                 return;
             }
             if (inputService->IsPressed(InputAction::IgShowRules))
             {
-                sceneService->PushScene(Rules);
+                sceneService->PushScene(ESceneState::Rules);
                 return;
             }
 

@@ -1,8 +1,6 @@
 module;
 
-#include <string>
 #include <vector>
-#include <tnl_rect.h>
 
 export module CardService;
 
@@ -49,15 +47,14 @@ namespace mc
         virtual void Start() = 0;
         virtual Card DrawCard() = 0;
         virtual void DiscardHand() = 0;
-        virtual const std::vector<Card>& GetHandCards() = 0;
-        virtual const std::vector<Card>& GetDrawCards() = 0;
-        virtual const std::vector<Card>& GetDiscardCards() = 0;
+        virtual std::vector<Card> GetHandCards() = 0;
+        virtual std::vector<Card> GetDrawCards() = 0;
+        virtual std::vector<Card> GetDiscardCards() = 0;
     };
 
     export struct DrawCardEvent : IEvent {};
 
     export struct ShuffleEvent : IEvent {};
-
 
     export struct DeckUpdatedEvent : IEvent
     {
@@ -71,10 +68,10 @@ namespace mc
 
     export struct HandUpdatedEvent : IEvent
     {
-        HandUpdatedEvent(const std::vector<Card>& cards)
-            : cards(cards) {}
+        explicit HandUpdatedEvent(std::vector<Card> cards)
+            : cards(std::move(cards)) {}
 
-        const std::vector<Card>& cards;
+        std::vector<Card> cards;
     };
 
     export constexpr Card CARD_ROCK_2 = {ECardType::Rock, 2};

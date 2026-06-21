@@ -42,7 +42,7 @@ namespace mc
         {
         }
 
-        const std::vector<Card>& GetHandCards() override
+        std::vector<Card> GetHandCards() override
         {
             return hand;
         }
@@ -82,12 +82,12 @@ namespace mc
         }
 
 
-        const std::vector<Card>& GetDrawCards() override
+        std::vector<Card> GetDrawCards() override
         {
             return drawPile;
         }
 
-        const std::vector<Card>& GetDiscardCards() override
+        std::vector<Card> GetDiscardCards() override
         {
             return discardPile;
         }

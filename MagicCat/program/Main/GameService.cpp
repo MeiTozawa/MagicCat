@@ -25,7 +25,7 @@ class GameService : public IGameService
     ISceneService* sceneService = nullptr;
 
 public:
-    GameService(ISceneService* sceneService) : sceneService(sceneService) {}
+    explicit GameService(ISceneService* sceneService) : sceneService(sceneService) {}
 
     void Start() override
     {

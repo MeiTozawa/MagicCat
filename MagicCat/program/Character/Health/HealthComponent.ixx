@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 #include <functional>
 #include <vector>
@@ -13,7 +13,7 @@ namespace mc {
 export struct DeathEvent : IEvent
 {
     const Character* Victim;
-    DeathEvent(const Character* victim) : Victim(victim) {}
+    explicit DeathEvent(const Character* victim) : Victim(victim) {}
 };
 
 export struct HealthChangedEvent : IEvent

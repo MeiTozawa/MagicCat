@@ -27,7 +27,7 @@ namespace mc
     export struct ChangeMpEvent : IEvent
     {
         int offset;
-        ChangeMpEvent(int offset) : offset(offset) {}
+        explicit ChangeMpEvent(int offset) : offset(offset) {}
     };
 
     export struct LackOfMpEvent : IEvent {};
@@ -35,7 +35,7 @@ namespace mc
     export struct MagicEvent : IEvent
     {
         EMagic magic;
-        MagicEvent(EMagic magic) : magic(magic) {}
+        explicit MagicEvent(EMagic magic) : magic(magic) {}
     };
 
     /**
@@ -107,7 +107,7 @@ namespace mc
                 {
                     ChangeMp(-CLAIRVOYANCE_MP_COST);
                     hasUsedClairvoyance = true;
-                    EventBus::Publish<MagicEvent>({EMagic::Clairvoyance});
+                    EventBus::Publish<MagicEvent>(MagicEvent{EMagic::Clairvoyance});
                     return true;
                 }
                 else
@@ -115,7 +115,6 @@ namespace mc
                     EventBus::Publish<LackOfMpEvent>({});
                     return false;
                 }
-                break;
             default:
                 assert(false && "未実装、または未知の魔法タイプです");
                 return false;
@@ -124,7 +123,7 @@ namespace mc
 
         const HealthComponent& GetHealthComponent() const { return *healthComp; }
 
-        void TakeDamage(int amount)
+        void TakeDamage(int amount) const
         {
             healthComp->TakeDamage(amount);
         }

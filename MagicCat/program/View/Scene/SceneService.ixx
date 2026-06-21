@@ -29,7 +29,7 @@ namespace mc
 
     export struct ActionSelectionEvent : IEvent
     {
-        ActionSelectionEvent(const int selected_index)
+        explicit ActionSelectionEvent(const int selected_index)
             : selectedIndex(selected_index) {}
 
         int selectedIndex;

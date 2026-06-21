@@ -36,19 +36,32 @@ namespace mc
     export struct Card
     {
         ECardType CardType;
-        // 敵が「ECardType」を出す確率のオフセット
-        int Value = 0;
+        int Power = 0;
     };
 
+    /// @brief カード関連の管理（手札、山札、捨て札）を行うサービス
     export class ICardService
     {
     public:
         virtual ~ICardService() = default;
+
+        /// @brief サービスを初期化し、初期デッキの構築やシャッフルを行う
         virtual void Start() = 0;
+
+        /// @brief 山札からカードを1枚引く。山札が空の場合は捨て札をリシャッフルする
+        /// @return 引いたカード。デッキが完全に空の場合はNullカードを返す
         virtual Card DrawCard() = 0;
+
+        /// @brief 現在の手札をすべて捨て札に移動する
         virtual void DiscardHand() = 0;
+
+        /// @brief 現在の手札のリストを取得する
         virtual std::vector<Card> GetHandCards() = 0;
+
+        /// @brief 現在の山札のリストを取得する
         virtual std::vector<Card> GetDrawCards() = 0;
+
+        /// @brief 現在の捨て札のリストを取得する
         virtual std::vector<Card> GetDiscardCards() = 0;
     };
 

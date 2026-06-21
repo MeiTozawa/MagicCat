@@ -64,7 +64,7 @@ namespace mc
             {
                 if (discardPile.empty()) return Card{ECardType::Null, 0};
                 drawPile.insert(drawPile.end(), discardPile.begin(), discardPile.end());
-                discardPile.clear(); // 再シャッフル時に捨て札を確実にクリアする
+                discardPile.clear();
                 Random::Shuffle(drawPile);
                 EventBus::Publish(ShuffleEvent());
             }

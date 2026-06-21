@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <cassert>
 #include <random>
 
@@ -24,10 +24,7 @@ public:
     template <typename... T>
     static int RandomSelection(T... list)
     {
-        //template <typename... T> によって T は「型のリスト（パラメータパック）」になります（例: int, int, int）。 
-        //しかし、std::discrete_distribution<T> の <T> には単一の整数型（戻り値の型である int や size_t など）を
-        //指定しなければならないため、型のリストである T をそのまま渡すと「パラメータパックはこのコンテキストで
-        //展開する必要があります」という文法エラーになってしまいます。
+        // std::discrete_distributionは単一の整数型を要求するため、パラメータパックTを直接渡せない。
         std::discrete_distribution<int> dist({static_cast<double>(list)...});
         return dist(GetEngine());
     }

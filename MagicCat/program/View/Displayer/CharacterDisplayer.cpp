@@ -122,7 +122,7 @@ namespace mc
                 float x2 = PLAYER_DAMAGE_START_X + RECT_X;
                 float y2 = PLAYER_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y;
 
-                // 通常の枠線を描画
+
                 DrawHollowBox(renderService, x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
 
                 if (i == focus)

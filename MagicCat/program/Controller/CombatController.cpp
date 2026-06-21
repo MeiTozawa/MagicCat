@@ -97,11 +97,11 @@ namespace mc
                 auto c = cardService->DrawCard();
                 if (c.CardType == ECardType::Magic)
                 {
-                    characterService->GetPlayer().ChangeMp(c.Value);
+                    characterService->GetPlayer().ChangeMp(c.Power);
                 }
                 else if (c.CardType == ECardType::Rock || c.CardType == ECardType::Scissors || c.CardType == ECardType::Paper)
                 {
-                    characterService->GetEnemy().AddWeight(ToAttackType(c.CardType), c.Value);
+                    characterService->GetEnemy().AddWeight(ToAttackType(c.CardType), c.Power);
                 }
                 EventBus::Publish(DrawCardEvent());
             }

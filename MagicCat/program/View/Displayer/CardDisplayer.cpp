@@ -19,9 +19,7 @@ import ViewEnumMapper;
 
 namespace mc
 {
-    /// かつて、constexprには内部リンク性があり、これは暗黙的にstaticが追加されたのと同じ効果を持っていました。
-    /// しかし、C++20のモジュールスコープにおいて、C++20委員会はconstexprの暗黙的な内部リンク性を廃止し、モジュールリンク性を付与しました。
-    /// これにより、constexprで定義された定数は現在のモジュール内のすべてのファイルで共有されるようになり、その結果、再定義が可能になりました。
+
     namespace
     {
         // card
@@ -131,7 +129,7 @@ namespace mc
             auto position = tnl::Vector2i{CARD_START_X, CARD_START_Y};
             for (size_t i = 0; i < cachedHand.size(); ++i)
             {
-                std::wstring msg = std::format(L"+{}", cachedHand[i].Value);
+                std::wstring msg = std::format(L"+{}", cachedHand[i].Power);
                 auto cardDisplay = std::make_unique<PrintACardDisplayer>(cachedHand[i], position, msg, renderService, assetService);
 
                 // If this is the newest card, wrap it in HitFlashEffector

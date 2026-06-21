@@ -22,12 +22,12 @@ namespace mc
         constexpr int TEXT_START_OFFSET_Y = 50;
 
         constexpr int CONTENT_START_OFFSET_Y = 140;
-        constexpr int LINE_SPACING = 70;
+        constexpr int LINE_SPACING = 60;
 
         constexpr int INDENT_LEVEL_1 = 50;
         constexpr int INDENT_LEVEL_2 = 80;
 
-        constexpr int SECTION_SPACING = 250;
+        constexpr int SECTION_SPACING = 280;
 
         constexpr int ICON_OFFSET_X = 320;
         constexpr int ICON_OFFSET_Y = 80;
@@ -79,18 +79,20 @@ namespace mc
             renderService->DrawString(boxX1 + INDENT_LEVEL_1, textY,
                                       L"仕組み: カードを引くと即座に効果が発動します", COLOR_TEXT_NORMAL);
             renderService->DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING,
-                                      L"魔法カード：MPが回復しする。", COLOR_TEXT_BLUE);
+                                      L"魔法カード：MPが回復します。", COLOR_TEXT_BLUE);
             renderService->DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 2,
-                                      L"じゃんけんカード：敵の該当する攻撃のウェイトが上昇する。", COLOR_TEXT_RED);
+                                      L"じゃんけんカード：敵の該当する攻撃のウェイトが上昇します。", COLOR_TEXT_RED);
+            renderService->DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 3,
+                                      L"手札は4枚までです。", COLOR_TEXT_GREEN);
 
             renderService->DrawString(boxX1 + INDENT_LEVEL_1, textY + SECTION_SPACING,
-                                      L"アクション: 【カードを引く】【攻撃する】【魔法を使用する】", COLOR_TEXT_NORMAL);
+                                      L"アクション: 【カードを引く】【魔法を使用する】【攻撃する】", COLOR_TEXT_NORMAL);
             renderService->DrawString(boxX1 + INDENT_LEVEL_2, textY + SECTION_SPACING + LINE_SPACING,
-                                      L"魔法を使用するとMPが必要。効果は何か試してごらん。", COLOR_TEXT_GREEN);
+                                      L"魔法を使用するとMPが必要。効果は何か試してみてください。", COLOR_TEXT_GREEN);
             renderService->DrawString(boxX1 + INDENT_LEVEL_2, textY + SECTION_SPACING + LINE_SPACING * 2,
-                                      L"攻撃した後、ターンが終了する。", COLOR_TEXT_RED);
+                                      L"攻撃した後、ターンが終了します。", COLOR_TEXT_RED);
             renderService->DrawString(boxX1 + INDENT_LEVEL_2, textY + SECTION_SPACING + LINE_SPACING * 3,
-                                      L"ターンが終了すると、敵のウェイトと手札はリセットされる。", COLOR_TEXT_RED);
+                                      L"ターンが終了すると、敵のウェイトと手札はリセットされます。", COLOR_TEXT_RED);
 
             int kbrHandle = assetService->GetImageHandle(EImage::KB_R);
             DrawGraph(boxX2 - ICON_OFFSET_X, boxY2 - ICON_OFFSET_Y, kbrHandle, TRUE);

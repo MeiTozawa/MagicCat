@@ -49,7 +49,7 @@ namespace mc
 
         std::unique_ptr<HealthComponent> healthComp;
         bool hasUsedClairvoyance = false;
-        int mp = DEFAULT_MAX_MP;
+        int mp = 0;
         int maxMp = DEFAULT_MAX_MP;
 
     public:

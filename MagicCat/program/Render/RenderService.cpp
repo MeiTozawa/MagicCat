@@ -46,8 +46,8 @@ namespace mc
         }
     };
 
-    Shared<IRenderService> CreateRenderService()
+    std::unique_ptr<IRenderService> CreateRenderService()
     {
-        return std::make_shared<DxLibRenderService>();
+        return std::make_unique<DxLibRenderService>();
     }
 } // namespace mc

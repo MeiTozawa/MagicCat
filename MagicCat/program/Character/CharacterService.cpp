@@ -46,9 +46,9 @@ namespace mc
     class CharacterService : public ICharacterService
     {
     public:
-        CharacterService(IConfigService* configService)
+        CharacterService(IConfigService& configService)
         {
-            enemies = configService->GetEnemyConfigs();
+            enemies = configService.GetEnemyConfigs();
         }
 
         void Start() override
@@ -85,8 +85,8 @@ namespace mc
         std::unique_ptr<Player> currentPlayer;
     };
 
-    Shared<ICharacterService> CreateCharacterService(IConfigService* configService)
+    std::unique_ptr<ICharacterService> CreateCharacterService(IConfigService& configService)
     {
-        return std::make_shared<CharacterService>(configService);
+        return std::make_unique<CharacterService>(configService);
     }
 } // namespace mc

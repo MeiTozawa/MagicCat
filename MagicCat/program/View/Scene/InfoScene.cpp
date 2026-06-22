@@ -16,9 +16,9 @@ namespace mc
 {
     class InfoScene : public IScene
     {
-        IInputService* inputService = nullptr;
-        ISceneService* sceneService = nullptr;
-        IRenderService* renderService = nullptr;
+        IInputService& inputService;
+        ISceneService& sceneService;
+        IRenderService& renderService;
         EventHandle deathEvent;
         std::wstring info = {};
         uint32_t infoColor;
@@ -27,7 +27,7 @@ namespace mc
         float blinkTimer = 0;
 
     public:
-        InfoScene(IInputService* input, ISceneService* scene, IRenderService* render)
+        InfoScene(IInputService& input, ISceneService& scene, IRenderService& render)
             : inputService(input), sceneService(scene), renderService(render)
         {
             infoColor = 0xF259FF;
@@ -54,31 +54,31 @@ namespace mc
         void Update(float deltaTime) override
         {
             blinkTimer += deltaTime * 60;
-            if (inputService->IsPressed(InputAction::IgConfirm))
+            if (inputService.IsPressed(InputAction::IgConfirm))
             {
-                sceneService->PushScene(ESceneState::Combat);
+                sceneService.PushScene(ESceneState::Combat);
                 return;
             }
-            if (inputService->IsPressed(InputAction::IgShowRules))
+            if (inputService.IsPressed(InputAction::IgShowRules))
             {
-                sceneService->PushScene(ESceneState::Rules);
+                sceneService.PushScene(ESceneState::Rules);
                 return;
             }
 
             if (!info.empty())
             {
                 SetFontSize(240);
-                DrawCenterString(renderService, dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
+                DrawCenterString(&renderService, dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
                                  info, infoColor);
                 SetFontSize(48);
             }
             else
             {
                 SetFontSize(160);
-                DrawCenterString(renderService, dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.2f),
+                DrawCenterString(&renderService, dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.2f),
                                  L"MagicCat", infoColor);
                 SetFontSize(48);
-                DrawCenterString(renderService, dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
+                DrawCenterString(&renderService, dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
                                  L"吾輩は魔法猫である！\n"
                                  "これはじゃんけんの対決にゃん！\n"
                                  "吾輩は魔法のカードを使って敵の精神状態を操り、\n"
@@ -88,17 +88,17 @@ namespace mc
                                  , COLOR_WHITE);
             }
 
-            DrawLeftString(renderService, 20, 40,
+            DrawLeftString(&renderService, 20, 40,
                            std::format(L" 勝利回数: {} ", winCount).c_str(), COLOR_WHITE);
-            DrawRightString(renderService, dxe::GetWindowWidthF(1.f), 40,
+            DrawRightString(&renderService, dxe::GetWindowWidthF(1.f), 40,
                             std::format(L" 失敗回数: {} ", failCount).c_str(), COLOR_WHITE);
-            DrawCenterString(renderService, dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.8f),
+            DrawCenterString(&renderService, dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.8f),
                              L"Enterキーを押してゲームをスタートにゃ！", COLOR_WHITE);
         }
     };
 
-    std::unique_ptr<IScene> CreateInfoScene(IInputService* inputService, ISceneService* sceneService,
-                                            IRenderService* renderService)
+    std::unique_ptr<IScene> CreateInfoScene(IInputService& inputService, ISceneService& sceneService,
+                                            IRenderService& renderService)
     {
         return std::make_unique<InfoScene>(inputService, sceneService, renderService);
     }

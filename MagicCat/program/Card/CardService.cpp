@@ -18,9 +18,9 @@ namespace mc
     class CardService : public ICardService
     {
     public:
-        CardService(IConfigService* configService)
+        CardService(IConfigService& configService)
         {
-            auto& deckConfig = configService->GetCardConfigs();
+            auto& deckConfig = configService.GetCardConfigs();
             for (const auto& c : deckConfig)
             {
                 auto card = Card{ToCardType(c.type), c.value};
@@ -114,8 +114,8 @@ namespace mc
 
     };
 
-    Shared<ICardService> CreateCardService(IConfigService* configService)
+    std::unique_ptr<ICardService> CreateCardService(IConfigService& configService)
     {
-        return std::make_shared<CardService>(configService);
+        return std::make_unique<CardService>(configService);
     }
 } // namespace mc

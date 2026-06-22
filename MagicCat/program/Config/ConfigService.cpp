@@ -108,8 +108,8 @@ namespace mc
         }
     };
 
-    Shared<IConfigService> CreateConfigService(const std::string& cardConfigPath, const std::string& enemyConfigPath)
+    std::unique_ptr<IConfigService> CreateConfigService(const std::string& cardConfigPath, const std::string& enemyConfigPath)
     {
-        return std::make_shared<ConfigService>(cardConfigPath, enemyConfigPath);
+        return std::make_unique<ConfigService>(cardConfigPath, enemyConfigPath);
     }
 } // namespace mc

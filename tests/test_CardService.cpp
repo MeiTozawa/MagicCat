@@ -37,7 +37,7 @@ namespace {
     };
 
     TEST_F(CardServiceTest, Start_InitializesPiles) {
-        auto cardService = CreateCardService(mockConfig.get());
+        auto cardService = CreateCardService(*mockConfig);
         cardService->Start();
 
         auto drawCards = cardService->GetDrawCards();
@@ -47,7 +47,7 @@ namespace {
     }
 
     TEST_F(CardServiceTest, DrawCard_MovesCardToHand) {
-        auto cardService = CreateCardService(mockConfig.get());
+        auto cardService = CreateCardService(*mockConfig);
         cardService->Start();
 
         cardService->DrawCard();
@@ -57,7 +57,7 @@ namespace {
     }
 
     TEST_F(CardServiceTest, DrawCard_WhenEmpty_ShufflesDiscardPile) {
-        auto cardService = CreateCardService(mockConfig.get());
+        auto cardService = CreateCardService(*mockConfig);
         cardService->Start();
 
         cardService->DrawCard();
@@ -80,7 +80,7 @@ namespace {
     }
 
     TEST_F(CardServiceTest, DrawCard_WhenHandFull_ReturnsNullCard) {
-        auto cardService = CreateCardService(mockConfig.get());
+        auto cardService = CreateCardService(*mockConfig);
         cardService->Start();
 
         // Fill the hand to HAND_SIZE_MAX (4)
@@ -97,7 +97,7 @@ namespace {
     }
 
     TEST_F(CardServiceTest, DrawCard_WhenBothPilesEmpty_ReturnsNullCard) {
-        auto cardService = CreateCardService(mockConfig.get());
+        auto cardService = CreateCardService(*mockConfig);
         cardService->Start();
 
         // Fill hand, discard, then fill hand again to exhaust draw pile
@@ -114,7 +114,7 @@ namespace {
     }
 
     TEST_F(CardServiceTest, DrawCard_FiresHandUpdatedEvent) {
-        auto cardService = CreateCardService(mockConfig.get());
+        auto cardService = CreateCardService(*mockConfig);
         cardService->Start();
 
         bool eventFired = false;
@@ -129,7 +129,7 @@ namespace {
     }
 
     TEST_F(CardServiceTest, DiscardHand_FiresHandUpdatedEvent) {
-        auto cardService = CreateCardService(mockConfig.get());
+        auto cardService = CreateCardService(*mockConfig);
         cardService->Start();
         cardService->DrawCard(); // put a card in hand first
 

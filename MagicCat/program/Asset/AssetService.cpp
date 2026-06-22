@@ -193,8 +193,8 @@ namespace mc
         }
     };
 
-    Shared<IAssetService> CreateAssetService()
+    std::unique_ptr<IAssetService> CreateAssetService()
     {
-        return std::make_shared<AssetService>();
+        return std::make_unique<AssetService>();
     }
 } // namespace mc

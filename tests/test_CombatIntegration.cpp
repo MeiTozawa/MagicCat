@@ -25,9 +25,9 @@ namespace {
     protected:
         std::unique_ptr<MockInputService> mockInput;
         std::unique_ptr<MockConfigService> mockConfig;
-        Shared<ICharacterService> characterService;
-        Shared<ICardService> cardService;
-        Shared<ISceneService> sceneService;
+        std::unique_ptr<ICharacterService> characterService;
+        std::unique_ptr<ICardService> cardService;
+        std::unique_ptr<ISceneService> sceneService;
         std::unique_ptr<ICombatController> combatController;
 
         std::vector<EnemyConfig> enemyConfigs;
@@ -44,14 +44,14 @@ namespace {
             ON_CALL(*mockConfig, GetEnemyConfigs()).WillByDefault(testing::ReturnRef(enemyConfigs));
             ON_CALL(*mockConfig, GetCardConfigs()).WillByDefault(testing::ReturnRef(cardConfigs));
 
-            characterService = CreateCharacterService(mockConfig.get());
-            cardService = CreateCardService(mockConfig.get());
-            sceneService = CreateSceneService(nullptr);
+            characterService = CreateCharacterService(*mockConfig);
+            cardService = CreateCardService(*mockConfig);
+            sceneService = CreateSceneService(*characterService);
 
             characterService->Start();
             cardService->Start();
             
-            combatController = CreateCombatController(mockInput.get(), characterService.get(), sceneService.get(), cardService.get());
+            combatController = CreateCombatController(*mockInput, *characterService, *sceneService, *cardService);
         }
 
         void TearDown() override {

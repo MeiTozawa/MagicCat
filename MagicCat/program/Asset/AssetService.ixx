@@ -73,5 +73,5 @@ namespace mc
 
     };
 
-    export Shared<IAssetService> CreateAssetService();
+    export std::unique_ptr<IAssetService> CreateAssetService();
 } // namespace mc

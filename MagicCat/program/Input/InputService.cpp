@@ -157,8 +157,8 @@ namespace mc
         }
     };
 
-    Shared<IInputService> CreateInputService()
+    std::unique_ptr<IInputService> CreateInputService()
     {
-        return std::make_shared<InputService>();
+        return std::make_unique<InputService>();
     }
 } // namespace mc

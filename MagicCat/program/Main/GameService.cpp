@@ -22,10 +22,10 @@ constexpr int CARD_MAX = 4;
 
 class GameService : public IGameService
 {
-    ISceneService* sceneService = nullptr;
+    ISceneService& sceneService;
 
 public:
-    explicit GameService(ISceneService* sceneService) : sceneService(sceneService) {}
+    explicit GameService(ISceneService& sceneService) : sceneService(sceneService) {}
 
     void Start() override
     {
@@ -35,14 +35,13 @@ public:
 
     void Update(float deltaTime) override
     {
-        sceneService->Update(deltaTime);
+        sceneService.Update(deltaTime);
     }
 };
 
-Shared<IGameService> CreateGameService(ISceneService* sceneService)
+std::unique_ptr<IGameService> CreateGameService(ISceneService& sceneService)
 {
-    return std::make_shared<GameService>(sceneService);
+    return std::make_unique<GameService>(sceneService);
 }
 
 } // namespace mc
-

@@ -2,6 +2,9 @@
 
 import SceneService;
 import EventBus;
+import CharacterService;
+import Enemy;
+import Player;
 
 namespace mc {
 namespace {
@@ -15,7 +18,17 @@ namespace {
         void Update(float deltaTime) override { updateCount++; }
     };
 
+    class DummyCharacterService : public ICharacterService {
+    public:
+        void Start() override {}
+        Enemy& GetEnemy() override { static Enemy e; return e; }
+        Player& GetPlayer() override { static Player p; return p; }
+    };
+
     class SceneServiceTest : public ::testing::Test {
+    protected:
+        DummyCharacterService characterService;
+
         void SetUp() override {
         }
 
@@ -24,7 +37,7 @@ namespace {
     };
 
     TEST_F(SceneServiceTest, PushScene_ChangesCurrentScene) {
-        auto sceneService = CreateSceneService(nullptr);
+        auto sceneService = CreateSceneService(characterService);
         
         auto infoSceneRaw = new DummyScene();
         auto combatSceneRaw = new DummyScene();
@@ -42,7 +55,7 @@ namespace {
     }
 
     TEST_F(SceneServiceTest, PopScene_ReturnsToPreviousScene) {
-        auto sceneService = CreateSceneService(nullptr);
+        auto sceneService = CreateSceneService(characterService);
         
         sceneService->RegisterScene(ESceneState::Info, std::make_unique<DummyScene>());
         sceneService->RegisterScene(ESceneState::Combat, std::make_unique<DummyScene>());
@@ -55,7 +68,7 @@ namespace {
     }
 
     TEST_F(SceneServiceTest, PopScene_WhenStackHasOnlyDefaultScene_DoesNotCrash) {
-        auto sceneService = CreateSceneService(nullptr);
+        auto sceneService = CreateSceneService(characterService);
 
         sceneService->RegisterScene(ESceneState::Info, std::make_unique<DummyScene>());
 
@@ -64,7 +77,7 @@ namespace {
     }
 
     TEST_F(SceneServiceTest, Update_DelegatesToCurrentScene) {
-        auto sceneService = CreateSceneService(nullptr);
+        auto sceneService = CreateSceneService(characterService);
 
         auto* dummyRaw = new DummyScene();
         sceneService->RegisterScene(ESceneState::Info, std::unique_ptr<IScene>(dummyRaw));

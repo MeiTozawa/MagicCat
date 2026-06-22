@@ -15,5 +15,5 @@ namespace mc
         virtual ~IAudioService() = default;
     };
 
-    export Shared<IAudioService> CreateAudioService(IAssetService* assetService, ICharacterService* characterService);
+    export std::unique_ptr<IAudioService> CreateAudioService(IAssetService& assetService, ICharacterService& characterService);
 } // namespace mc

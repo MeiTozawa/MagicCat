@@ -52,5 +52,5 @@ namespace mc
         virtual void ClearAndSetContext(InputContext context) = 0;
     };
 
-    export Shared<IInputService> CreateInputService();
+    export std::unique_ptr<IInputService> CreateInputService();
 } // namespace mc

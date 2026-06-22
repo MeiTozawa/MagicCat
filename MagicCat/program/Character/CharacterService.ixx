@@ -28,5 +28,5 @@ namespace mc
         virtual Player& GetPlayer() = 0;
     };
 
-    export Shared<ICharacterService> CreateCharacterService(IConfigService* configService);
+    export std::unique_ptr<ICharacterService> CreateCharacterService(IConfigService& configService);
 } // namespace mc

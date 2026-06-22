@@ -100,5 +100,5 @@ namespace mc
     export constexpr Card CARD_MAGIC_3 = {ECardType::Magic, 3};
     export constexpr Card CARD_MAGIC_4 = {ECardType::Magic, 4};
 
-    export Shared<ICardService> CreateCardService(IConfigService* configService);
+    export std::unique_ptr<ICardService> CreateCardService(IConfigService& configService);
 } // namespace mc

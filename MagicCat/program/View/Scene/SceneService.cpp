@@ -39,16 +39,16 @@ namespace mc
         }
 
     public:
-        SceneService(ICharacterService* characterService)
+        SceneService(ICharacterService& characterService)
         {
-            characterDiedHandle = EventBus::Subscribe<DeathEvent>([this, characterService](const DeathEvent& event)
+            characterDiedHandle = EventBus::Subscribe<DeathEvent>([this, &characterService](const DeathEvent& event)
             {
-                if (characterService)
+                if (event.Victim == &characterService.GetPlayer() || 
+                    event.Victim == &characterService.GetEnemy())
                 {
-                    if (event.Victim == &characterService->GetPlayer() || 
-                        event.Victim == &characterService->GetEnemy())
+                    sceneStack = {ESceneState::Info};
+                    if (scenes.contains(ESceneState::Info) && scenes[ESceneState::Info])
                     {
-                        sceneStack = {ESceneState::Info};
                         scenes[ESceneState::Info]->Start();
                     }
                 }
@@ -105,8 +105,8 @@ namespace mc
         }
     };
 
-    Shared<ISceneService> CreateSceneService(ICharacterService* characterService)
+    std::unique_ptr<ISceneService> CreateSceneService(ICharacterService& characterService)
     {
-        return std::make_shared<SceneService>(characterService);
+        return std::make_unique<SceneService>(characterService);
     }
 } // namespace mc

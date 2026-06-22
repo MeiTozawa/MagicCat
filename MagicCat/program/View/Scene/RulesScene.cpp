@@ -39,13 +39,13 @@ namespace mc
 
     class RulesScene : public IScene
     {
-        IInputService* inputService;
-        ISceneService* sceneService;
-        IAssetService* assetService;
-        IRenderService* renderService;
+        IInputService& inputService;
+        ISceneService& sceneService;
+        IAssetService& assetService;
+        IRenderService& renderService;
 
     public:
-        RulesScene(IInputService* input, ISceneService* scene, IAssetService* asset, IRenderService* render)
+        RulesScene(IInputService& input, ISceneService& scene, IAssetService& asset, IRenderService& render)
             : inputService(input), sceneService(scene), assetService(asset), renderService(render) {}
 
         void Start() override {}
@@ -53,9 +53,9 @@ namespace mc
 
         void Update(float deltaTime) override
         {
-            if (inputService->IsPressed(InputAction::IgShowRules))
+            if (inputService.IsPressed(InputAction::IgShowRules))
             {
-                sceneService->PopScene();
+                sceneService.PopScene();
                 return;
             }
 
@@ -70,39 +70,40 @@ namespace mc
             const int boxY2 = GetWindowHeight() - BOX_MARGIN_Y;
 
             DrawBox(boxX1, boxY1, boxX2, boxY2, COLOR_BOX_BG, TRUE);
-            DrawHollowBox(renderService, boxX1, boxY1, boxX2, boxY2, 3, COLOR_WHITE);
+            DrawHollowBox(&renderService, boxX1, boxY1, boxX2, boxY2, 3, COLOR_WHITE);
 
-            renderService->DrawString(boxX1 + TEXT_START_OFFSET_X, boxY1 + TEXT_START_OFFSET_Y,
+            renderService.DrawString(boxX1 + TEXT_START_OFFSET_X, boxY1 + TEXT_START_OFFSET_Y,
                                       L"【ルール説明】", COLOR_WHITE);
 
             int textY = boxY1 + CONTENT_START_OFFSET_Y;
-            renderService->DrawString(boxX1 + INDENT_LEVEL_1, textY,
+            renderService.DrawString(boxX1 + INDENT_LEVEL_1, textY,
                                       L"仕組み: カードを引くと即座に効果が発動します", COLOR_TEXT_NORMAL);
-            renderService->DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING,
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING,
                                       L"魔法カード：MPが回復します。", COLOR_TEXT_BLUE);
-            renderService->DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 2,
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 2,
                                       L"じゃんけんカード：敵の該当する攻撃のウェイトが上昇します。", COLOR_TEXT_RED);
-            renderService->DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 3,
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 3,
                                       L"手札は4枚までです。", COLOR_TEXT_GREEN);
 
-            renderService->DrawString(boxX1 + INDENT_LEVEL_1, textY + SECTION_SPACING,
+            renderService.DrawString(boxX1 + INDENT_LEVEL_1, textY + SECTION_SPACING,
                                       L"アクション: 【カードを引く】【魔法を使用する】【攻撃する】", COLOR_TEXT_NORMAL);
-            renderService->DrawString(boxX1 + INDENT_LEVEL_2, textY + SECTION_SPACING + LINE_SPACING,
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + SECTION_SPACING + LINE_SPACING,
                                       L"魔法を使用するとMPが必要。効果は何か試してみてください。", COLOR_TEXT_GREEN);
-            renderService->DrawString(boxX1 + INDENT_LEVEL_2, textY + SECTION_SPACING + LINE_SPACING * 2,
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + SECTION_SPACING + LINE_SPACING * 2,
                                       L"攻撃した後、ターンが終了します。", COLOR_TEXT_RED);
-            renderService->DrawString(boxX1 + INDENT_LEVEL_2, textY + SECTION_SPACING + LINE_SPACING * 3,
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + SECTION_SPACING + LINE_SPACING * 3,
                                       L"ターンが終了すると、敵のウェイトと手札はリセットされます。", COLOR_TEXT_RED);
 
-            int kbrHandle = assetService->GetImageHandle(EImage::KB_R);
+
+            int kbrHandle = assetService.GetImageHandle(EImage::KB_R);
             DrawGraph(boxX2 - ICON_OFFSET_X, boxY2 - ICON_OFFSET_Y, kbrHandle, TRUE);
-            renderService->DrawString(boxX2 - ICON_TEXT_OFFSET_X, boxY2 - ICON_TEXT_OFFSET_Y, L"押して戻る",
+            renderService.DrawString(boxX2 - ICON_TEXT_OFFSET_X, boxY2 - ICON_TEXT_OFFSET_Y, L"押して戻る",
                                       COLOR_TEXT_NORMAL);
         }
     };
 
-    std::unique_ptr<IScene> CreateRulesScene(IInputService* inputService, ISceneService* sceneService,
-                                             IAssetService* assetService, IRenderService* renderService)
+    std::unique_ptr<IScene> CreateRulesScene(IInputService& inputService, ISceneService& sceneService,
+                                             IAssetService& assetService, IRenderService& renderService)
     {
         return std::make_unique<RulesScene>(inputService, sceneService, assetService, renderService);
     }

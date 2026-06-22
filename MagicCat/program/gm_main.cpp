@@ -16,15 +16,15 @@ import RenderService;
 using namespace mc;
 
 // Globals to keep Services alive
-Shared<IRenderService> renderService;
-Shared<IConfigService> configService;
-Shared<IAssetService> assetService;
-Shared<ICardService> cardService;
-Shared<ICharacterService> characterService;
-Shared<IInputService> inputService;
-Shared<IAudioService> audioService;
-Shared<ISceneService> sceneService;
-Shared<IGameService> gameService;
+std::unique_ptr<IRenderService> renderService;
+std::unique_ptr<IConfigService> configService;
+std::unique_ptr<IAssetService> assetService;
+std::unique_ptr<ICardService> cardService;
+std::unique_ptr<ICharacterService> characterService;
+std::unique_ptr<IInputService> inputService;
+std::unique_ptr<IAudioService> audioService;
+std::unique_ptr<ISceneService> sceneService;
+std::unique_ptr<IGameService> gameService;
 
 void InitGameServices()
 {
@@ -37,22 +37,22 @@ void InitGameServices()
     inputService = CreateInputService();
 
     // 2. Create services that depend on config
-    cardService = CreateCardService(configService.get());
-    characterService = CreateCharacterService(configService.get());
+    cardService = CreateCardService(*configService);
+    characterService = CreateCharacterService(*configService);
 
     // 3. Audio Service depends on Asset and Character
-    audioService = CreateAudioService(assetService.get(), characterService.get());
+    audioService = CreateAudioService(*assetService, *characterService);
 
     // 4. Scene Service needs CharacterService
-    sceneService = CreateSceneService(characterService.get());
+    sceneService = CreateSceneService(*characterService);
 
     // 5. Register Scenes with their dependencies
-    sceneService->RegisterScene(ESceneState::Info, CreateInfoScene(inputService.get(), sceneService.get(), renderService.get()));
-    sceneService->RegisterScene(ESceneState::Combat, CreateCombatScene(characterService.get(), sceneService.get(), assetService.get(), cardService.get(), inputService.get(), renderService.get()));
-    sceneService->RegisterScene(ESceneState::Rules, CreateRulesScene(inputService.get(), sceneService.get(), assetService.get(), renderService.get()));
+    sceneService->RegisterScene(ESceneState::Info, CreateInfoScene(*inputService, *sceneService, *renderService));
+    sceneService->RegisterScene(ESceneState::Combat, CreateCombatScene(*characterService, *sceneService, *assetService, *cardService, *inputService, *renderService));
+    sceneService->RegisterScene(ESceneState::Rules, CreateRulesScene(*inputService, *sceneService, *assetService, *renderService));
 
     // 6. Game Service needs SceneService
-    gameService = CreateGameService(sceneService.get());
+    gameService = CreateGameService(*sceneService);
 }
 
 void GameStart()

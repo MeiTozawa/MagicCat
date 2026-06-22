@@ -20,5 +20,5 @@ namespace mc
         virtual void SetDrawBlendMode(int blendMode, int pal) = 0;
     };
 
-    export Shared<IRenderService> CreateRenderService();
+    export std::unique_ptr<IRenderService> CreateRenderService();
 } // namespace mc

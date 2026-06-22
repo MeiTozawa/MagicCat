@@ -15,5 +15,5 @@ namespace mc {
         virtual void Update(float deltaTime) = 0;
     };
 
-    export Shared<IGameService> CreateGameService(ISceneService* sceneService);
+    export std::unique_ptr<IGameService> CreateGameService(ISceneService& sceneService);
 }

@@ -1,8 +1,6 @@
 module;
 
-#include <vector>
 #include <memory>
-#include <functional>
 
 export module SceneService;
 

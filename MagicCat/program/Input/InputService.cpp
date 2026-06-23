@@ -52,6 +52,14 @@ namespace mc
                 dxe::Input::eButton::KB_DOWN,
                 dxe::Input::eButton::PAD_DOWN
             };
+            actionMappings[InputContext::InGame][InputAction::IgLeft] = {
+                dxe::Input::eButton::KB_LEFT,
+                dxe::Input::eButton::PAD_LEFT
+            };
+            actionMappings[InputContext::InGame][InputAction::IgRight] = {
+                dxe::Input::eButton::KB_RIGHT,
+                dxe::Input::eButton::PAD_RIGHT
+            };
             actionMappings[InputContext::InGame][InputAction::IgDrawCard] = {
                 dxe::Input::eButton::KB_Q,
                 dxe::Input::eButton::PAD_X

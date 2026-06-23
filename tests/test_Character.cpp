@@ -34,9 +34,9 @@ namespace {
     TEST(CharacterTest, GetDamage_ReturnsCorrectDamage) {
         DummyCharacter c;
         
-        EXPECT_EQ(c.GetDamage(EAttackType::Rock), 1);
-        EXPECT_EQ(c.GetDamage(EAttackType::Scissors), 2);
-        EXPECT_EQ(c.GetDamage(EAttackType::Paper), 3);
+        EXPECT_EQ(c.GetBaseDamage(EAttackType::Rock), 1);
+        EXPECT_EQ(c.GetBaseDamage(EAttackType::Scissors), 2);
+        EXPECT_EQ(c.GetBaseDamage(EAttackType::Paper), 3);
     }
 
     TEST(CharacterTest, GetName_ReturnsCorrectName) {

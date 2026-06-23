@@ -12,6 +12,7 @@ namespace mc {
 	static constexpr uint32_t COLOR_RED = 0xFF0000;
 	static constexpr uint32_t COLOR_GREEN = 0x00FF00;
 	static constexpr uint32_t COLOR_BLUE = 0x0000FF;
+    static constexpr uint32_t COLOR_GRAY = 0x808080;
 	
 
     static constexpr uint32_t COLOR_TEXT_NORMAL = 0xC8C8C8;

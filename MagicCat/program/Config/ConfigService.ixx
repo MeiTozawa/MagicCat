@@ -9,6 +9,7 @@ namespace mc
 {
     export struct EnemyConfig
     {
+        int hp;
         int baseWeight;
         int rockDamage;
         int scissorsDamage;

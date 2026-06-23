@@ -21,10 +21,7 @@ import HealthComponent;
 import Character;
 import EffectorFactory;
 
-namespace mc
-{
-    namespace
-    {
+namespace mc { namespace {
         constexpr int PLAYER_DAMAGE_START_X = 400;
         constexpr int PLAYER_DAMAGE_START_Y = 200;
 
@@ -42,8 +39,8 @@ namespace mc
         constexpr int ENEMY_DAMAGE_START_X = 1500;
         constexpr int ENEMY_DAMAGE_START_Y = 300;
 
-        constexpr int TEXT_OFFSET_X = 40;
-        constexpr int TEXT_OFFSET_Y = 30;
+        constexpr int TEXT_OFFSET_X = 30;
+        constexpr int TEXT_OFFSET_Y = 28;
 
         constexpr int OFFSET_Y = 120;
 
@@ -58,6 +55,7 @@ namespace mc
         ICharacterService* characterService;
         IRenderService* renderService;
         int currentFocus = 0;
+        bool isMagicMenuOpen = false;
         EventHandle actionSelectionEvent;
         EventHandle addWeightEvent;
         std::vector<std::unique_ptr<EffectorPlayer>> enemyWeightEffectors;
@@ -70,6 +68,7 @@ namespace mc
             actionSelectionEvent = EventBus::Subscribe<ActionSelectionEvent>([this](const ActionSelectionEvent& e)
             {
                 currentFocus = e.selectedIndex;
+                isMagicMenuOpen = e.isMagicMenuOpen;
             });
             addWeightEvent = EventBus::Subscribe<AddWeightEvent>([this](const AddWeightEvent& e)
             {
@@ -128,23 +127,58 @@ namespace mc
                 if (i == focus)
                 {
                     // 選択中の場合は少し内側に追加の枠線を描画して太く（または二重に）見せる
-                    DrawHollowBox(renderService, x1 + 2 * THICKNESS, y1 + 2 * THICKNESS, 
-                                      x2 - 2 * THICKNESS, y2 - 2 * THICKNESS, 
-                                      THICKNESS, COLOR_WHITE);
+                    DrawHollowBox(renderService, x1 + 2 * THICKNESS, y1 + 2 * THICKNESS,
+                                  x2 - 2 * THICKNESS, y2 - 2 * THICKNESS,
+                                  THICKNESS, COLOR_WHITE);
                 }
             }
-            DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
-                             PLAYER_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                             L"  魔法", COLOR_WHITE);
-            DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
-                             PLAYER_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                             std::format(L"✊ ⚔：{}", player.GetDamage(EAttackType::Rock)).c_str(), COLOR_WHITE);
-            DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
-                             PLAYER_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                             std::format(L"✌ ⚔：{}", player.GetDamage(EAttackType::Scissors)).c_str(), COLOR_WHITE);
-            DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
-                             PLAYER_DAMAGE_START_Y + 3 * OFFSET_Y + TEXT_OFFSET_Y,
-                             std::format(L"✋ ⚔：{}", player.GetDamage(EAttackType::Paper)).c_str(), COLOR_WHITE);
+            if (isMagicMenuOpen)
+            {
+                DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                           PLAYER_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
+                           L"  戻る", COLOR_WHITE);
+
+                uint32_t c1 = player.IsMagicUsable(EMagic::Clairvoyance) ? COLOR_WHITE : COLOR_GRAY;
+                DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                           PLAYER_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
+                           L"透視 (10MP)", c1);
+
+                uint32_t c2 = player.IsMagicUsable(EMagic::PowerBoost) ? COLOR_WHITE : COLOR_GRAY;
+                DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                           PLAYER_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
+                           L"攻撃力UP (7MP)", c2);
+
+                uint32_t c3 = player.IsMagicUsable(EMagic::Heal) ? COLOR_WHITE : COLOR_GRAY;
+                DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                           PLAYER_DAMAGE_START_Y + 3 * OFFSET_Y + TEXT_OFFSET_Y,
+                           L"回復 (5MP)", c3);
+            }
+            else
+            {
+                DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                           PLAYER_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
+                           L"  魔法", COLOR_WHITE);
+
+                constexpr std::pair<EAttackType, const wchar_t*> attackTypes[] = {
+                    { EAttackType::Rock, L"✊" },
+                    { EAttackType::Scissors, L"✌" },
+                    { EAttackType::Paper, L"✋" }
+                };
+
+                for (int i = 0; i < 3; ++i)
+                {
+                    auto color = COLOR_WHITE;
+                    std::wstring message = std::format(L"{}⚔：{}", attackTypes[i].second, player.GetBaseDamage(attackTypes[i].first));
+                    if (int offset = player.GetAttackOffset(); offset != 0)
+                    {
+                        color = COLOR_RED;
+                        message += std::format(L"+{}", offset);
+                    }
+                    DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                               PLAYER_DAMAGE_START_Y + (i + 1) * OFFSET_Y + TEXT_OFFSET_Y,
+                               message.c_str(), color);
+                }
+            }
         }
 
         void InitEnemyWeightEffectors()
@@ -154,7 +188,7 @@ namespace mc
             auto rockWeightDisplayer = CreateLambdaDisplayer([this](float)
             {
                 const Enemy& enemy = characterService->GetEnemy();
-                std::wstring message = L"✊ ⚖：";
+                std::wstring message = L"✊⚖：";
                 if (enemy.IsExposed())
                     message += std::to_wstring(enemy.GetBaseWeight());
                 else
@@ -172,7 +206,7 @@ namespace mc
             auto scissorsWeightDisplayer = CreateLambdaDisplayer([this](float)
             {
                 const Enemy& enemy = characterService->GetEnemy();
-                std::wstring message = L"✌ ⚖：";
+                std::wstring message = L"✌⚖：";
                 if (enemy.IsExposed())
                     message += std::to_wstring(enemy.GetBaseWeight());
                 else
@@ -190,7 +224,7 @@ namespace mc
             auto paperWeightDisplayer = CreateLambdaDisplayer([this](float)
             {
                 const Enemy& enemy = characterService->GetEnemy();
-                std::wstring message = L"✋ ⚖：";
+                std::wstring message = L"✋⚖：";
                 if (enemy.IsExposed())
                     message += std::to_wstring(enemy.GetBaseWeight());
                 else
@@ -240,31 +274,32 @@ namespace mc
             if (enemy.IsExposed())
             {
                 DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                                 ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                                 std::format(L"✊ ⚔：{}", enemy.GetDamage(EAttackType::Rock)).c_str(), COLOR_WHITE);
+                           ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
+                           std::format(L"✊⚔：{}", enemy.GetBaseDamage(EAttackType::Rock)).c_str(), COLOR_WHITE);
                 DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                                 ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                                 std::format(L"✌ ⚔：{}", enemy.GetDamage(EAttackType::Scissors)).c_str(), COLOR_WHITE);
+                           ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
+                           std::format(L"✌⚔：{}", enemy.GetBaseDamage(EAttackType::Scissors)).c_str(), COLOR_WHITE);
                 DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                                 ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                                 std::format(L"✋ ⚔：{}", enemy.GetDamage(EAttackType::Paper)).c_str(), COLOR_WHITE);
+                           ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
+                           std::format(L"✋⚔：{}", enemy.GetBaseDamage(EAttackType::Paper)).c_str(), COLOR_WHITE);
             }
             else
             {
                 DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                                 ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                                 L"✊ ⚔：？", COLOR_WHITE);
+                           ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
+                           L"✊⚔：?", COLOR_WHITE);
                 DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                                 ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                                 L"✌ ⚔：？", COLOR_WHITE);
+                           ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
+                           L"✌⚔：?", COLOR_WHITE);
                 DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                                 ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                                 L"✋ ⚔：？", COLOR_WHITE);
+                           ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
+                           L"✋⚔：?", COLOR_WHITE);
             }
         }
     };
 
-    std::unique_ptr<IDisplayer> CreateCharacterDisplayer(ICharacterService* characterService, IRenderService* renderService)
+    std::unique_ptr<IDisplayer> CreateCharacterDisplayer(ICharacterService* characterService,
+                                                         IRenderService* renderService)
     {
         return std::make_unique<CharacterDisplayer>(characterService, renderService);
     }

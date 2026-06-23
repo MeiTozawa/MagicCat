@@ -29,10 +29,12 @@ namespace mc
 
     export struct ActionSelectionEvent : IEvent
     {
-        explicit ActionSelectionEvent(const int selected_index)
-            : selectedIndex(selected_index) {}
-
         int selectedIndex;
+        bool isMagicMenuOpen;
+        explicit ActionSelectionEvent(const int selected_index, bool isMagicMenuOpen = false)
+            : selectedIndex(selected_index), isMagicMenuOpen(isMagicMenuOpen)
+        {
+        }
     };
 
     /// @brief ビュー（UIや描画等）の基本インターフェース

@@ -49,6 +49,17 @@ public:
         }
     }
 
+    void Heal(int amount)
+    {
+        if (isDead) return;
+
+        hp += amount;
+        if (hp > maxHp)
+            hp = maxHp;
+
+        EventBus::Publish(HealthChangedEvent(GetOwner(), hp));
+    }
+
     bool IsDead() const override
     {
         return isDead;

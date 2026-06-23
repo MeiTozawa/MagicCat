@@ -79,13 +79,14 @@ namespace mc
                         for (auto& item : json.array_items())
                         {
                             EnemyConfig e;
+                            e.hp = item["hp"].int_value();
                             e.baseWeight = item["baseWeight"].int_value();
                             e.rockDamage = item["rockDamage"].int_value();
                             e.scissorsDamage = item["scissorsDamage"].int_value();
                             e.paperDamage = item["paperDamage"].int_value();
                             e.spriteName = item["sprite"].string_value();
                             std::string s = item["name"].string_value();
-                            int len = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, NULL, 0);
+                            int len = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, nullptr, 0);
                             if (len > 0)
                             {
                                 std::vector<wchar_t> buf(len);

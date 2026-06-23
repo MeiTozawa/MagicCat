@@ -5,8 +5,7 @@ export module Character;
 import EventBus;
 import AssetService;
 
-namespace mc
-{
+namespace mc {
     /**
      * @brief 攻撃の属性を定義する列挙型。
      * じゃんけんのルール（グー、チョキ、パー）に基づいて設定されます。
@@ -62,14 +61,23 @@ namespace mc
         int rockDamage = 1;
         int scissorsDamage = 1;
         int paperDamage = 1;
+        int attackOffset = 0;
         ESprite sprite = ESprite::Null;
 
         std::vector<ETag> tags;
 
     public:
+        virtual ~Character() = default;
+        virtual void TakeDamage(int amount) const = 0;
         ESprite GetSprite() const { return sprite; }
         std::wstring GetName() const { return name; }
-        int GetDamage(EAttackType t) const
+        void SetAttackOffset(int offset) { attackOffset = offset; }
+        int GetAttackOffset() const { return attackOffset; }
+        void ResetAttackOffset() { attackOffset = 0; }
+
+        const std::vector<ETag>& GetTags() const { return tags; }
+
+        int GetBaseDamage(EAttackType t) const
         {
             switch (t)
             {
@@ -84,7 +92,5 @@ namespace mc
                 return 0;
             }
         }
-
-        const std::vector<ETag>& GetTags() const { return tags; }
     };
 } // namespace mc

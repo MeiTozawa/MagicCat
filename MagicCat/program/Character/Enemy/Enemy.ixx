@@ -41,10 +41,6 @@ namespace mc
 
         }
 
-        ~Enemy()
-        {
-        }
-
         void AddWeight(EAttackType t, int weight)
         {
             switch (t)
@@ -109,7 +105,7 @@ namespace mc
 
         const HealthComponent& GetHealthComponent() const { return *healthComp; }
 
-        void TakeDamage(int amount)
+        void TakeDamage(int amount) const override
         {
             healthComp->TakeDamage(amount);
         }

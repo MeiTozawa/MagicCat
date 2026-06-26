@@ -2,9 +2,14 @@ module;
 
 export module EffectorFactory;
 import AnimationFactory;
-import Displayer;
+import DisplayerBase;
 namespace mc
 {
+    export enum class EEffector
+    {
+        HitFlash, Fade
+    };
+    
     export class EffectorPlayer : virtual public IDisplayer
     {
     protected:

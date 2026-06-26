@@ -37,7 +37,7 @@ namespace {
             mockInput = std::make_unique<NiceMock<MockInputService>>();
             mockConfig = std::make_unique<NiceMock<MockConfigService>>();
             
-            enemyConfigs = { {0, 10, 10, 10, L"TestEnemy", ""} };
+            enemyConfigs = { {10, 0, 10, 10, 10, L"TestEnemy", ""} };
             cardConfigs = {
                 {3, 5}, {3, 5}, {3, 5}, {3, 5}
             };
@@ -61,11 +61,19 @@ namespace {
     TEST_F(CombatIntegrationTest, MagicAction_SetsEnemyExposed_IfSuccessful) {
         characterService->GetPlayer().ChangeMp(100);
         
-        ON_CALL(*mockInput, IsPressed(InputAction::IgConfirm)).WillByDefault(Return(true));
+        int frame = 0;
+        ON_CALL(*mockInput, IsPressed(testing::_)).WillByDefault(testing::Invoke([&](InputAction action) {
+            if (frame == 0 && action == InputAction::IgConfirm) return true;
+            if (frame == 1 && action == InputAction::IgDown) return true;
+            if (frame == 2 && action == InputAction::IgConfirm) return true;
+            return false;
+        }));
         
         combatController->Reset();
         
-        combatController->Update(0.1f);
+        combatController->Update(0.1f); frame++;
+        combatController->Update(0.1f); frame++;
+        combatController->Update(0.1f); frame++;
         
         EXPECT_TRUE(characterService->GetEnemy().IsExposed());
     }

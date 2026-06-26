@@ -2,7 +2,7 @@ module;
 
 export module AnimationFactory;
 import Character;
-import Displayer;
+import DisplayerBase;
 import AssetService;
 
 namespace mc

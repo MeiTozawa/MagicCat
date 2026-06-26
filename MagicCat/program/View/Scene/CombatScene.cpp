@@ -17,8 +17,8 @@ import CombatController;
 import HealthComponent;
 import Character;
 import ViewEnumMapper;
-namespace mc
-{
+
+namespace mc {
     constexpr int PLAYER_START_X = 800;
     constexpr int PLAYER_START_Y = 450;
     constexpr int ENEMY_START_X = 1000;
@@ -30,7 +30,6 @@ namespace mc
     constexpr float ENEMY_ATTACK_X = 1020.f;
     constexpr float ENEMY_ATTACK_Y = 400.f;
     constexpr float ATTACK_IMAGE_SCALE = 0.2f;
-
 
 
     constexpr int FADE_IN_TIME = 200;
@@ -45,12 +44,9 @@ namespace mc
         ICardService& cardService;
         IInputService& inputService;
         IRenderService& renderService;
-        
-        std::vector<std::unique_ptr<IDisplayer>> displayers;
-        std::unique_ptr<EffectorPlayer> playerAnimationEffector;
-        std::unique_ptr<EffectorPlayer> enemyAnimationEffector;
-        std::unique_ptr<EffectorPlayer> playerAttackEffector = nullptr;
-        std::unique_ptr<EffectorPlayer> enemyAttackEffector = nullptr;
+
+        Displayers displayers;
+
         int playerAttackImageHandle = -1;
         int enemyAttackImageHandle = -1;
         std::unique_ptr<ICombatController> combatController;
@@ -58,9 +54,10 @@ namespace mc
         EventHandle combatEvent = -1;
 
     public:
-        CombatScene(ICharacterService& character, ISceneService& scene, IAssetService& asset, ICardService& card, IInputService& input, IRenderService& render)
-            : characterService(character), sceneService(scene), assetService(asset), cardService(card), inputService(input), renderService(render)
-        {}
+        CombatScene(ICharacterService& character, ISceneService& scene, IAssetService& asset, ICardService& card,
+                    IInputService& input, IRenderService& render)
+            : characterService(character), sceneService(scene), assetService(asset), cardService(card),
+              inputService(input), renderService(render) {}
 
         void Start() override
         {
@@ -71,10 +68,15 @@ namespace mc
                 EventBus::Unsubscribe(healthChangedEvent);
                 healthChangedEvent = -1;
             }
+            if (combatEvent != -1)
+            {
+                EventBus::Unsubscribe(combatEvent);
+                combatEvent = -1;
+            }
             displayers.clear();
-            displayers.push_back(CreateCardDisplayer(&cardService, &assetService, &renderService));
-            displayers.push_back(CreateCharacterDisplayer(&characterService, &renderService));
-            displayers.push_back(CreateControlDisplayer(&assetService, &renderService));
+            displayers.push_back(CreateCardDisplayer(cardService, assetService, renderService));
+            displayers.push_back(CreateCharacterDisplayer(characterService, renderService));
+            displayers.push_back(CreateControlDisplayer(assetService, renderService));
 
             combatController = CreateCombatController(inputService, characterService, sceneService, cardService);
             combatController->Reset();
@@ -83,47 +85,55 @@ namespace mc
                 &assetService, characterService.GetPlayer().GetSprite(), EXTRA_RATE
             );
             playerAnimation->SetPosition(PLAYER_START_X, PLAYER_START_Y);
-            playerAnimationEffector = CreateHitFlashEffector(std::move(playerAnimation), 0xFF0000);
+            auto temp1 = CreateHitFlashEffector(std::move(playerAnimation), 0xFF0000);
+            auto& playerAnimationEffector = *temp1.get();
+            displayers.push_back(std::move(temp1));
 
             auto enemyAnimation = CreateSpriteAnimation(
                 &assetService, characterService.GetEnemy().GetSprite(), EXTRA_RATE, true
             );
             enemyAnimation->SetPosition(ENEMY_START_X, ENEMY_START_Y);
-            enemyAnimationEffector = CreateHitFlashEffector(std::move(enemyAnimation), 0xFF0000);
+            auto temp2 = CreateHitFlashEffector(std::move(enemyAnimation), 0xFF0000);
+            auto& enemyAnimationEffector = *temp2.get();
+            displayers.push_back(std::move(temp2));
 
-            playerAttackEffector = CreateFadeEffector(
+            auto temp3 = CreateFadeEffector(
                 CreateAttackDisplayer(
                     PLAYER_ATTACK_X, PLAYER_ATTACK_Y, ATTACK_IMAGE_SCALE,
                     &playerAttackImageHandle
                 ), FADE_IN_TIME, HOLD_TIME, FADE_OUT_TIME
             );
+            auto& playerAttackEffector = *temp3.get();
+            displayers.push_back(std::move(temp3));
 
-            enemyAttackEffector = CreateFadeEffector(
+            auto temp4 = CreateFadeEffector(
                 CreateAttackDisplayer(
                     ENEMY_ATTACK_X, ENEMY_ATTACK_Y, ATTACK_IMAGE_SCALE,
                     &enemyAttackImageHandle
                 ), FADE_IN_TIME, HOLD_TIME, FADE_OUT_TIME
             );
+            auto& enemyAttackEffector = *temp4.get();
+            displayers.push_back(std::move(temp4));
 
-            healthChangedEvent = EventBus::Subscribe<HealthChangedEvent>([this](const HealthChangedEvent& event)
+            healthChangedEvent = EventBus::Subscribe<HealthChangedEvent>([&](const HealthChangedEvent& event)
             {
                 auto tags = event.Victim->GetTags();
                 if (std::ranges::find(tags, ETag::Player) != tags.end())
-                    playerAnimationEffector->Play();
+                    playerAnimationEffector.Play();
                 else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
-                    enemyAnimationEffector->Play();
+                    enemyAnimationEffector.Play();
             });
 
-            combatEvent = EventBus::Subscribe<CombatEvent>([this](const CombatEvent& event)
+            combatEvent = EventBus::Subscribe<CombatEvent>([&](const CombatEvent& event)
             {
                 playerAttackImageHandle = assetService.GetImageHandle(ToImage(event.playerAttackType));
                 enemyAttackImageHandle = assetService.GetImageHandle(ToImage(event.enemyAttackType));
 
-                playerAttackEffector->Play();
-                enemyAttackEffector->Play();
+                playerAttackEffector.Play();
+                enemyAttackEffector.Play();
             });
         }
-        
+
         ~CombatScene() override
         {
             if (healthChangedEvent != -1) EventBus::Unsubscribe(healthChangedEvent);
@@ -135,24 +145,16 @@ namespace mc
         {
             combatController->Update(deltaTime);
 
-            for (auto& displayer : displayers)
-            {
-                displayer->Update(deltaTime);
-                displayer->Draw(deltaTime);
-            }
-            playerAnimationEffector->Update(deltaTime);
-            playerAnimationEffector->Draw(deltaTime);
-            enemyAnimationEffector->Update(deltaTime);
-            enemyAnimationEffector->Draw(deltaTime);
-            playerAttackEffector->Update(deltaTime);
-            playerAttackEffector->Draw(deltaTime);
-            enemyAttackEffector->Update(deltaTime);
-            enemyAttackEffector->Draw(deltaTime);
+            displayers.Update(deltaTime);
+            displayers.Draw(deltaTime);
         }
     };
 
-    std::unique_ptr<IScene> CreateCombatScene(ICharacterService& characterService, ISceneService& sceneService, IAssetService& assetService, ICardService& cardService, IInputService& inputService, IRenderService& renderService)
+    std::unique_ptr<IScene> CreateCombatScene(ICharacterService& characterService, ISceneService& sceneService,
+                                              IAssetService& assetService, ICardService& cardService,
+                                              IInputService& inputService, IRenderService& renderService)
     {
-        return std::make_unique<CombatScene>(characterService, sceneService, assetService, cardService, inputService, renderService);
+        return std::make_unique<CombatScene>(characterService, sceneService, assetService, cardService, inputService,
+                                             renderService);
     }
 } // namespace mc

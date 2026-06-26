@@ -65,7 +65,8 @@ namespace mc {
             scissorsDamage = 2;
             paperDamage = 2;
 #ifdef _DEBUG
-            mp = 10;
+            maxMp = 100;
+            mp = 100;
 #endif
             healthComp = std::make_unique<HealthComponent>(this);
             tags.push_back(ETag::Player);

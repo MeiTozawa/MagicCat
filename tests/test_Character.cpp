@@ -15,6 +15,11 @@ namespace {
             paperDamage = 3;
             sprite = ESprite::Null;
         }
+
+        void TakeDamage(int amount) const override
+        {
+            // Empty for testing LosesTo logic
+        }
     };
 
     TEST(CharacterTest, LosesTo_LogicCheck) {

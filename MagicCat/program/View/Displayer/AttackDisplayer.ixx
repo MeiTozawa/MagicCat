@@ -1,8 +1,8 @@
 module;
 
-#include <dxe.h>
 #include <memory>
-module Displayer;
+export module Displayer:Attack;
+import DisplayerBase;
 
 
 namespace mc
@@ -28,7 +28,7 @@ namespace mc
         }
     };
 
-    std::unique_ptr<IDisplayer> CreateAttackDisplayer(float x, float y, float scale, const int* handle)
+    export std::unique_ptr<IDisplayer> CreateAttackDisplayer(float x, float y, float scale, const int* handle)
     {
         return std::make_unique<AttackDisplayer>(x, y, scale, handle);
     }

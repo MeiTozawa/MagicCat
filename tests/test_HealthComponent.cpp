@@ -16,6 +16,7 @@ namespace {
             paperDamage = 1;
             sprite = ESprite::Null;
         }
+        void TakeDamage(int) const override {}
     };
 
     TEST(HealthComponentTest, TakeDamage_ReducesHealth) {

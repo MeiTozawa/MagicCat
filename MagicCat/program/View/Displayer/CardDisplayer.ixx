@@ -1,6 +1,5 @@
 module;
 
-#include <dxe.h>
 #include <memory>
 #include <vector>
 #include <string>
@@ -8,7 +7,8 @@ module;
 #include <cassert>
 #include <RenderUtils.h>
 
-module Displayer;
+export module Displayer:Card;
+import DisplayerBase;
 
 import CardService;
 import RenderService;
@@ -39,33 +39,18 @@ namespace mc
         constexpr float IMAGE_SCALE = 0.3f;
     }
 
-    class CardDisplayer : public IDisplayer
+    class CardDisplayer : public Displayers
     {
-        ICardService* cardService;
-        IAssetService* assetService;
-        IRenderService* renderService;
+        ICardService& cardService;
+        IAssetService& assetService;
+        IRenderService& renderService;
 
         EventHandle handUpdateHandle;
         std::vector<Card> cachedHand;
-        std::vector<std::unique_ptr<IDisplayer>> cardDisplayers;
 
-        class PrintACardDisplayer : public IDisplayer
+        std::unique_ptr<IDisplayer> CreatePrintACardDisplayer(Card card, tnl::Vector2i start_position, std::wstring message) const
         {
-        public:
-            Card card;
-            tnl::Vector2i start_position;
-            std::wstring message;
-            IRenderService* renderService;
-            IAssetService* assetService;
-
-            PrintACardDisplayer(Card card, tnl::Vector2i start_position, std::wstring message, IRenderService* renderService, IAssetService* assetService) :
-                card(card), start_position(start_position), message(std::move(message)), renderService(renderService), assetService(assetService)
-            {
-            }
-
-            void Update(float deltaTime) override {}
-
-            void Draw(float deltaTime) const override
+            return CreateLambdaDisplayer([card, start_position, message, this](float deltaTime)
             {
                 auto x = start_position.x, y = start_position.y;
                 uint32_t color;
@@ -107,52 +92,60 @@ namespace mc
                 }
                 if (has_icon)
                 {
-                    int icon = assetService->GetImageHandle(ToImage(card.CardType));
+                    int icon = assetService.GetImageHandle(ToImage(card.CardType));
                     if (icon != -1)
                     {
                         DrawRotaGraphF(x + CARD_WIDTH / 2.f, y + CARD_HEIGHT / 3.5f, IMAGE_SCALE, 0.0, icon, TRUE);
                     }
-                    DrawCenterString(renderService, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10,
+                    DrawCenterString(&renderService, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10,
                                      message.c_str(), color);
                 }
                 else
                 {
-                    DrawCenterString(renderService, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 - 30,
+                    DrawCenterString(&renderService, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 - 30,
                                      message.c_str(), color);
                 }
-            }
-        };
+            });
+        }
 
         void RebuildDisplayers(bool isDraw = false)
         {
-            cardDisplayers.clear();
+            displayers.clear();
             auto position = tnl::Vector2i{CARD_START_X, CARD_START_Y};
             for (size_t i = 0; i < cachedHand.size(); ++i)
             {
                 std::wstring msg = std::format(L"+{}", cachedHand[i].Power);
-                auto cardDisplay = std::make_unique<PrintACardDisplayer>(cachedHand[i], position, msg, renderService, assetService);
+                auto cardDisplay = CreatePrintACardDisplayer(cachedHand[i], position, msg);
 
                 // If this is the newest card, wrap it in HitFlashEffector
                 if (isDraw && i == cachedHand.size() - 1)
                 {
                     auto flashEffector = CreateHitFlashEffector(std::move(cardDisplay), 0x000000, 300);
                     flashEffector->Play();
-                    cardDisplayers.push_back(std::move(flashEffector));
+                    push_back(std::move(flashEffector));
                 }
                 else
                 {
-                    cardDisplayers.push_back(std::move(cardDisplay));
+                    push_back(std::move(cardDisplay));
                 }
 
                 position.x += OFFSET_X;
             }
+            
+            // Add draw pile
+            std::wstring drawPileMsg = std::format(L"山札\n{:2}枚", cardService.GetDrawCards().size());
+            push_back(CreatePrintACardDisplayer({ECardType::Null}, {DRAW_PILE_X, DRAW_PILE_Y}, drawPileMsg));
+            
+            // Add discard pile
+            std::wstring discardPileMsg = std::format(L"捨札\n{:2}枚", cardService.GetDiscardCards().size());
+            push_back(CreatePrintACardDisplayer({ECardType::Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, discardPileMsg));
         }
 
     public:
-        CardDisplayer(ICardService* card, IAssetService* asset, IRenderService* render)
+        CardDisplayer(ICardService& card, IAssetService& asset, IRenderService& render)
             : cardService(card), assetService(asset), renderService(render)
         {
-            cachedHand = cardService->GetHandCards();
+            cachedHand = cardService.GetHandCards();
             RebuildDisplayers(false);
 
             handUpdateHandle = EventBus::Subscribe<HandUpdatedEvent>([this](const HandUpdatedEvent& e)
@@ -167,40 +160,9 @@ namespace mc
         {
             EventBus::Unsubscribe(handUpdateHandle);
         }
-
-        void Update(float deltaTime) override
-        {
-            for (auto& display : cardDisplayers)
-            {
-                display->Update(deltaTime);
-            }
-        }
-
-        void Draw(float deltaTime) const override
-        {
-            InitDrawPile(deltaTime);
-            InitDiscardPile(deltaTime);
-            for (auto& display : cardDisplayers)
-            {
-                display->Draw(deltaTime);
-            }
-        }
-
-    private:
-        void InitDrawPile(float deltaTime) const
-        {
-            std::wstring message = std::format(L"山札\n{:2}枚", cardService->GetDrawCards().size());
-            PrintACardDisplayer({ECardType::Null}, {DRAW_PILE_X, DRAW_PILE_Y}, message, renderService, assetService).Draw(deltaTime);
-        }
-
-        void InitDiscardPile(float deltaTime) const
-        {
-            std::wstring message = std::format(L"捨札\n{:2}枚", cardService->GetDiscardCards().size());
-            PrintACardDisplayer({ECardType::Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, message, renderService, assetService).Draw(deltaTime);
-        }
     };
 
-    std::unique_ptr<IDisplayer> CreateCardDisplayer(ICardService* cardService, IAssetService* assetService, IRenderService* renderService)
+    export std::unique_ptr<IDisplayer> CreateCardDisplayer(ICardService& cardService, IAssetService& assetService, IRenderService& renderService)
     {
         return std::make_unique<CardDisplayer>(cardService, assetService, renderService);
     }

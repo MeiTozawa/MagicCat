@@ -49,7 +49,7 @@ namespace {
         player.UseMagic(EMagic::Clairvoyance);
 
         EXPECT_TRUE(magicEventFired);
-        EXPECT_EQ(player.GetMp(), initialMp - 5); // CLAIRVOYANCE_MP_COST is 5
+        EXPECT_EQ(player.GetMp(), initialMp - 10); // CLAIRVOYANCE_MP_COST is 10
 
         EventBus::Unsubscribe(handle);
     }

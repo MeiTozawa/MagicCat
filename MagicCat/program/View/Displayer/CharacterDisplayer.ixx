@@ -1,25 +1,24 @@
 module;
 
-#include <dxe.h>
-
 #include <memory>
+#include <vector>
 #include <string>
 #include <format>
 #include <RenderUtils.h>
-#include <format>
 
-module Displayer;
+export module Displayer:Character;
+import DisplayerBase;
 
-import SceneService;
-import GameService;
+import CharacterService;
 import RenderService;
 import EventBus;
-import CharacterService;
-import Player;
-import Enemy;
+import EffectorFactory;
+import ViewEnumMapper;
 import HealthComponent;
 import Character;
-import EffectorFactory;
+import Enemy;
+import Player;
+import SceneService;
 
 namespace mc { namespace {
         constexpr int PLAYER_DAMAGE_START_X = 400;
@@ -50,10 +49,10 @@ namespace mc { namespace {
         constexpr int THICKNESS = 2;
     }
 
-    class CharacterDisplayer : public IDisplayer
+    class CharacterDisplayer : public Displayers
     {
-        ICharacterService* characterService;
-        IRenderService* renderService;
+        ICharacterService& characterService;
+        IRenderService& renderService;
         int currentFocus = 0;
         bool isMagicMenuOpen = false;
         EventHandle actionSelectionEvent;
@@ -61,10 +60,15 @@ namespace mc { namespace {
         std::vector<std::unique_ptr<EffectorPlayer>> enemyWeightEffectors;
 
     public:
-        CharacterDisplayer(ICharacterService* character, IRenderService* render)
+        CharacterDisplayer(ICharacterService& character, IRenderService& render)
             : characterService(character), renderService(render)
         {
             InitEnemyWeightEffectors();
+
+            push_back(CreateLambdaDisplayer([this](float) { PrintPlayerInfo(); }));
+            push_back(CreateLambdaDisplayer([this](float) { PrintEnemyInfoWithoutWeight(); }));
+            push_back(CreateLambdaDisplayer([this](float) { PrintPlayerActions(currentFocus); }));
+
             actionSelectionEvent = EventBus::Subscribe<ActionSelectionEvent>([this](const ActionSelectionEvent& e)
             {
                 currentFocus = e.selectedIndex;
@@ -72,7 +76,6 @@ namespace mc { namespace {
             });
             addWeightEvent = EventBus::Subscribe<AddWeightEvent>([this](const AddWeightEvent& e)
             {
-                InitEnemyWeightEffectors();
                 enemyWeightEffectors[static_cast<int>(e.AttackType)]->Play();
             });
         }
@@ -85,15 +88,15 @@ namespace mc { namespace {
 
         void Update(float deltaTime) override
         {
+            Displayers::Update(deltaTime);
+
             for (auto& eff : enemyWeightEffectors)
                 eff->Update(deltaTime);
         }
 
         void Draw(float deltaTime) const override
         {
-            PrintPlayerInfo();
-            PrintEnemyInfoWithoutWeight();
-            PrintPlayerActions(currentFocus);
+            Displayers::Draw(deltaTime);
 
             for (auto& eff : enemyWeightEffectors)
                 eff->Draw(deltaTime);
@@ -102,7 +105,7 @@ namespace mc { namespace {
     private:
         void PrintPlayerInfo() const
         {
-            const Player& player = characterService->GetPlayer();
+            const Player& player = characterService.GetPlayer();
             const auto playerHealthComp = player.GetHealthComponent();
 
             auto message = std::format(L"HP: {}/{}", playerHealthComp.GetHealth(), playerHealthComp.GetMaxHealth());
@@ -113,7 +116,7 @@ namespace mc { namespace {
 
         void PrintPlayerActions(int focus) const
         {
-            const Player& player = characterService->GetPlayer();
+            const Player& player = characterService.GetPlayer();
             for (int i = 0; i < 4; ++i)
             {
                 float x1 = PLAYER_DAMAGE_START_X;
@@ -122,12 +125,12 @@ namespace mc { namespace {
                 float y2 = PLAYER_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y;
 
 
-                DrawHollowBox(renderService, x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
+                DrawHollowBox(&renderService, x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
 
                 if (i == focus)
                 {
-                    // 選択中の場合は少し内側に追加の枠線を描画して太く（または二重に）見せる
-                    DrawHollowBox(renderService, x1 + 2 * THICKNESS, y1 + 2 * THICKNESS,
+                    // 驕ｸ謚樔ｸｭ縺ｮ蝣ｴ蜷医・蟆代＠蜀・・縺ｫ霑ｽ蜉縺ｮ譫邱壹ｒ謠冗判縺励※螟ｪ縺擾ｼ医∪縺溘・莠碁㍾縺ｫ・芽ｦ九○繧・
+                    DrawHollowBox(&renderService, x1 + 2 * THICKNESS, y1 + 2 * THICKNESS,
                                   x2 - 2 * THICKNESS, y2 - 2 * THICKNESS,
                                   THICKNESS, COLOR_WHITE);
                 }
@@ -146,7 +149,7 @@ namespace mc { namespace {
                 uint32_t c2 = player.IsMagicUsable(EMagic::PowerBoost) ? COLOR_WHITE : COLOR_GRAY;
                 DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                            PLAYER_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                           L"攻撃力UP (7MP)", c2);
+                           L"⚔UP (7MP)", c2);
 
                 uint32_t c3 = player.IsMagicUsable(EMagic::Heal) ? COLOR_WHITE : COLOR_GRAY;
                 DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
@@ -160,15 +163,16 @@ namespace mc { namespace {
                            L"  魔法", COLOR_WHITE);
 
                 constexpr std::pair<EAttackType, const wchar_t*> attackTypes[] = {
-                    { EAttackType::Rock, L"✊" },
-                    { EAttackType::Scissors, L"✌" },
-                    { EAttackType::Paper, L"✋" }
+                    {EAttackType::Rock, L"✊"},
+                    {EAttackType::Scissors, L"✌"},
+                    {EAttackType::Paper, L"✋"}
                 };
 
                 for (int i = 0; i < 3; ++i)
                 {
                     auto color = COLOR_WHITE;
-                    std::wstring message = std::format(L"{}⚔：{}", attackTypes[i].second, player.GetBaseDamage(attackTypes[i].first));
+                    std::wstring message = std::format(L"{}⚔：{}", attackTypes[i].second,
+                                                       player.GetBaseDamage(attackTypes[i].first));
                     if (int offset = player.GetAttackOffset(); offset != 0)
                     {
                         color = COLOR_RED;
@@ -187,7 +191,7 @@ namespace mc { namespace {
 
             auto rockWeightDisplayer = CreateLambdaDisplayer([this](float)
             {
-                const Enemy& enemy = characterService->GetEnemy();
+                const Enemy& enemy = characterService.GetEnemy();
                 std::wstring message = L"✊⚖：";
                 if (enemy.IsExposed())
                     message += std::to_wstring(enemy.GetBaseWeight());
@@ -205,7 +209,7 @@ namespace mc { namespace {
 
             auto scissorsWeightDisplayer = CreateLambdaDisplayer([this](float)
             {
-                const Enemy& enemy = characterService->GetEnemy();
+                const Enemy& enemy = characterService.GetEnemy();
                 std::wstring message = L"✌⚖：";
                 if (enemy.IsExposed())
                     message += std::to_wstring(enemy.GetBaseWeight());
@@ -223,7 +227,7 @@ namespace mc { namespace {
 
             auto paperWeightDisplayer = CreateLambdaDisplayer([this](float)
             {
-                const Enemy& enemy = characterService->GetEnemy();
+                const Enemy& enemy = characterService.GetEnemy();
                 std::wstring message = L"✋⚖：";
                 if (enemy.IsExposed())
                     message += std::to_wstring(enemy.GetBaseWeight());
@@ -242,7 +246,7 @@ namespace mc { namespace {
 
         void PrintEnemyInfoWithoutWeight() const
         {
-            const Enemy& enemy = characterService->GetEnemy();
+            const Enemy& enemy = characterService.GetEnemy();
             const auto enemyHealthComp = enemy.GetHealthComponent();
 
             auto message = enemy.GetName();
@@ -258,7 +262,7 @@ namespace mc { namespace {
                 float x2 = ENEMY_WEIGHT_START_X + RECT_X;
                 float y2 = ENEMY_WEIGHT_START_Y + RECT_Y + i * OFFSET_Y;
 
-                DrawHollowBox(renderService, x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
+                DrawHollowBox(&renderService, x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
             }
 
             for (int i = 0; i < 3; ++i)
@@ -268,7 +272,7 @@ namespace mc { namespace {
                 float x2 = ENEMY_DAMAGE_START_X + RECT_X;
                 float y2 = ENEMY_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y;
 
-                DrawHollowBox(renderService, x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
+                DrawHollowBox(&renderService, x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
             }
 
             if (enemy.IsExposed())
@@ -298,8 +302,8 @@ namespace mc { namespace {
         }
     };
 
-    std::unique_ptr<IDisplayer> CreateCharacterDisplayer(ICharacterService* characterService,
-                                                         IRenderService* renderService)
+    export std::unique_ptr<IDisplayer> CreateCharacterDisplayer(ICharacterService& characterService,
+                                                                IRenderService& renderService)
     {
         return std::make_unique<CharacterDisplayer>(characterService, renderService);
     }

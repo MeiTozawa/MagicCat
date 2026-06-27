@@ -9,7 +9,7 @@ module;
 export module Displayer:Character;
 import DisplayerBase;
 
-import CharacterService;
+import BattleService;
 import RenderService;
 import EventBus;
 import EffectorFactory;
@@ -51,7 +51,7 @@ namespace mc { namespace {
 
     class CharacterDisplayer : public Displayers
     {
-        ICharacterService& characterService;
+        IBattleService& characterService;
         IRenderService& renderService;
         int currentFocus = 0;
         bool isMagicMenuOpen = false;
@@ -60,7 +60,7 @@ namespace mc { namespace {
         std::vector<std::unique_ptr<EffectorPlayer>> enemyWeightEffectors;
 
     public:
-        CharacterDisplayer(ICharacterService& character, IRenderService& render)
+        CharacterDisplayer(IBattleService& character, IRenderService& render)
             : characterService(character), renderService(render)
         {
             InitEnemyWeightEffectors();
@@ -302,7 +302,7 @@ namespace mc { namespace {
         }
     };
 
-    export std::unique_ptr<IDisplayer> CreateCharacterDisplayer(ICharacterService& characterService,
+    export std::unique_ptr<IDisplayer> CreateCharacterDisplayer(IBattleService& characterService,
                                                                 IRenderService& renderService)
     {
         return std::make_unique<CharacterDisplayer>(characterService, renderService);

@@ -35,6 +35,21 @@ namespace mc
             displayers.clear();
         }
 
+        size_t size() const
+        {
+            return displayers.size();
+        }
+
+        std::unique_ptr<IDisplayer>& operator[](size_t index)
+        {
+            return displayers[index];
+        }
+
+        const std::unique_ptr<IDisplayer>& operator[](size_t index) const
+        {
+            return displayers[index];
+        }
+
         void Update(float deltaTime) override
         {
             for (auto& displayer : displayers)

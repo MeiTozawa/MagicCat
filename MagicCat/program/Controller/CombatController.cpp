@@ -5,7 +5,7 @@ module;
 module CombatController;
 
 import InputService;
-import CharacterService;
+import BattleService;
 import EventBus;
 import CardService;
 import Character;
@@ -17,14 +17,14 @@ namespace mc
     class CombatController : public ICombatController
     {
         IInputService& inputService;
-        ICharacterService& characterService;
+        IBattleService& characterService;
         ISceneService& sceneService;
         ICardService& cardService;
         int selectedActionIndex = 0;
         bool isMagicMenuOpen = false;
 
     public:
-        CombatController(IInputService& input, ICharacterService& character, ISceneService& scene, ICardService& card)
+        CombatController(IInputService& input, IBattleService& character, ISceneService& scene, ICardService& card)
             : inputService(input), characterService(character), sceneService(scene), cardService(card)
         {
         }
@@ -142,7 +142,7 @@ namespace mc
         }
     };
 
-    std::unique_ptr<ICombatController> CreateCombatController(IInputService& inputService, ICharacterService& characterService, ISceneService& sceneService, ICardService& cardService)
+    std::unique_ptr<ICombatController> CreateCombatController(IInputService& inputService, IBattleService& characterService, ISceneService& sceneService, ICardService& cardService)
     {
         return std::make_unique<CombatController>(inputService, characterService, sceneService, cardService);
     }

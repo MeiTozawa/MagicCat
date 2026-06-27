@@ -5,7 +5,7 @@ module;
 export module CombatController;
 
 import InputService;
-import CharacterService;
+import BattleService;
 import SceneService;
 import CardService;
 
@@ -25,5 +25,5 @@ namespace mc
         virtual void Reset() = 0;
     };
 
-    export std::unique_ptr<ICombatController> CreateCombatController(IInputService& inputService, ICharacterService& characterService, ISceneService& sceneService, ICardService& cardService);
+    export std::unique_ptr<ICombatController> CreateCombatController(IInputService& inputService, IBattleService& BattleService, ISceneService& sceneService, ICardService& cardService);
 }

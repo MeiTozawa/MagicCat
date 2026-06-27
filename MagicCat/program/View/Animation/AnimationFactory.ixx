@@ -20,6 +20,9 @@ namespace mc
         void Update(float deltaTime) override = 0;
         void Draw(float deltaTime) const override = 0;
 
+        /// @brief 表示するスプライトを差し替える（アニメーションを再生成せず内部データのみ更新する）
+        virtual void SetSprite(ESprite sprite) {}
+
         virtual void SetPosition(int newX, int newY) final
         {
             x = newX;

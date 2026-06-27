@@ -27,7 +27,7 @@ namespace mc
 
     public:
         Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0,
-              const std::wstring& name = L"Unknown", ESprite sprite = ESprite::Null)
+              const std::wstring& name = L"Unknown", ESprite sprite = ESprite::Null, int hp = 10)
             : baseWeight(baseWeight)
         {
             Character::name = name;
@@ -36,9 +36,24 @@ namespace mc
             Character::scissorsDamage = scissorsDamage;
             Character::paperDamage = paperDamage;
             healthComp = std::make_unique<HealthComponent>(this);
+            healthComp->Reset(hp);
             tags.push_back(ETag::Enemy);
+        }
 
-
+        /// @brief 既存の Enemy インスタンスを破棄・再生成せず、その内部データを
+        /// 新しい敵の設定で上書きする。HealthComponent や Enemy への参照は維持される。
+        void Reset(int baseWeight, int rockDamage, int scissorsDamage, int paperDamage,
+                   const std::wstring& name, ESprite sprite, int hp)
+        {
+            this->baseWeight = baseWeight;
+            Character::name = name;
+            Character::sprite = sprite;
+            Character::rockDamage = rockDamage;
+            Character::scissorsDamage = scissorsDamage;
+            Character::paperDamage = paperDamage;
+            healthComp->Reset(hp);
+            ResetWeights();
+            isExposed = false;
         }
 
         void AddWeight(EAttackType t, int weight)

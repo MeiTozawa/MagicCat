@@ -5,12 +5,10 @@ module;
 #include <RenderUtils.h>
 
 module SceneService;
-import SceneService;
+import BattleService;
 import InputService;
 import RenderService;
 import EventBus;
-import HealthComponent;
-import Character;
 
 namespace mc
 {
@@ -19,7 +17,9 @@ namespace mc
         IInputService& inputService;
         ISceneService& sceneService;
         IRenderService& renderService;
-        EventHandle deathEvent;
+        IBattleService& BattleService;
+        EventHandle stageClearHandle;
+        EventHandle stageFailHandle;
         std::wstring info = {};
         uint32_t infoColor;
         int winCount = 0;
@@ -27,26 +27,28 @@ namespace mc
         float blinkTimer = 0;
 
     public:
-        InfoScene(IInputService& input, ISceneService& scene, IRenderService& render)
-            : inputService(input), sceneService(scene), renderService(render)
+        InfoScene(IInputService& input, ISceneService& scene, IRenderService& render, IBattleService& battleSeq)
+            : inputService(input), sceneService(scene), renderService(render), BattleService(battleSeq)
         {
             infoColor = 0xF259FF;
-            deathEvent = EventBus::Subscribe<DeathEvent>([this](const DeathEvent& e)
+            stageClearHandle = EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&)
             {
-                auto tags = e.Victim->GetTags();
-                if (std::ranges::find(tags, ETag::Enemy) != tags.end())
-                {
-                    winCount++;
-                    info = L"勝利にゃあ！！";
-                    infoColor = 0xFFD700;
-                }
-                else if (std::ranges::find(tags, ETag::Player) != tags.end())
-                {
-                    failCount++;
-                    info = L"失敗にゃの！？";
-                    infoColor = 0xff3333;
-                }
+                winCount++;
+                info = L"勝利にゃあ！！";
+                infoColor = 0xFFD700;
             });
+            stageFailHandle = EventBus::Subscribe<StageFailEvent>([this](const StageFailEvent&)
+            {
+                failCount++;
+                info = L"失敗にゃの！？";
+                infoColor = 0xff3333;
+            });
+        }
+
+        ~InfoScene() override
+        {
+            EventBus::Unsubscribe(stageClearHandle);
+            EventBus::Unsubscribe(stageFailHandle);
         }
 
         void Start() override {}
@@ -56,7 +58,7 @@ namespace mc
             blinkTimer += deltaTime * 60;
             if (inputService.IsPressed(InputAction::IgConfirm))
             {
-                sceneService.PushScene(ESceneState::Combat);
+                BattleService.StartStage();
                 return;
             }
             if (inputService.IsPressed(InputAction::IgShowRules))
@@ -98,8 +100,8 @@ namespace mc
     };
 
     std::unique_ptr<IScene> CreateInfoScene(IInputService& inputService, ISceneService& sceneService,
-                                            IRenderService& renderService)
+                                            IRenderService& renderService, IBattleService& BattleService)
     {
-        return std::make_unique<InfoScene>(inputService, sceneService, renderService);
+        return std::make_unique<InfoScene>(inputService, sceneService, renderService, BattleService);
     }
 } // namespace mc

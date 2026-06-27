@@ -6,9 +6,8 @@ module;
 module SceneService;
 
 import GameService;
-import HealthComponent;
 import EventBus;
-import CharacterService;
+import BattleService;
 
 namespace mc
 {
@@ -17,7 +16,8 @@ namespace mc
         std::unordered_map<ESceneState, std::unique_ptr<IScene>> scenes;
         std::vector<ESceneState> sceneStack = {};
         bool initialized = false;
-        EventHandle characterDiedHandle;
+        EventHandle stageClearHandle;
+        EventHandle stageFailHandle;
 
         /**
          * @brief 依存関係の遅延初期化（Lazy Initialization）を行います。
@@ -39,25 +39,24 @@ namespace mc
         }
 
     public:
-        SceneService(ICharacterService& characterService)
+        SceneService()
         {
-            characterDiedHandle = EventBus::Subscribe<DeathEvent>([this, &characterService](const DeathEvent& event)
-            {
-                if (event.Victim == &characterService.GetPlayer() || 
-                    event.Victim == &characterService.GetEnemy())
-                {
-                    sceneStack = {ESceneState::Info};
-                    if (scenes.contains(ESceneState::Info) && scenes[ESceneState::Info])
-                    {
-                        scenes[ESceneState::Info]->Start();
-                    }
-                }
+            stageClearHandle = EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&) {
+                SetCurrentScene(ESceneState::Info);
+                if (scenes.contains(ESceneState::Info) && scenes[ESceneState::Info])
+                    scenes[ESceneState::Info]->Start();
+            });
+            stageFailHandle = EventBus::Subscribe<StageFailEvent>([this](const StageFailEvent&) {
+                SetCurrentScene(ESceneState::Info);
+                if (scenes.contains(ESceneState::Info) && scenes[ESceneState::Info])
+                    scenes[ESceneState::Info]->Start();
             });
         }
 
         ~SceneService() override
         {
-            EventBus::Unsubscribe(characterDiedHandle);
+            EventBus::Unsubscribe(stageClearHandle);
+            EventBus::Unsubscribe(stageFailHandle);
         }
 
         void RegisterScene(ESceneState type, std::unique_ptr<IScene>&& scene) override
@@ -105,8 +104,8 @@ namespace mc
         }
     };
 
-    std::unique_ptr<ISceneService> CreateSceneService(ICharacterService& characterService)
+    std::unique_ptr<ISceneService> CreateSceneService()
     {
-        return std::make_unique<SceneService>(characterService);
+        return std::make_unique<SceneService>();
     }
 } // namespace mc

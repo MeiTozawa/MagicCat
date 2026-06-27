@@ -5,7 +5,7 @@ module;
 export module AudioService;
 
 import AssetService;
-import CharacterService;
+import BattleService;
 
 namespace mc
 {
@@ -15,5 +15,5 @@ namespace mc
         virtual ~IAudioService() = default;
     };
 
-    export std::unique_ptr<IAudioService> CreateAudioService(IAssetService& assetService, ICharacterService& characterService);
+    export std::unique_ptr<IAudioService> CreateAudioService(IAssetService& assetService, IBattleService& characterService);
 } // namespace mc

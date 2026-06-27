@@ -79,6 +79,14 @@ public:
     {
         return owner;
     }
+
+    /// @brief 静かに HP を最大値にリセットする（イベント発行なし）。
+    void Reset(int newMaxHp)
+    {
+        maxHp = newMaxHp;
+        hp = newMaxHp;
+        isDead = false;
+    }
 };
 
 } // namespace mc

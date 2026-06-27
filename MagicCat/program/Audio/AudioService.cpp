@@ -7,18 +7,18 @@ import Character;
 import AssetService;
 import CardService;
 import SceneService;
-import CharacterService;
+import BattleService;
 import Player;
 namespace mc
 {
     class AudioService : public IAudioService
     {
         IAssetService& assetService;
-        ICharacterService& characterService;
+        IBattleService& characterService;
         std::vector<EventHandle> eventHandles;
 
     public:
-        AudioService(IAssetService& asset, ICharacterService& character)
+        AudioService(IAssetService& asset, IBattleService& character)
             : assetService(asset), characterService(character)
         {
 
@@ -95,7 +95,7 @@ namespace mc
         }
     };
 
-    std::unique_ptr<IAudioService> CreateAudioService(IAssetService& assetService, ICharacterService& characterService)
+    std::unique_ptr<IAudioService> CreateAudioService(IAssetService& assetService, IBattleService& characterService)
     {
         return std::make_unique<AudioService>(assetService, characterService);
     }

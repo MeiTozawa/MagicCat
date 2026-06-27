@@ -1,3 +1,14 @@
+include(FetchContent)
+
+FetchContent_Declare(
+    rapidcheck
+    GIT_REPOSITORY https://github.com/emil-e/rapidcheck.git
+    GIT_TAG        master
+)
+
+set(RC_ENABLE_GTEST ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(rapidcheck)
+
 add_executable(MagicCatTests
     test_main.cpp
     test_HealthComponent.cpp
@@ -11,6 +22,9 @@ add_executable(MagicCatTests
     test_SceneService.cpp
     test_CombatIntegration.cpp
     test_GameFlowIntegration.cpp
+    test_BattleSequenceService.cpp
+    test_BattleSequenceServiceProperties.cpp
+    test_SequentialBattlesIntegration.cpp
 )
 
 target_compile_features(MagicCatTests PRIVATE cxx_std_23)
@@ -24,6 +38,8 @@ target_link_libraries(MagicCatTests PRIVATE
     MagicCatCore
     gtest_main
     gmock
+    rapidcheck
+    rapidcheck_gtest
 )
 
 include(GoogleTest)

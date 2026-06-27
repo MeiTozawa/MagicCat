@@ -3,6 +3,7 @@
 import HealthComponent;
 import Character;
 import EventBus;
+import AssetService;
 
 namespace mc {
 namespace {
@@ -84,6 +85,80 @@ namespace {
         HealthComponent health(&character);
 
         EXPECT_EQ(health.GetMaxHealth(), 10);
+    }
+
+    // --- Reset tests (Requirement 2.4) ---
+
+    TEST(HealthComponentTest, Reset_SetsHealthToMaxHp) {
+        DummyCharacter character;
+        HealthComponent health(&character);
+
+        health.Reset(25);
+
+        EXPECT_EQ(health.GetHealth(), 25);
+        EXPECT_EQ(health.GetMaxHealth(), 25);
+    }
+
+    TEST(HealthComponentTest, Reset_ClearsDeadState) {
+        DummyCharacter character;
+        HealthComponent health(&character);
+
+        // Kill the character first
+        health.TakeDamage(10);
+        ASSERT_TRUE(health.IsDead());
+
+        health.Reset(10);
+
+        EXPECT_FALSE(health.IsDead());
+    }
+
+    TEST(HealthComponentTest, Reset_AfterPartialDamage_RestoresFullHealth) {
+        DummyCharacter character;
+        HealthComponent health(&character);
+
+        health.TakeDamage(6);
+        ASSERT_EQ(health.GetHealth(), 4);
+
+        health.Reset(20);
+
+        EXPECT_EQ(health.GetHealth(), 20);
+        EXPECT_FALSE(health.IsDead());
+    }
+
+    TEST(HealthComponentTest, Reset_DoesNotFireDeathEvent) {
+        DummyCharacter character;
+        HealthComponent health(&character);
+
+        // Kill first so Reset has something meaningful to reset
+        health.TakeDamage(10);
+        ASSERT_TRUE(health.IsDead());
+
+        bool deathEventFired = false;
+        auto handle = EventBus::Subscribe<DeathEvent>([&](const DeathEvent&) {
+            deathEventFired = true;
+        });
+
+        health.Reset(10);
+
+        EXPECT_FALSE(deathEventFired);
+
+        EventBus::Unsubscribe(handle);
+    }
+
+    TEST(HealthComponentTest, Reset_DoesNotFireHealthChangedEvent) {
+        DummyCharacter character;
+        HealthComponent health(&character);
+
+        bool healthChangedFired = false;
+        auto handle = EventBus::Subscribe<HealthChangedEvent>([&](const HealthChangedEvent&) {
+            healthChangedFired = true;
+        });
+
+        health.Reset(15);
+
+        EXPECT_FALSE(healthChangedFired);
+
+        EventBus::Unsubscribe(handle);
     }
 
 } // namespace

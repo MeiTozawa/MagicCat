@@ -3,7 +3,7 @@
 #include "MockServices.h"
 
 import CombatController;
-import CharacterService;
+import BattleService;
 import CardService;
 import SceneService;
 import EventBus;
@@ -25,7 +25,7 @@ namespace {
     protected:
         std::unique_ptr<MockInputService> mockInput;
         std::unique_ptr<MockConfigService> mockConfig;
-        std::unique_ptr<ICharacterService> characterService;
+        std::unique_ptr<IBattleService> characterService;
         std::unique_ptr<ICardService> cardService;
         std::unique_ptr<ISceneService> sceneService;
         std::unique_ptr<ICombatController> combatController;
@@ -44,11 +44,11 @@ namespace {
             ON_CALL(*mockConfig, GetEnemyConfigs()).WillByDefault(testing::ReturnRef(enemyConfigs));
             ON_CALL(*mockConfig, GetCardConfigs()).WillByDefault(testing::ReturnRef(cardConfigs));
 
-            characterService = CreateCharacterService(*mockConfig);
             cardService = CreateCardService(*mockConfig);
-            sceneService = CreateSceneService(*characterService);
+            sceneService = CreateSceneService();
+            characterService = CreateBattleService(*mockConfig, *cardService, *sceneService);
 
-            characterService->Start();
+            characterService->StartStage();
             cardService->Start();
             
             combatController = CreateCombatController(*mockInput, *characterService, *sceneService, *cardService);

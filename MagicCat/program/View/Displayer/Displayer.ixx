@@ -7,3 +7,4 @@ export import :Attack;
 export import :Control;
 export import :Card;
 export import :Character;
+export import :Dialog;

@@ -11,8 +11,7 @@ import EventBus;
 import AssetService;
 import Player;
 
-namespace mc
-{
+namespace mc {
     export struct AddWeightEvent : IEvent
     {
         EAttackType AttackType;
@@ -30,6 +29,9 @@ namespace mc
               const std::wstring& name = L"Unknown", ESprite sprite = ESprite::Null, int hp = 10)
             : baseWeight(baseWeight)
         {
+#ifdef _DEBUG
+            this->baseWeight = 1;
+#endif
             Character::name = name;
             Character::sprite = sprite;
             Character::rockDamage = rockDamage;
@@ -84,8 +86,25 @@ namespace mc
                 rockWeight, scissorsWeight, paperWeight
             );
             assert(index >= 0 && index <= 2 && "ランダム攻撃のインデックスが範囲外です");
-            constexpr EAttackType mappedTypes[] = { EAttackType::Rock, EAttackType::Scissors, EAttackType::Paper };
+            constexpr EAttackType mappedTypes[] = {EAttackType::Rock, EAttackType::Scissors, EAttackType::Paper};
             return mappedTypes[index];
+        }
+
+        float GetLoseRateAgainst(EAttackType playerAttack) const
+        {
+            int rockWeight = baseWeight + rockWeightOffset;
+            int scissorsWeight = baseWeight + scissorsWeightOffset;
+            int paperWeight = baseWeight + paperWeightOffset;
+            int total = rockWeight + scissorsWeight + paperWeight;
+            if (total <= 0)
+                return 0.f;
+
+            int losingWeight = 0;
+            if (LosesTo(EAttackType::Rock, playerAttack)) losingWeight += rockWeight;
+            if (LosesTo(EAttackType::Scissors, playerAttack)) losingWeight += scissorsWeight;
+            if (LosesTo(EAttackType::Paper, playerAttack)) losingWeight += paperWeight;
+
+            return static_cast<float>(losingWeight) / total;
         }
 
         bool operator==(const Enemy& e) const
@@ -115,7 +134,7 @@ namespace mc
         }
 
         bool IsExposed() const { return isExposed; }
-        
+
         int GetBaseWeight() const { return baseWeight; }
 
         const HealthComponent& GetHealthComponent() const { return *healthComp; }

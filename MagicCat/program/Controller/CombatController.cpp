@@ -99,7 +99,9 @@ namespace mc
                         else return;
 
                         EAttackType enemyAttackIntent = characterService.GetEnemy().GetAttackIntent();
-                        
+
+                        float playerWinRate = characterService.GetEnemy().GetLoseRateAgainst(playerAttackIntent);
+
                         int playerDamage = characterService.GetPlayer().GetBaseDamage(playerAttackIntent);
                         int enemyDamage = characterService.GetEnemy().GetBaseDamage(enemyAttackIntent);
 
@@ -117,7 +119,7 @@ namespace mc
                         characterService.GetPlayer().ResetAttackOffset();
 
                         EventBus::Publish(
-                            CombatEvent(playerAttackIntent, enemyAttackIntent, playerDamage, enemyDamage)
+                            CombatEvent(playerAttackIntent, enemyAttackIntent, playerDamage, enemyDamage, playerWinRate)
                         );
                     }
                 }

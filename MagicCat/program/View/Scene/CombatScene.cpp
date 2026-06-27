@@ -2,6 +2,7 @@ module;
 
 #include <memory>
 #include <format>
+#include <RenderUtils.h>
 #include <string>
 
 module SceneService;
@@ -34,10 +35,20 @@ namespace mc {
     constexpr float ENEMY_ATTACK_Y = 400.f;
     constexpr float ATTACK_IMAGE_SCALE = 0.2f;
 
+    constexpr int ATTACK_FADE_IN_TIME = 150;
+    constexpr int ATTACK_HOLD_TIME = 800;
+    constexpr int ATTACK_FADE_OUT_TIME = 250;
 
-    constexpr int FADE_IN_TIME = 200;
-    constexpr int HOLD_TIME = 600;
-    constexpr int FADE_OUT_TIME = 100;
+    constexpr int PLAYER_DIALOG_X = PLAYER_START_X + 50;
+    constexpr int PLAYER_DIALOG_Y = PLAYER_START_Y + 82;
+    constexpr int DIALOG_FADE_IN_TIME = 150;
+    constexpr int DIALOG_HOLD_TIME = 800;
+    constexpr int DIALOG_FADE_OUT_TIME = 250;
+    constexpr float HIGH_WIN_RATE = 0.6f;
+    constexpr float LOW_WIN_RATE = 0.4f;
+
+    constexpr uint32_t DIALOG_COLOR_LUCKY = COLOR_GREEN;
+    constexpr uint32_t DIALOG_COLOR_DAMN = COLOR_RED;
 
     class CombatScene : public IScene
     {
@@ -50,8 +61,6 @@ namespace mc {
 
         Displayers displayers;
 
-        int playerAttackImageHandle = -1;
-        int enemyAttackImageHandle = -1;
         std::unique_ptr<ICombatController> combatController;
         EventHandle healthChangedEvent = -1;
         EventHandle combatEvent = -1;
@@ -114,23 +123,33 @@ namespace mc {
             auto& enemyFlashEffector = *temp2.get();
             displayers.push_back(std::move(temp2));
 
+            auto playerAttackDisplayer = CreateAttackDisplayer(
+                PLAYER_ATTACK_X, PLAYER_ATTACK_Y, ATTACK_IMAGE_SCALE
+            );
+            auto& playerAttack = *playerAttackDisplayer;
             auto temp3 = CreateFadeEffector(
-                CreateAttackDisplayer(
-                    PLAYER_ATTACK_X, PLAYER_ATTACK_Y, ATTACK_IMAGE_SCALE,
-                    &playerAttackImageHandle
-                ), FADE_IN_TIME, HOLD_TIME, FADE_OUT_TIME
+                std::move(playerAttackDisplayer), ATTACK_FADE_IN_TIME, ATTACK_HOLD_TIME, ATTACK_FADE_OUT_TIME
             );
             auto& playerAttackEffector = *temp3.get();
             displayers.push_back(std::move(temp3));
 
+            auto enemyAttackDisplayer = CreateAttackDisplayer(
+                ENEMY_ATTACK_X, ENEMY_ATTACK_Y, ATTACK_IMAGE_SCALE
+            );
+            auto& enemyAttack = *enemyAttackDisplayer;
             auto temp4 = CreateFadeEffector(
-                CreateAttackDisplayer(
-                    ENEMY_ATTACK_X, ENEMY_ATTACK_Y, ATTACK_IMAGE_SCALE,
-                    &enemyAttackImageHandle
-                ), FADE_IN_TIME, HOLD_TIME, FADE_OUT_TIME
+                std::move(enemyAttackDisplayer), ATTACK_FADE_IN_TIME, ATTACK_HOLD_TIME, ATTACK_FADE_OUT_TIME
             );
             auto& enemyAttackEffector = *temp4.get();
             displayers.push_back(std::move(temp4));
+
+            auto dialogDisplayer = CreateDialogDisplayer(renderService, PLAYER_DIALOG_X, PLAYER_DIALOG_Y);
+            auto& playerDialog = *dialogDisplayer;
+            auto temp5 = CreateFadeEffector(
+                std::move(dialogDisplayer), DIALOG_FADE_IN_TIME, DIALOG_HOLD_TIME, DIALOG_FADE_OUT_TIME
+            );
+            auto& playerDialogEffector = *temp5.get();
+            displayers.push_back(std::move(temp5));
 
             progressText = std::format(L"敵 {}/3", BattleService.GetCurrentEnemyIndex() + 1);
 
@@ -145,11 +164,25 @@ namespace mc {
 
             combatEvent = EventBus::Subscribe<CombatEvent>([&](const CombatEvent& event)
             {
-                playerAttackImageHandle = assetService.GetImageHandle(ToImage(event.playerAttackType));
-                enemyAttackImageHandle = assetService.GetImageHandle(ToImage(event.enemyAttackType));
+                playerAttack.SetImage(assetService.GetImageHandle(ToImage(event.playerAttackType)));
+                enemyAttack.SetImage(assetService.GetImageHandle(ToImage(event.enemyAttackType)));
 
                 playerAttackEffector.Play();
                 enemyAttackEffector.Play();
+
+                bool playerLost = LosesTo(event.playerAttackType, event.enemyAttackType);
+                bool playerWon = LosesTo(event.enemyAttackType, event.playerAttackType);
+
+                if (event.playerWinRate > HIGH_WIN_RATE && playerLost)
+                {
+                    playerDialog.SetMessage(L"クッソー", DIALOG_COLOR_DAMN);
+                    playerDialogEffector.Play();
+                }
+                else if (event.playerWinRate < LOW_WIN_RATE && playerWon)
+                {
+                    playerDialog.SetMessage(L"ラッキー", DIALOG_COLOR_LUCKY);
+                    playerDialogEffector.Play();
+                }
             });
 
             enemyDefeatedHandle = EventBus::Subscribe<EnemyDefeatedEvent>([&](const EnemyDefeatedEvent& e)

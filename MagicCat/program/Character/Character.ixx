@@ -43,11 +43,13 @@ namespace mc {
         EAttackType enemyAttackType;
         int playerAttackDamage;
         int enemyAttackDamage;
+        float playerWinRate;
 
         CombatEvent(EAttackType playerAttackType, EAttackType enemyAttackType,
-                    int playerAttackDamage, int enemyAttackDamage) :
+                    int playerAttackDamage, int enemyAttackDamage, float playerWinRate = 0.f) :
             playerAttackType(playerAttackType), enemyAttackType(enemyAttackType),
-            playerAttackDamage(playerAttackDamage), enemyAttackDamage(enemyAttackDamage) {}
+            playerAttackDamage(playerAttackDamage), enemyAttackDamage(enemyAttackDamage),
+            playerWinRate(playerWinRate) {}
     };
 
     /**

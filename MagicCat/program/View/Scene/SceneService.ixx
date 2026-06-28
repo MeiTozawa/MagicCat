@@ -10,6 +10,7 @@ import EventBus;
 import InputService;
 import AssetService;
 import RenderService;
+import BattleService;
 
 namespace mc
 {
@@ -93,4 +94,6 @@ namespace mc
 
     export std::unique_ptr<ISceneService> CreateSceneService();
     export std::unique_ptr<IScene> CreateRulesScene(IInputService& inputService, ISceneService& sceneService, IAssetService& assetService, IRenderService& renderService);
+    export std::unique_ptr<IScene> CreateInfoScene(IInputService& inputService, ISceneService& sceneService, IRenderService& renderService, IBattleService& BattleService);
+    export std::unique_ptr<IScene> CreateCombatScene(ISceneService& sceneService, IAssetService& assetService, ICardService& cardService, IInputService& inputService, IRenderService& renderService, IBattleService& BattleService);
 } // namespace mc

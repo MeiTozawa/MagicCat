@@ -51,12 +51,10 @@ namespace mc
     public:
         BattleService(
             IConfigService& configService,
-            ICardService& cardService,
-            ISceneService& sceneService
+            ICardService& cardService
         )
             : configService(configService)
             , cardService(cardService)
-            , sceneService(sceneService)
         {
             deathHandle = EventBus::Subscribe<DeathEvent>([this](const DeathEvent& e)
             {
@@ -98,7 +96,7 @@ namespace mc
             currentPlayer = std::make_unique<Player>();
             LoadEnemy(sequence[0]);
             cardService.Start();
-            sceneService.PushScene(ESceneState::Combat);
+            EventBus::Publish(StageStartedEvent{});
         }
 
         int GetCurrentEnemyIndex() const override
@@ -180,7 +178,6 @@ namespace mc
 
         IConfigService&    configService;
         ICardService&      cardService;
-        ISceneService&     sceneService;
 
         std::vector<EnemyConfig> sequence;
         int currentIndex = 0;
@@ -192,12 +189,11 @@ namespace mc
 
     std::unique_ptr<IBattleService> CreateBattleService(
         IConfigService& configService,
-        ICardService& cardService,
-        ISceneService& sceneService
+        ICardService& cardService
     )
     {
         return std::make_unique<BattleService>(
-            configService, cardService, sceneService);
+            configService, cardService);
     }
 
 } // namespace mc

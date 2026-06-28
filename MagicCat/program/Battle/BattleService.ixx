@@ -7,7 +7,6 @@ export module BattleService;
 
 import ConfigService;
 import CardService;
-import SceneService;
 import EventBus;
 import Enemy;
 import Player;
@@ -26,6 +25,9 @@ namespace mc
 
     /// @brief プレイヤーが死亡してステージ失敗になった際に発行されるイベント
     export struct StageFailEvent : IEvent {};
+
+    /// @brief ステージ開始時（敵 Sequence の準備完了後）に発行されるイベント
+    export struct StageStartedEvent : IEvent {};
 
     /// @brief ステージの進行状態（Sequence、Current_Enemy_Index、ステージ結果）と
     /// キャラクター（プレイヤーおよび敵）の管理を行うサービス
@@ -59,8 +61,7 @@ namespace mc
 
     export std::unique_ptr<IBattleService> CreateBattleService(
         IConfigService& configService,
-        ICardService& cardService,
-        ISceneService& sceneService
+        ICardService& cardService
     );
 
 } // namespace mc

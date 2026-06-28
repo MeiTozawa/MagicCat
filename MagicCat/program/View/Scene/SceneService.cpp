@@ -5,7 +5,6 @@ module;
 
 module SceneService;
 
-import GameService;
 import EventBus;
 import BattleService;
 
@@ -18,6 +17,7 @@ namespace mc
         bool initialized = false;
         EventHandle stageClearHandle;
         EventHandle stageFailHandle;
+        EventHandle stageStartedHandle;
 
         /**
          * @brief 依存関係の遅延初期化（Lazy Initialization）を行います。
@@ -51,12 +51,16 @@ namespace mc
                 if (scenes.contains(ESceneState::Info) && scenes[ESceneState::Info])
                     scenes[ESceneState::Info]->Start();
             });
+            stageStartedHandle = EventBus::Subscribe<StageStartedEvent>([this](const StageStartedEvent&) {
+                PushScene(ESceneState::Combat);
+            });
         }
 
         ~SceneService() override
         {
             EventBus::Unsubscribe(stageClearHandle);
             EventBus::Unsubscribe(stageFailHandle);
+            EventBus::Unsubscribe(stageStartedHandle);
         }
 
         void RegisterScene(ESceneState type, std::unique_ptr<IScene>&& scene) override

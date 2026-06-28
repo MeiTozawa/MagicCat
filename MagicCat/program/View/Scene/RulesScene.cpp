@@ -9,7 +9,8 @@ import InputService;
 import RenderService;
 import AssetService;
 
-namespace mc { namespace {
+namespace mc { 
+    namespace {
         constexpr int OVERLAY_ALPHA = 200;
 
         constexpr int BOX_MARGIN_X = 200;

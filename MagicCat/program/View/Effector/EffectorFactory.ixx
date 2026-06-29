@@ -31,4 +31,12 @@ namespace mc
     export std::unique_ptr<EffectorPlayer> CreateFadeEffector(
         std::unique_ptr<IDisplayer>&& displayer, int fadeInTime, int holdTime, int fadeOutTime
     );
+    /// @brief 透明 → 不透明（単方向フェードアウト）
+    export std::unique_ptr<EffectorPlayer> CreateFadeOutEffector(
+        std::unique_ptr<IDisplayer>&& displayer, int durationMs
+    );
+    /// @brief 不透明 → 透明（単方向フェードイン）
+    export std::unique_ptr<EffectorPlayer> CreateFadeInEffector(
+        std::unique_ptr<IDisplayer>&& displayer, int durationMs
+    );
 }

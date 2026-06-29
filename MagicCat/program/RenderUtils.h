@@ -6,6 +6,8 @@
 import RenderService;
 
 namespace mc {
+	
+	static constexpr uint32_t COLOR_BG = 0x071F38;
 
 	static constexpr uint32_t COLOR_WHITE = 0xFFFFFF;
     static constexpr uint32_t COLOR_BLACK = 0x000000;
@@ -44,76 +46,4 @@ namespace mc {
 		static const int y = (int) dxe::GetWindowHeightF();
 		return y;
 	}
-
-    /**
-     * @brief 文字列を中央揃えで描画します。
-     * @param renderer 描画サービス
-     * @param x 中心となるX座標
-     * @param y 中心となるY座標
-     * @param text 描画する文字列
-     * @param color 描画する色
-     */
-    inline void DrawCenterString(IRenderService* renderer, int x, int y, const std::wstring& text, uint32_t color)
-    {
-        int textWidth = renderer->GetDrawStringWidth(text.c_str());
-        int textHeight = renderer->GetFontSize();
-
-        int drawX = x - (textWidth / 2);
-        int drawY = y - (textHeight / 2);
-
-        renderer->DrawString(drawX, drawY, text.c_str(), color);
-    }
-
-    /**
-     * @brief 文字列を左揃えで描画します。
-     * @param renderer 描画サービス
-     * @param x 左端となるX座標
-     * @param y 上端となるY座標
-     * @param text 描画する文字列
-     * @param color 描画する色
-     */
-    inline void DrawLeftString(IRenderService* renderer, int x, int y, const std::wstring& text, uint32_t color)
-    {
-        int textHeight = renderer->GetFontSize();
-        int drawY = y - (textHeight / 2);
-
-        renderer->DrawString(x, drawY, text.c_str(), color);
-    }
-
-    /**
-     * @brief 文字列を右揃えで描画します。
-     * @param renderer 描画サービス
-     * @param x 右端となるX座標
-     * @param y 上端となるY座標
-     * @param text 描画する文字列
-     * @param color 描画する色
-     */
-    inline void DrawRightString(IRenderService* renderer, int x, int y, const std::wstring& text, uint32_t color)
-    {
-        int textWidth = renderer->GetDrawStringWidth(text.c_str());
-        int textHeight = renderer->GetFontSize();
-
-        int drawX = x - textWidth;
-        int drawY = y - (textHeight / 2);
-
-        renderer->DrawString(drawX, drawY, text.c_str(), color);
-    }
-
-    /**
-     * @brief 中空の矩形（枠線）を太さを指定して描画します。
-     * @param renderer 描画サービス
-     * @param x1 左上のX座標
-     * @param y1 左上のY座標
-     * @param x2 右下のX座標
-     * @param y2 右下のY座標
-     * @param thickness 枠線の太さ（ピクセル）
-     * @param color 描画する色
-     */
-    inline void DrawHollowBox(IRenderService* renderer, int x1, int y1, int x2, int y2, int thickness, uint32_t color)
-    {
-        renderer->DrawBoxAA(x1, y1, x2, y1 + thickness, color, TRUE);
-        renderer->DrawBoxAA(x1, y2 - thickness, x2, y2, color, TRUE);
-        renderer->DrawBoxAA(x1, y1, x1 + thickness, y2, color, TRUE);
-        renderer->DrawBoxAA(x2 - thickness, y1, x2, y2, color, TRUE);
-    }
 }

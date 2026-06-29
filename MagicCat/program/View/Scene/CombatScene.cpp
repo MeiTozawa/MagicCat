@@ -40,13 +40,18 @@ namespace mc {
     constexpr int ATTACK_FADE_OUT_TIME = 250;
 
     constexpr int PLAYER_DIALOG_X = PLAYER_START_X + 50;
-    constexpr int PLAYER_DIALOG_Y = PLAYER_START_Y + 82;
+    constexpr int PLAYER_DIALOG_Y = PLAYER_START_Y + 100;
     constexpr int DIALOG_FADE_IN_TIME = 150;
     constexpr int DIALOG_HOLD_TIME = 800;
     constexpr int DIALOG_FADE_OUT_TIME = 250;
+#ifdef _DEBUG
     constexpr float HIGH_WIN_RATE = 0.6f;
     constexpr float LOW_WIN_RATE = 0.4f;
-
+#else
+    constexpr float HIGH_WIN_RATE = 0.75f;
+    constexpr float LOW_WIN_RATE = 0.25f;
+#endif
+    
     constexpr uint32_t DIALOG_COLOR_LUCKY = COLOR_GREEN;
     constexpr uint32_t DIALOG_COLOR_DAMN = COLOR_RED;
 
@@ -64,7 +69,6 @@ namespace mc {
         std::unique_ptr<ICombatController> combatController;
         EventHandle healthChangedEvent = -1;
         EventHandle combatEvent = -1;
-        EventHandle enemyDefeatedHandle = -1;
         EventHandle stageClearHandle = -1;
 
         std::wstring progressText;
@@ -87,11 +91,6 @@ namespace mc {
                 EventBus::Unsubscribe(combatEvent);
                 combatEvent = -1;
             }
-            if (enemyDefeatedHandle != -1)
-            {
-                EventBus::Unsubscribe(enemyDefeatedHandle);
-                enemyDefeatedHandle = -1;
-            }
             if (stageClearHandle != -1)
             {
                 EventBus::Unsubscribe(stageClearHandle);
@@ -107,7 +106,7 @@ namespace mc {
             combatController->Reset();
 
             auto playerAnimation = CreateSpriteAnimation(
-                &assetService, BattleService.GetPlayer().GetSprite(), EXTRA_RATE
+                &assetService, &renderService, BattleService.GetPlayer().GetSprite(), EXTRA_RATE
             );
             playerAnimation->SetPosition(PLAYER_START_X, PLAYER_START_Y);
             auto temp1 = CreateHitFlashEffector(std::move(playerAnimation), 0xFF0000);
@@ -115,10 +114,9 @@ namespace mc {
             displayers.push_back(std::move(temp1));
 
             auto enemyAnimation = CreateSpriteAnimation(
-                &assetService, BattleService.GetEnemy().GetSprite(), EXTRA_RATE, true
+                &assetService, &renderService, BattleService.GetEnemy().GetSprite(), EXTRA_RATE, true
             );
             enemyAnimation->SetPosition(ENEMY_START_X, ENEMY_START_Y);
-            auto& enemyAnimationPlayer = *enemyAnimation;
             auto temp2 = CreateHitFlashEffector(std::move(enemyAnimation), 0xFF0000);
             auto& enemyFlashEffector = *temp2.get();
             displayers.push_back(std::move(temp2));
@@ -185,13 +183,6 @@ namespace mc {
                 }
             });
 
-            enemyDefeatedHandle = EventBus::Subscribe<EnemyDefeatedEvent>([&](const EnemyDefeatedEvent& e)
-            {
-                int idx = BattleService.GetCurrentEnemyIndex();
-                progressText = std::format(L"敵 {}/3", idx + 1);
-                enemyAnimationPlayer.SetSprite(BattleService.GetEnemy().GetSprite());
-            });
-
             stageClearHandle = EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent& e)
             {
                 progressText = L"全クリア！";
@@ -202,7 +193,6 @@ namespace mc {
         {
             if (healthChangedEvent != -1) EventBus::Unsubscribe(healthChangedEvent);
             if (combatEvent != -1) EventBus::Unsubscribe(combatEvent);
-            if (enemyDefeatedHandle != -1) EventBus::Unsubscribe(enemyDefeatedHandle);
             if (stageClearHandle != -1) EventBus::Unsubscribe(stageClearHandle);
         }
 

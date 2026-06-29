@@ -79,7 +79,7 @@ namespace mc {
             const int boxY2 = GetWindowHeight() - BOX_MARGIN_Y;
 
             DrawBox(boxX1, boxY1, boxX2, boxY2, COLOR_BOX_BG, TRUE);
-            DrawHollowBox(&renderService, boxX1, boxY1, boxX2, boxY2, 3, COLOR_WHITE);
+            renderService.DrawHollowBox(boxX1, boxY1, boxX2, boxY2, 3, COLOR_WHITE);
 
             renderService.DrawString(boxX1 + TEXT_START_OFFSET_X, boxY1 + TEXT_START_OFFSET_Y,
                                      L"【ルール説明】", COLOR_WHITE);
@@ -129,7 +129,7 @@ namespace mc {
             renderService.DrawGraph(boxX2 - ICON_OFFSET_X, boxY2 - ICON_OFFSET_Y, kbrHandle, TRUE);
             renderService.DrawString(boxX2 - ICON_TEXT_OFFSET_X, boxY2 - ICON_TEXT_OFFSET_Y,
                                      L"押して戻る", COLOR_TEXT_NORMAL);
-            DrawCenterString(&renderService, GetWindowWidth() / 2, boxY2 - ICON_TEXT_OFFSET_Y,
+            renderService.DrawCenterString(GetWindowWidth() / 2, boxY2 - ICON_TEXT_OFFSET_Y,
                              L"(◀/▶ でページ切替)", COLOR_TEXT_NORMAL);
         }
     };

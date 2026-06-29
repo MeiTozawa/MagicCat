@@ -1,4 +1,4 @@
-module;
+﻿module;
 
 #include <memory>
 #include <vector>
@@ -97,12 +97,12 @@ namespace mc
                     {
                         DrawRotaGraphF(x + CARD_WIDTH / 2.f, y + CARD_HEIGHT / 3.5f, IMAGE_SCALE, 0.0, icon, TRUE);
                     }
-                    DrawCenterString(&renderService, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10,
+                    renderService.DrawCenterString( x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10,
                                      message.c_str(), color);
                 }
                 else
                 {
-                    DrawCenterString(&renderService, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 - 30,
+                    renderService.DrawCenterString( x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 - 30,
                                      message.c_str(), color);
                 }
             });

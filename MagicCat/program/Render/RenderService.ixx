@@ -18,6 +18,17 @@ namespace mc
         virtual void DrawGraph(int x, int y, int handle, bool transFlag) = 0;
         virtual void DrawRectRotaGraph(int x, int y, int srcX, int srcY, int width, int height, double extRate, double angle, int graphHandle, bool transFlag, bool turnFlag) = 0;
         virtual void SetDrawBlendMode(int blendMode, int pal) = 0;
+        virtual void DrawRoundRectFrame(int x1, int y1, int x2, int y2,
+                                        int cornerRadius, int thickness, uint32_t color) = 0;
+
+        /// @brief 文字列を中央揃えで描画する（x, y は中心座標）
+        virtual void DrawCenterString(int x, int y, const wchar_t* text, uint32_t color) = 0;
+        /// @brief 文字列を左揃えで描画する（x は左端、y は中心Y座標）
+        virtual void DrawLeftString(int x, int y, const wchar_t* text, uint32_t color) = 0;
+        /// @brief 文字列を右揃えで描画する（x は右端、y は中心Y座標）
+        virtual void DrawRightString(int x, int y, const wchar_t* text, uint32_t color) = 0;
+        /// @brief 中空の矩形（枠線）を太さを指定して描画する
+        virtual void DrawHollowBox(int x1, int y1, int x2, int y2, int thickness, uint32_t color) = 0;
     };
 
     export std::unique_ptr<IRenderService> CreateRenderService();

@@ -1,4 +1,4 @@
-module;
+﻿module;
 
 #include <memory>
 #include <vector>
@@ -125,12 +125,12 @@ namespace mc { namespace {
                 float y2 = PLAYER_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y;
 
 
-                DrawHollowBox(&renderService, x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
+                renderService.DrawHollowBox( x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
 
                 if (i == focus)
                 {
                     // 驕ｸ謚樔ｸｭ縺ｮ蝣ｴ蜷医・蟆代＠蜀・・縺ｫ霑ｽ蜉縺ｮ譫邱壹ｒ謠冗判縺励※螟ｪ縺擾ｼ医∪縺溘・莠碁㍾縺ｫ・芽ｦ九○繧・
-                    DrawHollowBox(&renderService, x1 + 2 * THICKNESS, y1 + 2 * THICKNESS,
+                    renderService.DrawHollowBox( x1 + 2 * THICKNESS, y1 + 2 * THICKNESS,
                                   x2 - 2 * THICKNESS, y2 - 2 * THICKNESS,
                                   THICKNESS, COLOR_WHITE);
                 }
@@ -262,7 +262,7 @@ namespace mc { namespace {
                 float x2 = ENEMY_WEIGHT_START_X + RECT_X;
                 float y2 = ENEMY_WEIGHT_START_Y + RECT_Y + i * OFFSET_Y;
 
-                DrawHollowBox(&renderService, x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
+                renderService.DrawHollowBox( x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
             }
 
             for (int i = 0; i < 3; ++i)
@@ -272,7 +272,7 @@ namespace mc { namespace {
                 float x2 = ENEMY_DAMAGE_START_X + RECT_X;
                 float y2 = ENEMY_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y;
 
-                DrawHollowBox(&renderService, x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
+                renderService.DrawHollowBox( x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
             }
 
             if (enemy.IsExposed())

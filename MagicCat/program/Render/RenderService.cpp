@@ -44,6 +44,42 @@ namespace mc
         {
             ::SetDrawBlendMode(blendMode, pal);
         }
+
+        void DrawRoundRectFrame(int x1, int y1, int x2, int y2,
+                                int cornerRadius, int thickness, uint32_t color) override
+        {
+            for (int i = 0; i < thickness; ++i)
+                ::DrawRoundRect(x1 + i, y1 + i, x2 - i, y2 - i,
+                                cornerRadius, cornerRadius, color, FALSE);
+        }
+
+        void DrawCenterString(int x, int y, const wchar_t* text, uint32_t color) override
+        {
+            const int drawX = x - GetDrawStringWidth(text) / 2;
+            const int drawY = y - GetFontSize() / 2;
+            DrawString(drawX, drawY, text, color);
+        }
+
+        void DrawLeftString(int x, int y, const wchar_t* text, uint32_t color) override
+        {
+            const int drawY = y - GetFontSize() / 2;
+            DrawString(x, drawY, text, color);
+        }
+
+        void DrawRightString(int x, int y, const wchar_t* text, uint32_t color) override
+        {
+            const int drawX = x - GetDrawStringWidth(text);
+            const int drawY = y - GetFontSize() / 2;
+            DrawString(drawX, drawY, text, color);
+        }
+
+        void DrawHollowBox(int x1, int y1, int x2, int y2, int thickness, uint32_t color) override
+        {
+            DrawBoxAA(x1,              y1,              x2,              y1 + thickness, color, true);
+            DrawBoxAA(x1,              y2 - thickness,  x2,              y2,             color, true);
+            DrawBoxAA(x1,              y1,              x1 + thickness,  y2,             color, true);
+            DrawBoxAA(x2 - thickness,  y1,              x2,              y2,             color, true);
+        }
     };
 
     std::unique_ptr<IRenderService> CreateRenderService()

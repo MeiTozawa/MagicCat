@@ -70,17 +70,17 @@ namespace mc
             if (!info.empty())
             {
                 SetFontSize(240);
-                DrawCenterString(&renderService, dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
-                                 info, infoColor);
+                renderService.DrawCenterString(dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
+                                               info.c_str(), infoColor);
                 SetFontSize(48);
             }
             else
             {
                 SetFontSize(160);
-                DrawCenterString(&renderService, dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.2f),
-                                 L"MagicCat", infoColor);
+                renderService.DrawCenterString(dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.2f),
+                                               L"MagicCat", infoColor);
                 SetFontSize(48);
-                DrawCenterString(&renderService, dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
+                renderService.DrawCenterString(dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
                                  L"吾輩は魔法猫である！\n"
                                  "これはじゃんけんの対決にゃん！\n"
                                  "吾輩は魔法のカードを使って敵の精神状態を操り、\n"
@@ -90,11 +90,11 @@ namespace mc
                                  , COLOR_WHITE);
             }
 
-            DrawLeftString(&renderService, 20, 40,
+            renderService.DrawLeftString(20, 40,
                            std::format(L" 勝利回数: {} ", winCount).c_str(), COLOR_WHITE);
-            DrawRightString(&renderService, dxe::GetWindowWidthF(1.f), 40,
+            renderService.DrawRightString(dxe::GetWindowWidthF(1.f), 40,
                             std::format(L" 失敗回数: {} ", failCount).c_str(), COLOR_WHITE);
-            DrawCenterString(&renderService, dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.8f),
+            renderService.DrawCenterString(dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.8f),
                              L"Enterキーを押してゲームをスタートにゃ！", COLOR_WHITE);
         }
     };

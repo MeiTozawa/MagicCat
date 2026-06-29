@@ -15,8 +15,7 @@ import HealthComponent;
 import Character;
 import AssetService;
 
-namespace mc
-{
+namespace mc {
     ESprite ParseSprite(const std::string& name)
     {
         static const std::unordered_map<std::string, ESprite> spriteMap = {
@@ -54,7 +53,7 @@ namespace mc
             ICardService& cardService
         )
             : configService(configService)
-            , cardService(cardService)
+              , cardService(cardService)
         {
             deathHandle = EventBus::Subscribe<DeathEvent>([this](const DeathEvent& e)
             {
@@ -82,7 +81,7 @@ namespace mc
             }
             else
             {
-                // pool is small — pick with replacement using a mutable copy
+                // プールが少ない場合は重複を許して補充する
                 std::vector<EnemyConfig> mutablePool(pool.begin(), pool.end());
                 while (sequence.size() < 3)
                 {
@@ -114,9 +113,7 @@ namespace mc
             ESprite sprite = ParseSprite(config.spriteName);
             if (currentEnemy)
             {
-                // Overwrite the existing enemy's data in place rather than
-                // destroying and recreating it, so references held elsewhere
-                // (HealthComponent owner, views, etc.) remain valid.
+                // 既存インスタンスのデータを上書きし、外部からの参照を維持する
                 currentEnemy->Reset(
                     config.baseWeight, config.rockDamage, config.scissorsDamage, config.paperDamage,
                     config.name, sprite, config.hp
@@ -147,7 +144,7 @@ namespace mc
             if (e.Victim == nullptr) return;
 
             const auto& tags = e.Victim->GetTags();
-            bool isEnemy  = std::ranges::contains(tags, ETag::Enemy);
+            bool isEnemy = std::ranges::contains(tags, ETag::Enemy);
             bool isPlayer = std::ranges::contains(tags, ETag::Player);
 
             if (isEnemy)
@@ -156,12 +153,11 @@ namespace mc
                 {
                     int prevIndex = currentIndex;
                     currentIndex++;
-                    // Load the next enemy first so listeners of EnemyDefeatedEvent
-                    // (e.g. the combat view) observe the updated enemy data.
+                    // 次の敵を先に読み込んでから EnemyDefeatedEvent を発行する（ビュー側が更新済みの敵データを参照できる）
                     LoadEnemy(sequence[currentIndex]);
                     EventBus::Publish(EnemyDefeatedEvent(prevIndex));
                 }
-                else // currentIndex == 2
+                else
                 {
                     EventBus::Publish(StageClearEvent{});
                     sequence.clear();
@@ -176,14 +172,14 @@ namespace mc
             }
         }
 
-        IConfigService&    configService;
-        ICardService&      cardService;
+        IConfigService& configService;
+        ICardService& cardService;
 
         std::vector<EnemyConfig> sequence;
         int currentIndex = 0;
         EventHandle deathHandle;
 
-        std::unique_ptr<Enemy>  currentEnemy;
+        std::unique_ptr<Enemy> currentEnemy;
         std::unique_ptr<Player> currentPlayer;
     };
 
@@ -195,5 +191,4 @@ namespace mc
         return std::make_unique<BattleService>(
             configService, cardService);
     }
-
 } // namespace mc

@@ -10,8 +10,7 @@ module;
 
 module ConfigService;
 
-namespace mc
-{
+namespace mc {
     class ConfigService : public IConfigService
     {
         std::vector<CardConfig> cardConfigs;
@@ -109,7 +108,8 @@ namespace mc
         }
     };
 
-    std::unique_ptr<IConfigService> CreateConfigService(const std::string& cardConfigPath, const std::string& enemyConfigPath)
+    std::unique_ptr<IConfigService> CreateConfigService(const std::string& cardConfigPath,
+                                                        const std::string& enemyConfigPath)
     {
         return std::make_unique<ConfigService>(cardConfigPath, enemyConfigPath);
     }

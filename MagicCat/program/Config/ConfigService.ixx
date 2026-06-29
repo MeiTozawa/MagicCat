@@ -5,8 +5,7 @@ module;
 
 export module ConfigService;
 
-namespace mc
-{
+namespace mc {
     export struct EnemyConfig
     {
         int hp;
@@ -32,5 +31,6 @@ namespace mc
         virtual const std::vector<EnemyConfig>& GetEnemyConfigs() const = 0;
     };
 
-    export std::unique_ptr<IConfigService> CreateConfigService(const std::string& cardConfigPath, const std::string& enemyConfigPath);
+    export std::unique_ptr<IConfigService> CreateConfigService(const std::string& cardConfigPath,
+                                                               const std::string& enemyConfigPath);
 } // namespace mc

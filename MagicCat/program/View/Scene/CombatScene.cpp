@@ -61,7 +61,7 @@ namespace mc {
         ICardService& cardService;
         IInputService& inputService;
         IRenderService& renderService;
-        IBattleService& BattleService;
+        IBattleService& battleService;
 
         Displayers displayers;
 
@@ -71,70 +71,77 @@ namespace mc {
         EventHandle stageClearHandle = -1;
 
         // 各 Displayer の raw pointer（effector を追加するために保持）
-        Displayer* playerAnimDisp  = nullptr;
-        Displayer* enemyAnimDisp   = nullptr;
+        Displayer* playerAnimDisp = nullptr;
+        Displayer* enemyAnimDisp = nullptr;
         AttackDisplayer* playerAttack = nullptr;
-        AttackDisplayer* enemyAttack  = nullptr;
-        Displayer* playerAttackDisp   = nullptr;
-        Displayer* enemyAttackDisp    = nullptr;
+        AttackDisplayer* enemyAttack = nullptr;
+        Displayer* playerAttackDisp = nullptr;
+        Displayer* enemyAttackDisp = nullptr;
         DialogDisplayer* playerDialog = nullptr;
-        Displayer* playerDialogDisp   = nullptr;
+        Displayer* playerDialogDisp = nullptr;
 
         std::wstring progressText;
 
     public:
         CombatScene(ISceneService& scene, IAssetService& asset, ICardService& card,
-                    IInputService& input, IRenderService& render, IBattleService& battleSequence)
+                    IInputService& input, IRenderService& render, IBattleService& battle)
             : sceneService(scene), assetService(asset), cardService(card),
-              inputService(input), renderService(render), BattleService(battleSequence) {}
+              inputService(input), renderService(render), battleService(battle) {}
 
         void Start() override
         {
-            if (healthChangedEvent != -1) { EventBus::Unsubscribe(healthChangedEvent); healthChangedEvent = -1; }
-            if (combatEvent != -1)        { EventBus::Unsubscribe(combatEvent);        combatEvent = -1; }
-            if (stageClearHandle != -1)   { EventBus::Unsubscribe(stageClearHandle);   stageClearHandle = -1; }
+            if (healthChangedEvent != -1)
+            {
+                EventBus::Unsubscribe(healthChangedEvent);
+                healthChangedEvent = -1;
+            }
+            if (combatEvent != -1)
+            {
+                EventBus::Unsubscribe(combatEvent);
+                combatEvent = -1;
+            }
+            if (stageClearHandle != -1)
+            {
+                EventBus::Unsubscribe(stageClearHandle);
+                stageClearHandle = -1;
+            }
 
             displayers.clear();
             displayers.push_back(CreateCardDisplayer(cardService, assetService, renderService));
-            displayers.push_back(CreateCharacterDisplayer(BattleService, renderService));
+            displayers.push_back(CreateCharacterDisplayer(battleService, renderService));
             displayers.push_back(CreateControlDisplayer(assetService, renderService));
 
-            combatController = CreateCombatController(inputService, BattleService, sceneService, cardService);
+            combatController = CreateCombatController(inputService, battleService, sceneService, cardService);
             combatController->Reset();
 
-            // --- プレイヤースプライト ---
             auto playerAnim = CreateSpriteDisplayer(&assetService, &renderService,
-                                                    BattleService.GetPlayer().GetSprite(), EXTRA_RATE);
+                                                    battleService.GetPlayer().GetSprite(), EXTRA_RATE);
             playerAnim->SetPosition(PLAYER_START_X, PLAYER_START_Y);
             playerAnimDisp = playerAnim.get();
             displayers.push_back(std::move(playerAnim));
 
-            // --- 敵スプライト ---
             auto enemyAnim = CreateSpriteDisplayer(&assetService, &renderService,
-                                                   BattleService.GetEnemy().GetSprite(), EXTRA_RATE, true);
+                                                   battleService.GetEnemy().GetSprite(), EXTRA_RATE, true);
             enemyAnim->SetPosition(ENEMY_START_X, ENEMY_START_Y);
             enemyAnimDisp = enemyAnim.get();
             displayers.push_back(std::move(enemyAnim));
 
-            // --- プレイヤー攻撃画像 ---
             auto pAtk = CreateAttackDisplayer(PLAYER_ATTACK_X, PLAYER_ATTACK_Y, ATTACK_IMAGE_SCALE);
             playerAttack = pAtk.get();
             playerAttackDisp = pAtk.get();
             displayers.push_back(std::move(pAtk));
 
-            // --- 敵攻撃画像 ---
             auto eAtk = CreateAttackDisplayer(ENEMY_ATTACK_X, ENEMY_ATTACK_Y, ATTACK_IMAGE_SCALE);
             enemyAttack = eAtk.get();
             enemyAttackDisp = eAtk.get();
             displayers.push_back(std::move(eAtk));
 
-            // --- プレイヤーダイアログ ---
             auto dlg = CreateDialogDisplayer(renderService, PLAYER_DIALOG_X, PLAYER_DIALOG_Y);
             playerDialog = dlg.get();
             playerDialogDisp = dlg.get();
             displayers.push_back(std::move(dlg));
 
-            progressText = std::format(L"敵 {}/3", BattleService.GetCurrentEnemyIndex() + 1);
+            progressText = std::format(L"敵 {}/3", battleService.GetCurrentEnemyIndex() + 1);
 
             healthChangedEvent = EventBus::Subscribe<HealthChangedEvent>([&](const HealthChangedEvent& event)
             {
@@ -156,7 +163,7 @@ namespace mc {
                     CreateFadeEffector(ATTACK_FADE_IN_TIME, ATTACK_HOLD_TIME, ATTACK_FADE_OUT_TIME));
 
                 bool playerLost = LosesTo(event.playerAttackType, event.enemyAttackType);
-                bool playerWon  = LosesTo(event.enemyAttackType, event.playerAttackType);
+                bool playerWon = LosesTo(event.enemyAttackType, event.playerAttackType);
 
                 if (event.playerWinRate > HIGH_WIN_RATE && playerLost)
                 {
@@ -181,8 +188,8 @@ namespace mc {
         ~CombatScene() override
         {
             if (healthChangedEvent != -1) EventBus::Unsubscribe(healthChangedEvent);
-            if (combatEvent != -1)        EventBus::Unsubscribe(combatEvent);
-            if (stageClearHandle != -1)   EventBus::Unsubscribe(stageClearHandle);
+            if (combatEvent != -1) EventBus::Unsubscribe(combatEvent);
+            if (stageClearHandle != -1) EventBus::Unsubscribe(stageClearHandle);
         }
 
         void Update(float deltaTime) override
@@ -197,9 +204,9 @@ namespace mc {
     std::unique_ptr<IScene> CreateCombatScene(ISceneService& sceneService,
                                               IAssetService& assetService, ICardService& cardService,
                                               IInputService& inputService, IRenderService& renderService,
-                                              IBattleService& BattleService)
+                                              IBattleService& battleService)
     {
         return std::make_unique<CombatScene>(sceneService, assetService, cardService, inputService,
-                                             renderService, BattleService);
+                                             renderService, battleService);
     }
 } // namespace mc

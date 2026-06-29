@@ -13,8 +13,7 @@ import Player;
 import AssetService;
 import ConfigService;
 
-namespace mc
-{
+namespace mc {
     class CardService : public ICardService
     {
     public:
@@ -38,9 +37,7 @@ namespace mc
             EventBus::Publish(DeckUpdatedEvent{drawPile.size(), discardPile.size()});
         }
 
-        ~CardService() override
-        {
-        }
+        ~CardService() override {}
 
         std::vector<Card> GetHandCards() override
         {
@@ -97,7 +94,7 @@ namespace mc
         std::vector<Card> hand = std::vector<Card>();
         std::vector<Card> drawPile = std::vector<Card>();
         std::vector<Card> discardPile = std::vector<Card>();
-        
+
         static ECardType ToCardType(int type)
         {
             switch (type)
@@ -111,7 +108,6 @@ namespace mc
                 return ECardType::Null;
             }
         }
-
     };
 
     std::unique_ptr<ICardService> CreateCardService(IConfigService& configService)

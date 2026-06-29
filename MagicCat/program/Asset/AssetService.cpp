@@ -10,8 +10,7 @@ module;
 
 module AssetService;
 
-namespace mc
-{
+namespace mc {
     class AssetService : public IAssetService
     {
     public:
@@ -71,23 +70,23 @@ namespace mc
         ESprite ParseSprite(const std::string& name) const override
         {
             static const std::unordered_map<std::string, ESprite> spriteMap = {
-                {"Bunny",            ESprite::Bunny},
-                {"Wolf",             ESprite::Wolf},
-                {"CluckingChicken",  ESprite::CluckingChicken},
-                {"CoralCrab",        ESprite::CoralCrab},
-                {"CroakingToad",     ESprite::CroakingToad},
-                {"DaintyPig",        ESprite::DaintyPig},
-                {"HonkingGoose",     ESprite::HonkingGoose},
-                {"LeapingFrog",      ESprite::LeapingFrog},
-                {"MadBoar",          ESprite::MadBoar},
-                {"MeowingCat",       ESprite::MeowingCat},
-                {"PasturingSheep",   ESprite::PasturingSheep},
-                {"SlowTurtle",       ESprite::SlowTurtle},
-                {"SnowFox",          ESprite::SnowFox},
-                {"SpikeyPorcupine",  ESprite::SpikeyPorcupine},
-                {"StinkySkunk",      ESprite::StinkySkunk},
-                {"TimberWolf",       ESprite::TimberWolf},
-                {"TinyChick",        ESprite::TinyChick}
+                {"Bunny", ESprite::Bunny},
+                {"Wolf", ESprite::Wolf},
+                {"CluckingChicken", ESprite::CluckingChicken},
+                {"CoralCrab", ESprite::CoralCrab},
+                {"CroakingToad", ESprite::CroakingToad},
+                {"DaintyPig", ESprite::DaintyPig},
+                {"HonkingGoose", ESprite::HonkingGoose},
+                {"LeapingFrog", ESprite::LeapingFrog},
+                {"MadBoar", ESprite::MadBoar},
+                {"MeowingCat", ESprite::MeowingCat},
+                {"PasturingSheep", ESprite::PasturingSheep},
+                {"SlowTurtle", ESprite::SlowTurtle},
+                {"SnowFox", ESprite::SnowFox},
+                {"SpikeyPorcupine", ESprite::SpikeyPorcupine},
+                {"StinkySkunk", ESprite::StinkySkunk},
+                {"TimberWolf", ESprite::TimberWolf},
+                {"TinyChick", ESprite::TinyChick}
             };
             if (auto it = spriteMap.find(name); it != spriteMap.end())
                 return it->second;
@@ -147,7 +146,7 @@ namespace mc
                 SpriteData sprites[] = {
                     {ESprite::Bunny, FILE_PATH_PNG_MINIBUNNY},
                     {ESprite::Wolf, FILE_PATH_PNG_MINIWOLF},
-                    
+
                     {ESprite::CluckingChicken, FILE_PATH_PNG_CLUCKINGCHICKEN},
                     {ESprite::CoralCrab, FILE_PATH_PNG_CORALCRAB},
                     {ESprite::CroakingToad, FILE_PATH_PNG_CROAKINGTOAD},

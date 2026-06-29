@@ -21,7 +21,8 @@ import Enemy;
 import Player;
 import SceneService;
 
-namespace mc { namespace {
+namespace mc {
+    namespace {
         constexpr int PLAYER_DAMAGE_START_X = 400;
         constexpr int PLAYER_DAMAGE_START_Y = 200;
 
@@ -118,14 +119,14 @@ namespace mc { namespace {
                 float y2 = PLAYER_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y;
 
 
-                renderService.DrawHollowBox( x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
+                renderService.DrawHollowBox(x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
 
                 if (i == focus)
                 {
-                    // 驕ｸ謚樔ｸｭ縺ｮ蝣ｴ蜷医・蟆代＠蜀・・縺ｫ霑ｽ蜉縺ｮ譫邱壹ｒ謠冗判縺励※螟ｪ縺擾ｼ医∪縺溘・莠碁㍾縺ｫ・芽ｦ九○繧・
-                    renderService.DrawHollowBox( x1 + 2 * THICKNESS, y1 + 2 * THICKNESS,
-                                  x2 - 2 * THICKNESS, y2 - 2 * THICKNESS,
-                                  THICKNESS, COLOR_WHITE);
+                    // 選択中の枠は内側にもう一重追加して太く見せる
+                    renderService.DrawHollowBox(x1 + 2 * THICKNESS, y1 + 2 * THICKNESS,
+                                                x2 - 2 * THICKNESS, y2 - 2 * THICKNESS,
+                                                THICKNESS, COLOR_WHITE);
                 }
             }
             if (isMagicMenuOpen)
@@ -180,8 +181,8 @@ namespace mc { namespace {
 
         void InitEnemyWeightDisplayers()
         {
-            // Rock=0, Scissors=1, Paper=2 の順で LambdaDisplayer を生成し push_back する
-            // raw pointer を weightDisplayers に保持して AddEffector 呼び出しに使う
+            // Rock=0, Scissors=1, Paper=2 の順で Displayer を生成する
+            // raw pointer を weightDisplayers に保持し、AddEffector 呼び出しに使う
             constexpr EAttackType types[3] = {EAttackType::Rock, EAttackType::Scissors, EAttackType::Paper};
 
             for (int i = 0; i < 3; ++i)
@@ -226,7 +227,7 @@ namespace mc { namespace {
                 float x2 = ENEMY_WEIGHT_START_X + RECT_X;
                 float y2 = ENEMY_WEIGHT_START_Y + RECT_Y + i * OFFSET_Y;
 
-                renderService.DrawHollowBox( x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
+                renderService.DrawHollowBox(x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
             }
 
             for (int i = 0; i < 3; ++i)
@@ -236,7 +237,7 @@ namespace mc { namespace {
                 float x2 = ENEMY_DAMAGE_START_X + RECT_X;
                 float y2 = ENEMY_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y;
 
-                renderService.DrawHollowBox( x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
+                renderService.DrawHollowBox(x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
             }
 
             if (enemy.IsExposed())
@@ -267,7 +268,7 @@ namespace mc { namespace {
     };
 
     export std::unique_ptr<Displayer> CreateCharacterDisplayer(IBattleService& characterService,
-                                                                IRenderService& renderService)
+                                                               IRenderService& renderService)
     {
         return std::make_unique<CharacterDisplayer>(characterService, renderService);
     }

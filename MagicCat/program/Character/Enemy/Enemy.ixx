@@ -109,7 +109,6 @@ namespace mc {
 
         bool operator==(const Enemy& e) const
         {
-            // For simplicity, we just compare pointers for name since they are string literals
             return this->name == e.name &&
                 this->baseWeight == e.baseWeight &&
                 this->rockDamage == e.rockDamage &&

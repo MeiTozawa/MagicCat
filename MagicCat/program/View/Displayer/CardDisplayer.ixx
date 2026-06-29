@@ -17,12 +17,8 @@ import EventBus;
 import EffectorFactory;
 import ViewEnumMapper;
 
-namespace mc
-{
-
-    namespace
-    {
-        // card
+namespace mc {
+    namespace {
         constexpr int CARD_START_X = 400;
         constexpr int CARD_START_Y = 750;
         constexpr int DRAW_PILE_X = 50;
@@ -31,11 +27,9 @@ namespace mc
         constexpr int DISCARD_PILE_Y = 750;
         constexpr int OFFSET_X = 250;
 
-        // thickness
         constexpr int THICKNESS = 5;
         constexpr int RADIUS = 30;
 
-        // image
         constexpr float IMAGE_SCALE = 0.3f;
     }
 
@@ -48,7 +42,8 @@ namespace mc
         EventHandle handUpdateHandle;
         std::vector<Card> cachedHand;
 
-        std::unique_ptr<Displayer> CreatePrintACardDisplayer(Card card, tnl::Vector2i start_position, std::wstring message) const
+        std::unique_ptr<Displayer> CreatePrintACardDisplayer(Card card, tnl::Vector2i start_position,
+                                                             std::wstring message) const
         {
             return CreateLambdaDisplayer([card, start_position, message, this](float deltaTime)
             {
@@ -97,13 +92,13 @@ namespace mc
                     {
                         DrawRotaGraphF(x + CARD_WIDTH / 2.f, y + CARD_HEIGHT / 3.5f, IMAGE_SCALE, 0.0, icon, TRUE);
                     }
-                    renderService.DrawCenterString( x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10,
-                                     message.c_str(), color);
+                    renderService.DrawCenterString(x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10,
+                                                   message.c_str(), color);
                 }
                 else
                 {
-                    renderService.DrawCenterString( x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 - 30,
-                                     message.c_str(), color);
+                    renderService.DrawCenterString(x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 - 30,
+                                                   message.c_str(), color);
                 }
             });
         }
@@ -117,7 +112,6 @@ namespace mc
                 std::wstring msg = std::format(L"+{}", cachedHand[i].Power);
                 auto cardDisplay = CreatePrintACardDisplayer(cachedHand[i], position, msg);
 
-                // If this is the newest card, wrap it in HitFlashEffector
                 if (isDraw && i == cachedHand.size() - 1)
                 {
                     cardDisplay->AddEffector(CreateHitFlashEffector(0x000000, 300));
@@ -130,12 +124,10 @@ namespace mc
 
                 position.x += OFFSET_X;
             }
-            
-            // Add draw pile
+
             std::wstring drawPileMsg = std::format(L"山札\n{:2}枚", cardService.GetDrawCards().size());
             push_back(CreatePrintACardDisplayer({ECardType::Null}, {DRAW_PILE_X, DRAW_PILE_Y}, drawPileMsg));
-            
-            // Add discard pile
+
             std::wstring discardPileMsg = std::format(L"捨札\n{:2}枚", cardService.GetDiscardCards().size());
             push_back(CreatePrintACardDisplayer({ECardType::Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, discardPileMsg));
         }
@@ -161,7 +153,8 @@ namespace mc
         }
     };
 
-    export std::unique_ptr<Displayer> CreateCardDisplayer(ICardService& cardService, IAssetService& assetService, IRenderService& renderService)
+    export std::unique_ptr<Displayer> CreateCardDisplayer(ICardService& cardService, IAssetService& assetService,
+                                                          IRenderService& renderService)
     {
         return std::make_unique<CardDisplayer>(cardService, assetService, renderService);
     }

@@ -128,21 +128,17 @@ namespace mc {
                     EventBus::Publish<MagicEvent>(MagicEvent{EMagic::Clairvoyance});
                     return true;
                 }
-                else
-                {
-                    EventBus::Publish<LackOfMpEvent>({});
-                    return false;
-                }
+                EventBus::Publish<LackOfMpEvent>({});
+                return false;
             case EMagic::PowerBoost:
-                if (mp >= POWER_BOOST_MP_COST)
                 {
-                    ChangeMp(-POWER_BOOST_MP_COST);
-                    SetAttackOffset(3);
-                    EventBus::Publish<MagicEvent>(MagicEvent{EMagic::PowerBoost});
-                    return true;
-                }
-                else
-                {
+                    if (mp >= POWER_BOOST_MP_COST)
+                    {
+                        ChangeMp(-POWER_BOOST_MP_COST);
+                        SetAttackOffset(3);
+                        EventBus::Publish<MagicEvent>(MagicEvent{EMagic::PowerBoost});
+                        return true;
+                    }
                     EventBus::Publish<LackOfMpEvent>({});
                     return false;
                 }
@@ -157,11 +153,8 @@ namespace mc {
                     EventBus::Publish<MagicEvent>(MagicEvent{EMagic::Heal});
                     return true;
                 }
-                else
-                {
-                    EventBus::Publish<LackOfMpEvent>({});
-                    return false;
-                }
+                EventBus::Publish<LackOfMpEvent>({});
+                return false;
             default:
                 assert(false && "未実装、または未知の魔法タイプです");
                 return false;

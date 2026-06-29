@@ -9,8 +9,7 @@ import CardService;
 import SceneService;
 import BattleService;
 import Player;
-namespace mc
-{
+namespace mc {
     class AudioService : public IAudioService
     {
         IAssetService& assetService;
@@ -21,7 +20,6 @@ namespace mc
         AudioService(IAssetService& asset, IBattleService& character)
             : assetService(asset), characterService(character)
         {
-
             eventHandles.push_back(EventBus::Subscribe<HealthChangedEvent>([this](const HealthChangedEvent& e)
             {
                 auto tags = e.Victim->GetTags();
@@ -42,32 +40,32 @@ namespace mc
                 }
             }));
 
-            eventHandles.push_back(EventBus::Subscribe<DrawCardEvent>([this](const DrawCardEvent& e)
+            eventHandles.push_back(EventBus::Subscribe<DrawCardEvent>([this](const DrawCardEvent&)
             {
                 PlaySoundMem(assetService.GetSoundHandle(ESound::DrawCard),DX_PLAYTYPE_BACK);
             }));
 
-            eventHandles.push_back(EventBus::Subscribe<ShuffleEvent>([this](const ShuffleEvent& e)
+            eventHandles.push_back(EventBus::Subscribe<ShuffleEvent>([this](const ShuffleEvent&)
             {
                 PlaySoundMem(assetService.GetSoundHandle(ESound::Shuffle), DX_PLAYTYPE_BACK);
             }));
 
-            eventHandles.push_back(EventBus::Subscribe<ActionSelectionEvent>([this](const ActionSelectionEvent& e)
+            eventHandles.push_back(EventBus::Subscribe<ActionSelectionEvent>([this](const ActionSelectionEvent&)
             {
                 PlaySoundMem(assetService.GetSoundHandle(ESound::Select), DX_PLAYTYPE_BACK);
             }));
 
-            eventHandles.push_back(EventBus::Subscribe<CombatEvent>([this](const CombatEvent& e)
+            eventHandles.push_back(EventBus::Subscribe<CombatEvent>([this](const CombatEvent&)
             {
                 PlaySoundMem(assetService.GetSoundHandle(ESound::Confirm), DX_PLAYTYPE_BACK);
             }));
 
-            eventHandles.push_back(EventBus::Subscribe<MagicEvent>([this](const MagicEvent& e)
+            eventHandles.push_back(EventBus::Subscribe<MagicEvent>([this](const MagicEvent&)
             {
                 PlaySoundMem(assetService.GetSoundHandle(ESound::Magic), DX_PLAYTYPE_BACK);
             }));
-            
-            eventHandles.push_back(EventBus::Subscribe<LackOfMpEvent>([this](const LackOfMpEvent& e)
+
+            eventHandles.push_back(EventBus::Subscribe<LackOfMpEvent>([this](const LackOfMpEvent&)
             {
                 PlaySoundMem(assetService.GetSoundHandle(ESound::Beep), DX_PLAYTYPE_BACK);
             }));

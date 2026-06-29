@@ -8,20 +8,20 @@ export module DisplayerBase;
 import EffectorFactory;
 
 namespace mc {
-
     export class Displayer
     {
     protected:
         int x = 0, y = 0;
         bool isVisible = true;
         bool isPlaying = true;
-        bool stopOnEffectEnd = false;  ///< 全 effector 完了時に自動 Stop するか
+        bool stopOnEffectEnd = false; ///< 全 Effector 完了時に自動 Stop するか
 
         struct EffectorEntry
         {
-            std::unique_ptr<Effector>    effector;
-            std::function<void()>        onComplete;  ///< 完了時コールバック（省略可）
+            std::unique_ptr<Effector> effector;
+            std::function<void()> onComplete; ///< 完了時コールバック（省略可）
         };
+
         std::vector<EffectorEntry> effectors = {};
 
     public:
@@ -36,8 +36,8 @@ namespace mc {
             OnUpdate(deltaTime);
             if (!effectors.empty())
             {
-                // コールバックを収集してから erase し、最後にまとめて呼ぶ。
-                // erase_if 中に effectors を変更するとイテレータが無効になるため分離が必要。
+                // erase_if 中に effectors が変更されるとイテレータが無効になるため、
+                // コールバックを先に収集してから一括実行する。
                 std::vector<std::function<void()>> callbacks;
                 std::erase_if(effectors, [&](const auto& entry)
                 {
@@ -88,6 +88,7 @@ namespace mc {
         {
             effectors.push_back({std::move(e), std::move(onComplete)});
         }
+
         virtual Effector* AddEffectorAndGet(std::unique_ptr<Effector> e,
                                             std::function<void()> onComplete = nullptr) final
         {
@@ -95,6 +96,7 @@ namespace mc {
             effectors.push_back({std::move(e), std::move(onComplete)});
             return raw;
         }
+
         virtual void ResetAndAddEffector(std::unique_ptr<Effector> e,
                                          std::function<void()> onComplete = nullptr) final
         {
@@ -122,7 +124,7 @@ namespace mc {
             displayers.push_back(std::move(displayer));
         }
 
-        void clear()  { displayers.clear(); }
+        void clear() { displayers.clear(); }
         size_t size() const { return displayers.size(); }
 
         std::unique_ptr<Displayer>& operator[](size_t index)

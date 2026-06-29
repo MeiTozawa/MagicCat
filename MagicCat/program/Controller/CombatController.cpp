@@ -12,8 +12,7 @@ import Character;
 import Player;
 import SceneService;
 
-namespace mc
-{
+namespace mc {
     class CombatController : public ICombatController
     {
         IInputService& inputService;
@@ -25,9 +24,7 @@ namespace mc
 
     public:
         CombatController(IInputService& input, IBattleService& character, ISceneService& scene, ICardService& card)
-            : inputService(input), characterService(character), sceneService(scene), cardService(card)
-        {
-        }
+            : inputService(input), characterService(character), sceneService(scene), cardService(card) {}
 
         void Reset() override
         {
@@ -66,7 +63,7 @@ namespace mc
                     if (isMagicMenuOpen)
                     {
                         bool success = false;
-                        if (selectedActionIndex == 1) // Clairvoyance
+                        if (selectedActionIndex == 1)
                         {
                             success = characterService.GetPlayer().UseMagic(EMagic::Clairvoyance);
                             if (success)
@@ -74,15 +71,15 @@ namespace mc
                                 characterService.GetEnemy().SetExposed(true);
                             }
                         }
-                        else if (selectedActionIndex == 2) // PowerBoost
+                        else if (selectedActionIndex == 2)
                         {
                             success = characterService.GetPlayer().UseMagic(EMagic::PowerBoost);
                         }
-                        else if (selectedActionIndex == 3) // Heal
+                        else if (selectedActionIndex == 3)
                         {
                             success = characterService.GetPlayer().UseMagic(EMagic::Heal);
                         }
-                        
+
                         if (success)
                         {
                             isMagicMenuOpen = false;
@@ -131,7 +128,8 @@ namespace mc
                 {
                     characterService.GetPlayer().ChangeMp(c.Power);
                 }
-                else if (c.CardType == ECardType::Rock || c.CardType == ECardType::Scissors || c.CardType == ECardType::Paper)
+                else if (c.CardType == ECardType::Rock || c.CardType == ECardType::Scissors || c.CardType ==
+                    ECardType::Paper)
                 {
                     characterService.GetEnemy().AddWeight(ToAttackType(c.CardType), c.Power);
                 }
@@ -144,7 +142,9 @@ namespace mc
         }
     };
 
-    std::unique_ptr<ICombatController> CreateCombatController(IInputService& inputService, IBattleService& characterService, ISceneService& sceneService, ICardService& cardService)
+    std::unique_ptr<ICombatController> CreateCombatController(IInputService& inputService,
+                                                              IBattleService& characterService,
+                                                              ISceneService& sceneService, ICardService& cardService)
     {
         return std::make_unique<CombatController>(inputService, characterService, sceneService, cardService);
     }

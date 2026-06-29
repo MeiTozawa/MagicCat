@@ -8,10 +8,8 @@ export module Displayer:Dialog;
 import DisplayerBase;
 import RenderService;
 
-namespace mc
-{
-    namespace
-    {
+namespace mc {
+    namespace {
         constexpr int DIALOG_PADDING_X = 24;
         constexpr int DIALOG_PADDING_Y = 12;
         constexpr int DIALOG_BORDER = 3;

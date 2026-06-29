@@ -24,7 +24,7 @@ public:
     template <typename... T>
     static int RandomSelection(T... list)
     {
-        // std::discrete_distributionは単一の整数型を要求するため、パラメータパックTを直接渡せない。
+        // discrete_distribution は初期化子リストから整数型のみ受け取るため double にキャストする
         std::discrete_distribution<int> dist({static_cast<double>(list)...});
         return dist(GetEngine());
     }

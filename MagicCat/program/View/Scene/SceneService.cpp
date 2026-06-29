@@ -13,16 +13,15 @@ import BattleService;
 import EffectorFactory;
 import DisplayerBase;
 
-namespace mc
-{
+namespace mc {
     static constexpr int SCENE_FADE_DURATION_MS = 500;
 
     /// @brief シーン遷移フェード専用 Displayer。
     /// Effector が存在する間だけ全画面色塊を描画する。
-    /// Effector がない（アニメーション完了後）状態では何も描画しない。
     class ScreenFadeDisplayer : public Displayer
     {
         IRenderService& rs;
+
     public:
         explicit ScreenFadeDisplayer(IRenderService& rs) : rs(rs) {}
 
@@ -34,7 +33,6 @@ namespace mc
             rs.DrawBoxAA(0.f, 0.f, w, h, COLOR_BG, true);
         }
 
-    public:
         // effector がない場合（フェード完了後）は何も描画しない
         void Draw(float deltaTime) const override
         {
@@ -49,7 +47,7 @@ namespace mc
         std::vector<ESceneState> sceneStack = {};
         bool initialized = false;
 
-        IRenderService*            renderService = nullptr;
+        IRenderService* renderService = nullptr;
         std::unique_ptr<Displayer> fadeDisplayer;
 
         std::optional<ESceneState> pendingScene;
@@ -120,19 +118,24 @@ namespace mc
     public:
         explicit SceneService(IRenderService* rs) : renderService(rs)
         {
-            stageClearHandle = EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&) {
+            stageClearHandle = EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&)
+            {
                 TransitionTo(ESceneState::Info);
             });
-            stageFailHandle = EventBus::Subscribe<StageFailEvent>([this](const StageFailEvent&) {
+            stageFailHandle = EventBus::Subscribe<StageFailEvent>([this](const StageFailEvent&)
+            {
                 TransitionTo(ESceneState::Info);
             });
-            stageStartedHandle = EventBus::Subscribe<StageStartedEvent>([this](const StageStartedEvent&) {
+            stageStartedHandle = EventBus::Subscribe<StageStartedEvent>([this](const StageStartedEvent&)
+            {
                 TransitionTo(ESceneState::Cutscene);
             });
-            enemyDefeatedHandle = EventBus::Subscribe<EnemyDefeatedEvent>([this](const EnemyDefeatedEvent&) {
+            enemyDefeatedHandle = EventBus::Subscribe<EnemyDefeatedEvent>([this](const EnemyDefeatedEvent&)
+            {
                 TransitionTo(ESceneState::Cutscene);
             });
-            cutsceneFinishedHandle = EventBus::Subscribe<CutsceneFinishedEvent>([this](const CutsceneFinishedEvent&) {
+            cutsceneFinishedHandle = EventBus::Subscribe<CutsceneFinishedEvent>([this](const CutsceneFinishedEvent&)
+            {
                 TransitionTo(ESceneState::Combat);
             });
         }

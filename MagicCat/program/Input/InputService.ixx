@@ -4,8 +4,7 @@ module;
 
 export module InputService;
 
-namespace mc
-{
+namespace mc {
     export enum class InputAction
     {
         IgUp, IgDown, IgLeft, IgRight, IgConfirm, IgToggleMenu, // IgMouseClick,

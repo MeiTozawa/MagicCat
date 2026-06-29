@@ -9,7 +9,7 @@ import InputService;
 import RenderService;
 import AssetService;
 
-namespace mc { 
+namespace mc {
     namespace {
         constexpr int OVERLAY_ALPHA = 200;
 
@@ -130,7 +130,7 @@ namespace mc {
             renderService.DrawString(boxX2 - ICON_TEXT_OFFSET_X, boxY2 - ICON_TEXT_OFFSET_Y,
                                      L"押して戻る", COLOR_TEXT_NORMAL);
             renderService.DrawCenterString(GetWindowWidth() / 2, boxY2 - ICON_TEXT_OFFSET_Y,
-                             L"(◀/▶ でページ切替)", COLOR_TEXT_NORMAL);
+                                           L"(◀/▶ でページ切替)", COLOR_TEXT_NORMAL);
         }
     };
 

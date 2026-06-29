@@ -12,13 +12,11 @@ import AssetService;
 import RenderService;
 import BattleService;
 
-namespace mc
-{
+namespace mc {
     export enum class ESceneState
     {
         Info, Combat, Rules, Cutscene
     };
-
 
 
     export struct EnterCutSceneEvent : IEvent {};
@@ -31,10 +29,9 @@ namespace mc
     {
         int selectedIndex;
         bool isMagicMenuOpen;
+
         explicit ActionSelectionEvent(const int selected_index, bool isMagicMenuOpen = false)
-            : selectedIndex(selected_index), isMagicMenuOpen(isMagicMenuOpen)
-        {
-        }
+            : selectedIndex(selected_index), isMagicMenuOpen(isMagicMenuOpen) {}
     };
 
     /// @brief ビュー（UIや描画等）の基本インターフェース
@@ -95,8 +92,14 @@ namespace mc
     };
 
     export std::unique_ptr<ISceneService> CreateSceneService(IRenderService* renderService = nullptr);
-    export std::unique_ptr<IScene> CreateRulesScene(IInputService& inputService, ISceneService& sceneService, IAssetService& assetService, IRenderService& renderService);
-    export std::unique_ptr<IScene> CreateInfoScene(IInputService& inputService, ISceneService& sceneService, IRenderService& renderService, IBattleService& BattleService);
-    export std::unique_ptr<IScene> CreateCombatScene(ISceneService& sceneService, IAssetService& assetService, ICardService& cardService, IInputService& inputService, IRenderService& renderService, IBattleService& BattleService);
-    export std::unique_ptr<IScene> CreateCutsceneScene(IInputService& inputService, ISceneService& sceneService, IAssetService& assetService, IRenderService& renderService, IBattleService& battleService);
+    export std::unique_ptr<IScene> CreateRulesScene(IInputService& inputService, ISceneService& sceneService,
+                                                    IAssetService& assetService, IRenderService& renderService);
+    export std::unique_ptr<IScene> CreateInfoScene(IInputService& inputService, ISceneService& sceneService,
+                                                   IRenderService& renderService, IBattleService& battleService);
+    export std::unique_ptr<IScene> CreateCombatScene(ISceneService& sceneService, IAssetService& assetService,
+                                                     ICardService& cardService, IInputService& inputService,
+                                                     IRenderService& renderService, IBattleService& battleService);
+    export std::unique_ptr<IScene> CreateCutsceneScene(IInputService& inputService, ISceneService& sceneService,
+                                                       IAssetService& assetService, IRenderService& renderService,
+                                                       IBattleService& battleService);
 } // namespace mc

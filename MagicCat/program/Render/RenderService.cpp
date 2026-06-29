@@ -50,8 +50,8 @@ namespace mc {
                                 int cornerRadius, int thickness, uint32_t color) override
         {
             for (int i = 0; i < thickness; ++i)
-                ::DrawRoundRect(x1 + i, y1 + i, x2 - i, y2 - i,
-                                cornerRadius, cornerRadius, color, FALSE);
+                DrawRoundRect(x1 + i, y1 + i, x2 - i, y2 - i,
+                              cornerRadius, cornerRadius, color, FALSE);
         }
 
         void DrawCenterString(int x, int y, const wchar_t* text, uint32_t color) override

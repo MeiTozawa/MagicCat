@@ -1,5 +1,4 @@
-// MagicCat.cpp : アプリケーションのエントリ ポイントを定義します。
-//
+// MagicCat.cpp : アプリケーションのエントリ ポイント
 
 #pragma warning(disable:4819)
 #include <Windows.h>
@@ -15,10 +14,9 @@
 
 #define MAX_LOADSTRING 100
 
-// グローバル変数:
-HINSTANCE hInst;                                // 現在のインターフェイス
-WCHAR szTitle[MAX_LOADSTRING];                  // タイトル バーのテキスト
-WCHAR szWindowClass[MAX_LOADSTRING];            // メイン ウィンドウ クラス名
+HINSTANCE hInst;
+WCHAR szTitle[MAX_LOADSTRING];
+WCHAR szWindowClass[MAX_LOADSTRING];
 
 static std::chrono::system_clock::time_point clock_start, clock_end;
 static std::chrono::system_clock::time_point fps_clock_start, fps_clock_end;
@@ -31,87 +29,49 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: ここにコードを挿入してください。
-
-    // DirectX バージョン設定
     SetUseDirect3DVersion(DX_DIRECT3D_11);
-
-    // Log.txt の出力
     SetOutApplicationLogValidFlag(FALSE);
-
-    // ウインドウが非アクティブでもアプリケーションを動かすか
     SetAlwaysRunFlag(ALLWAYS_RUN_FLAG);
-
-    // 起動時のウインドウ位置設定
     SetWindowPosition(0, 0);
 
-    // 画面モード変更時( とウインドウモード変更時 )にグラフィックスシステムの設定やグラフィックハンドルを
-    // リセットするかどうかを設定する
-    // Flag :  TRUE=リセットする( デフォルト )  FALSE=リセットしない
+    // 画面モード変更時にグラフィックハンドルをリセットしない
     SetChangeScreenModeGraphicsSystemResetFlag(FALSE);
 
-    // ウィンドウモードで起動
     dxe::SetWindowMode(true);
-
-    // ウィンドウサイズ設定
     SetGraphMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32);
-
-    // ディスプレイの拡大設定に関わらず設定されたサイズでウィンドウを作成
     SetWindowSizeExtendRate(1.0);
-
-    // ScreenFlip 実行時にＶＳＹＮＣ待ちをするかどうかを設定する
     SetWaitVSyncFlag(TRUE);
-
-    // 深度バッファのビット幅
     SetZBufferBitDepth(32);
     SetCreateDrawValidGraphZBufferBitDepth(32);
-
-    // exe の二重起動を許可するか
     SetDoubleStartValidFlag(TRUE);
-
-    // 使用する文字コードを UTF-8 に設定
     SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
 
-    // ＤＸライブラリ初期化処理
     if (DxLib_Init() == -1)
     {
-        // エラーが起きたら直ちに終了
         return -1;
     }
     SetDrawScreen(DX_SCREEN_BACK);
 
-    // マウスポインタの表示状態を設定する
     dxe::SetVisibleMousePointer(true);
-
-    // ファイルドラッグの受付可否
     SetDragFileValidFlag(TRUE);
 
     HWND hWnd = GetMainWindowHandle();
     HDC hdc = GetDC(hWnd);
 
-    // ImGuiプロシージャを追加
     extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     SetHookWinProc(ImGui_ImplWin32_WndProcHandler);
 
-    // dxe 初期化
     dxe::Initialize(hInstance, hWnd, hdc, WINDOW_WIDTH, WINDOW_HEIGHT, FIX_FPS, APPLICATION_START_FRAME);
-
-    // リソースパス＆フォント名 参照テーブルを作成
     dxe::SetFilePathDictionary(FILE_PATH_DICTIONARY);
     dxe::SetFontNameToPathDictionary(FONT_NAME_TO_PATH_DICTIONARY);
 
-    // 計測開始時間初期化
     clock_start = std::chrono::system_clock::now();
 
-    // ゲームスタート処理
     GameStart();
 
-    // メッセージループ
     while (1)
     {
-
-        // フレーム間の経過時間
-        // マイクロ秒で計測して秒に変換
+        // フレーム間の経過時間をマイクロ秒で計測して秒に変換
         clock_end = std::chrono::system_clock::now();
         double micro_seconds = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count());
         float delta_time = static_cast<float>(micro_seconds / 1000.0 / 1000.0);
@@ -129,10 +89,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
         fps_clock_start = std::chrono::system_clock::now();
 
-        // 画面をクリア
         ClearDrawScreen();
-
-        // dxe 更新
         dxe::Update(delta_time);
 
         if (dxe::IsRunApplication()) {
@@ -141,7 +98,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
         if (dxe::IsExitApplication()) break;
 
-        // バックバッファをフリップ
         ScreenFlip();
 
         // フレームレートコントロール
@@ -158,20 +114,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
     }
 
-    const int t_wait = 100;
-    // ゲーム側の終了処理
-    Sleep(t_wait);
+    Sleep(100);
     GameEnd();
 
-    // dxe 解放処理
     dxe::Release();
 
-    // ＤＸライブラリ使用の終了処理
-    //  DXライブラリ拡張 DirectX 解放 と衝突するのでコメントアウト
-    //DxLib_End();
+    // DxLib_End() は dxe::Release() と競合するため呼ばない
 
     ReleaseDC(hWnd, hdc);
-
 
     return 0;
 }

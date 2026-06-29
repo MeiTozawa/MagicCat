@@ -34,19 +34,11 @@ namespace mc {
 		float x, y;
 	};
 	
-    /**
-     * @brief ウィンドウの幅を取得します。
-     * @return ウィンドウの幅（ピクセル）
-     */
 	inline int GetWindowWidth() {
 		static const int x = (int) dxe::GetWindowWidthF();
 		return x;
 	}
 	
-    /**
-     * @brief ウィンドウの高さを取得します。
-     * @return ウィンドウの高さ（ピクセル）
-     */
 	inline int GetWindowHeight() {
 		static const int y = (int) dxe::GetWindowHeightF();
 		return y;

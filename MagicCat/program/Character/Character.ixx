@@ -6,19 +6,11 @@ import EventBus;
 import AssetService;
 
 namespace mc {
-    /**
-     * @brief 攻撃の属性を定義する列挙型。
-     * じゃんけんのルール（グー、チョキ、パー）に基づいて設定されます。
-     */
     export enum class EAttackType
     {
         Rock = 0, Scissors = 1, Paper = 2,
     };
 
-    /**
-     * @brief キャラクターのタグを定義する列挙型。
-     * 衝突判定やイベントの対象者を区別するために使用されます。
-     */
     export enum class ETag
     {
         Player, Enemy

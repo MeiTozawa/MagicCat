@@ -9,8 +9,7 @@ import Character;
 import EventBus;
 import ConfigService;
 
-namespace mc
-{
+namespace mc {
     export constexpr int CARD_HEIGHT = 300;
     export constexpr int CARD_WIDTH = 200;
     export constexpr int HAND_SIZE_MAX = 4;

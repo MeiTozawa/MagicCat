@@ -11,10 +11,8 @@ import AssetService;
 import RenderService;
 
 
-namespace mc
-{
-    namespace
-    {
+namespace mc {
+    namespace {
         constexpr int KB_Q_X = 100;
         constexpr int KB_UP_X = 500;
         constexpr int KB_DOWN_X = 560;
@@ -34,9 +32,7 @@ namespace mc
 
     public:
         ControlDisplayer(IAssetService& asset, IRenderService& render, uint32_t c = 0xFFFFFF)
-            : assetService(asset), renderService(render), color(c)
-        {
-        }
+            : assetService(asset), renderService(render), color(c) {}
 
         void OnDraw(float deltaTime) const override
         {
@@ -60,7 +56,8 @@ namespace mc
         }
     };
 
-    export std::unique_ptr<Displayer> CreateControlDisplayer(IAssetService& assetService, IRenderService& renderService, uint32_t color = 0xFFFFFF)
+    export std::unique_ptr<Displayer> CreateControlDisplayer(IAssetService& assetService, IRenderService& renderService,
+                                                             uint32_t color = 0xFFFFFF)
     {
         return std::make_unique<ControlDisplayer>(assetService, renderService, color);
     }

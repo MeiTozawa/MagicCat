@@ -3,10 +3,7 @@ module;
 
 module EffectorFactory;
 namespace mc {
-    // -------------------------------------------------------------------------
-    // tween 構築ヘルパー（値渡し・値返しで真の連鎖呼び出しが可能）
-    // durationMs が 0 の場合はそのステップを追加せずそのまま返す
-    // -------------------------------------------------------------------------
+    /// durationMs が 0 の場合はそのステップを追加せず tween をそのまま返す（値渡しで連鎖呼び出しが可能）
     static tweeny::tween<int> FadeIn(tweeny::tween<int> tween, int durationMs)
     {
         if (durationMs > 0)
@@ -28,11 +25,8 @@ namespace mc {
         return tween;
     }
 
-    // -------------------------------------------------------------------------
-
     class FadeEffector : public Effector
     {
-    private:
         tweeny::tween<int> alphaTween;
         int currentAlpha = 0;
         int fadeInTime, holdTime, fadeOutTime;
@@ -76,7 +70,7 @@ namespace mc {
         void BeforeDraw() const override
         {
             if (currentAlpha <= 0)
-                return;  // 完全透明 — 描画不要
+                return;
             if (currentAlpha < 255)
                 SetDrawBlendMode(DX_BLENDMODE_ALPHA, currentAlpha);
         }

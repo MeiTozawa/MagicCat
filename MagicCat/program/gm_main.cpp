@@ -16,7 +16,7 @@ import RenderService;
 import BattleService;
 using namespace mc;
 
-// Globals to keep Services alive
+// サービスのライフタイムを管理するグローバル変数
 std::unique_ptr<IRenderService> renderService;
 std::unique_ptr<IConfigService> configService;
 std::unique_ptr<IAssetService> assetService;
@@ -24,39 +24,30 @@ std::unique_ptr<ICardService> cardService;
 std::unique_ptr<IInputService> inputService;
 std::unique_ptr<IAudioService> audioService;
 std::unique_ptr<ISceneService> sceneService;
-std::unique_ptr<IBattleService> BattleService;
+std::unique_ptr<IBattleService> battleService;
 
 void InitGameServices()
 {
-    // 1. Create independent services
     renderService = CreateRenderService();
     configService = CreateConfigService("resource/json/card_config.json", "resource/json/enemy_config.json");
     assetService = CreateAssetService();
     inputService = CreateInputService();
 
-    // 2. Create services that depend on config
     cardService = CreateCardService(*configService);
-
-    // 3. Scene Service — pass renderService for fade transitions
     sceneService = CreateSceneService(renderService.get());
+    battleService = CreateBattleService(*configService, *cardService);
+    audioService = CreateAudioService(*assetService, *battleService);
 
-    // 4. Battle Sequence Service depends on config and card.
-    //    It also owns the player/enemy characters.
-    BattleService = CreateBattleService(*configService, *cardService);
-
-    // 5. Audio Service depends on Asset and the Battle Sequence Service (characters)
-    audioService = CreateAudioService(*assetService, *BattleService);
-
-    // 6. Register Scenes with their dependencies
     sceneService->RegisterScene(ESceneState::Info,
-                                CreateInfoScene(*inputService, *sceneService, *renderService, *BattleService));
+                                CreateInfoScene(*inputService, *sceneService, *renderService, *battleService));
     sceneService->RegisterScene(ESceneState::Combat,
                                 CreateCombatScene(*sceneService, *assetService, *cardService, *inputService,
-                                                  *renderService, *BattleService));
+                                                  *renderService, *battleService));
     sceneService->RegisterScene(ESceneState::Rules,
                                 CreateRulesScene(*inputService, *sceneService, *assetService, *renderService));
     sceneService->RegisterScene(ESceneState::Cutscene,
-                                CreateCutsceneScene(*inputService, *sceneService, *assetService, *renderService, *BattleService));
+                                CreateCutsceneScene(*inputService, *sceneService, *assetService, *renderService,
+                                                    *battleService));
 }
 
 void GameStart()

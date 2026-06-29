@@ -5,8 +5,7 @@ export module Displayer:Attack;
 import DisplayerBase;
 
 
-namespace mc
-{
+namespace mc {
     export class AttackDisplayer : public Displayer
     {
         float x, y, scale;

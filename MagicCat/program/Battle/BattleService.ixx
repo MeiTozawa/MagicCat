@@ -11,8 +11,7 @@ import EventBus;
 import Enemy;
 import Player;
 
-namespace mc
-{
+namespace mc {
     /// @brief 敵が撃破された際に発行されるイベント
     export struct EnemyDefeatedEvent : IEvent
     {
@@ -63,5 +62,4 @@ namespace mc
         IConfigService& configService,
         ICardService& cardService
     );
-
 } // namespace mc

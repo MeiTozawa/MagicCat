@@ -10,8 +10,7 @@ export module Displayer:CutsceneFocus;
 import DisplayerBase;
 import RenderService;
 
-namespace mc
-{
+namespace mc {
     /// @brief カットシーンのスロット間をスライドする角丸矩形フォーカス枠の Displayer。
     /// 内部に線形補間アニメーションを持ち、source から destination へ duration 秒で移動する。
     export class CutsceneFocusDisplayer : public Displayer
@@ -19,10 +18,10 @@ namespace mc
         IRenderService& m_renderService;
 
         // レイアウト
-        float    m_halfWidth;
-        float    m_halfHeight;
-        int      m_cornerRadius;
-        int      m_thickness;
+        float m_halfWidth;
+        float m_halfHeight;
+        int m_cornerRadius;
+        int m_thickness;
         uint32_t m_color;
 
         // 線形補間アニメーション
@@ -38,15 +37,14 @@ namespace mc
                                Point source, Point destination,
                                float halfWidth, float halfHeight,
                                int cornerRadius, int thickness,
-                               uint32_t color    = 0xFFFFFF,
-                               float    duration = DEFAULT_DURATION)
+                               uint32_t color = 0xFFFFFF,
+                               float duration = DEFAULT_DURATION)
             : m_renderService(renderService)
-            , m_halfWidth(halfWidth), m_halfHeight(halfHeight)
-            , m_cornerRadius(cornerRadius), m_thickness(thickness)
-            , m_color(color)
-            , m_source(source), m_destination(destination)
-            , m_duration(duration)
-        {}
+              , m_halfWidth(halfWidth), m_halfHeight(halfHeight)
+              , m_cornerRadius(cornerRadius), m_thickness(thickness)
+              , m_color(color)
+              , m_source(source), m_destination(destination)
+              , m_duration(duration) {}
 
         void OnUpdate(float deltaTime) override
         {
@@ -67,7 +65,6 @@ namespace mc
                 static_cast<int>(cy + m_halfHeight),
                 m_cornerRadius, m_thickness, m_color);
         }
-
     };
 
     export std::unique_ptr<CutsceneFocusDisplayer> CreateCutsceneFocusDisplayer(
@@ -75,8 +72,8 @@ namespace mc
         Point source, Point destination,
         float halfWidth, float halfHeight,
         int cornerRadius, int thickness,
-        uint32_t color    = 0xFFFFFF,
-        float    duration = CutsceneFocusDisplayer::DEFAULT_DURATION)
+        uint32_t color = 0xFFFFFF,
+        float duration = CutsceneFocusDisplayer::DEFAULT_DURATION)
     {
         return std::make_unique<CutsceneFocusDisplayer>(
             renderService, source, destination,

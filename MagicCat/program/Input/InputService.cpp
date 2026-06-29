@@ -8,8 +8,7 @@ module;
 
 module InputService;
 
-namespace mc
-{
+namespace mc {
     class InputService : public IInputService
     {
         Shared<dxe::Input> input;
@@ -128,7 +127,6 @@ namespace mc
 
         void PushContext(InputContext context) override
         {
-            // 同じContextが連続してスタックにプッシュされるのを防ぐ
             if (activeInputModes.empty() || activeInputModes.back() != context)
             {
                 activeInputModes.push_back(context);
@@ -137,7 +135,6 @@ namespace mc
 
         void PopContext() override
         {
-            // スタックが空になるのを防ぐ
             if (activeInputModes.size() > 1)
             {
                 activeInputModes.pop_back();

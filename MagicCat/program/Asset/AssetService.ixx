@@ -6,10 +6,7 @@ module;
 
 export module AssetService;
 
-namespace mc
-{
-
-
+namespace mc {
     export enum class EFont
     {
         Null = -1,
@@ -27,8 +24,8 @@ namespace mc
     export enum class ESound
     {
         Null = -1,
-        Confirm = 0, DrawCard, EnemyHurt, 
-        Fail, PlayerHurt, Select, 
+        Confirm = 0, DrawCard, EnemyHurt,
+        Fail, PlayerHurt, Select,
         Shuffle, Warning, Win,
         Beep, Magic
     };
@@ -37,7 +34,7 @@ namespace mc
     {
         Null = -1,
         Bunny, Wolf,
-        
+
         CluckingChicken = 100,
         CoralCrab,
         CroakingToad,
@@ -54,7 +51,7 @@ namespace mc
         TimberWolf,
         TinyChick
     };
-    
+
     export struct SpriteInfo
     {
         tnl::Vector2i size;
@@ -72,7 +69,6 @@ namespace mc
         virtual const int GetSoundHandle(ESound) = 0;
         /// @brief スプライト名の文字列を ESprite 列挙値に変換する。未知の名前は ESprite::Null を返す。
         virtual ESprite ParseSprite(const std::string& name) const = 0;
-
     };
 
     export std::unique_ptr<IAssetService> CreateAssetService();

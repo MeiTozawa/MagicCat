@@ -1,6 +1,7 @@
 module;
 
 export module EffectorFactory;
+import RenderService;
 namespace mc {
     export enum class EEffector
     {
@@ -20,17 +21,17 @@ namespace mc {
     };
 
     export std::unique_ptr<Effector> CreateHitFlashEffector(
-        uint32_t color, int flashTime = 300
+        IRenderService& renderService, uint32_t color, int flashTime = 300
     );
     export std::unique_ptr<Effector> CreateFadeEffector(
-        int fadeInTime, int holdTime, int fadeOutTime
+        IRenderService& renderService, int fadeInTime, int holdTime, int fadeOutTime
     );
     /// @brief 透明 → 不透明（単方向フェードアウト）
     export std::unique_ptr<Effector> CreateFadeOutEffector(
-        int durationMs
+        IRenderService& renderService, int durationMs
     );
     /// @brief 不透明 → 透明（単方向フェードイン）
     export std::unique_ptr<Effector> CreateFadeInEffector(
-        int durationMs
+        IRenderService& renderService, int durationMs
     );
 }

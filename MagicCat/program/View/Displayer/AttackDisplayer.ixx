@@ -3,17 +3,18 @@ module;
 #include <memory>
 export module Displayer:Attack;
 import DisplayerBase;
-
+import RenderService;
 
 namespace mc {
     export class AttackDisplayer : public Displayer
     {
         float x, y, scale;
         int handle = -1;
+        IRenderService& renderService;
 
     public:
-        AttackDisplayer(const float x, const float y, const float scale)
-            : x(x), y(y), scale(scale) {}
+        AttackDisplayer(IRenderService& rs, const float x, const float y, const float scale)
+            : x(x), y(y), scale(scale), renderService(rs) {}
 
         void SetImage(int imageHandle)
         {
@@ -24,13 +25,14 @@ namespace mc {
         {
             if (handle != -1)
             {
-                DrawRotaGraphF(x, y, scale, 0.0, handle, TRUE);
+                renderService.DrawRotaGraphF(x, y, scale, 0.0, handle, true);
             }
         }
     };
 
-    export std::unique_ptr<AttackDisplayer> CreateAttackDisplayer(float x, float y, float scale)
+    export std::unique_ptr<AttackDisplayer> CreateAttackDisplayer(IRenderService& renderService,
+                                                                   float x, float y, float scale)
     {
-        return std::make_unique<AttackDisplayer>(x, y, scale);
+        return std::make_unique<AttackDisplayer>(renderService, x, y, scale);
     }
 }

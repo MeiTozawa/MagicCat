@@ -1,6 +1,5 @@
 module;
 
-#include <dxe.h>
 #include <memory>
 #include <RenderUtils.h>
 
@@ -68,18 +67,18 @@ namespace mc {
 
             if (!info.empty())
             {
-                SetFontSize(240);
-                renderService.DrawCenterString(dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
+                renderService.SetFontSize(240);
+                renderService.DrawCenterString(renderService.GetWindowWidth() / 2, renderService.GetWindowHeight() * 4 / 10,
                                                info.c_str(), infoColor);
-                SetFontSize(48);
+                renderService.SetFontSize(48);
             }
             else
             {
-                SetFontSize(160);
-                renderService.DrawCenterString(dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.2f),
+                renderService.SetFontSize(160);
+                renderService.DrawCenterString(renderService.GetWindowWidth() / 2, renderService.GetWindowHeight() * 2 / 10,
                                                L"MagicCat", infoColor);
-                SetFontSize(48);
-                renderService.DrawCenterString(dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
+                renderService.SetFontSize(48);
+                renderService.DrawCenterString(renderService.GetWindowWidth() / 2, renderService.GetWindowHeight() * 4 / 10,
                                                L"吾輩はマジックキャットである！\n"
                                                "これはじゃんけんの対決にゃん！\n"
                                                "吾輩は魔法のカードを使って敵の精神状態を操り、\n"
@@ -91,9 +90,9 @@ namespace mc {
 
             renderService.DrawLeftString(20, 40,
                                          std::format(L" 勝利回数: {} ", winCount).c_str(), COLOR_WHITE);
-            renderService.DrawRightString(dxe::GetWindowWidthF(1.f), 40,
+            renderService.DrawRightString(renderService.GetWindowWidth(), 40,
                                           std::format(L" 失敗回数: {} ", failCount).c_str(), COLOR_WHITE);
-            renderService.DrawCenterString(dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.8f),
+            renderService.DrawCenterString(renderService.GetWindowWidth() / 2, renderService.GetWindowHeight() * 8 / 10,
                                            L"Enterキーを押してゲームをスタートにゃ！", COLOR_WHITE);
         }
     };

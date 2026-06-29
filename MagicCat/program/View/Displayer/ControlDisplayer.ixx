@@ -1,8 +1,6 @@
 module;
 
 #include <memory>
-#include <DxLib.h>
-
 
 export module Displayer:Control;
 import DisplayerBase;
@@ -37,21 +35,21 @@ namespace mc {
         void OnDraw(float deltaTime) const override
         {
             int icon = assetService.GetImageHandle(EImage::KB_Q);
-            DrawRotaGraphF(KB_Q_X, Y, 1.0, 0.0, icon, TRUE);
+            renderService.DrawRotaGraphF(KB_Q_X, Y, 1.0, 0.0, icon, true);
             renderService.DrawString(KB_Q_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"カードを引く", color);
 
             icon = assetService.GetImageHandle(EImage::KB_R);
-            DrawRotaGraphF(KB_R_X, Y, 1.0, 0.0, icon, TRUE);
+            renderService.DrawRotaGraphF(KB_R_X, Y, 1.0, 0.0, icon, true);
             renderService.DrawString(KB_R_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"ルールを見る", color);
 
             icon = assetService.GetImageHandle(EImage::KB_UP);
-            DrawRotaGraphF(KB_UP_X, Y, 1.0, 0.0, icon, TRUE);
+            renderService.DrawRotaGraphF(KB_UP_X, Y, 1.0, 0.0, icon, true);
 
             icon = assetService.GetImageHandle(EImage::KB_DOWN);
-            DrawRotaGraphF(KB_DOWN_X, Y, 1.0, 0.0, icon, TRUE);
+            renderService.DrawRotaGraphF(KB_DOWN_X, Y, 1.0, 0.0, icon, true);
 
             icon = assetService.GetImageHandle(EImage::KB_SPACE);
-            DrawRotaGraphF(KB_SPACE_X, Y, 1.0, 0.0, icon, TRUE);
+            renderService.DrawRotaGraphF(KB_SPACE_X, Y, 1.0, 0.0, icon, true);
             renderService.DrawString(KB_SPACE_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"アクション", color);
         }
     };

@@ -4,7 +4,6 @@ module;
 #include <memory>
 #include <optional>
 #include <RenderUtils.h>
-#include <dxe.h>
 
 module SceneService;
 
@@ -28,8 +27,8 @@ namespace mc {
     protected:
         void OnDraw(float) const override
         {
-            const float w = dxe::GetWindowWidthF(1.f);
-            const float h = dxe::GetWindowHeightF(1.f);
+            const float w = static_cast<float>(rs.GetWindowWidth());
+            const float h = static_cast<float>(rs.GetWindowHeight());
             rs.DrawBoxAA(0.f, 0.f, w, h, COLOR_BG, true);
         }
 
@@ -79,7 +78,7 @@ namespace mc {
             {
                 fadeDisplayer = std::make_unique<ScreenFadeDisplayer>(*renderService);
                 fadeDisplayer->AddEffector(
-                    CreateFadeOutEffector(SCENE_FADE_DURATION_MS),
+                    CreateFadeOutEffector(*renderService, SCENE_FADE_DURATION_MS),
                     [this]() { ApplyPendingTransition(); }
                 );
                 fadeDisplayer->Play();
@@ -95,7 +94,7 @@ namespace mc {
             if (renderService)
             {
                 fadeDisplayer = std::make_unique<ScreenFadeDisplayer>(*renderService);
-                fadeDisplayer->AddEffector(CreateFadeInEffector(SCENE_FADE_DURATION_MS));
+                fadeDisplayer->AddEffector(CreateFadeInEffector(*renderService, SCENE_FADE_DURATION_MS));
                 fadeDisplayer->Play();
             }
         }

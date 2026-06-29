@@ -68,17 +68,18 @@ namespace mc {
                 currentPage++;
             }
 
-            SetDrawBlendMode(DX_BLENDMODE_ALPHA, OVERLAY_ALPHA);
-            DrawBox(0, 0, GetWindowWidth(), GetWindowHeight(), COLOR_BLACK, TRUE);
-            SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+            renderService.SetDrawBlendMode(BlendMode::Alpha, OVERLAY_ALPHA);
+            renderService.DrawBoxAA(0.f, 0.f, static_cast<float>(renderService.GetWindowWidth()), static_cast<float>(renderService.GetWindowHeight()), COLOR_BLACK, true);
+            renderService.SetDrawBlendMode(BlendMode::NoBlend, 0);
 
             constexpr int boxX1 = BOX_MARGIN_X;
             constexpr int boxY1 = BOX_MARGIN_Y;
 
-            const int boxX2 = GetWindowWidth() - BOX_MARGIN_X;
-            const int boxY2 = GetWindowHeight() - BOX_MARGIN_Y;
+            const int boxX2 = renderService.GetWindowWidth() - BOX_MARGIN_X;
+            const int boxY2 = renderService.GetWindowHeight() - BOX_MARGIN_Y;
 
-            DrawBox(boxX1, boxY1, boxX2, boxY2, COLOR_BOX_BG, TRUE);
+            renderService.DrawBoxAA(static_cast<float>(boxX1), static_cast<float>(boxY1),
+                                    static_cast<float>(boxX2), static_cast<float>(boxY2), COLOR_BOX_BG, true);
             renderService.DrawHollowBox(boxX1, boxY1, boxX2, boxY2, 3, COLOR_WHITE);
 
             renderService.DrawString(boxX1 + TEXT_START_OFFSET_X, boxY1 + TEXT_START_OFFSET_Y,
@@ -126,10 +127,10 @@ namespace mc {
 
 
             int kbrHandle = assetService.GetImageHandle(EImage::KB_R);
-            renderService.DrawGraph(boxX2 - ICON_OFFSET_X, boxY2 - ICON_OFFSET_Y, kbrHandle, TRUE);
+            renderService.DrawGraph(boxX2 - ICON_OFFSET_X, boxY2 - ICON_OFFSET_Y, kbrHandle, true);
             renderService.DrawString(boxX2 - ICON_TEXT_OFFSET_X, boxY2 - ICON_TEXT_OFFSET_Y,
                                      L"押して戻る", COLOR_TEXT_NORMAL);
-            renderService.DrawCenterString(GetWindowWidth() / 2, boxY2 - ICON_TEXT_OFFSET_Y,
+            renderService.DrawCenterString(renderService.GetWindowWidth() / 2, boxY2 - ICON_TEXT_OFFSET_Y,
                                            L"(◀/▶ でページ切替)", COLOR_TEXT_NORMAL);
         }
     };

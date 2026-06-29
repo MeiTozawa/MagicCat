@@ -1,19 +1,20 @@
 module;
 
-#include <string>
 #include <cstdint>
-#include "DxLib.h"
+#include <dxe.h>
 
 module RenderService;
 namespace mc {
     class DxLibRenderService : public IRenderService
     {
     public:
+        // ---- フォントサイズ ----
         int GetFontSize() override
         {
             return ::GetFontSize();
         }
 
+        // ---- 描画 ----
         void DrawString(int x, int y, const wchar_t* text, uint32_t color) override
         {
             ::DrawString(x, y, text, color);
@@ -34,24 +35,41 @@ namespace mc {
             ::DrawGraph(x, y, handle, transFlag ? TRUE : FALSE);
         }
 
+        void DrawRotaGraphF(float x, float y, double extRate, double angle,
+                            int graphHandle, bool transFlag) override
+        {
+            ::DrawRotaGraphF(x, y, extRate, angle, graphHandle, transFlag ? TRUE : FALSE);
+        }
+
         void DrawRectRotaGraph(int x, int y, int srcX, int srcY, int width, int height, double extRate, double angle,
                                int graphHandle, bool transFlag, bool turnFlag) override
         {
-            ::DrawRectRotaGraph(x, y, srcX, srcY, width, height, extRate, angle, graphHandle, transFlag ? TRUE : FALSE,
-                                turnFlag ? TRUE : FALSE);
+            ::DrawRectRotaGraph(x, y, srcX, srcY, width, height, extRate, angle, graphHandle,
+                                transFlag ? TRUE : FALSE, turnFlag ? TRUE : FALSE);
         }
 
-        void SetDrawBlendMode(int blendMode, int pal) override
+        void SetDrawBlendMode(BlendMode mode, int pal) override
         {
-            ::SetDrawBlendMode(blendMode, pal);
+            int dxMode = DX_BLENDMODE_NOBLEND;
+            switch (mode)
+            {
+            case BlendMode::Alpha:   dxMode = DX_BLENDMODE_ALPHA;   break;
+            case BlendMode::NoBlend: dxMode = DX_BLENDMODE_NOBLEND; break;
+            }
+            ::SetDrawBlendMode(dxMode, pal);
+        }
+
+        void SetDrawBright(int r, int g, int b) override
+        {
+            ::SetDrawBright(r, g, b);
         }
 
         void DrawRoundRectFrame(int x1, int y1, int x2, int y2,
                                 int cornerRadius, int thickness, uint32_t color) override
         {
             for (int i = 0; i < thickness; ++i)
-                DrawRoundRect(x1 + i, y1 + i, x2 - i, y2 - i,
-                              cornerRadius, cornerRadius, color, FALSE);
+                ::DrawRoundRect(x1 + i, y1 + i, x2 - i, y2 - i,
+                                cornerRadius, cornerRadius, color, FALSE);
         }
 
         void DrawCenterString(int x, int y, const wchar_t* text, uint32_t color) override
@@ -80,6 +98,43 @@ namespace mc {
             DrawBoxAA(x1, y2 - thickness, x2, y2, color, true);
             DrawBoxAA(x1, y1, x1 + thickness, y2, color, true);
             DrawBoxAA(x2 - thickness, y1, x2, y2, color, true);
+        }
+
+        // ---- ウィンドウサイズ ----
+        int GetWindowWidth() const override
+        {
+            return static_cast<int>(dxe::GetWindowWidthF());
+        }
+
+        int GetWindowHeight() const override
+        {
+            return static_cast<int>(dxe::GetWindowHeightF());
+        }
+
+        // ---- 初期化・フォント設定 ----
+        void SetFontTypeNormal() override
+        {
+            ::ChangeFontType(DX_FONTTYPE_NORMAL);
+        }
+
+        void ChangeFont(const wchar_t* fontName) override
+        {
+            ::ChangeFont(fontName);
+        }
+
+        void SetFontSize(int size) override
+        {
+            ::SetFontSize(size);
+        }
+
+        void SetFontThickness(int thickness) override
+        {
+            ::SetFontThickness(thickness);
+        }
+
+        void SetBackgroundColor(int r, int g, int b) override
+        {
+            ::SetBackgroundColor(r, g, b);
         }
     };
 

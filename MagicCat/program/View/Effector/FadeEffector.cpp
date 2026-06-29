@@ -2,6 +2,7 @@ module;
 #include "tweeny.h"
 
 module EffectorFactory;
+import RenderService;
 namespace mc {
     /// durationMs が 0 の場合はそのステップを追加せず tween をそのまま返す（値渡しで連鎖呼び出しが可能）
     static tweeny::tween<int> FadeIn(tweeny::tween<int> tween, int durationMs)
@@ -30,10 +31,12 @@ namespace mc {
         tweeny::tween<int> alphaTween;
         int currentAlpha = 0;
         int fadeInTime, holdTime, fadeOutTime;
+        IRenderService& renderService;
 
     public:
-        FadeEffector(int fadeInTime, int holdTime, int fadeOutTime)
-            : fadeInTime(fadeInTime), holdTime(holdTime), fadeOutTime(fadeOutTime)
+        FadeEffector(IRenderService& rs, int fadeInTime, int holdTime, int fadeOutTime)
+            : fadeInTime(fadeInTime), holdTime(holdTime), fadeOutTime(fadeOutTime),
+              renderService(rs)
         {
             const int startAlpha = (fadeInTime > 0) ? 0 : 255;
             currentAlpha = startAlpha;
@@ -72,36 +75,36 @@ namespace mc {
             if (currentAlpha <= 0)
                 return;
             if (currentAlpha < 255)
-                SetDrawBlendMode(DX_BLENDMODE_ALPHA, currentAlpha);
+                renderService.SetDrawBlendMode(BlendMode::Alpha, currentAlpha);
         }
 
         void AfterDraw() const override
         {
             if (currentAlpha <= 0) return;
-            SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+            renderService.SetDrawBlendMode(BlendMode::NoBlend, 0);
         }
 
         bool ShouldDraw() const override { return currentAlpha > 0; }
     };
 
     std::unique_ptr<Effector> CreateFadeEffector(
-        int fadeInTime, int holdTime, int fadeOutTime
+        IRenderService& renderService, int fadeInTime, int holdTime, int fadeOutTime
     )
     {
-        return std::make_unique<FadeEffector>(fadeInTime, holdTime, fadeOutTime);
+        return std::make_unique<FadeEffector>(renderService, fadeInTime, holdTime, fadeOutTime);
     }
 
     std::unique_ptr<Effector> CreateFadeOutEffector(
-        int durationMs
+        IRenderService& renderService, int durationMs
     )
     {
-        return CreateFadeEffector(durationMs, 0, 0);
+        return CreateFadeEffector(renderService, durationMs, 0, 0);
     }
 
     std::unique_ptr<Effector> CreateFadeInEffector(
-        int durationMs
+        IRenderService& renderService, int durationMs
     )
     {
-        return CreateFadeEffector(0, 0, durationMs);
+        return CreateFadeEffector(renderService, 0, 0, durationMs);
     }
 }

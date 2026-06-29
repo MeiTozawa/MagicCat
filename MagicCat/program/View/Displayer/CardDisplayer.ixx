@@ -90,7 +90,7 @@ namespace mc {
                     int icon = assetService.GetImageHandle(ToImage(card.CardType));
                     if (icon != -1)
                     {
-                        DrawRotaGraphF(x + CARD_WIDTH / 2.f, y + CARD_HEIGHT / 3.5f, IMAGE_SCALE, 0.0, icon, TRUE);
+                        renderService.DrawRotaGraphF(x + CARD_WIDTH / 2.f, y + CARD_HEIGHT / 3.5f, IMAGE_SCALE, 0.0, icon, true);
                     }
                     renderService.DrawCenterString(x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10,
                                                    message.c_str(), color);
@@ -114,7 +114,7 @@ namespace mc {
 
                 if (isDraw && i == cachedHand.size() - 1)
                 {
-                    cardDisplay->AddEffector(CreateHitFlashEffector(0x000000, 300));
+                    cardDisplay->AddEffector(CreateHitFlashEffector(renderService, 0x000000, 300));
                     push_back(std::move(cardDisplay));
                 }
                 else

@@ -126,12 +126,12 @@ namespace mc {
             enemyAnimDisp = enemyAnim.get();
             displayers.push_back(std::move(enemyAnim));
 
-            auto pAtk = CreateAttackDisplayer(PLAYER_ATTACK_X, PLAYER_ATTACK_Y, ATTACK_IMAGE_SCALE);
+            auto pAtk = CreateAttackDisplayer(renderService, PLAYER_ATTACK_X, PLAYER_ATTACK_Y, ATTACK_IMAGE_SCALE);
             playerAttack = pAtk.get();
             playerAttackDisp = pAtk.get();
             displayers.push_back(std::move(pAtk));
 
-            auto eAtk = CreateAttackDisplayer(ENEMY_ATTACK_X, ENEMY_ATTACK_Y, ATTACK_IMAGE_SCALE);
+            auto eAtk = CreateAttackDisplayer(renderService, ENEMY_ATTACK_X, ENEMY_ATTACK_Y, ATTACK_IMAGE_SCALE);
             enemyAttack = eAtk.get();
             enemyAttackDisp = eAtk.get();
             displayers.push_back(std::move(eAtk));
@@ -147,9 +147,9 @@ namespace mc {
             {
                 auto tags = event.Victim->GetTags();
                 if (std::ranges::find(tags, ETag::Player) != tags.end())
-                    playerAnimDisp->AddEffector(CreateHitFlashEffector(0xFF0000));
+                    playerAnimDisp->AddEffector(CreateHitFlashEffector(renderService, 0xFF0000));
                 else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
-                    enemyAnimDisp->AddEffector(CreateHitFlashEffector(0xFF0000));
+                    enemyAnimDisp->AddEffector(CreateHitFlashEffector(renderService, 0xFF0000));
             });
 
             combatEvent = EventBus::Subscribe<CombatEvent>([&](const CombatEvent& event)
@@ -158,9 +158,9 @@ namespace mc {
                 enemyAttack->SetImage(assetService.GetImageHandle(ToImage(event.enemyAttackType)));
 
                 playerAttackDisp->ResetAndAddEffector(
-                    CreateFadeEffector(ATTACK_FADE_IN_TIME, ATTACK_HOLD_TIME, ATTACK_FADE_OUT_TIME));
+                    CreateFadeEffector(renderService, ATTACK_FADE_IN_TIME, ATTACK_HOLD_TIME, ATTACK_FADE_OUT_TIME));
                 enemyAttackDisp->ResetAndAddEffector(
-                    CreateFadeEffector(ATTACK_FADE_IN_TIME, ATTACK_HOLD_TIME, ATTACK_FADE_OUT_TIME));
+                    CreateFadeEffector(renderService, ATTACK_FADE_IN_TIME, ATTACK_HOLD_TIME, ATTACK_FADE_OUT_TIME));
 
                 bool playerLost = LosesTo(event.playerAttackType, event.enemyAttackType);
                 bool playerWon = LosesTo(event.enemyAttackType, event.playerAttackType);
@@ -169,13 +169,13 @@ namespace mc {
                 {
                     playerDialog->SetMessage(L"クッソー", DIALOG_COLOR_DAMN);
                     playerDialogDisp->ResetAndAddEffector(
-                        CreateFadeEffector(DIALOG_FADE_IN_TIME, DIALOG_HOLD_TIME, DIALOG_FADE_OUT_TIME));
+                        CreateFadeEffector(renderService, DIALOG_FADE_IN_TIME, DIALOG_HOLD_TIME, DIALOG_FADE_OUT_TIME));
                 }
                 else if (event.playerWinRate < LOW_WIN_RATE && playerWon)
                 {
                     playerDialog->SetMessage(L"ラッキー", DIALOG_COLOR_LUCKY);
                     playerDialogDisp->ResetAndAddEffector(
-                        CreateFadeEffector(DIALOG_FADE_IN_TIME, DIALOG_HOLD_TIME, DIALOG_FADE_OUT_TIME));
+                        CreateFadeEffector(renderService, DIALOG_FADE_IN_TIME, DIALOG_HOLD_TIME, DIALOG_FADE_OUT_TIME));
                 }
             });
 

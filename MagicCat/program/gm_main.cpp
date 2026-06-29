@@ -28,7 +28,6 @@ std::unique_ptr<IBattleService> battleService;
 
 void InitGameServices()
 {
-    renderService = CreateRenderService();
     configService = CreateConfigService("resource/json/card_config.json", "resource/json/enemy_config.json");
     assetService = CreateAssetService();
     inputService = CreateInputService();
@@ -52,14 +51,18 @@ void InitGameServices()
 
 void GameStart()
 {
-    ChangeFontType(DX_FONTTYPE_NORMAL);
+    renderService = CreateRenderService();
     InitGameServices();
     AddFontResourceEx(FILE_PATH_OTF_UNIFONT_17, FR_PRIVATE, nullptr);
-    ChangeFont(FONT_NAME_UNIFONT);
-    SetFontSize(48);
-    ChangeFontType(DX_FONTTYPE_NORMAL);
-    SetFontThickness(1);
-    SetBackgroundColor(COLOR_BG << 8 >> 24, COLOR_BG << 16 >> 24, COLOR_BG << 24 >> 24);
+    renderService->SetFontTypeNormal();
+    renderService->ChangeFont(FONT_NAME_UNIFONT);
+    renderService->SetFontSize(48);
+    renderService->SetFontTypeNormal();
+    renderService->SetFontThickness(1);
+    renderService->SetBackgroundColor(
+        (COLOR_BG >> 16) & 0xFF,
+        (COLOR_BG >> 8)  & 0xFF,
+        (COLOR_BG)       & 0xFF);
 }
 
 void GameMain(float deltaTime)

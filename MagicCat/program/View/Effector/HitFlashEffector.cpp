@@ -3,6 +3,7 @@ module;
 #include "tweeny.h"
 
 module EffectorFactory;
+import RenderService;
 
 namespace mc {
     class HitFlashEffector : public Effector
@@ -11,10 +12,11 @@ namespace mc {
         int bright = 255;
         tweeny::tween<int> colorTween = {};
         uint32_t flashColor = 0xFF0000;
+        IRenderService& renderService;
 
     public:
-        HitFlashEffector(const int flashTime, uint32_t color) :
-            flashTime(flashTime), flashColor(color)
+        HitFlashEffector(IRenderService& rs, const int flashTime, uint32_t color) :
+            flashTime(flashTime), flashColor(color), renderService(rs)
         {
             colorTween = tweeny::from(255)
                          .to(0).during(50)
@@ -46,19 +48,19 @@ namespace mc {
             int curG = flashG + (255 - flashG) * bright / 255;
             int curB = flashB + (255 - flashB) * bright / 255;
 
-            SetDrawBright(curR, curG, curB);
+            renderService.SetDrawBright(curR, curG, curB);
         }
 
         void AfterDraw() const override
         {
-            SetDrawBright(255, 255, 255);
+            renderService.SetDrawBright(255, 255, 255);
         }
     };
 
     std::unique_ptr<Effector> CreateHitFlashEffector(
-        uint32_t color, int flashTime
+        IRenderService& renderService, uint32_t color, int flashTime
     )
     {
-        return std::make_unique<HitFlashEffector>(flashTime, color);
+        return std::make_unique<HitFlashEffector>(renderService, flashTime, color);
     }
 }

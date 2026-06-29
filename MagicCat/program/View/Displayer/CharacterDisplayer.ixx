@@ -81,7 +81,7 @@ namespace mc {
             {
                 const int idx = static_cast<int>(e.AttackType);
                 if (idx >= 0 && idx < 3 && weightDisplayers[idx])
-                    weightDisplayers[idx]->AddEffector(CreateHitFlashEffector(COLOR_RED, 300));
+                    weightDisplayers[idx]->AddEffector(CreateHitFlashEffector(renderService, COLOR_RED, 300));
             });
         }
 

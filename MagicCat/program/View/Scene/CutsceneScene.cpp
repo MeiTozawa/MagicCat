@@ -69,8 +69,8 @@ namespace mc {
         {
             inputService.PushContext(InputContext::CutScene);
 
-            const float screenW = GetWindowWidth();
-            const float screenH = GetWindowHeight();
+            const float screenW = static_cast<float>(renderService.GetWindowWidth());
+            const float screenH = static_cast<float>(renderService.GetWindowHeight());
 
             timer = 0.f;
             finished = false;
@@ -117,7 +117,7 @@ namespace mc {
                     renderService.DrawRectRotaGraph(
                         static_cast<int>(cx), static_cast<int>(cy),
                         0, 0, sv.info.size.x, sv.info.size.y,
-                        SPRITE_EXT_RATE, 0.0, sv.spriteHandle, TRUE, FALSE);
+                        SPRITE_EXT_RATE, 0.0, sv.spriteHandle, true, false);
                 }
                 else
                 {

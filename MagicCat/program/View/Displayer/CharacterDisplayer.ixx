@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <array>
 #include <string>
 #include <format>
 #include <RenderUtils.h>
@@ -57,13 +58,14 @@ namespace mc { namespace {
         bool isMagicMenuOpen = false;
         EventHandle actionSelectionEvent;
         EventHandle addWeightEvent;
-        std::vector<std::unique_ptr<EffectorPlayer>> enemyWeightEffectors;
+        // ウェイト表示 Displayer（インデックス: 0=Rock, 1=Scissors, 2=Paper）
+        std::array<Displayer*, 3> weightDisplayers = {};
 
     public:
         CharacterDisplayer(IBattleService& character, IRenderService& render)
             : characterService(character), renderService(render)
         {
-            InitEnemyWeightEffectors();
+            InitEnemyWeightDisplayers();
 
             push_back(CreateLambdaDisplayer([this](float) { PrintPlayerInfo(); }));
             push_back(CreateLambdaDisplayer([this](float) { PrintEnemyInfoWithoutWeight(); }));
@@ -76,7 +78,9 @@ namespace mc { namespace {
             });
             addWeightEvent = EventBus::Subscribe<AddWeightEvent>([this](const AddWeightEvent& e)
             {
-                enemyWeightEffectors[static_cast<int>(e.AttackType)]->Play();
+                const int idx = static_cast<int>(e.AttackType);
+                if (idx >= 0 && idx < 3 && weightDisplayers[idx])
+                    weightDisplayers[idx]->AddEffector(CreateHitFlashEffector(COLOR_RED, 300));
             });
         }
 
@@ -86,20 +90,9 @@ namespace mc { namespace {
             EventBus::Unsubscribe(addWeightEvent);
         }
 
-        void Update(float deltaTime) override
+        void OnUpdate(float deltaTime) override
         {
-            Displayers::Update(deltaTime);
-
-            for (auto& eff : enemyWeightEffectors)
-                eff->Update(deltaTime);
-        }
-
-        void Draw(float deltaTime) const override
-        {
-            Displayers::Draw(deltaTime);
-
-            for (auto& eff : enemyWeightEffectors)
-                eff->Draw(deltaTime);
+            Displayers::OnUpdate(deltaTime);
         }
 
     private:
@@ -185,63 +178,34 @@ namespace mc { namespace {
             }
         }
 
-        void InitEnemyWeightEffectors()
+        void InitEnemyWeightDisplayers()
         {
-            enemyWeightEffectors.clear();
+            // Rock=0, Scissors=1, Paper=2 の順で LambdaDisplayer を生成し push_back する
+            // raw pointer を weightDisplayers に保持して AddEffector 呼び出しに使う
+            constexpr EAttackType types[3] = {EAttackType::Rock, EAttackType::Scissors, EAttackType::Paper};
 
-            auto rockWeightDisplayer = CreateLambdaDisplayer([this](float)
+            for (int i = 0; i < 3; ++i)
             {
-                const Enemy& enemy = characterService.GetEnemy();
-                std::wstring message = L"✊⚖：";
-                if (enemy.IsExposed())
-                    message += std::to_wstring(enemy.GetBaseWeight());
-                else
-                    message += L"?";
-                if (auto offset = enemy.GetWeightOffset(EAttackType::Rock); offset != 0)
-                    message += std::format(L"+{}", offset);
+                constexpr int offsetY[3] = {0, 1, 2};
+                constexpr const wchar_t* icons[3] = {L"✊", L"✌", L"✋"};
+                auto d = CreateLambdaDisplayer([this, t = types[i], icon = icons[i], row = offsetY[i]](float)
+                {
+                    const Enemy& enemy = characterService.GetEnemy();
+                    std::wstring message = std::wstring(icon) + L"⚖：";
+                    if (enemy.IsExposed())
+                        message += std::to_wstring(enemy.GetBaseWeight());
+                    else
+                        message += L"?";
+                    if (auto offset = enemy.GetWeightOffset(t); offset != 0)
+                        message += std::format(L"+{}", offset);
 
-                DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
-                           ENEMY_WEIGHT_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                           message.c_str(), COLOR_WHITE);
-            });
-
-            enemyWeightEffectors.push_back(CreateHitFlashEffector(std::move(rockWeightDisplayer), COLOR_RED, 300));
-
-            auto scissorsWeightDisplayer = CreateLambdaDisplayer([this](float)
-            {
-                const Enemy& enemy = characterService.GetEnemy();
-                std::wstring message = L"✌⚖：";
-                if (enemy.IsExposed())
-                    message += std::to_wstring(enemy.GetBaseWeight());
-                else
-                    message += L"?";
-                if (auto offset = enemy.GetWeightOffset(EAttackType::Scissors); offset != 0)
-                    message += std::format(L"+{}", offset);
-
-                DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
-                           ENEMY_WEIGHT_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                           message.c_str(), COLOR_WHITE);
-            });
-
-            enemyWeightEffectors.push_back(CreateHitFlashEffector(std::move(scissorsWeightDisplayer), COLOR_RED, 300));
-
-            auto paperWeightDisplayer = CreateLambdaDisplayer([this](float)
-            {
-                const Enemy& enemy = characterService.GetEnemy();
-                std::wstring message = L"✋⚖：";
-                if (enemy.IsExposed())
-                    message += std::to_wstring(enemy.GetBaseWeight());
-                else
-                    message += L"?";
-                if (auto offset = enemy.GetWeightOffset(EAttackType::Paper); offset != 0)
-                    message += std::format(L"+{}", offset);
-
-                DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
-                           ENEMY_WEIGHT_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                           message.c_str(), COLOR_WHITE);
-            });
-
-            enemyWeightEffectors.push_back(CreateHitFlashEffector(std::move(paperWeightDisplayer), COLOR_RED, 300));
+                    DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
+                               ENEMY_WEIGHT_START_Y + row * OFFSET_Y + TEXT_OFFSET_Y,
+                               message.c_str(), COLOR_WHITE);
+                });
+                weightDisplayers[i] = d.get();
+                push_back(std::move(d));
+            }
         }
 
         void PrintEnemyInfoWithoutWeight() const
@@ -302,7 +266,7 @@ namespace mc { namespace {
         }
     };
 
-    export std::unique_ptr<IDisplayer> CreateCharacterDisplayer(IBattleService& characterService,
+    export std::unique_ptr<Displayer> CreateCharacterDisplayer(IBattleService& characterService,
                                                                 IRenderService& renderService)
     {
         return std::make_unique<CharacterDisplayer>(characterService, renderService);

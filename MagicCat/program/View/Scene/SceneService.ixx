@@ -16,7 +16,7 @@ namespace mc
 {
     export enum class ESceneState
     {
-        Info, Combat, Rules
+        Info, Combat, Rules, Cutscene
     };
 
 
@@ -24,6 +24,8 @@ namespace mc
     export struct EnterCutSceneEvent : IEvent {};
 
     export struct ExitCutSceneEvent : IEvent {};
+
+    export struct CutsceneFinishedEvent : IEvent {};
 
     export struct ActionSelectionEvent : IEvent
     {
@@ -92,8 +94,9 @@ namespace mc
         virtual void SetCurrentScene(ESceneState type) = 0;
     };
 
-    export std::unique_ptr<ISceneService> CreateSceneService();
+    export std::unique_ptr<ISceneService> CreateSceneService(IRenderService* renderService = nullptr);
     export std::unique_ptr<IScene> CreateRulesScene(IInputService& inputService, ISceneService& sceneService, IAssetService& assetService, IRenderService& renderService);
     export std::unique_ptr<IScene> CreateInfoScene(IInputService& inputService, ISceneService& sceneService, IRenderService& renderService, IBattleService& BattleService);
     export std::unique_ptr<IScene> CreateCombatScene(ISceneService& sceneService, IAssetService& assetService, ICardService& cardService, IInputService& inputService, IRenderService& renderService, IBattleService& BattleService);
+    export std::unique_ptr<IScene> CreateCutsceneScene(ISceneService& sceneService, IAssetService& assetService, IRenderService& renderService, IBattleService& battleService);
 } // namespace mc

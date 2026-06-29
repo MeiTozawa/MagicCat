@@ -20,7 +20,7 @@ namespace mc
         constexpr int DIALOG_TAIL_HEIGHT = 16;
     }
 
-    export class DialogDisplayer : public IDisplayer
+    export class DialogDisplayer : public Displayer
     {
         IRenderService& renderService;
         int centerX;
@@ -38,9 +38,7 @@ namespace mc
             color = messageColor;
         }
 
-        void Update(float deltaTime) override {}
-
-        void Draw(float deltaTime) const override
+        void OnDraw(float deltaTime) const override
         {
             if (text.empty())
                 return;

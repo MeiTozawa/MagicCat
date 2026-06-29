@@ -26,7 +26,7 @@ namespace mc
         constexpr int TEXT_OFFSET_Y = -25;
     }
 
-    class ControlDisplayer : public IDisplayer
+    class ControlDisplayer : public Displayer
     {
         IAssetService& assetService;
         IRenderService& renderService;
@@ -38,9 +38,7 @@ namespace mc
         {
         }
 
-        void Update(float deltaTime) override {}
-
-        void Draw(float deltaTime) const override
+        void OnDraw(float deltaTime) const override
         {
             int icon = assetService.GetImageHandle(EImage::KB_Q);
             DrawRotaGraphF(KB_Q_X, Y, 1.0, 0.0, icon, TRUE);
@@ -62,7 +60,7 @@ namespace mc
         }
     };
 
-    export std::unique_ptr<IDisplayer> CreateControlDisplayer(IAssetService& assetService, IRenderService& renderService, uint32_t color = 0xFFFFFF)
+    export std::unique_ptr<Displayer> CreateControlDisplayer(IAssetService& assetService, IRenderService& renderService, uint32_t color = 0xFFFFFF)
     {
         return std::make_unique<ControlDisplayer>(assetService, renderService, color);
     }

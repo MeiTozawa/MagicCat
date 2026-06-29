@@ -3,36 +3,26 @@ module;
 #include "tweeny.h"
 
 module EffectorFactory;
-import AnimationFactory;
 
-namespace mc
-{
-    class HitFlashEffector : public EffectorPlayer
+namespace mc {
+    class HitFlashEffector : public Effector
     {
-        bool isPlaying = false;
         const int flashTime = 0;
         int bright = 255;
         tweeny::tween<int> colorTween = {};
         uint32_t flashColor = 0xFF0000;
 
     public:
-        HitFlashEffector(std::unique_ptr<IDisplayer>&& displayer, const int flashTime, uint32_t color) :
-            EffectorPlayer(std::move(displayer)), flashTime(flashTime), flashColor(color) {}
-
-        void Play() override
+        HitFlashEffector(const int flashTime, uint32_t color) :
+            flashTime(flashTime), flashColor(color)
         {
             colorTween = tweeny::from(255)
                          .to(0).during(50)
                          .to(255).during(flashTime).via(tweeny::easing::quadraticOut);
-
-            isPlaying = true;
         }
 
-        void Update(float deltaTime) override
+        bool Update(float deltaTime) override
         {
-            displayer->Update(deltaTime);
-            if (!isPlaying) return;
-
             int deltaMs = static_cast<int>(deltaTime * 1000.0f);
             colorTween.step(deltaMs);
 
@@ -41,11 +31,12 @@ namespace mc
             if (colorTween.progress() >= 1.0f)
             {
                 bright = 255;
-                isPlaying = false;
+                return false;
             }
+            return true;
         }
 
-        void Draw(float deltaTime) const override
+        void BeforeDraw() const override
         {
             int flashR = (flashColor >> 16) & 0xFF;
             int flashG = (flashColor >> 8) & 0xFF;
@@ -56,15 +47,18 @@ namespace mc
             int curB = flashB + (255 - flashB) * bright / 255;
 
             SetDrawBright(curR, curG, curB);
-            displayer->Draw(deltaTime);
+        }
+
+        void AfterDraw() const override
+        {
             SetDrawBright(255, 255, 255);
         }
     };
 
-    std::unique_ptr<EffectorPlayer> CreateHitFlashEffector(
-        std::unique_ptr<IDisplayer>&& displayer, uint32_t color, int flashTime
+    std::unique_ptr<Effector> CreateHitFlashEffector(
+        uint32_t color, int flashTime
     )
     {
-        return std::make_unique<HitFlashEffector>(std::move(displayer), flashTime, color);
+        return std::make_unique<HitFlashEffector>(flashTime, color);
     }
 }

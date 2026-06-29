@@ -5,8 +5,7 @@ module;
 #include "DxLib.h"
 
 module RenderService;
-namespace mc
-{
+namespace mc {
     class DxLibRenderService : public IRenderService
     {
     public:
@@ -35,9 +34,11 @@ namespace mc
             ::DrawGraph(x, y, handle, transFlag ? TRUE : FALSE);
         }
 
-        void DrawRectRotaGraph(int x, int y, int srcX, int srcY, int width, int height, double extRate, double angle, int graphHandle, bool transFlag, bool turnFlag) override
+        void DrawRectRotaGraph(int x, int y, int srcX, int srcY, int width, int height, double extRate, double angle,
+                               int graphHandle, bool transFlag, bool turnFlag) override
         {
-            ::DrawRectRotaGraph(x, y, srcX, srcY, width, height, extRate, angle, graphHandle, transFlag ? TRUE : FALSE, turnFlag ? TRUE : FALSE);
+            ::DrawRectRotaGraph(x, y, srcX, srcY, width, height, extRate, angle, graphHandle, transFlag ? TRUE : FALSE,
+                                turnFlag ? TRUE : FALSE);
         }
 
         void SetDrawBlendMode(int blendMode, int pal) override
@@ -75,10 +76,10 @@ namespace mc
 
         void DrawHollowBox(int x1, int y1, int x2, int y2, int thickness, uint32_t color) override
         {
-            DrawBoxAA(x1,              y1,              x2,              y1 + thickness, color, true);
-            DrawBoxAA(x1,              y2 - thickness,  x2,              y2,             color, true);
-            DrawBoxAA(x1,              y1,              x1 + thickness,  y2,             color, true);
-            DrawBoxAA(x2 - thickness,  y1,              x2,              y2,             color, true);
+            DrawBoxAA(x1, y1, x2, y1 + thickness, color, true);
+            DrawBoxAA(x1, y2 - thickness, x2, y2, color, true);
+            DrawBoxAA(x1, y1, x1 + thickness, y2, color, true);
+            DrawBoxAA(x2 - thickness, y1, x2, y2, color, true);
         }
     };
 

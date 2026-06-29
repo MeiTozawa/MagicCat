@@ -1,42 +1,36 @@
 module;
 
 export module EffectorFactory;
-import AnimationFactory;
-import DisplayerBase;
-namespace mc
-{
+namespace mc {
     export enum class EEffector
     {
         HitFlash, Fade
     };
-    
-    export class EffectorPlayer : virtual public IDisplayer
-    {
-    protected:
-        std::unique_ptr<IDisplayer> displayer;
-        bool isPlaying = false;
 
+    export class Effector
+    {
     public:
-        explicit EffectorPlayer(std::unique_ptr<IDisplayer>&& displayer) : displayer(std::move(displayer)) {}
-        ~EffectorPlayer() override = default;
-        virtual void Play() = 0;
-        virtual bool IsPlaying() final { return isPlaying; }
-        void Update(float deltaTime) override = 0;
-        void Draw(float deltaTime) const override = 0;
+        virtual ~Effector() = default;
+        virtual bool Update(float deltaTime) = 0;
+        virtual void BeforeDraw() const = 0;
+        virtual void AfterDraw() const = 0;
+        /// @brief この Effector が適用された状態で Displayer を描画すべきか。
+        /// false を返した場合 OnDraw はスキップされる。
+        virtual bool ShouldDraw() const { return true; }
     };
 
-    export std::unique_ptr<EffectorPlayer> CreateHitFlashEffector(
-        std::unique_ptr<IDisplayer>&& displayer, uint32_t color, int flashTime = 300
+    export std::unique_ptr<Effector> CreateHitFlashEffector(
+        uint32_t color, int flashTime = 300
     );
-    export std::unique_ptr<EffectorPlayer> CreateFadeEffector(
-        std::unique_ptr<IDisplayer>&& displayer, int fadeInTime, int holdTime, int fadeOutTime
+    export std::unique_ptr<Effector> CreateFadeEffector(
+        int fadeInTime, int holdTime, int fadeOutTime
     );
     /// @brief 透明 → 不透明（単方向フェードアウト）
-    export std::unique_ptr<EffectorPlayer> CreateFadeOutEffector(
-        std::unique_ptr<IDisplayer>&& displayer, int durationMs
+    export std::unique_ptr<Effector> CreateFadeOutEffector(
+        int durationMs
     );
     /// @brief 不透明 → 透明（単方向フェードイン）
-    export std::unique_ptr<EffectorPlayer> CreateFadeInEffector(
-        std::unique_ptr<IDisplayer>&& displayer, int durationMs
+    export std::unique_ptr<Effector> CreateFadeInEffector(
+        int durationMs
     );
 }

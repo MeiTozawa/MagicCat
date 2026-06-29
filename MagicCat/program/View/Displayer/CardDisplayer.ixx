@@ -48,7 +48,7 @@ namespace mc
         EventHandle handUpdateHandle;
         std::vector<Card> cachedHand;
 
-        std::unique_ptr<IDisplayer> CreatePrintACardDisplayer(Card card, tnl::Vector2i start_position, std::wstring message) const
+        std::unique_ptr<Displayer> CreatePrintACardDisplayer(Card card, tnl::Vector2i start_position, std::wstring message) const
         {
             return CreateLambdaDisplayer([card, start_position, message, this](float deltaTime)
             {
@@ -120,9 +120,8 @@ namespace mc
                 // If this is the newest card, wrap it in HitFlashEffector
                 if (isDraw && i == cachedHand.size() - 1)
                 {
-                    auto flashEffector = CreateHitFlashEffector(std::move(cardDisplay), 0x000000, 300);
-                    flashEffector->Play();
-                    push_back(std::move(flashEffector));
+                    cardDisplay->AddEffector(CreateHitFlashEffector(0x000000, 300));
+                    push_back(std::move(cardDisplay));
                 }
                 else
                 {
@@ -162,7 +161,7 @@ namespace mc
         }
     };
 
-    export std::unique_ptr<IDisplayer> CreateCardDisplayer(ICardService& cardService, IAssetService& assetService, IRenderService& renderService)
+    export std::unique_ptr<Displayer> CreateCardDisplayer(ICardService& cardService, IAssetService& assetService, IRenderService& renderService)
     {
         return std::make_unique<CardDisplayer>(cardService, assetService, renderService);
     }

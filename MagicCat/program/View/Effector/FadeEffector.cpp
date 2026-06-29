@@ -3,7 +3,6 @@ module;
 
 module EffectorFactory;
 namespace mc {
-    
     // -------------------------------------------------------------------------
     // tween 構築ヘルパー（値渡し・値返しで真の連鎖呼び出しが可能）
     // durationMs が 0 の場合はそのステップを追加せずそのまま返す
@@ -31,7 +30,7 @@ namespace mc {
 
     // -------------------------------------------------------------------------
 
-    class FadeEffector : public EffectorPlayer
+    class FadeEffector : public Effector
     {
     private:
         tweeny::tween<int> alphaTween;
@@ -39,18 +38,9 @@ namespace mc {
         int fadeInTime, holdTime, fadeOutTime;
 
     public:
-        FadeEffector(std::unique_ptr<IDisplayer>&& displayer, int fadeInTime, int holdTime, int fadeOutTime)
-            : EffectorPlayer(std::move(displayer)),
-              fadeInTime(fadeInTime), holdTime(holdTime), fadeOutTime(fadeOutTime) {}
-
-        void Play() override
+        FadeEffector(int fadeInTime, int holdTime, int fadeOutTime)
+            : fadeInTime(fadeInTime), holdTime(holdTime), fadeOutTime(fadeOutTime)
         {
-            if (fadeInTime == 0 && holdTime == 0 && fadeOutTime == 0)
-            {
-                isPlaying = false;
-                return;
-            }
-
             const int startAlpha = (fadeInTime > 0) ? 0 : 255;
             currentAlpha = startAlpha;
 
@@ -62,14 +52,14 @@ namespace mc {
                             fadeInTime),
                         holdTime),
                     fadeOutTime);
-
-            isPlaying = true;
         }
 
-        void Update(float deltaTime) override
+        bool Update(float deltaTime) override
         {
-            displayer->Update(deltaTime);
-            if (!isPlaying) return;
+            if (fadeInTime == 0 && holdTime == 0 && fadeOutTime == 0)
+            {
+                return false;
+            }
 
             int dtMs = static_cast<int>(deltaTime * 1000.0f);
             alphaTween.step(dtMs);
@@ -78,46 +68,46 @@ namespace mc {
             if (alphaTween.progress() >= 1.0f)
             {
                 currentAlpha = alphaTween.peek();
-                isPlaying = false;
+                return false;
             }
+            return true;
         }
 
-        void Draw(float deltaTime) const override
+        void BeforeDraw() const override
         {
             if (currentAlpha <= 0)
-                return;
-
+                return;  // 完全透明 — 描画不要
             if (currentAlpha < 255)
-            {
                 SetDrawBlendMode(DX_BLENDMODE_ALPHA, currentAlpha);
-                displayer->Draw(deltaTime);
-                SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-            }
-            else
-            {
-                displayer->Draw(deltaTime);
-            }
         }
+
+        void AfterDraw() const override
+        {
+            if (currentAlpha <= 0) return;
+            SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+        }
+
+        bool ShouldDraw() const override { return currentAlpha > 0; }
     };
 
-    std::unique_ptr<EffectorPlayer> CreateFadeEffector(
-        std::unique_ptr<IDisplayer>&& displayer, int fadeInTime, int holdTime, int fadeOutTime
+    std::unique_ptr<Effector> CreateFadeEffector(
+        int fadeInTime, int holdTime, int fadeOutTime
     )
     {
-        return std::make_unique<FadeEffector>(std::move(displayer), fadeInTime, holdTime, fadeOutTime);
+        return std::make_unique<FadeEffector>(fadeInTime, holdTime, fadeOutTime);
     }
 
-    std::unique_ptr<EffectorPlayer> CreateFadeOutEffector(
-        std::unique_ptr<IDisplayer>&& displayer, int durationMs
+    std::unique_ptr<Effector> CreateFadeOutEffector(
+        int durationMs
     )
     {
-        return CreateFadeEffector(std::move(displayer), durationMs, 0, 0);
+        return CreateFadeEffector(durationMs, 0, 0);
     }
 
-    std::unique_ptr<EffectorPlayer> CreateFadeInEffector(
-        std::unique_ptr<IDisplayer>&& displayer, int durationMs
+    std::unique_ptr<Effector> CreateFadeInEffector(
+        int durationMs
     )
     {
-        return CreateFadeEffector(std::move(displayer), 0, 0, durationMs);
+        return CreateFadeEffector(0, 0, durationMs);
     }
 }

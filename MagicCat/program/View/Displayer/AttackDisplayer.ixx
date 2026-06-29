@@ -7,7 +7,7 @@ import DisplayerBase;
 
 namespace mc
 {
-    export class AttackDisplayer : public IDisplayer
+    export class AttackDisplayer : public Displayer
     {
         float x, y, scale;
         int handle = -1;
@@ -21,9 +21,7 @@ namespace mc
             handle = imageHandle;
         }
 
-        void Update(float deltaTime) override {}
-
-        void Draw(float deltaTime) const override
+        void OnDraw(float deltaTime) const override
         {
             if (handle != -1)
             {

@@ -49,6 +49,7 @@ public:
     MOCK_METHOD(int, GetDrawStringWidth, (const wchar_t*), (override));
     MOCK_METHOD(void, DrawRectRotaGraph, (int, int, int, int, int, int, double, double, int, bool, bool), (override));
     MOCK_METHOD(void, SetDrawBlendMode, (int, int), (override));
+    MOCK_METHOD(void, DrawRoundRectFrame, (int, int, int, int, int, int, uint32_t), (override));
 };
 
 } // namespace mc

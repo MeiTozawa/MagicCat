@@ -1,5 +1,7 @@
 #include <dxe.h>
 #include "gm_main.h"
+
+#include <RenderUtils.h>
 #include <windows.h>
 
 #include <ResourceConstantHedder.h>
@@ -35,8 +37,8 @@ void InitGameServices()
     // 2. Create services that depend on config
     cardService = CreateCardService(*configService);
 
-    // 3. Scene Service (no args)
-    sceneService = CreateSceneService();
+    // 3. Scene Service — pass renderService for fade transitions
+    sceneService = CreateSceneService(renderService.get());
 
     // 4. Battle Sequence Service depends on config and card.
     //    It also owns the player/enemy characters.
@@ -46,10 +48,15 @@ void InitGameServices()
     audioService = CreateAudioService(*assetService, *BattleService);
 
     // 6. Register Scenes with their dependencies
-    sceneService->RegisterScene(ESceneState::Info, CreateInfoScene(*inputService, *sceneService, *renderService, *BattleService));
-    sceneService->RegisterScene(ESceneState::Combat, CreateCombatScene(*sceneService, *assetService, *cardService, *inputService, *renderService, *BattleService));
-    sceneService->RegisterScene(ESceneState::Rules, CreateRulesScene(*inputService, *sceneService, *assetService, *renderService));
-
+    sceneService->RegisterScene(ESceneState::Info,
+                                CreateInfoScene(*inputService, *sceneService, *renderService, *BattleService));
+    sceneService->RegisterScene(ESceneState::Combat,
+                                CreateCombatScene(*sceneService, *assetService, *cardService, *inputService,
+                                                  *renderService, *BattleService));
+    sceneService->RegisterScene(ESceneState::Rules,
+                                CreateRulesScene(*inputService, *sceneService, *assetService, *renderService));
+    sceneService->RegisterScene(ESceneState::Cutscene,
+                                CreateCutsceneScene(*sceneService, *assetService, *renderService, *BattleService));
 }
 
 void GameStart()
@@ -57,11 +64,11 @@ void GameStart()
     ChangeFontType(DX_FONTTYPE_NORMAL);
     InitGameServices();
     AddFontResourceEx(FILE_PATH_OTF_UNIFONT_17, FR_PRIVATE, nullptr);
-    ChangeFont(FONT_NAME_UNIFONT); 
+    ChangeFont(FONT_NAME_UNIFONT);
     SetFontSize(48);
     ChangeFontType(DX_FONTTYPE_NORMAL);
     SetFontThickness(1);
-    SetBackgroundColor(7, 31, 56);
+    SetBackgroundColor(COLOR_BG << 8 >> 24, COLOR_BG << 16 >> 24, COLOR_BG << 24 >> 24);
 }
 
 void GameMain(float deltaTime)
@@ -69,7 +76,4 @@ void GameMain(float deltaTime)
     sceneService->Update(deltaTime);
 }
 
-void GameEnd()
-{
-
-}
+void GameEnd() {}

@@ -15,10 +15,9 @@ import InputService;
 import Displayer;
 
 namespace mc {
-    static constexpr float CUTSCENE_DURATION = 2.0f;
+    static constexpr float CUTSCENE_DURATION = 1.0f;
     static constexpr float SPRITE_EXT_RATE = 8.f;
 
-    // --- スロットレイアウト定数（旧 CutsceneLayout） ---
     static constexpr int SLOT_COUNT = 3;
     static constexpr float SLOT_X_FRACTIONS[3] = {0.25f, 0.50f, 0.75f};
     static constexpr float SLOT_Y_FRACTION = 0.45f;

@@ -37,8 +37,7 @@ namespace mc {
             Character::rockDamage = rockDamage;
             Character::scissorsDamage = scissorsDamage;
             Character::paperDamage = paperDamage;
-            healthComp = std::make_unique<HealthComponent>(this);
-            healthComp->Reset(hp);
+            healthComp = std::make_unique<HealthComponent>(this, hp);
             tags.push_back(ETag::Enemy);
         }
 

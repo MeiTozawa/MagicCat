@@ -26,14 +26,14 @@ namespace mc {
 
     export class HealthComponent : public IDamageable
     {
-        int maxHp = 10;
-        int hp = 10;
+        int maxHp;
+        int hp;
         bool isDead = false;
         Character* owner;
 
     public:
-        explicit HealthComponent(Character* owner)
-            : owner(owner) {}
+        explicit HealthComponent(Character* owner, int hp)
+            : maxHp(hp), hp(hp), owner(owner){}
 
         void TakeDamage(int damage) override
         {

@@ -61,6 +61,7 @@ namespace mc {
         {
             name = L"Player";
             sprite = ESprite::MeowingCat;
+            
             rockDamage = 2;
             scissorsDamage = 2;
             paperDamage = 2;
@@ -71,7 +72,7 @@ namespace mc {
             // scissorsDamage = 12;
             // paperDamage = 12;
 #endif
-            healthComp = std::make_unique<HealthComponent>(this);
+            healthComp = std::make_unique<HealthComponent>(this, 20);
             tags.push_back(ETag::Player);
         }
 

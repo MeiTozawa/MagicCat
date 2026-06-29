@@ -15,6 +15,9 @@ namespace mc
         constexpr int DIALOG_PADDING_X = 24;
         constexpr int DIALOG_PADDING_Y = 12;
         constexpr int DIALOG_BORDER = 3;
+        constexpr int DIALOG_RADIUS = 14;
+        constexpr int DIALOG_TAIL_WIDTH = 22;
+        constexpr int DIALOG_TAIL_HEIGHT = 16;
     }
 
     export class DialogDisplayer : public IDisplayer
@@ -52,9 +55,17 @@ namespace mc
             int x2 = x1 + boxWidth;
             int y2 = y1 + boxHeight;
 
-            renderService.DrawBoxAA(x1, y1, x2, y2, COLOR_BLACK, true);
-            DrawHollowBox(&renderService, x1, y1, x2, y2, DIALOG_BORDER, color);
-            DrawCenterString(&renderService, centerX, y1 + boxHeight / 2, text, color);
+            // プレイヤー（吹き出しの左上方向）を指す小さな三角形
+            int tailCenterX = x1 + boxWidth / 4;
+            int tailHalf = DIALOG_TAIL_WIDTH / 2;
+            DrawTriangle(tailCenterX - tailHalf, y1, tailCenterX + tailHalf, y1,
+                         tailCenterX, y1 - DIALOG_TAIL_HEIGHT, color, TRUE);
+
+            // 背景は透明にして、角丸の枠線のみを描画する
+            for (int i = 0; i < DIALOG_BORDER; ++i)
+                DrawRoundRect(x1 + i, y1 + i, x2 - i, y2 - i, DIALOG_RADIUS, DIALOG_RADIUS, color, FALSE);
+
+            renderService.DrawCenterString(centerX, y1 + boxHeight / 2, text.c_str(), color);
         }
     };
 

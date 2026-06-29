@@ -98,5 +98,5 @@ namespace mc
     export std::unique_ptr<IScene> CreateRulesScene(IInputService& inputService, ISceneService& sceneService, IAssetService& assetService, IRenderService& renderService);
     export std::unique_ptr<IScene> CreateInfoScene(IInputService& inputService, ISceneService& sceneService, IRenderService& renderService, IBattleService& BattleService);
     export std::unique_ptr<IScene> CreateCombatScene(ISceneService& sceneService, IAssetService& assetService, ICardService& cardService, IInputService& inputService, IRenderService& renderService, IBattleService& BattleService);
-    export std::unique_ptr<IScene> CreateCutsceneScene(ISceneService& sceneService, IAssetService& assetService, IRenderService& renderService, IBattleService& battleService);
+    export std::unique_ptr<IScene> CreateCutsceneScene(IInputService& inputService, ISceneService& sceneService, IAssetService& assetService, IRenderService& renderService, IBattleService& battleService);
 } // namespace mc

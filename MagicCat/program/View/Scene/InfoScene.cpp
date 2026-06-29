@@ -81,7 +81,7 @@ namespace mc
                                                L"MagicCat", infoColor);
                 SetFontSize(48);
                 renderService.DrawCenterString(dxe::GetWindowWidthF(.5f), dxe::GetWindowHeightF(.4f),
-                                 L"吾輩は魔法猫である！\n"
+                                 L"吾輩はマジックキャットである！\n"
                                  "これはじゃんけんの対決にゃん！\n"
                                  "吾輩は魔法のカードを使って敵の精神状態を操り、\n"
                                  "相手の出し手を左右できるにゃん。\n"

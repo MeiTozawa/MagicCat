@@ -9,3 +9,4 @@ export import :Card;
 export import :Character;
 export import :Dialog;
 export import :Sprite;
+export import :CutsceneFocus;

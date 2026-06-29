@@ -68,6 +68,32 @@ namespace mc
             return -1;
         }
 
+        ESprite ParseSprite(const std::string& name) const override
+        {
+            static const std::unordered_map<std::string, ESprite> spriteMap = {
+                {"Bunny",            ESprite::Bunny},
+                {"Wolf",             ESprite::Wolf},
+                {"CluckingChicken",  ESprite::CluckingChicken},
+                {"CoralCrab",        ESprite::CoralCrab},
+                {"CroakingToad",     ESprite::CroakingToad},
+                {"DaintyPig",        ESprite::DaintyPig},
+                {"HonkingGoose",     ESprite::HonkingGoose},
+                {"LeapingFrog",      ESprite::LeapingFrog},
+                {"MadBoar",          ESprite::MadBoar},
+                {"MeowingCat",       ESprite::MeowingCat},
+                {"PasturingSheep",   ESprite::PasturingSheep},
+                {"SlowTurtle",       ESprite::SlowTurtle},
+                {"SnowFox",          ESprite::SnowFox},
+                {"SpikeyPorcupine",  ESprite::SpikeyPorcupine},
+                {"StinkySkunk",      ESprite::StinkySkunk},
+                {"TimberWolf",       ESprite::TimberWolf},
+                {"TinyChick",        ESprite::TinyChick}
+            };
+            if (auto it = spriteMap.find(name); it != spriteMap.end())
+                return it->second;
+            return ESprite::Null;
+        }
+
     private:
         std::unordered_map<EImage, int> imageMappings = {};
         std::unordered_map<ESprite, int> spriteMappings = {};

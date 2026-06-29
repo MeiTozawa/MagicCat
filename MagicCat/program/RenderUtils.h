@@ -29,6 +29,11 @@ namespace mc {
     static constexpr uint32_t COLOR_CARD_SCISSORS = 0xB0C4DE;
     static constexpr uint32_t COLOR_CARD_MAGIC = 0x9370DB;
 	
+	struct Point
+	{
+		float x, y;
+	};
+	
     /**
      * @brief ウィンドウの幅を取得します。
      * @return ウィンドウの幅（ピクセル）

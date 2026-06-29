@@ -6,7 +6,6 @@ module;
 
 export module DisplayerBase;
 import EffectorFactory;
-import EventBus;
 
 namespace mc {
 
@@ -37,23 +36,18 @@ namespace mc {
             OnUpdate(deltaTime);
             if (!effectors.empty())
             {
+                // コールバックを収集してから erase し、最後にまとめて呼ぶ。
+                // erase_if 中に effectors を変更するとイテレータが無効になるため分離が必要。
                 std::vector<std::function<void()>> callbacks;
-                std::vector<const Effector*> completed;
                 std::erase_if(effectors, [&](const auto& entry)
                 {
                     const bool done = !entry.effector->Update(deltaTime);
-                    if (done)
-                    {
-                        completed.push_back(entry.effector.get());
-                        if (entry.onComplete) callbacks.push_back(entry.onComplete);
-                    }
+                    if (done && entry.onComplete)
+                        callbacks.push_back(entry.onComplete);
                     return done;
                 });
-                for (const auto* e : completed)
-                    PublishEffectEnd(e);
                 for (const auto& cb : callbacks)
                     cb();
-                // すべての effector が完了したら自動 Stop
                 if (stopOnEffectEnd && effectors.empty())
                 {
                     stopOnEffectEnd = false;
@@ -115,26 +109,7 @@ namespace mc {
             x = newX;
             y = newY;
         }
-
-    private:
-        // EffectEndEvent の定義より後に実装される（このヘッダの下部で定義）
-        void PublishEffectEnd(const Effector* effector) const;
     };
-
-    /// @brief エフェクトが完了・削除される直前に発行されるイベント
-    export struct EffectEndEvent : IEvent
-    {
-        const Displayer* displayer;  ///< エフェクトを保持していた Displayer
-        const Effector*  effector;   ///< 完了した Effector
-
-        EffectEndEvent(const Displayer* d, const Effector* e) : displayer(d), effector(e) {}
-    };
-
-    // Displayer::PublishEffectEnd の実装 — EffectEndEvent が完全型になった後
-    inline void Displayer::PublishEffectEnd(const Effector* effector) const
-    {
-        EventBus::Publish(EffectEndEvent{this, effector});
-    }
 
     export struct Displayers : Displayer
     {

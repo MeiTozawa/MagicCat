@@ -56,7 +56,7 @@ void InitGameServices()
     sceneService->RegisterScene(ESceneState::Rules,
                                 CreateRulesScene(*inputService, *sceneService, *assetService, *renderService));
     sceneService->RegisterScene(ESceneState::Cutscene,
-                                CreateCutsceneScene(*sceneService, *assetService, *renderService, *BattleService));
+                                CreateCutsceneScene(*inputService, *sceneService, *assetService, *renderService, *BattleService));
 }
 
 void GameStart()

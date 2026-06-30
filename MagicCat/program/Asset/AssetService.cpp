@@ -10,6 +10,12 @@ module;
 
 module AssetService;
 
+namespace {
+    // ESprite の整数値がこの閾値未満のスプライトは 32×32 のスプライトシートを使用する。
+    // この閾値以上のスプライトは 16×16 のスプライトシートを使用する。
+    constexpr int LARGE_SPRITE_ENUM_THRESHOLD = 100;
+}
+
 namespace mc {
     class AssetService : public IAssetService
     {
@@ -21,7 +27,7 @@ namespace mc {
             LoadSounds();
         }
 
-        const int GetFontHandle(EFont e) override
+        int GetFontHandle(EFont e) override
         {
             if (e == EFont::Null) return -1;
             if (fontMappings.contains(e))
@@ -31,7 +37,7 @@ namespace mc {
         }
 
 
-        const int GetImageHandle(EImage e) override
+        int GetImageHandle(EImage e) override
         {
             if (e == EImage::Null) return -1;
             if (imageMappings.contains(e))
@@ -40,7 +46,7 @@ namespace mc {
             return -1;
         }
 
-        const int GetSpriteHandle(ESprite e) override
+        int GetSpriteHandle(ESprite e) override
         {
             if (e == ESprite::Null) return -1;
             if (spriteMappings.contains(e))
@@ -49,16 +55,16 @@ namespace mc {
             return -1;
         }
 
-        const SpriteInfo GetSpriteInfo(ESprite e) override
+        SpriteInfo GetSpriteInfo(ESprite e) override
         {
-            if (static_cast<int>(e) < 100)
+            if (static_cast<int>(e) < LARGE_SPRITE_ENUM_THRESHOLD)
             {
                 return {{32, 32}, 4};
             }
             return {{16, 16}, 4};
         }
 
-        const int GetSoundHandle(ESound e) override
+        int GetSoundHandle(ESound e) override
         {
             if (e == ESound::Null) return -1;
             if (soundMappings.contains(e))

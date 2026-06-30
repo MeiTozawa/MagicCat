@@ -19,11 +19,12 @@ public:
 
 class MockAssetService : public IAssetService {
 public:
-    MOCK_METHOD(const int, GetImageHandle, (EImage), (override));
-    MOCK_METHOD(const int, GetFontHandle, (EFont), (override));
-    MOCK_METHOD(const int, GetSpriteHandle, (ESprite), (override));
-    MOCK_METHOD(const SpriteInfo, GetSpriteInfo, (ESprite), (override));
-    MOCK_METHOD(const int, GetSoundHandle, (ESound), (override));
+    MOCK_METHOD(int, GetImageHandle, (EImage), (override));
+    MOCK_METHOD(int, GetFontHandle, (EFont), (override));
+    MOCK_METHOD(int, GetSpriteHandle, (ESprite), (override));
+    MOCK_METHOD(SpriteInfo, GetSpriteInfo, (ESprite), (override));
+    MOCK_METHOD(int, GetSoundHandle, (ESound), (override));
+    MOCK_METHOD(ESprite, ParseSprite, (const std::string&), (const, override));
 };
 
 class MockAudioService : public IAudioService {
@@ -65,6 +66,7 @@ public:
     MOCK_METHOD(void, SetFontSize, (int), (override));
     MOCK_METHOD(void, SetFontThickness, (int), (override));
     MOCK_METHOD(void, SetBackgroundColor, (int, int, int), (override));
+    MOCK_METHOD(void, DrawFilledTriangle, (int, int, int, int, int, int, uint32_t), (override));
 };
 
 class MockBattleService : public IBattleService {

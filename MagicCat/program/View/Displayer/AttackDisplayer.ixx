@@ -21,6 +21,7 @@ namespace mc {
             handle = imageHandle;
         }
 
+    private:
         void OnDraw(float deltaTime) const override
         {
             if (handle != -1)

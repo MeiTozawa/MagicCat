@@ -36,6 +36,7 @@ namespace mc {
             color = messageColor;
         }
 
+    private:
         void OnDraw(float deltaTime) const override
         {
             if (text.empty())

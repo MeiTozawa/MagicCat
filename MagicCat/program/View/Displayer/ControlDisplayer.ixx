@@ -32,6 +32,7 @@ namespace mc {
         ControlDisplayer(IAssetService& asset, IRenderService& render, uint32_t c = 0xFFFFFF)
             : assetService(asset), renderService(render), color(c) {}
 
+    private:
         void OnDraw(float deltaTime) const override
         {
             int icon = assetService.GetImageHandle(EImage::KB_Q);

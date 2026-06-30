@@ -36,6 +36,7 @@ namespace mc {
             size = info.size;
         }
 
+    private:
         void OnUpdate(float deltaTime) override
         {
             timer += deltaTime;

@@ -46,6 +46,7 @@ namespace mc {
               , m_source(source), m_destination(destination)
               , m_duration(duration) {}
 
+    private:
         void OnUpdate(float deltaTime) override
         {
             if (deltaTime > 0.f)

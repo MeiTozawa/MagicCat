@@ -24,10 +24,11 @@ namespace mc {
 
         std::vector<EffectorEntry> effectors = {};
 
-    public:
+    private:
         virtual void OnUpdate(float deltaTime) {}
         virtual void OnDraw(float deltaTime) const = 0;
 
+    public:
         virtual ~Displayer() = default;
 
         virtual void Update(float deltaTime)
@@ -137,6 +138,7 @@ namespace mc {
             return displayers[index];
         }
 
+    private:
         void OnUpdate(float deltaTime) override
         {
             for (auto& displayer : displayers)
@@ -159,6 +161,7 @@ namespace mc {
         LambdaDisplayer(std::function<void(float)> drawFunc, std::function<void(float)> updateFunc = nullptr)
             : onDrawFunc(std::move(drawFunc)), onUpdateFunc(std::move(updateFunc)) {}
 
+    private:
         void OnUpdate(float deltaTime) override
         {
             if (onUpdateFunc) onUpdateFunc(deltaTime);

@@ -1,5 +1,6 @@
 module;
 #include "tweeny.h"
+#include <cmath>
 
 module EffectorFactory;
 import RenderService;
@@ -58,15 +59,12 @@ namespace mc {
                 return false;
             }
 
-            int dtMs = static_cast<int>(deltaTime * 1000.0f);
+            int dtMs = static_cast<int>(std::lround(deltaTime * 1000.0f));
             alphaTween.step(dtMs);
             currentAlpha = alphaTween.peek();
 
             if (alphaTween.progress() >= 1.0f)
-            {
-                currentAlpha = alphaTween.peek();
                 return false;
-            }
             return true;
         }
 
@@ -98,13 +96,13 @@ namespace mc {
         IRenderService& renderService, int durationMs
     )
     {
-        return CreateFadeEffector(renderService, durationMs, 0, 0);
+        return CreateFadeEffector(renderService, 0, 0, durationMs);   // correct: fadeOutTime
     }
 
     std::unique_ptr<Effector> CreateFadeInEffector(
         IRenderService& renderService, int durationMs
     )
     {
-        return CreateFadeEffector(renderService, 0, 0, durationMs);
+        return CreateFadeEffector(renderService, durationMs, 0, 0);   // correct: fadeInTime
     }
 }

@@ -24,7 +24,7 @@ namespace mc {
     public:
         explicit ScreenFadeDisplayer(IRenderService& rs) : rs(rs) {}
 
-    protected:
+    private:
         void OnDraw(float) const override
         {
             const float w = static_cast<float>(rs.GetWindowWidth());
@@ -191,8 +191,12 @@ namespace mc {
 
         void SetCurrentScene(ESceneState state) override
         {
+            if (!scenes.contains(state) || !scenes[state]) return;
+
             sceneStack.clear();
             sceneStack.push_back(state);
+            scenes[state]->Start();
+            StartFadeIn();
         }
     };
 

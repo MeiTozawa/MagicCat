@@ -91,11 +91,6 @@ namespace mc {
             EventBus::Unsubscribe(addWeightEvent);
         }
 
-        void OnUpdate(float deltaTime) override
-        {
-            Displayers::OnUpdate(deltaTime);
-        }
-
     private:
         void PrintPlayerInfo() const
         {

@@ -22,6 +22,10 @@ import Enemy;
 import Player;
 import HealthComponent;
 
+#include "MockServices.h"
+
+using ::testing::NiceMock;
+
 namespace mc {
 namespace {
 
@@ -94,6 +98,7 @@ class SequentialBattlesIntegrationTest : public ::testing::Test
 {
 protected:
     StubConfigService                          configService;
+    NiceMock<MockAssetService>                 mockAssetService;
 
     std::unique_ptr<ICardService>              cardService;
     std::unique_ptr<ISceneService>             sceneService;
@@ -120,7 +125,7 @@ protected:
         sceneService->RegisterScene(ESceneState::Cutscene, std::move(cutsceneScene));
 
         BattleService = CreateBattleService(
-            configService, *cardService);
+            configService, *cardService, mockAssetService);
     }
 
     void TearDown() override

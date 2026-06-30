@@ -20,6 +20,10 @@ import Enemy;
 import Player;
 import HealthComponent;
 
+#include "MockServices.h"
+
+using ::testing::NiceMock;
+
 namespace mc {
 namespace {
 
@@ -64,8 +68,9 @@ public:
 RC_GTEST_PROP(BattleServiceProperties, SequenceAlwaysHasThreeEntries, ())
 {
     StubConfigService cfg;
+    NiceMock<MockAssetService> mockAsset;
     auto cs = CreateCardService(cfg);
-    auto bs = CreateBattleService(cfg, *cs);
+    auto bs = CreateBattleService(cfg, *cs, mockAsset);
 
     bs->StartStage();
 
@@ -80,8 +85,9 @@ RC_GTEST_PROP(BattleServiceProperties, SequenceAlwaysHasThreeEntries, ())
 RC_GTEST_PROP(BattleServiceProperties, SequenceEntriesAreFromPool, ())
 {
     StubConfigService cfg;
+    NiceMock<MockAssetService> mockAsset;
     auto cs = CreateCardService(cfg);
-    auto bs = CreateBattleService(cfg, *cs);
+    auto bs = CreateBattleService(cfg, *cs, mockAsset);
 
     bs->StartStage();
 
@@ -108,8 +114,9 @@ RC_GTEST_PROP(BattleServiceProperties, SequenceEntriesAreFromPool, ())
 RC_GTEST_PROP(BattleServiceProperties, CurrentIndexAlwaysStartsAtZero, ())
 {
     StubConfigService cfg;
+    NiceMock<MockAssetService> mockAsset;
     auto cs = CreateCardService(cfg);
-    auto bs = CreateBattleService(cfg, *cs);
+    auto bs = CreateBattleService(cfg, *cs, mockAsset);
 
     bs->StartStage();
 
@@ -124,8 +131,9 @@ RC_GTEST_PROP(BattleServiceProperties, CurrentIndexAlwaysStartsAtZero, ())
 RC_GTEST_PROP(BattleServiceProperties, EnemyDeathAlwaysIncrementsIndex, ())
 {
     StubConfigService cfg;
+    NiceMock<MockAssetService> mockAsset;
     auto cs = CreateCardService(cfg);
-    auto bs = CreateBattleService(cfg, *cs);
+    auto bs = CreateBattleService(cfg, *cs, mockAsset);
 
     bs->StartStage();
     RC_ASSERT(bs->GetCurrentEnemyIndex() == 0);
@@ -144,8 +152,9 @@ RC_GTEST_PROP(BattleServiceProperties, EnemyDeathAlwaysIncrementsIndex, ())
 RC_GTEST_PROP(BattleServiceProperties, ThreeConsecutiveEnemyDeaths_StageClear, ())
 {
     StubConfigService cfg;
+    NiceMock<MockAssetService> mockAsset;
     auto cs = CreateCardService(cfg);
-    auto bs = CreateBattleService(cfg, *cs);
+    auto bs = CreateBattleService(cfg, *cs, mockAsset);
 
     bs->StartStage();
 

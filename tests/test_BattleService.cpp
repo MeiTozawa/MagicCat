@@ -18,6 +18,10 @@ import Enemy;
 import Player;
 import HealthComponent;
 
+#include "MockServices.h"
+
+using ::testing::NiceMock;
+
 namespace mc {
 namespace {
 
@@ -64,13 +68,14 @@ class BattleServiceTest : public ::testing::Test
 {
 protected:
     StubConfigService              configService;
+    NiceMock<MockAssetService>     mockAssetService;
     std::unique_ptr<ICardService>  cardService;
     std::unique_ptr<IBattleService> battleService;
 
     void SetUp() override
     {
         cardService   = CreateCardService(configService);
-        battleService = CreateBattleService(configService, *cardService);
+        battleService = CreateBattleService(configService, *cardService, mockAssetService);
     }
 
     void TearDown() override
@@ -274,7 +279,8 @@ TEST_F(BattleServiceTest, StartStage_WithSmallPool_StillGeneratesThreeEnemies)
     StubConfigService tinyConfig(
         { EnemyConfig{ 10, 1, 1, 1, 1, L"Lone", "Bunny" } });
     auto cs  = CreateCardService(tinyConfig);
-    auto bs  = CreateBattleService(tinyConfig, *cs);
+    NiceMock<MockAssetService> mockAsset;
+    auto bs  = CreateBattleService(tinyConfig, *cs, mockAsset);
 
     bs->StartStage();
     EXPECT_EQ(bs->GetSequence().size(), 3u);

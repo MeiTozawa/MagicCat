@@ -32,6 +32,10 @@ namespace mc {
         virtual void DrawRoundRectFrame(int x1, int y1, int x2, int y2,
                                         int cornerRadius, int thickness, uint32_t color) = 0;
 
+        /// @brief 塗り潰し三角形を描画する
+        virtual void DrawFilledTriangle(int x1, int y1, int x2, int y2,
+                                        int x3, int y3, uint32_t color) = 0;
+
         /// @brief 文字列を中央揃えで描画する（x, y は中心座標）
         virtual void DrawCenterString(int x, int y, const wchar_t* text, uint32_t color) = 0;
         /// @brief 文字列を左揃えで描画する（x は左端、y は中心Y座標）

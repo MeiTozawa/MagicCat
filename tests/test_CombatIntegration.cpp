@@ -25,6 +25,7 @@ namespace {
     protected:
         std::unique_ptr<MockInputService> mockInput;
         std::unique_ptr<MockConfigService> mockConfig;
+        std::unique_ptr<MockAssetService> mockAssetService;
         std::unique_ptr<IBattleService> characterService;
         std::unique_ptr<ICardService> cardService;
         std::unique_ptr<ISceneService> sceneService;
@@ -36,6 +37,7 @@ namespace {
         void SetUp() override {
             mockInput = std::make_unique<NiceMock<MockInputService>>();
             mockConfig = std::make_unique<NiceMock<MockConfigService>>();
+            mockAssetService = std::make_unique<NiceMock<MockAssetService>>();
             
             enemyConfigs = { {10, 0, 10, 10, 10, L"TestEnemy", ""} };
             cardConfigs = {
@@ -46,7 +48,7 @@ namespace {
 
             cardService = CreateCardService(*mockConfig);
             sceneService = CreateSceneService();
-            characterService = CreateBattleService(*mockConfig, *cardService);
+            characterService = CreateBattleService(*mockConfig, *cardService, *mockAssetService);
 
             characterService->StartStage();
             cardService->Start();

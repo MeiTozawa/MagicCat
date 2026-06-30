@@ -6,7 +6,6 @@ module;
 #include <algorithm>
 #include <ranges>
 #include <string>
-#include <unordered_map>
 #include <RandomUtils.h>
 
 module BattleService;
@@ -16,44 +15,17 @@ import Character;
 import AssetService;
 
 namespace mc {
-    ESprite ParseSprite(const std::string& name)
-    {
-        static const std::unordered_map<std::string, ESprite> spriteMap = {
-            {"Bunny", ESprite::Bunny},
-            {"Wolf", ESprite::Wolf},
-            {"CluckingChicken", ESprite::CluckingChicken},
-            {"CoralCrab", ESprite::CoralCrab},
-            {"CroakingToad", ESprite::CroakingToad},
-            {"DaintyPig", ESprite::DaintyPig},
-            {"HonkingGoose", ESprite::HonkingGoose},
-            {"LeapingFrog", ESprite::LeapingFrog},
-            {"MadBoar", ESprite::MadBoar},
-            {"MeowingCat", ESprite::MeowingCat},
-            {"PasturingSheep", ESprite::PasturingSheep},
-            {"SlowTurtle", ESprite::SlowTurtle},
-            {"SnowFox", ESprite::SnowFox},
-            {"SpikeyPorcupine", ESprite::SpikeyPorcupine},
-            {"StinkySkunk", ESprite::StinkySkunk},
-            {"TimberWolf", ESprite::TimberWolf},
-            {"TinyChick", ESprite::TinyChick}
-        };
-
-        if (auto it = spriteMap.find(name); it != spriteMap.end())
-        {
-            return it->second;
-        }
-        return ESprite::Null;
-    }
-
     class BattleService : public IBattleService
     {
     public:
         BattleService(
             IConfigService& configService,
-            ICardService& cardService
+            ICardService& cardService,
+            IAssetService& assetService
         )
             : configService(configService)
               , cardService(cardService)
+              , assetService(assetService)
         {
             deathHandle = EventBus::Subscribe<DeathEvent>([this](const DeathEvent& e)
             {
@@ -110,7 +82,7 @@ namespace mc {
 
         void LoadEnemy(const EnemyConfig& config) override
         {
-            ESprite sprite = ParseSprite(config.spriteName);
+            ESprite sprite = assetService.ParseSprite(config.spriteName);
             if (currentEnemy)
             {
                 // 既存インスタンスのデータを上書きし、外部からの参照を維持する
@@ -179,6 +151,7 @@ namespace mc {
 
         IConfigService& configService;
         ICardService& cardService;
+        IAssetService& assetService;
 
         std::vector<EnemyConfig> sequence;
         int currentIndex = 0;
@@ -190,10 +163,11 @@ namespace mc {
 
     std::unique_ptr<IBattleService> CreateBattleService(
         IConfigService& configService,
-        ICardService& cardService
+        ICardService& cardService,
+        IAssetService& assetService
     )
     {
         return std::make_unique<BattleService>(
-            configService, cardService);
+            configService, cardService, assetService);
     }
 } // namespace mc

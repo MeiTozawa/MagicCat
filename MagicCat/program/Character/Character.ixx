@@ -36,12 +36,16 @@ namespace mc {
         int playerAttackDamage;
         int enemyAttackDamage;
         float playerWinRate;
+        /// @brief 戦闘解決時点での敵の各手の weight offset（Rock=0, Scissors=1, Paper=2）
+        int enemyWeightOffsets[3];
 
         CombatEvent(EAttackType playerAttackType, EAttackType enemyAttackType,
-                    int playerAttackDamage, int enemyAttackDamage, float playerWinRate = 0.f) :
+                    int playerAttackDamage, int enemyAttackDamage, float playerWinRate = 0.f,
+                    int rockOffset = 0, int scissorsOffset = 0, int paperOffset = 0) :
             playerAttackType(playerAttackType), enemyAttackType(enemyAttackType),
             playerAttackDamage(playerAttackDamage), enemyAttackDamage(enemyAttackDamage),
-            playerWinRate(playerWinRate) {}
+            playerWinRate(playerWinRate),
+            enemyWeightOffsets{rockOffset, scissorsOffset, paperOffset} {}
     };
 
     /**

@@ -99,6 +99,10 @@ namespace mc {
 
                         float playerWinRate = characterService.GetEnemy().GetLoseRateAgainst(playerAttackIntent);
 
+                        int rockOffset     = characterService.GetEnemy().GetWeightOffset(EAttackType::Rock);
+                        int scissorsOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Scissors);
+                        int paperOffset    = characterService.GetEnemy().GetWeightOffset(EAttackType::Paper);
+
                         int playerDamage = characterService.GetPlayer().GetDamage(playerAttackIntent);
                         int enemyDamage = characterService.GetEnemy().GetDamage(enemyAttackIntent);
 
@@ -116,7 +120,8 @@ namespace mc {
                         characterService.GetPlayer().ResetDamageOffset();
 
                         EventBus::Publish(
-                            CombatEvent(playerAttackIntent, enemyAttackIntent, playerDamage, enemyDamage, playerWinRate)
+                            CombatEvent(playerAttackIntent, enemyAttackIntent, playerDamage, enemyDamage,
+                                        playerWinRate, rockOffset, scissorsOffset, paperOffset)
                         );
                     }
                 }

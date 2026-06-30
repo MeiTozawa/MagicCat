@@ -41,17 +41,12 @@ namespace mc {
     constexpr int PLAYER_DIALOG_X = PLAYER_START_X + 50;
     constexpr int PLAYER_DIALOG_Y = PLAYER_START_Y + 100;
     constexpr int DIALOG_FADE_IN_TIME = 150;
-    constexpr int DIALOG_HOLD_TIME = 800;
+    constexpr int DIALOG_HOLD_TIME = 1000;
     constexpr int DIALOG_FADE_OUT_TIME = 250;
-#ifdef _DEBUG
-    constexpr float HIGH_WIN_RATE = 0.6f;
-    constexpr float LOW_WIN_RATE = 0.4f;
-#else
-    constexpr float HIGH_WIN_RATE = 0.75f;
-    constexpr float LOW_WIN_RATE = 0.25f;
-#endif
+    /// @brief 敵のいずれかの手の weight offset が他の手との差分がこの値以上の場合、
+    /// プレイヤーは「正解の手」を判断できるとみなす。
+    constexpr int KUSSOU_WEIGHT_DIFF_THRESHOLD = 7;
 
-    constexpr uint32_t DIALOG_COLOR_LUCKY = COLOR_GREEN;
     constexpr uint32_t DIALOG_COLOR_DAMN = COLOR_RED;
 
     class CombatScene : public IScene
@@ -158,20 +153,50 @@ namespace mc {
                 enemyAttack->ResetAndAddEffector(
                     CreateFadeEffector(renderService, ATTACK_FADE_IN_TIME, ATTACK_HOLD_TIME, ATTACK_FADE_OUT_TIME));
 
-                bool playerLost = LosesTo(event.playerAttackType, event.enemyAttackType);
-                bool playerWon = LosesTo(event.enemyAttackType, event.playerAttackType);
+                // クッソー条件：
+                //   敵のいずれかの offset が他の2手の offset に対して差分 >= 閾値
+                //   かつ プレイヤーがその「正解手」を打っていた
+                //   かつ それでも負けた
+                if (LosesTo(event.playerAttackType, event.enemyAttackType))
+                {
+                    const int offsets[3] = {
+                        event.enemyWeightOffsets[0], // Rock
+                        event.enemyWeightOffsets[1], // Scissors
+                        event.enemyWeightOffsets[2]  // Paper
+                    };
+                    constexpr EAttackType types[3] = {
+                        EAttackType::Rock, EAttackType::Scissors, EAttackType::Paper
+                    };
 
-                if (event.playerWinRate > HIGH_WIN_RATE && playerLost)
-                {
-                    playerDialog->SetMessage(L"クッソー", DIALOG_COLOR_DAMN);
-                    playerDialog->ResetAndAddEffector(
-                        CreateFadeEffector(renderService, DIALOG_FADE_IN_TIME, DIALOG_HOLD_TIME, DIALOG_FADE_OUT_TIME));
-                }
-                else if (event.playerWinRate < LOW_WIN_RATE && playerWon)
-                {
-                    playerDialog->SetMessage(L"ラッキー", DIALOG_COLOR_LUCKY);
-                    playerDialog->ResetAndAddEffector(
-                        CreateFadeEffector(renderService, DIALOG_FADE_IN_TIME, DIALOG_HOLD_TIME, DIALOG_FADE_OUT_TIME));
+                    bool playedCorrectCounter = false;
+                    for (int i = 0; i < 3; ++i)
+                    {
+                        bool dominates = true;
+                        for (int j = 0; j < 3; ++j)
+                        {
+                            if (i == j) continue;
+                            if (offsets[i] - offsets[j] < KUSSOU_WEIGHT_DIFF_THRESHOLD)
+                            {
+                                dominates = false;
+                                break;
+                            }
+                        }
+                        if (dominates)
+                        {
+                            if (LosesTo(types[i], event.playerAttackType))
+                            {
+                                playedCorrectCounter = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (playedCorrectCounter)
+                    {
+                        playerDialog->SetMessage(L"クッソー", DIALOG_COLOR_DAMN);
+                        playerDialog->ResetAndAddEffector(
+                            CreateFadeEffector(renderService, DIALOG_FADE_IN_TIME, DIALOG_HOLD_TIME, DIALOG_FADE_OUT_TIME));
+                    }
                 }
             });
 

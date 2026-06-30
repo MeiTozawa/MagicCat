@@ -72,7 +72,7 @@ namespace mc {
             // scissorsDamage = 12;
             // paperDamage = 12;
 #endif
-            healthComp = std::make_unique<HealthComponent>(this, 20);
+            healthComp = std::make_unique<HealthComponent>(this, 15);
             tags.push_back(ETag::Player);
         }
 

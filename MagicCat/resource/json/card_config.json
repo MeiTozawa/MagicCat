@@ -1,13 +1,13 @@
 [
-  { "type": 0, "value": 2 },
   { "type": 0, "value": 3 },
   { "type": 0, "value": 4 },
-  { "type": 1, "value": 2 },
+  { "type": 0, "value": 5 },
   { "type": 1, "value": 3 },
   { "type": 1, "value": 4 },
-  { "type": 2, "value": 2 },
+  { "type": 1, "value": 5 },
   { "type": 2, "value": 3 },
   { "type": 2, "value": 4 },
+  { "type": 2, "value": 5 },
   { "type": 3, "value": 2 },
   { "type": 3, "value": 3 },
   { "type": 3, "value": 4 }

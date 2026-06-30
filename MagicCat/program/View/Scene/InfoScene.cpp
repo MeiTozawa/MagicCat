@@ -57,9 +57,8 @@ namespace mc {
             if (inputService.IsPressed(InputAction::IgConfirm))
             {
                 battleService.StartStage();
-                return;
             }
-            if (inputService.IsPressed(InputAction::IgShowRules))
+            else if (inputService.IsPressed(InputAction::IgShowRules))
             {
                 sceneService.PushScene(ESceneState::Rules);
                 return;

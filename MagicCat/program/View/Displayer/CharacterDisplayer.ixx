@@ -162,7 +162,7 @@ namespace mc {
                     auto color = COLOR_WHITE;
                     std::wstring message = std::format(L"{}⚔：{}", attackTypes[i].second,
                                                        player.GetBaseDamage(attackTypes[i].first));
-                    if (int offset = player.GetAttackOffset(); offset != 0)
+                    if (int offset = player.GetDamageOffset(); offset != 0)
                     {
                         color = COLOR_RED;
                         message += std::format(L"+{}", offset);

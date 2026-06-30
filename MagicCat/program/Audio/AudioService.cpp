@@ -126,7 +126,11 @@ namespace mc {
                 StartBgmFadeIn();
             }));
 
-            // --- BGM フェードアウト：ゲーム終了 ---
+            // --- BGM フェードアウト：敵撃破（次の敵へ移行）／ゲーム終了 ---
+            eventHandles.push_back(EventBus::Subscribe<EnemyDefeatedEvent>([this](const EnemyDefeatedEvent&)
+            {
+                StartBgmFadeOut();
+            }));
             eventHandles.push_back(EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&)
             {
                 StartBgmFadeOut();

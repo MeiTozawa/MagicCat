@@ -136,7 +136,7 @@ namespace mc {
                     if (mp >= POWER_BOOST_MP_COST)
                     {
                         ChangeMp(-POWER_BOOST_MP_COST);
-                        SetAttackOffset(3);
+                        SetDamageOffset(2);
                         EventBus::Publish<MagicEvent>(MagicEvent{EMagic::PowerBoost});
                         return true;
                     }
@@ -150,7 +150,7 @@ namespace mc {
                 {
                     ChangeMp(-HEAL_MP_COST);
                     healUses++;
-                    healthComp->Heal(1);
+                    healthComp->Heal(2);
                     EventBus::Publish<MagicEvent>(MagicEvent{EMagic::Heal});
                     return true;
                 }

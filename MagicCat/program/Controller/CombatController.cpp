@@ -99,8 +99,8 @@ namespace mc {
 
                         float playerWinRate = characterService.GetEnemy().GetLoseRateAgainst(playerAttackIntent);
 
-                        int playerDamage = characterService.GetPlayer().GetBaseDamage(playerAttackIntent);
-                        int enemyDamage = characterService.GetEnemy().GetBaseDamage(enemyAttackIntent);
+                        int playerDamage = characterService.GetPlayer().GetDamage(playerAttackIntent);
+                        int enemyDamage = characterService.GetEnemy().GetDamage(enemyAttackIntent);
 
                         if (LosesTo(playerAttackIntent, enemyAttackIntent))
                         {
@@ -113,7 +113,7 @@ namespace mc {
 
                         characterService.GetEnemy().ResetWeights();
                         cardService.DiscardHand();
-                        characterService.GetPlayer().ResetAttackOffset();
+                        characterService.GetPlayer().ResetDamageOffset();
 
                         EventBus::Publish(
                             CombatEvent(playerAttackIntent, enemyAttackIntent, playerDamage, enemyDamage, playerWinRate)

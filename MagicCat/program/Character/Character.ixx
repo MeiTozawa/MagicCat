@@ -55,7 +55,7 @@ namespace mc {
         int rockDamage = 1;
         int scissorsDamage = 1;
         int paperDamage = 1;
-        int attackOffset = 0;
+        int damageOffset = 0;
         ESprite sprite = ESprite::Null;
 
         std::vector<ETag> tags;
@@ -65,9 +65,9 @@ namespace mc {
         virtual void TakeDamage(int amount) const = 0;
         ESprite GetSprite() const { return sprite; }
         std::wstring GetName() const { return name; }
-        void SetAttackOffset(int offset) { attackOffset = offset; }
-        int GetAttackOffset() const { return attackOffset; }
-        void ResetAttackOffset() { attackOffset = 0; }
+        void SetDamageOffset(int offset) { damageOffset = offset; }
+        int GetDamageOffset() const { return damageOffset; }
+        void ResetDamageOffset() { damageOffset = 0; }
 
         const std::vector<ETag>& GetTags() const { return tags; }
 
@@ -86,5 +86,22 @@ namespace mc {
                 return 0;
             }
         }
+        
+        int GetDamage(EAttackType t) const
+        {
+            switch (t)
+            {
+            case EAttackType::Rock:
+                return rockDamage + damageOffset;
+            case EAttackType::Scissors:
+                return scissorsDamage + damageOffset;
+            case EAttackType::Paper:
+                return paperDamage + damageOffset;
+            default:
+                assert(false && "未知の攻撃タイプです");
+                return 0;
+            }
+        }
+        
     };
 } // namespace mc

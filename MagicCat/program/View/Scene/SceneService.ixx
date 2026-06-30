@@ -29,9 +29,10 @@ namespace mc {
     {
         int selectedIndex;
         bool isMagicMenuOpen;
+        bool silent; 
 
-        explicit ActionSelectionEvent(const int selected_index, bool isMagicMenuOpen = false)
-            : selectedIndex(selected_index), isMagicMenuOpen(isMagicMenuOpen) {}
+        explicit ActionSelectionEvent(const int selected_index, bool isMagicMenuOpen = false, bool silent = false)
+            : selectedIndex(selected_index), isMagicMenuOpen(isMagicMenuOpen), silent(silent) {}
     };
 
     /// @brief ビュー（UIや描画等）の基本インターフェース

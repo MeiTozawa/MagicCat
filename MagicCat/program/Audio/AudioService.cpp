@@ -86,9 +86,10 @@ namespace mc {
                 PlaySoundMem(assetService.GetSoundHandle(ESound::Shuffle), DX_PLAYTYPE_BACK);
             }));
 
-            eventHandles.push_back(EventBus::Subscribe<ActionSelectionEvent>([this](const ActionSelectionEvent&)
+            eventHandles.push_back(EventBus::Subscribe<ActionSelectionEvent>([this](const ActionSelectionEvent& e)
             {
-                PlaySoundMem(assetService.GetSoundHandle(ESound::Select), DX_PLAYTYPE_BACK);
+                if (!e.silent)
+                    PlaySoundMem(assetService.GetSoundHandle(ESound::Select), DX_PLAYTYPE_BACK);
             }));
 
             eventHandles.push_back(EventBus::Subscribe<CombatEvent>([this](const CombatEvent&)

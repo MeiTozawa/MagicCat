@@ -30,7 +30,7 @@ namespace mc {
         {
             selectedActionIndex = 0;
             isMagicMenuOpen = false;
-            EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
+            EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen, true));
         }
 
         void Update(float deltaTime) override

@@ -11,7 +11,6 @@ import BattleService;
 import AssetService;
 import RenderService;
 import EventBus;
-import InputService;
 import Displayer;
 
 namespace mc {
@@ -42,7 +41,6 @@ namespace mc {
 
     class CutsceneScene : public IScene
     {
-        IInputService& inputService;
         ISceneService& sceneService;
         IAssetService& assetService;
         IRenderService& renderService;
@@ -55,19 +53,16 @@ namespace mc {
         bool finished = false;
 
     public:
-        CutsceneScene(IInputService& inputService, ISceneService& sceneService,
+        CutsceneScene(ISceneService& sceneService,
                       IAssetService& assetService, IRenderService& renderService,
                       IBattleService& battleService)
-            : inputService(inputService)
-              , sceneService(sceneService)
+            : sceneService(sceneService)
               , assetService(assetService)
               , renderService(renderService)
               , battleService(battleService) {}
 
         void Start() override
         {
-            inputService.PushContext(InputContext::CutScene);
-
             const float screenW = static_cast<float>(renderService.GetWindowWidth());
             const float screenH = static_cast<float>(renderService.GetWindowHeight());
 
@@ -131,20 +126,18 @@ namespace mc {
             if (!finished && timer >= CUTSCENE_DURATION)
             {
                 finished = true;
-                inputService.PopContext();
                 EventBus::Publish(CutsceneFinishedEvent{});
             }
         }
     };
 
     std::unique_ptr<IScene> CreateCutsceneScene(
-        IInputService& inputService,
         ISceneService& sceneService,
         IAssetService& assetService,
         IRenderService& renderService,
         IBattleService& battleService)
     {
         return std::make_unique<CutsceneScene>(
-            inputService, sceneService, assetService, renderService, battleService);
+            sceneService, assetService, renderService, battleService);
     }
 } // namespace mc

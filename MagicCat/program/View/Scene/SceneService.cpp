@@ -47,9 +47,12 @@ namespace mc {
         bool initialized = false;
 
         IRenderService* renderService = nullptr;
+        IInputService* inputService = nullptr;
         std::unique_ptr<Displayer> fadeDisplayer;
 
         std::optional<ESceneState> pendingScene;
+
+        bool cutsceneContextPushed = false;
 
         EventHandle stageClearHandle;
         EventHandle stageFailHandle;
@@ -71,14 +74,35 @@ namespace mc {
             }
         }
 
+        /// @brief Cutscene 用の入力コンテキストをフェード開始前に切り替える。
+        /// 押し込み／取り出しが対になるようフラグで管理する。
+        void SetCutsceneInputContext(bool entering)
+        {
+            if (!inputService) return;
+            if (entering && !cutsceneContextPushed)
+            {
+                inputService->PushContext(InputContext::Cutscene);
+                cutsceneContextPushed = true;
+            }
+            else if (!entering && cutsceneContextPushed)
+            {
+                inputService->PopContext();
+                cutsceneContextPushed = false;
+            }
+        }
+
         void TransitionTo(ESceneState next)
         {
+            // 入力コンテキストはフェード（淡出）を開始する前に切り替える
+            SetCutsceneInputContext(next == ESceneState::Cutscene);
+
             pendingScene = next;
             if (renderService)
             {
                 fadeDisplayer = std::make_unique<ScreenFadeDisplayer>(*renderService);
+                // 旧シーンを BG で覆う（alpha 0→255）。完了後にシーンを差し替える。
                 fadeDisplayer->AddEffector(
-                    CreateFadeOutEffector(*renderService, SCENE_FADE_DURATION_MS),
+                    CreateFadeInEffector(*renderService, SCENE_FADE_DURATION_MS),
                     [this]() { ApplyPendingTransition(); }
                 );
                 fadeDisplayer->Play();
@@ -94,7 +118,8 @@ namespace mc {
             if (renderService)
             {
                 fadeDisplayer = std::make_unique<ScreenFadeDisplayer>(*renderService);
-                fadeDisplayer->AddEffector(CreateFadeInEffector(*renderService, SCENE_FADE_DURATION_MS));
+                // 新シーンを表示する（BG 覆いを alpha 255→0 で剥がす）。
+                fadeDisplayer->AddEffector(CreateFadeOutEffector(*renderService, SCENE_FADE_DURATION_MS));
                 fadeDisplayer->Play();
             }
         }
@@ -115,7 +140,8 @@ namespace mc {
         }
 
     public:
-        explicit SceneService(IRenderService* rs) : renderService(rs)
+        explicit SceneService(IRenderService* rs, IInputService* is = nullptr)
+            : renderService(rs), inputService(is)
         {
             stageClearHandle = EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&)
             {
@@ -200,8 +226,8 @@ namespace mc {
         }
     };
 
-    std::unique_ptr<ISceneService> CreateSceneService(IRenderService* renderService)
+    std::unique_ptr<ISceneService> CreateSceneService(IRenderService* renderService, IInputService* inputService)
     {
-        return std::make_unique<SceneService>(renderService);
+        return std::make_unique<SceneService>(renderService, inputService);
     }
 } // namespace mc

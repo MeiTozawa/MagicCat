@@ -91,7 +91,8 @@ namespace mc {
         virtual void SetCurrentScene(ESceneState type) = 0;
     };
 
-    export std::unique_ptr<ISceneService> CreateSceneService(IRenderService* renderService = nullptr);
+    export std::unique_ptr<ISceneService> CreateSceneService(IRenderService* renderService = nullptr,
+                                                             IInputService* inputService = nullptr);
     export std::unique_ptr<IScene> CreateRulesScene(IInputService& inputService, ISceneService& sceneService,
                                                     IAssetService& assetService, IRenderService& renderService);
     export std::unique_ptr<IScene> CreateInfoScene(IInputService& inputService, ISceneService& sceneService,
@@ -99,7 +100,7 @@ namespace mc {
     export std::unique_ptr<IScene> CreateCombatScene(ISceneService& sceneService, IAssetService& assetService,
                                                      ICardService& cardService, IInputService& inputService,
                                                      IRenderService& renderService, IBattleService& battleService);
-    export std::unique_ptr<IScene> CreateCutsceneScene(IInputService& inputService, ISceneService& sceneService,
+    export std::unique_ptr<IScene> CreateCutsceneScene(ISceneService& sceneService,
                                                        IAssetService& assetService, IRenderService& renderService,
                                                        IBattleService& battleService);
 } // namespace mc

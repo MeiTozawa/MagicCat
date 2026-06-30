@@ -51,7 +51,7 @@ namespace mc {
 
             icon = assetService.GetImageHandle(EImage::KB_SPACE);
             renderService.DrawRotaGraphF(KB_SPACE_X, Y, 1.0, 0.0, icon, true);
-            renderService.DrawString(KB_SPACE_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"アクション", color);
+            renderService.DrawString(KB_SPACE_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"選択する", color);
         }
     };
 

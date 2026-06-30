@@ -33,7 +33,7 @@ void InitGameServices()
     inputService = CreateInputService();
 
     cardService = CreateCardService(*configService);
-    sceneService = CreateSceneService(renderService.get());
+    sceneService = CreateSceneService(renderService.get(), inputService.get());
     battleService = CreateBattleService(*configService, *cardService);
     audioService = CreateAudioService(*assetService, *battleService);
 
@@ -45,7 +45,7 @@ void InitGameServices()
     sceneService->RegisterScene(ESceneState::Rules,
                                 CreateRulesScene(*inputService, *sceneService, *assetService, *renderService));
     sceneService->RegisterScene(ESceneState::Cutscene,
-                                CreateCutsceneScene(*inputService, *sceneService, *assetService, *renderService,
+                                CreateCutsceneScene(*sceneService, *assetService, *renderService,
                                                     *battleService));
 }
 

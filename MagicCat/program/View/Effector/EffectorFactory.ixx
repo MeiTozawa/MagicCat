@@ -26,11 +26,11 @@ namespace mc {
     export std::unique_ptr<Effector> CreateFadeEffector(
         IRenderService& renderService, int fadeInTime, int holdTime, int fadeOutTime
     );
-    /// @brief 透明 → 不透明（単方向フェードアウト）
+    /// @brief 不透明 → 透明（alpha 255→0、覆いを剥がして表示する）
     export std::unique_ptr<Effector> CreateFadeOutEffector(
         IRenderService& renderService, int durationMs
     );
-    /// @brief 不透明 → 透明（単方向フェードイン）
+    /// @brief 透明 → 不透明（alpha 0→255、BG で覆う）
     export std::unique_ptr<Effector> CreateFadeInEffector(
         IRenderService& renderService, int durationMs
     );

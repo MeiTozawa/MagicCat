@@ -17,7 +17,7 @@ namespace mc {
 
     export enum class InputContext
     {
-        InGame, Menu, CutScene
+        InGame, Menu, Cutscene
     };
 
     /// @brief 入力（キーボード、マウス等）の監視とコンテキスト管理を行うサービス

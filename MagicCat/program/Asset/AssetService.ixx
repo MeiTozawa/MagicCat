@@ -27,7 +27,8 @@ namespace mc {
         Confirm = 0, DrawCard, EnemyHurt,
         Fail, PlayerHurt, Select,
         Shuffle, Warning, Win,
-        Beep, Magic
+        Beep, Magic,
+        BGM
     };
 
     export enum class ESprite

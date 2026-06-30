@@ -199,7 +199,8 @@ namespace mc {
                     {ESound::Warning, FILE_PATH_MP3_WARNING},
                     {ESound::Win, FILE_PATH_MP3_WIN},
                     {ESound::Beep, FILE_PATH_MP3_BEEP},
-                    {ESound::Magic, FILE_PATH_MP3_MAGIC}
+                    {ESound::Magic, FILE_PATH_MP3_MAGIC},
+                    {ESound::BGM, FILE_PATH_MP3_BGM}
                 };
 
                 for (const auto& snd : sounds)

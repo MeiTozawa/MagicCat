@@ -48,6 +48,7 @@ constexpr const wchar_t* FILE_PATH_JSON_ENEMY_CONFIG = L"resource/Json/enemy_con
 constexpr const wchar_t* FILE_PATH_JSON_EXAMPLE = L"resource/Json/example.json"; 
 
 constexpr const wchar_t* FILE_PATH_MP3_BEEP = L"resource/Sounds/Beep.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_BGM = L"resource/Sounds/BGM.mp3"; 
 constexpr const wchar_t* FILE_PATH_MP3_CONFIRM = L"resource/Sounds/Confirm.mp3"; 
 constexpr const wchar_t* FILE_PATH_MP3_DRAWCARD = L"resource/Sounds/DrawCard.mp3"; 
 constexpr const wchar_t* FILE_PATH_MP3_ENEMYHURT = L"resource/Sounds/EnemyHurt.mp3"; 
@@ -111,6 +112,7 @@ const std::vector<const wchar_t*> FILE_PATH_TBL_JSON = {
 };
 const std::vector<const wchar_t*> FILE_PATH_TBL_SOUNDS = {
     FILE_PATH_MP3_BEEP,
+    FILE_PATH_MP3_BGM,
     FILE_PATH_MP3_CONFIRM,
     FILE_PATH_MP3_DRAWCARD,
     FILE_PATH_MP3_ENEMYHURT,
@@ -162,6 +164,7 @@ const std::unordered_map<std::wstring, const wchar_t*> FILE_PATH_DICTIONARY = {
     { std::wstring( L"enemy_config.json" ), FILE_PATH_JSON_ENEMY_CONFIG },
     { std::wstring( L"example.json" ), FILE_PATH_JSON_EXAMPLE },
     { std::wstring( L"Beep.mp3" ), FILE_PATH_MP3_BEEP },
+    { std::wstring( L"BGM.mp3" ), FILE_PATH_MP3_BGM },
     { std::wstring( L"Confirm.mp3" ), FILE_PATH_MP3_CONFIRM },
     { std::wstring( L"DrawCard.mp3" ), FILE_PATH_MP3_DRAWCARD },
     { std::wstring( L"EnemyHurt.mp3" ), FILE_PATH_MP3_ENEMYHURT },
@@ -218,6 +221,7 @@ constexpr const wchar_t* FILE_NAME_JSON_ENEMY_CONFIG = L"enemy_config.json";
 constexpr const wchar_t* FILE_NAME_JSON_EXAMPLE = L"example.json"; 
 
 constexpr const wchar_t* FILE_NAME_MP3_BEEP = L"Beep.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_BGM = L"BGM.mp3"; 
 constexpr const wchar_t* FILE_NAME_MP3_CONFIRM = L"Confirm.mp3"; 
 constexpr const wchar_t* FILE_NAME_MP3_DRAWCARD = L"DrawCard.mp3"; 
 constexpr const wchar_t* FILE_NAME_MP3_ENEMYHURT = L"EnemyHurt.mp3"; 
@@ -281,6 +285,7 @@ const std::vector<const wchar_t*> FILE_NAME_TBL_JSON = {
 };
 const std::vector<const wchar_t*> FILE_NAME_TBL_SOUNDS = {
     FILE_NAME_MP3_BEEP,
+    FILE_NAME_MP3_BGM,
     FILE_NAME_MP3_CONFIRM,
     FILE_NAME_MP3_DRAWCARD,
     FILE_NAME_MP3_ENEMYHURT,

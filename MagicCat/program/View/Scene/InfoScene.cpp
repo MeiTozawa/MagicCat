@@ -22,13 +22,17 @@ namespace mc {
         uint32_t infoColor;
         int winCount = 0;
         int failCount = 0;
-        float blinkTimer = 0;
 
     public:
         InfoScene(IInputService& input, ISceneService& scene, IRenderService& render, IBattleService& battle)
             : inputService(input), sceneService(scene), renderService(render), battleService(battle)
         {
             infoColor = 0xF259FF;
+            // これらのサブスクリプションはコンストラクタに配置し、デストラクタで Unsubscribe する。
+            // InfoScene はセッション開始時に一度だけ構築され、複数のステージにまたがって生存し続けるため、
+            // winCount と failCount をステージ間で正確に累積できる。
+            // Start() に移動すると、Start() はシーンがアクティブになるたびに呼ばれるため、
+            // 重複サブスクリプションが発生し、カウントが二重以上に加算されてしまう。
             stageClearHandle = EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&)
             {
                 winCount++;
@@ -53,7 +57,6 @@ namespace mc {
 
         void Update(float deltaTime) override
         {
-            blinkTimer += deltaTime * 60;
             if (inputService.IsPressed(InputAction::IgConfirm))
             {
                 battleService.StartStage();

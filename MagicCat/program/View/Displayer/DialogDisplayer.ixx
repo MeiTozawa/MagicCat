@@ -55,12 +55,11 @@ namespace mc {
             // プレイヤー（吹き出しの左上方向）を指す小さな三角形
             int tailCenterX = x1 + boxWidth / 4;
             int tailHalf = DIALOG_TAIL_WIDTH / 2;
-            DrawTriangle(tailCenterX - tailHalf, y1, tailCenterX + tailHalf, y1,
-                         tailCenterX, y1 - DIALOG_TAIL_HEIGHT, color, TRUE);
+            renderService.DrawFilledTriangle(tailCenterX - tailHalf, y1, tailCenterX + tailHalf, y1,
+                                             tailCenterX, y1 - DIALOG_TAIL_HEIGHT, color);
 
             // 背景は透明にして、角丸の枠線のみを描画する
-            for (int i = 0; i < DIALOG_BORDER; ++i)
-                DrawRoundRect(x1 + i, y1 + i, x2 - i, y2 - i, DIALOG_RADIUS, DIALOG_RADIUS, color, FALSE);
+            renderService.DrawRoundRectFrame(x1, y1, x2, y2, DIALOG_RADIUS, DIALOG_BORDER, color);
 
             renderService.DrawCenterString(centerX, y1 + boxHeight / 2, text.c_str(), color);
         }

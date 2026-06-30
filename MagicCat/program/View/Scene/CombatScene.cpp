@@ -2,6 +2,7 @@ module;
 
 #include <memory>
 #include <format>
+#include <optional>
 #include <RenderUtils.h>
 #include <string>
 
@@ -61,9 +62,9 @@ namespace mc {
         Displayers displayers;
 
         std::unique_ptr<ICombatController> combatController;
-        EventHandle healthChangedEvent = -1;
-        EventHandle combatEvent = -1;
-        EventHandle stageClearHandle = -1;
+        std::optional<EventHandle> healthChangedEvent;
+        std::optional<EventHandle> combatEvent;
+        std::optional<EventHandle> stageClearHandle;
 
         // 各 Displayer の raw pointer（effector を追加するために保持）
         Displayer* playerAnimDisp = nullptr;
@@ -82,20 +83,20 @@ namespace mc {
 
         void Start() override
         {
-            if (healthChangedEvent != -1)
+            if (healthChangedEvent.has_value())
             {
-                EventBus::Unsubscribe(healthChangedEvent);
-                healthChangedEvent = -1;
+                EventBus::Unsubscribe(*healthChangedEvent);
+                healthChangedEvent = std::nullopt;
             }
-            if (combatEvent != -1)
+            if (combatEvent.has_value())
             {
-                EventBus::Unsubscribe(combatEvent);
-                combatEvent = -1;
+                EventBus::Unsubscribe(*combatEvent);
+                combatEvent = std::nullopt;
             }
-            if (stageClearHandle != -1)
+            if (stageClearHandle.has_value())
             {
-                EventBus::Unsubscribe(stageClearHandle);
-                stageClearHandle = -1;
+                EventBus::Unsubscribe(*stageClearHandle);
+                stageClearHandle = std::nullopt;
             }
 
             displayers.clear();
@@ -208,9 +209,9 @@ namespace mc {
 
         ~CombatScene() override
         {
-            if (healthChangedEvent != -1) EventBus::Unsubscribe(healthChangedEvent);
-            if (combatEvent != -1) EventBus::Unsubscribe(combatEvent);
-            if (stageClearHandle != -1) EventBus::Unsubscribe(stageClearHandle);
+            if (healthChangedEvent.has_value()) EventBus::Unsubscribe(*healthChangedEvent);
+            if (combatEvent.has_value()) EventBus::Unsubscribe(*combatEvent);
+            if (stageClearHandle.has_value()) EventBus::Unsubscribe(*stageClearHandle);
         }
 
         void Update(float deltaTime) override

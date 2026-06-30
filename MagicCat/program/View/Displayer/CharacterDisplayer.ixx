@@ -98,9 +98,9 @@ namespace mc {
             const auto playerHealthComp = player.GetHealthComponent();
 
             auto message = std::format(L"HP: {}/{}", playerHealthComp.GetHealth(), playerHealthComp.GetMaxHealth());
-            DrawString(PLAYER_HP_X, PLAYER_HP_Y, message.c_str(), COLOR_WHITE);
+            renderService.DrawString(PLAYER_HP_X, PLAYER_HP_Y, message.c_str(), COLOR_WHITE);
             message = std::format(L"MP: {}/{}", player.GetMp(), player.GetMaxMp());
-            DrawString(PLAYER_MP_X, PLAYER_MP_Y, message.c_str(), COLOR_WHITE);
+            renderService.DrawString(PLAYER_MP_X, PLAYER_MP_Y, message.c_str(), COLOR_WHITE);
         }
 
         void PrintPlayerActions(int focus) const
@@ -126,28 +126,28 @@ namespace mc {
             }
             if (isMagicMenuOpen)
             {
-                DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                renderService.DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                            PLAYER_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
                            L"  戻る", COLOR_WHITE);
 
                 uint32_t c1 = player.IsMagicUsable(EMagic::Clairvoyance) ? COLOR_WHITE : COLOR_GRAY;
-                DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                renderService.DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                            PLAYER_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
                            L"透視 (10MP)", c1);
 
                 uint32_t c2 = player.IsMagicUsable(EMagic::PowerBoost) ? COLOR_WHITE : COLOR_GRAY;
-                DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                renderService.DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                            PLAYER_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
                            L"⚔UP (7MP)", c2);
 
                 uint32_t c3 = player.IsMagicUsable(EMagic::Heal) ? COLOR_WHITE : COLOR_GRAY;
-                DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                renderService.DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                            PLAYER_DAMAGE_START_Y + 3 * OFFSET_Y + TEXT_OFFSET_Y,
                            L"回復 (5MP)", c3);
             }
             else
             {
-                DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                renderService.DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                            PLAYER_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
                            L"  魔法", COLOR_WHITE);
 
@@ -167,7 +167,7 @@ namespace mc {
                         color = COLOR_RED;
                         message += std::format(L"+{}", offset);
                     }
-                    DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
+                    renderService.DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
                                PLAYER_DAMAGE_START_Y + (i + 1) * OFFSET_Y + TEXT_OFFSET_Y,
                                message.c_str(), color);
                 }
@@ -195,7 +195,7 @@ namespace mc {
                     if (auto offset = enemy.GetWeightOffset(t); offset != 0)
                         message += std::format(L"+{}", offset);
 
-                    DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
+                    renderService.DrawString(ENEMY_WEIGHT_START_X + TEXT_OFFSET_X,
                                ENEMY_WEIGHT_START_Y + row * OFFSET_Y + TEXT_OFFSET_Y,
                                message.c_str(), COLOR_WHITE);
                 });
@@ -210,10 +210,10 @@ namespace mc {
             const auto enemyHealthComp = enemy.GetHealthComponent();
 
             auto message = enemy.GetName();
-            DrawString(ENEMY_NAME_X, ENEMY_NAME_Y, message.c_str(), COLOR_WHITE);
+            renderService.DrawString(ENEMY_NAME_X, ENEMY_NAME_Y, message.c_str(), COLOR_WHITE);
 
             message = std::format(L"HP: {}/{}", enemyHealthComp.GetHealth(), enemyHealthComp.GetMaxHealth());
-            DrawString(ENEMY_HP_X, ENEMY_HP_Y, message.c_str(), COLOR_WHITE);
+            renderService.DrawString(ENEMY_HP_X, ENEMY_HP_Y, message.c_str(), COLOR_WHITE);
 
             for (int i = 0; i < 3; ++i)
             {
@@ -237,25 +237,25 @@ namespace mc {
 
             if (enemy.IsExposed())
             {
-                DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                renderService.DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
                            ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
                            std::format(L"✊⚔：{}", enemy.GetBaseDamage(EAttackType::Rock)).c_str(), COLOR_WHITE);
-                DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                renderService.DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
                            ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
                            std::format(L"✌⚔：{}", enemy.GetBaseDamage(EAttackType::Scissors)).c_str(), COLOR_WHITE);
-                DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                renderService.DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
                            ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
                            std::format(L"✋⚔：{}", enemy.GetBaseDamage(EAttackType::Paper)).c_str(), COLOR_WHITE);
             }
             else
             {
-                DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                renderService.DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
                            ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
                            L"✊⚔：?", COLOR_WHITE);
-                DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                renderService.DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
                            ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
                            L"✌⚔：?", COLOR_WHITE);
-                DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                renderService.DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
                            ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
                            L"✋⚔：?", COLOR_WHITE);
             }

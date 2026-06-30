@@ -22,8 +22,8 @@ add_executable(MagicCatTests
     test_SceneService.cpp
     test_CombatIntegration.cpp
     test_GameFlowIntegration.cpp
-    test_BattleSequenceService.cpp
-    test_BattleSequenceServiceProperties.cpp
+    test_BattleService.cpp
+    test_BattleServiceProperties.cpp
     test_SequentialBattlesIntegration.cpp
 )
 

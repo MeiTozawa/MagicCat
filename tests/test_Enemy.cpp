@@ -76,7 +76,13 @@ namespace {
     TEST_F(EnemyTest, GetBaseWeight_ReturnsConstructorValue) {
         Enemy enemy(42, 1, 1, 1, L"TestEnemy");
 
+        // In _DEBUG builds, Enemy::Enemy() forces baseWeight = 1 regardless of the
+        // constructor argument. In release, the constructor argument is used.
+#ifdef _DEBUG
+        EXPECT_EQ(enemy.GetBaseWeight(), 1);
+#else
         EXPECT_EQ(enemy.GetBaseWeight(), 42);
+#endif
     }
 
     TEST_F(EnemyTest, EqualityOperator_SameAttributes_ReturnsTrue) {

@@ -47,9 +47,23 @@ public:
     MOCK_METHOD(void, DrawString, (int, int, const wchar_t*, uint32_t), (override));
     MOCK_METHOD(void, DrawBoxAA, (float, float, float, float, uint32_t, bool), (override));
     MOCK_METHOD(int, GetDrawStringWidth, (const wchar_t*), (override));
+    MOCK_METHOD(void, DrawGraph, (int, int, int, bool), (override));
+    MOCK_METHOD(void, DrawRotaGraphF, (float, float, double, double, int, bool), (override));
     MOCK_METHOD(void, DrawRectRotaGraph, (int, int, int, int, int, int, double, double, int, bool, bool), (override));
-    MOCK_METHOD(void, SetDrawBlendMode, (int, int), (override));
+    MOCK_METHOD(void, SetDrawBlendMode, (BlendMode, int), (override));
+    MOCK_METHOD(void, SetDrawBright, (int, int, int), (override));
     MOCK_METHOD(void, DrawRoundRectFrame, (int, int, int, int, int, int, uint32_t), (override));
+    MOCK_METHOD(void, DrawCenterString, (int, int, const wchar_t*, uint32_t), (override));
+    MOCK_METHOD(void, DrawLeftString, (int, int, const wchar_t*, uint32_t), (override));
+    MOCK_METHOD(void, DrawRightString, (int, int, const wchar_t*, uint32_t), (override));
+    MOCK_METHOD(void, DrawHollowBox, (int, int, int, int, int, uint32_t), (override));
+    MOCK_METHOD(int, GetWindowWidth, (), (const, override));
+    MOCK_METHOD(int, GetWindowHeight, (), (const, override));
+    MOCK_METHOD(void, SetFontTypeNormal, (), (override));
+    MOCK_METHOD(void, ChangeFont, (const wchar_t*), (override));
+    MOCK_METHOD(void, SetFontSize, (int), (override));
+    MOCK_METHOD(void, SetFontThickness, (int), (override));
+    MOCK_METHOD(void, SetBackgroundColor, (int, int, int), (override));
 };
 
 } // namespace mc

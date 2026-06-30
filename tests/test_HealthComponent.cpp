@@ -22,7 +22,7 @@ namespace {
 
     TEST(HealthComponentTest, TakeDamage_ReducesHealth) {
         DummyCharacter character;
-        HealthComponent health(&character);
+        HealthComponent health(&character, 10);
 
         EXPECT_EQ(health.GetHealth(), 10);
         health.TakeDamage(3);
@@ -31,7 +31,7 @@ namespace {
 
     TEST(HealthComponentTest, TakeDamage_FiresHealthChangedEvent) {
         DummyCharacter character;
-        HealthComponent health(&character);
+        HealthComponent health(&character, 10);
 
         bool eventFired = false;
         int receivedHealth = -1;
@@ -50,7 +50,7 @@ namespace {
 
     TEST(HealthComponentTest, TakeDamage_Fatal_FiresDeathEvent) {
         DummyCharacter character;
-        HealthComponent health(&character);
+        HealthComponent health(&character, 10);
 
         bool deathEventFired = false;
         auto handle = EventBus::Subscribe<DeathEvent>([&](const DeathEvent& e) {
@@ -70,7 +70,7 @@ namespace {
 
     TEST(HealthComponentTest, TakeDamage_WhenAlreadyDead_DoesNothing) {
         DummyCharacter character;
-        HealthComponent health(&character);
+        HealthComponent health(&character, 10);
 
         health.TakeDamage(10); // Kill the character
         ASSERT_TRUE(health.IsDead());
@@ -82,7 +82,7 @@ namespace {
 
     TEST(HealthComponentTest, GetMaxHealth_ReturnsDefaultTen) {
         DummyCharacter character;
-        HealthComponent health(&character);
+        HealthComponent health(&character, 10);
 
         EXPECT_EQ(health.GetMaxHealth(), 10);
     }
@@ -91,7 +91,7 @@ namespace {
 
     TEST(HealthComponentTest, Reset_SetsHealthToMaxHp) {
         DummyCharacter character;
-        HealthComponent health(&character);
+        HealthComponent health(&character, 10);
 
         health.Reset(25);
 
@@ -101,7 +101,7 @@ namespace {
 
     TEST(HealthComponentTest, Reset_ClearsDeadState) {
         DummyCharacter character;
-        HealthComponent health(&character);
+        HealthComponent health(&character, 10);
 
         // Kill the character first
         health.TakeDamage(10);
@@ -114,7 +114,7 @@ namespace {
 
     TEST(HealthComponentTest, Reset_AfterPartialDamage_RestoresFullHealth) {
         DummyCharacter character;
-        HealthComponent health(&character);
+        HealthComponent health(&character, 10);
 
         health.TakeDamage(6);
         ASSERT_EQ(health.GetHealth(), 4);
@@ -127,7 +127,7 @@ namespace {
 
     TEST(HealthComponentTest, Reset_DoesNotFireDeathEvent) {
         DummyCharacter character;
-        HealthComponent health(&character);
+        HealthComponent health(&character, 10);
 
         // Kill first so Reset has something meaningful to reset
         health.TakeDamage(10);
@@ -147,7 +147,7 @@ namespace {
 
     TEST(HealthComponentTest, Reset_DoesNotFireHealthChangedEvent) {
         DummyCharacter character;
-        HealthComponent health(&character);
+        HealthComponent health(&character, 10);
 
         bool healthChangedFired = false;
         auto handle = EventBus::Subscribe<HealthChangedEvent>([&](const HealthChangedEvent&) {

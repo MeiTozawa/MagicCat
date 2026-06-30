@@ -95,7 +95,7 @@ namespace mc {
                 renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 2,
                                          L"【⚔UP】制限なし。そのターンの間、自分の攻撃力が+2される。", COLOR_TEXT_BLUE);
                 renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 3,
-                                         L"【回復】1ゲームに3回まで。自分のHPを1回復する。", COLOR_TEXT_BLUE);
+                                         L"【回復】1ゲームに3回まで。自分のHPを2回復する。", COLOR_TEXT_BLUE);
 
                 renderService.DrawString(boxX1 + INDENT_LEVEL_1, textY + SECTION_SPACING,
                                          L"表示される記号の意味：", COLOR_TEXT_NORMAL);

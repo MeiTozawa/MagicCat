@@ -56,6 +56,9 @@ namespace mc {
         /// @brief プレイヤーキャラクターのインスタンスを取得する
         /// @return プレイヤーキャラクターの参照
         virtual Player& GetPlayer() = 0;
+
+        /// @brief 現在のステージにおける敵の総数を返す。
+        virtual int GetTotalEnemyCount() const = 0;
     };
 
     export std::unique_ptr<IBattleService> CreateBattleService(

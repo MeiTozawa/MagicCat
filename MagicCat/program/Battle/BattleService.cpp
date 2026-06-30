@@ -138,6 +138,11 @@ namespace mc {
             return *currentPlayer;
         }
 
+        int GetTotalEnemyCount() const override
+        {
+            return static_cast<int>(sequence.size());
+        }
+
     private:
         void OnDeathEvent(const DeathEvent& e)
         {

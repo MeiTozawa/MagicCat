@@ -7,6 +7,7 @@ import AudioService;
 import InputService;
 import RenderService;
 import ConfigService;
+import BattleService;
 
 namespace mc {
 
@@ -64,6 +65,17 @@ public:
     MOCK_METHOD(void, SetFontSize, (int), (override));
     MOCK_METHOD(void, SetFontThickness, (int), (override));
     MOCK_METHOD(void, SetBackgroundColor, (int, int, int), (override));
+};
+
+class MockBattleService : public IBattleService {
+public:
+    MOCK_METHOD(void, StartStage, (), (override));
+    MOCK_METHOD(int, GetCurrentEnemyIndex, (), (const, override));
+    MOCK_METHOD(const std::vector<EnemyConfig>&, GetSequence, (), (const, override));
+    MOCK_METHOD(void, LoadEnemy, (const EnemyConfig&), (override));
+    MOCK_METHOD(Enemy&, GetEnemy, (), (override));
+    MOCK_METHOD(Player&, GetPlayer, (), (override));
+    MOCK_METHOD(int, GetTotalEnemyCount, (), (const, override));
 };
 
 } // namespace mc

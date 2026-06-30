@@ -75,10 +75,7 @@ namespace mc {
         Displayer* enemyAnimDisp = nullptr;
         AttackDisplayer* playerAttack = nullptr;
         AttackDisplayer* enemyAttack = nullptr;
-        Displayer* playerAttackDisp = nullptr;
-        Displayer* enemyAttackDisp = nullptr;
         DialogDisplayer* playerDialog = nullptr;
-        Displayer* playerDialogDisp = nullptr;
 
         std::wstring progressText;
 
@@ -128,22 +125,21 @@ namespace mc {
 
             auto pAtk = CreateAttackDisplayer(renderService, PLAYER_ATTACK_X, PLAYER_ATTACK_Y, ATTACK_IMAGE_SCALE);
             playerAttack = pAtk.get();
-            playerAttackDisp = pAtk.get();
             displayers.push_back(std::move(pAtk));
 
             auto eAtk = CreateAttackDisplayer(renderService, ENEMY_ATTACK_X, ENEMY_ATTACK_Y, ATTACK_IMAGE_SCALE);
             enemyAttack = eAtk.get();
-            enemyAttackDisp = eAtk.get();
             displayers.push_back(std::move(eAtk));
 
             auto dlg = CreateDialogDisplayer(renderService, PLAYER_DIALOG_X, PLAYER_DIALOG_Y);
             playerDialog = dlg.get();
-            playerDialogDisp = dlg.get();
             displayers.push_back(std::move(dlg));
 
-            progressText = std::format(L"敵 {}/3", battleService.GetCurrentEnemyIndex() + 1);
+            progressText = std::format(L"敵 {}/{}",
+                battleService.GetCurrentEnemyIndex() + 1,
+                battleService.GetTotalEnemyCount());
 
-            healthChangedEvent = EventBus::Subscribe<HealthChangedEvent>([&](const HealthChangedEvent& event)
+            healthChangedEvent = EventBus::Subscribe<HealthChangedEvent>([this](const HealthChangedEvent& event)
             {
                 auto tags = event.Victim->GetTags();
                 if (std::ranges::find(tags, ETag::Player) != tags.end())
@@ -152,14 +148,14 @@ namespace mc {
                     enemyAnimDisp->AddEffector(CreateHitFlashEffector(renderService, 0xFF0000));
             });
 
-            combatEvent = EventBus::Subscribe<CombatEvent>([&](const CombatEvent& event)
+            combatEvent = EventBus::Subscribe<CombatEvent>([this](const CombatEvent& event)
             {
                 playerAttack->SetImage(assetService.GetImageHandle(ToImage(event.playerAttackType)));
                 enemyAttack->SetImage(assetService.GetImageHandle(ToImage(event.enemyAttackType)));
 
-                playerAttackDisp->ResetAndAddEffector(
+                playerAttack->ResetAndAddEffector(
                     CreateFadeEffector(renderService, ATTACK_FADE_IN_TIME, ATTACK_HOLD_TIME, ATTACK_FADE_OUT_TIME));
-                enemyAttackDisp->ResetAndAddEffector(
+                enemyAttack->ResetAndAddEffector(
                     CreateFadeEffector(renderService, ATTACK_FADE_IN_TIME, ATTACK_HOLD_TIME, ATTACK_FADE_OUT_TIME));
 
                 bool playerLost = LosesTo(event.playerAttackType, event.enemyAttackType);
@@ -168,13 +164,13 @@ namespace mc {
                 if (event.playerWinRate > HIGH_WIN_RATE && playerLost)
                 {
                     playerDialog->SetMessage(L"クッソー", DIALOG_COLOR_DAMN);
-                    playerDialogDisp->ResetAndAddEffector(
+                    playerDialog->ResetAndAddEffector(
                         CreateFadeEffector(renderService, DIALOG_FADE_IN_TIME, DIALOG_HOLD_TIME, DIALOG_FADE_OUT_TIME));
                 }
                 else if (event.playerWinRate < LOW_WIN_RATE && playerWon)
                 {
                     playerDialog->SetMessage(L"ラッキー", DIALOG_COLOR_LUCKY);
-                    playerDialogDisp->ResetAndAddEffector(
+                    playerDialog->ResetAndAddEffector(
                         CreateFadeEffector(renderService, DIALOG_FADE_IN_TIME, DIALOG_HOLD_TIME, DIALOG_FADE_OUT_TIME));
                 }
             });

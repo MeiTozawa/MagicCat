@@ -67,6 +67,7 @@ void GameStart()
 
 void GameMain(float deltaTime)
 {
+    audioService->Update(deltaTime);
     sceneService->Update(deltaTime);
 }
 

@@ -40,48 +40,58 @@ namespace mc {
 
             activeInputModes.push_back(InputContext::InGame);
 
-            actionMappings[InputContext::InGame][InputAction::IgConfirm] = {
+            actionMappings[InputContext::InGame][InputAction::Confirm] = {
                 dxe::Input::eButton::KB_SPACE,
                 dxe::Input::eButton::KB_RETURN,
                 dxe::Input::eButton::PAD_A
             };
-            actionMappings[InputContext::InGame][InputAction::IgUp] = {
+            actionMappings[InputContext::InGame][InputAction::Up] = {
                 dxe::Input::eButton::KB_UP,
                 dxe::Input::eButton::PAD_UP
             };
-            actionMappings[InputContext::InGame][InputAction::IgDown] = {
+            actionMappings[InputContext::InGame][InputAction::Down] = {
                 dxe::Input::eButton::KB_DOWN,
                 dxe::Input::eButton::PAD_DOWN
             };
-            actionMappings[InputContext::InGame][InputAction::IgLeft] = {
+            actionMappings[InputContext::InGame][InputAction::Left] = {
                 dxe::Input::eButton::KB_LEFT,
                 dxe::Input::eButton::PAD_LEFT
             };
-            actionMappings[InputContext::InGame][InputAction::IgRight] = {
+            actionMappings[InputContext::InGame][InputAction::Right] = {
                 dxe::Input::eButton::KB_RIGHT,
                 dxe::Input::eButton::PAD_RIGHT
             };
-            actionMappings[InputContext::InGame][InputAction::IgDrawCard] = {
+            actionMappings[InputContext::InGame][InputAction::DrawCard] = {
                 dxe::Input::eButton::KB_Q,
                 dxe::Input::eButton::PAD_X
             };
-            actionMappings[InputContext::InGame][InputAction::IgShowRules] = {
+            actionMappings[InputContext::InGame][InputAction::ToggleMenu] = {
                 dxe::Input::eButton::KB_ESCAPE,
                 dxe::Input::eButton::PAD_START
             };
-            actionMappings[InputContext::InGame][InputAction::IgMouseClick] = { dxe::Input::eButton::MOUSE_LEFT };
+            actionMappings[InputContext::InGame][InputAction::MouseClick] = { dxe::Input::eButton::MOUSE_LEFT };
 
-            actionMappings[InputContext::Menu][InputAction::MenuConfirm] = {
+            actionMappings[InputContext::Menu][InputAction::Confirm] = {
                 dxe::Input::eButton::KB_SPACE,
                 dxe::Input::eButton::KB_RETURN,
                 dxe::Input::eButton::PAD_A
             };
-            actionMappings[InputContext::Menu][InputAction::MenuCancel] = {
+            actionMappings[InputContext::Menu][InputAction::ToggleMenu] = {
                 dxe::Input::eButton::KB_ESCAPE,
+                dxe::Input::eButton::PAD_START,
                 dxe::Input::eButton::PAD_B
             };
-            actionMappings[InputContext::Menu][InputAction::MenuMouseClick] = {
+            actionMappings[InputContext::Menu][InputAction::MouseClick] = {
                 dxe::Input::eButton::MOUSE_LEFT
+            };
+            // ページ切り替えはゲームパッドの十字キー左右でも操作できる
+            actionMappings[InputContext::Menu][InputAction::Left] = {
+                dxe::Input::eButton::KB_LEFT,
+                dxe::Input::eButton::PAD_LEFT
+            };
+            actionMappings[InputContext::Menu][InputAction::Right] = {
+                dxe::Input::eButton::KB_RIGHT,
+                dxe::Input::eButton::PAD_RIGHT
             };
         }
 

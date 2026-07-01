@@ -61,11 +61,11 @@ namespace {
 
         void Update(float deltaTime) override
         {
-            if (inputService.IsPressed(InputAction::IgConfirm))
+            if (inputService.IsPressed(InputAction::Confirm))
             {
                 battleService.StartStage();
             }
-            else if (inputService.IsPressed(InputAction::IgShowRules))
+            else if (inputService.IsPressed(InputAction::ToggleMenu))
             {
                 sceneService.PushScene(ESceneState::Rules);
                 return;
@@ -74,14 +74,14 @@ namespace {
             const int w = renderService.GetWindowWidth();
             const int h = renderService.GetWindowHeight();
 
-            auto click = inputService.OnMouseClick(InputAction::IgMouseClick);
+            auto click = inputService.OnMouseClick(InputAction::MouseClick);
             if (click.x != -1 && click.y != -1)
             {
                 if (click.x >= 0 && click.x < w &&
                     click.y >= 0 && click.y < h)
                 {
                     battleService.StartStage();
-                    return;
+                    // return を省略 — キーボードパスと同様にこのフレームの描画を継続する
                 }
             }
 

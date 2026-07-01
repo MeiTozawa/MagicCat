@@ -48,7 +48,7 @@ namespace mc {
 
         void Update(float deltaTime) override
         {
-            if (inputService.IsPressed(InputAction::IgUp))
+            if (inputService.IsPressed(InputAction::Up))
             {
                 if (selectedActionIndex > ACTION_MAGIC)
                 {
@@ -56,7 +56,7 @@ namespace mc {
                     EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
                 }
             }
-            else if (inputService.IsPressed(InputAction::IgDown))
+            else if (inputService.IsPressed(InputAction::Down))
             {
                 if (selectedActionIndex < ACTION_MAX)
                 {
@@ -64,7 +64,7 @@ namespace mc {
                     EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
                 }
             }
-            else if (inputService.IsPressed(InputAction::IgConfirm))
+            else if (inputService.IsPressed(InputAction::Confirm))
             {
                 if (selectedActionIndex == ACTION_MAGIC)
                 {
@@ -139,7 +139,7 @@ namespace mc {
                     }
                 }
             }
-            else if (inputService.IsPressed(InputAction::IgDrawCard))
+            else if (inputService.IsPressed(InputAction::DrawCard))
             {
                 auto c = cardService.DrawCard();
                 if (c.CardType == ECardType::Magic)
@@ -153,7 +153,7 @@ namespace mc {
                 }
                 EventBus::Publish(DrawCardEvent());
             }
-            else if (inputService.IsPressed(InputAction::IgShowRules))
+            else if (inputService.IsPressed(InputAction::ToggleMenu))
             {
                 sceneService.PushScene(ESceneState::Rules);
             }
@@ -181,7 +181,7 @@ namespace mc {
             }
 
             // Mouse click handling
-            auto click = inputService.OnMouseClick(InputAction::IgMouseClick);
+            auto click = inputService.OnMouseClick(InputAction::MouseClick);
             if (click.x != -1 && click.y != -1)
             {
                 // DrawCard HitBox
@@ -239,7 +239,7 @@ namespace mc {
                         }
                         else if (selectedActionIndex == i)
                         {
-                            // Same row re-click → IgConfirm equivalent
+                            // Same row re-click → Confirm equivalent
                             if (selectedActionIndex == ACTION_MAGIC)
                             {
                                 isMagicMenuOpen = !isMagicMenuOpen;

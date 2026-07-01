@@ -72,23 +72,23 @@ namespace mc {
 
         void Update(float deltaTime) override
         {
-            if (inputService.IsPressed(InputAction::IgShowRules))
+            if (inputService.IsPressed(InputAction::ToggleMenu))
             {
                 inputService.PopContext();
                 sceneService.PopScene();
                 return;
             }
 
-            if (inputService.IsPressed(InputAction::IgLeft) && currentPage > 0)
+            if (inputService.IsPressed(InputAction::Left) && currentPage > 0)
             {
                 currentPage--;
             }
-            if (inputService.IsPressed(InputAction::IgRight) && currentPage < 1)
+            if (inputService.IsPressed(InputAction::Right) && currentPage < 1)
             {
                 currentPage++;
             }
 
-            auto menuClick = inputService.OnMouseClick(InputAction::MenuMouseClick);
+            auto menuClick = inputService.OnMouseClick(InputAction::MouseClick);
             if (menuClick.x != -1 && menuClick.y != -1)
             {
                 if (menuClick.x >= BACK_BTN_X1 && menuClick.x < BACK_BTN_X2 &&

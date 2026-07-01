@@ -7,12 +7,8 @@ export module InputService;
 namespace mc {
     export enum class InputAction
     {
-        IgUp, IgDown, IgLeft, IgRight, IgConfirm, IgToggleMenu, IgMouseClick,
-        IgDrawCard, IgShowRules,
-
-        MenuConfirm = 100,
-        MenuCancel,
-        MenuMouseClick,
+        Up, Down, Left, Right, Confirm, ToggleMenu, MouseClick,
+        DrawCard
     };
 
     export enum class InputContext

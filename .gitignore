@@ -4,6 +4,7 @@
 .vscode/
 .editorconfig
 
+
 # User-specific files
 *.rsuser
 *.suo
@@ -13,6 +14,8 @@
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
+Log.txt
+build_tests.bat
 
 # Build results
 [Dd]ebug/

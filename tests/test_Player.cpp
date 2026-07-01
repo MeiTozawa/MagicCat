@@ -108,19 +108,22 @@ namespace {
         Player player;
 
         const auto& tags = player.GetTags();
-        auto it = std::find(tags.begin(), tags.end(), ETag::Player);
+        auto it = std::ranges::find(tags, ETag::Player);
         EXPECT_NE(it, tags.end());
     }
 
     TEST_F(PlayerTest, ChangeMp_NormalOffset_ChangesMp) {
         Player player;
         int initialMp = player.GetMp();
+        
+        player.ChangeMp(10);
+        EXPECT_EQ(player.GetMp(), initialMp + 10);
 
         player.ChangeMp(-3);
-        EXPECT_EQ(player.GetMp(), initialMp - 3);
+        EXPECT_EQ(player.GetMp(), initialMp + 7);
 
         player.ChangeMp(2);
-        EXPECT_EQ(player.GetMp(), initialMp - 1);
+        EXPECT_EQ(player.GetMp(), initialMp + 9);
     }
 
 } // namespace

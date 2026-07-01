@@ -67,10 +67,7 @@ namespace mc {
             paperDamage = 2;
 #ifdef _DEBUG
             maxMp = 100;
-            mp = 100;
-            // rockDamage = 12;
-            // scissorsDamage = 12;
-            // paperDamage = 12;
+            mp = 10;
 #endif
             healthComp = std::make_unique<HealthComponent>(this, 15);
             tags.push_back(ETag::Player);

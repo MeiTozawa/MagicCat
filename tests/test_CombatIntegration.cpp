@@ -65,9 +65,9 @@ namespace {
         
         int frame = 0;
         ON_CALL(*mockInput, IsPressed(testing::_)).WillByDefault(testing::Invoke([&](InputAction action) {
-            if (frame == 0 && action == InputAction::IgConfirm) return true;
-            if (frame == 1 && action == InputAction::IgDown) return true;
-            if (frame == 2 && action == InputAction::IgConfirm) return true;
+            if (frame == 0 && action == InputAction::Confirm) return true;
+            if (frame == 1 && action == InputAction::Down) return true;
+            if (frame == 2 && action == InputAction::Confirm) return true;
             return false;
         }));
         
@@ -81,7 +81,7 @@ namespace {
     }
 
     TEST_F(CombatIntegrationTest, DrawCard_UpdatesPiles_AndShufflesWhenEmpty) {
-        ON_CALL(*mockInput, IsPressed(InputAction::IgDrawCard)).WillByDefault(Return(true));
+        ON_CALL(*mockInput, IsPressed(InputAction::DrawCard)).WillByDefault(Return(true));
         
         EXPECT_EQ(cardService->GetDrawCards().size(), 4);
         EXPECT_EQ(cardService->GetHandCards().size(), 0);
@@ -113,11 +113,11 @@ namespace {
         characterService->GetPlayer().ChangeMp(0);
         characterService->GetEnemy().TakeDamage(-100);
         
-        ON_CALL(*mockInput, IsPressed(InputAction::IgDown)).WillByDefault(Return(true));
+        ON_CALL(*mockInput, IsPressed(InputAction::Down)).WillByDefault(Return(true));
         combatController->Update(0.1f);
         
-        ON_CALL(*mockInput, IsPressed(InputAction::IgDown)).WillByDefault(Return(false));
-        ON_CALL(*mockInput, IsPressed(InputAction::IgConfirm)).WillByDefault(Return(true));
+        ON_CALL(*mockInput, IsPressed(InputAction::Down)).WillByDefault(Return(false));
+        ON_CALL(*mockInput, IsPressed(InputAction::Confirm)).WillByDefault(Return(true));
         
         characterService->GetPlayer().TakeDamage(1000); 
         

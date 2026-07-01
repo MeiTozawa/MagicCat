@@ -1,5 +1,6 @@
 module;
 
+#include <algorithm>
 #include <memory>
 #include <RenderUtils.h>
 
@@ -33,6 +34,21 @@ namespace mc {
         constexpr int ICON_TEXT_OFFSET_Y = 72;
 
         constexpr uint32_t COLOR_BOX_BG = 0x1E1E28;
+
+        constexpr int BACK_BTN_X1 = 732;
+        constexpr int BACK_BTN_Y1 = 462;
+        constexpr int BACK_BTN_X2 = 788;
+        constexpr int BACK_BTN_Y2 = 518;
+
+        constexpr int NEXT_BTN_X1 = 1000;
+        constexpr int NEXT_BTN_X2 = 1080;
+        constexpr int NEXT_BTN_Y1 = 150;
+        constexpr int NEXT_BTN_Y2 = 570;
+
+        constexpr int PREV_BTN_X1 = 200;
+        constexpr int PREV_BTN_X2 = 280;
+        constexpr int PREV_BTN_Y1 = 150;
+        constexpr int PREV_BTN_Y2 = 570;
     }
 
     class RulesScene : public IScene
@@ -48,13 +64,17 @@ namespace mc {
         RulesScene(IInputService& input, ISceneService& scene, IAssetService& asset, IRenderService& render)
             : inputService(input), sceneService(scene), assetService(asset), renderService(render) {}
 
-        void Start() override {}
+        void Start() override
+        {
+            inputService.PushContext(InputContext::Menu);
+        }
 
 
         void Update(float deltaTime) override
         {
             if (inputService.IsPressed(InputAction::IgShowRules))
             {
+                inputService.PopContext();
                 sceneService.PopScene();
                 return;
             }
@@ -67,6 +87,30 @@ namespace mc {
             {
                 currentPage++;
             }
+
+            // Mouse click handling
+            auto menuClick = inputService.OnMouseClick(InputAction::MenuMouseClick);
+            if (menuClick.x != -1 && menuClick.y != -1)
+            {
+                if (menuClick.x >= BACK_BTN_X1 && menuClick.x < BACK_BTN_X2 &&
+                    menuClick.y >= BACK_BTN_Y1 && menuClick.y < BACK_BTN_Y2)
+                {
+                    inputService.PopContext();
+                    sceneService.PopScene();
+                    return;
+                }
+                if (menuClick.x >= NEXT_BTN_X1 && menuClick.x < NEXT_BTN_X2 &&
+                    menuClick.y >= NEXT_BTN_Y1 && menuClick.y < NEXT_BTN_Y2)
+                {
+                    currentPage++;
+                }
+                else if (menuClick.x >= PREV_BTN_X1 && menuClick.x < PREV_BTN_X2 &&
+                         menuClick.y >= PREV_BTN_Y1 && menuClick.y < PREV_BTN_Y2)
+                {
+                    currentPage--;
+                }
+            }
+            currentPage = std::clamp(currentPage, 0, 1);
 
             renderService.SetDrawBlendMode(BlendMode::Alpha, OVERLAY_ALPHA);
             renderService.DrawBoxAA(0.f, 0.f, static_cast<float>(renderService.GetWindowWidth()), static_cast<float>(renderService.GetWindowHeight()), COLOR_BLACK, true);

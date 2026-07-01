@@ -10,6 +10,10 @@ import RenderService;
 import EventBus;
 
 namespace mc {
+
+namespace {
+}
+
     class InfoScene : public IScene
     {
         IInputService& inputService;
@@ -65,6 +69,20 @@ namespace mc {
             {
                 sceneService.PushScene(ESceneState::Rules);
                 return;
+            }
+
+            const int w = renderService.GetWindowWidth();
+            const int h = renderService.GetWindowHeight();
+
+            auto click = inputService.OnMouseClick(InputAction::IgMouseClick);
+            if (click.x != -1 && click.y != -1)
+            {
+                if (click.x >= 0 && click.x < w &&
+                    click.y >= 0 && click.y < h)
+                {
+                    battleService.StartStage();
+                    return;
+                }
             }
 
             if (!info.empty())

@@ -1,7 +1,6 @@
 module;
 
 #include <dxe.h>
-#include <DxLib.h>
 #include <memory>
 #include <vector>
 #include <unordered_map>
@@ -15,6 +14,9 @@ namespace mc {
         std::vector<InputContext> activeInputModes;
         std::unordered_map<InputContext, std::unordered_map<InputAction, std::vector<dxe::Input::eButton>>>
         actionMappings;
+
+        // 最後に入力を検出したデバイス種別
+        mutable InputDevice activeDevice = InputDevice::Keyboard;
 
         const std::vector<dxe::Input::eButton>* CheckInput(InputAction action) const
         {
@@ -92,7 +94,13 @@ namespace mc {
                 for (auto key : *keys)
                 {
                     if (input->pressed(key))
+                    {
+                        if (static_cast<int>(key) >= static_cast<int>(dxe::Input::eButton::PAD_MIN))
+                            activeDevice = InputDevice::Gamepad;
+                        else
+                            activeDevice = InputDevice::Keyboard;
                         return true;
+                    }
                 }
             }
             return false;
@@ -148,6 +156,11 @@ namespace mc {
             activeInputModes.push_back(context);
         }
 
+        InputDevice GetActiveDevice() const override
+        {
+            return activeDevice;
+        }
+
         Point<int> OnMouseClick(InputAction action) const override
         {
             auto keys = CheckInput(action);
@@ -155,6 +168,7 @@ namespace mc {
             auto key = keys->at(0);
             if (input->pressed(key))
             {
+                activeDevice = InputDevice::Keyboard;
                 int x = 0, y = 0;
                 GetMousePoint(&x, &y);
                 return Point<int>{x, y};

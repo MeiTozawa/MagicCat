@@ -129,7 +129,7 @@ namespace mc {
                     {EImage::Paper,               FILE_PATH_PNG_PAPER},
                     {EImage::Magic,               FILE_PATH_PNG_POINT},
                     {EImage::KB_Q,                FILE_PATH_PNG_KEYBOARD_Q_OUTLINE},
-                    {EImage::KB_R,                FILE_PATH_PNG_BUTTON_MENU_OUTLINE},
+                    {EImage::KB_ESCAPE,                FILE_PATH_PNG_KEYBOARD_ESCAPE_OUTLINE},
                     {EImage::KB_SPACE,            FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE},
                     {EImage::KB_UP,               FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE},
                     {EImage::KB_DOWN,             FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE},

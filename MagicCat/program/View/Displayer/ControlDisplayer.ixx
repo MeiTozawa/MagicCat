@@ -1,21 +1,25 @@
 module;
 
 #include <memory>
+#include <DxLib.h>
+#include <RenderUtils.h>
 
 export module Displayer:Control;
 import DisplayerBase;
 
 import AssetService;
 import RenderService;
+import InputService;
 
 
 namespace mc {
     namespace {
-        constexpr int KB_Q_X = 100;
-        constexpr int KB_UP_X = 500;
-        constexpr int KB_DOWN_X = 560;
-        constexpr int KB_SPACE_X = 620;
-        constexpr int KB_R_X = 920;
+        // アイコン描画 X 座標
+        constexpr int ICON_DRAW_X  = 100;   // カードを引く
+        constexpr int ICON_NAV_X   = 500;   // 上下移動（キーボード: 上キー / パッド: D-pad）
+        constexpr int ICON_NAV2_X  = 560;   // 下キー（キーボードのみ）
+        constexpr int ICON_CONF_X  = 620;   // 確定（Space / A）
+        constexpr int ICON_RULES_X = 920;   // ルールを見る（Esc / Menu）
         constexpr int Y = 100;
 
         constexpr int TEXT_OFFSET_X = 40;
@@ -30,58 +34,85 @@ namespace mc {
     {
         IAssetService& assetService;
         IRenderService& renderService;
+        IInputService& inputService;
         uint32_t color;
 
     public:
-        ControlDisplayer(IAssetService& asset, IRenderService& render, uint32_t c = 0xFFFFFF)
-            : assetService(asset), renderService(render), color(c) {}
+        ControlDisplayer(IAssetService& asset, IRenderService& render,
+                         IInputService& input, uint32_t c = 0xFFFFFF)
+            : assetService(asset), renderService(render), inputService(input), color(c) {}
 
     private:
-        void OnDraw(float deltaTime) const override
+        void OnDraw(float) const override
         {
-            // マウス座標を毎フレーム直接取得（Pressed 判定不要）
+            const bool isGamepad = (inputService.GetActiveDevice() == InputDevice::Gamepad);
+
+            // マウスホバー検出（キーボードモードのみ意味がある）
             int mx = 0, my = 0;
             GetMousePoint(&mx, &my);
 
-            bool hoverQ = (mx >= KB_Q_X - ICON_HALF_W && mx < KB_Q_X + ICON_HALF_W &&
-                my >= Y - ICON_HALF_H && my < Y + ICON_HALF_H);
-            bool hoverR = (mx >= KB_R_X - ICON_HALF_W && mx < KB_R_X + ICON_HALF_W &&
-                my >= Y - ICON_HALF_H && my < Y + ICON_HALF_H);
+            bool hoverDraw  = !isGamepad &&
+                              mx >= ICON_DRAW_X - ICON_HALF_W && mx < ICON_DRAW_X + ICON_HALF_W &&
+                              my >= Y - ICON_HALF_H            && my < Y + ICON_HALF_H;
+            bool hoverRules = !isGamepad &&
+                              mx >= ICON_RULES_X - ICON_HALF_W && mx < ICON_RULES_X + ICON_HALF_W &&
+                              my >= Y - ICON_HALF_H              && my < Y + ICON_HALF_H;
 
-            // KB_Q アイコン描画
-            int icon = assetService.GetImageHandle(EImage::KB_Q);
-            renderService.DrawRotaGraphF(KB_Q_X, Y, 1.0, 0.0, icon, true);
-            uint32_t qColor = hoverQ ? COLOR_HOVER : color;
-            renderService.DrawString(KB_Q_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"カードを引く", qColor);
-            if (hoverQ)
-                renderService.DrawHollowBox(KB_Q_X - ICON_HALF_W, Y - ICON_HALF_H,
-                                            KB_Q_X + ICON_HALF_W, Y + ICON_HALF_H, 2, COLOR_HOVER);
+            // ---- カードを引く ----
+            {
+                EImage drawIcon = isGamepad ? EImage::XBOX_X : EImage::KB_Q;
+                int icon = assetService.GetImageHandle(drawIcon);
+                renderService.DrawRotaGraphF(ICON_DRAW_X, Y, 0.5, 0.0, icon, true);
+                uint32_t c = hoverDraw ? COLOR_HOVER : color;
+                renderService.DrawString(ICON_DRAW_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"カードを引く", c);
+                if (hoverDraw)
+                    renderService.DrawHollowBox(ICON_DRAW_X - ICON_HALF_W, Y - ICON_HALF_H,
+                                                ICON_DRAW_X + ICON_HALF_W, Y + ICON_HALF_H, 2, COLOR_HOVER);
+            }
 
-            // KB_R アイコン描画
-            icon = assetService.GetImageHandle(EImage::KB_R);
-            renderService.DrawRotaGraphF(KB_R_X, Y, 1.0, 0.0, icon, true);
-            uint32_t rColor = hoverR ? COLOR_HOVER : color;
-            renderService.DrawString(KB_R_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"ルールを見る", rColor);
-            if (hoverR)
-                renderService.DrawHollowBox(KB_R_X - ICON_HALF_W, Y - ICON_HALF_H,
-                                            KB_R_X + ICON_HALF_W, Y + ICON_HALF_H, 2, COLOR_HOVER);
+            // ---- ルールを見る ----
+            {
+                EImage rulesIcon = isGamepad ? EImage::BUTTON_MENU : EImage::KB_ESCAPE;
+                int icon = assetService.GetImageHandle(rulesIcon);
+                renderService.DrawRotaGraphF(ICON_RULES_X, Y, 0.5, 0.0, icon, true);
+                uint32_t c = hoverRules ? COLOR_HOVER : color;
+                renderService.DrawString(ICON_RULES_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"ルールを見る", c);
+                if (hoverRules)
+                    renderService.DrawHollowBox(ICON_RULES_X - ICON_HALF_W, Y - ICON_HALF_H,
+                                                ICON_RULES_X + ICON_HALF_W, Y + ICON_HALF_H, 2, COLOR_HOVER);
+            }
 
-            // 既存の KB_UP / KB_DOWN / KB_SPACE 描画（変更なし）
-            icon = assetService.GetImageHandle(EImage::KB_UP);
-            renderService.DrawRotaGraphF(KB_UP_X, Y, 1.0, 0.0, icon, true);
+            // ---- 上下移動 ----
+            if (isGamepad)
+            {
+                // D-pad 横アイコン1枚で上下を表現
+                int icon = assetService.GetImageHandle(EImage::XBOX_DPAD_HORIZONTAL);
+                renderService.DrawRotaGraphF(ICON_NAV_X, Y, 0.5, 0.0, icon, true);
+            }
+            else
+            {
+                int icon = assetService.GetImageHandle(EImage::KB_UP);
+                renderService.DrawRotaGraphF(ICON_NAV_X, Y, 0.5, 0.0, icon, true);
 
-            icon = assetService.GetImageHandle(EImage::KB_DOWN);
-            renderService.DrawRotaGraphF(KB_DOWN_X, Y, 1.0, 0.0, icon, true);
+                icon = assetService.GetImageHandle(EImage::KB_DOWN);
+                renderService.DrawRotaGraphF(ICON_NAV2_X, Y, 0.5, 0.0, icon, true);
+            }
 
-            icon = assetService.GetImageHandle(EImage::KB_SPACE);
-            renderService.DrawRotaGraphF(KB_SPACE_X, Y, 1.0, 0.0, icon, true);
-            renderService.DrawString(KB_SPACE_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"選択する", color);
+            // ---- 確定 ----
+            {
+                EImage confIcon = isGamepad ? EImage::XBOX_A : EImage::KB_SPACE;
+                int icon = assetService.GetImageHandle(confIcon);
+                renderService.DrawRotaGraphF(ICON_CONF_X, Y, 0.5, 0.0, icon, true);
+                renderService.DrawString(ICON_CONF_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"選択する", color);
+            }
         }
     };
 
-    export std::unique_ptr<Displayer> CreateControlDisplayer(IAssetService& assetService, IRenderService& renderService,
+    export std::unique_ptr<Displayer> CreateControlDisplayer(IAssetService& assetService,
+                                                             IRenderService& renderService,
+                                                             IInputService& inputService,
                                                              uint32_t color = 0xFFFFFF)
     {
-        return std::make_unique<ControlDisplayer>(assetService, renderService, color);
+        return std::make_unique<ControlDisplayer>(assetService, renderService, inputService, color);
     }
 } // namespace mc

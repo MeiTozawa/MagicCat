@@ -20,6 +20,13 @@ namespace mc {
         InGame, Menu, Cutscene
     };
 
+    /// @brief 最後に入力を受け付けたデバイスの種別
+    export enum class InputDevice
+    {
+        Keyboard,   ///< キーボード（またはマウス）
+        Gamepad     ///< ゲームパッド（Xbox等）
+    };
+
     /// @brief 入力（キーボード、マウス等）の監視とコンテキスト管理を行うサービス
     export class IInputService
     {
@@ -38,6 +45,10 @@ namespace mc {
         /// @brief マウスクリックアクションが発生した際のカーソル座標を取得する
         /// @return クリックされた画面上の座標（x, y）
         virtual Point<int> OnMouseClick(InputAction action) const = 0;
+
+        /// @brief 最後に入力を検出したデバイス種別を返す
+        /// @return Keyboard または Gamepad
+        virtual InputDevice GetActiveDevice() const = 0;
 
         /// @brief 新しい入力コンテキスト（InGame, Menu等）をスタックにプッシュする
         /// 同じコンテキストが連続してプッシュされる場合は無視される

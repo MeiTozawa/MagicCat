@@ -102,7 +102,7 @@ namespace mc {
             displayers.clear();
             displayers.push_back(CreateCardDisplayer(cardService, assetService, renderService));
             displayers.push_back(CreateCharacterDisplayer(battleService, renderService));
-            displayers.push_back(CreateControlDisplayer(assetService, renderService));
+            displayers.push_back(CreateControlDisplayer(assetService, renderService, inputService));
 
             combatController = CreateCombatController(inputService, battleService, sceneService, cardService);
             combatController->Reset();

@@ -34,6 +34,7 @@ constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE = L"resource/
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_LEFT_OUTLINE = L"resource/Images/InputIcon/keyboard_arrow_left_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_RIGHT_OUTLINE = L"resource/Images/InputIcon/keyboard_arrow_right_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE = L"resource/Images/InputIcon/keyboard_arrow_up_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ESCAPE_OUTLINE = L"resource/Images/InputIcon/keyboard_escape_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_Q_OUTLINE = L"resource/Images/InputIcon/keyboard_q_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE = L"resource/Images/InputIcon/keyboard_space_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_XBOX_BUTTON_COLOR_A_OUTLINE = L"resource/Images/InputIcon/xbox_button_color_a_outline.png"; 
@@ -101,6 +102,7 @@ const std::vector<const wchar_t*> FILE_PATH_TBL_IMAGES_INPUTICON = {
     FILE_PATH_PNG_KEYBOARD_ARROW_LEFT_OUTLINE,
     FILE_PATH_PNG_KEYBOARD_ARROW_RIGHT_OUTLINE,
     FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE,
+    FILE_PATH_PNG_KEYBOARD_ESCAPE_OUTLINE,
     FILE_PATH_PNG_KEYBOARD_Q_OUTLINE,
     FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE,
     FILE_PATH_PNG_XBOX_BUTTON_COLOR_A_OUTLINE,
@@ -168,6 +170,7 @@ const std::unordered_map<std::wstring, const wchar_t*> FILE_PATH_DICTIONARY = {
     { std::wstring( L"keyboard_arrow_left_outline.png" ), FILE_PATH_PNG_KEYBOARD_ARROW_LEFT_OUTLINE },
     { std::wstring( L"keyboard_arrow_right_outline.png" ), FILE_PATH_PNG_KEYBOARD_ARROW_RIGHT_OUTLINE },
     { std::wstring( L"keyboard_arrow_up_outline.png" ), FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE },
+    { std::wstring( L"keyboard_escape_outline.png" ), FILE_PATH_PNG_KEYBOARD_ESCAPE_OUTLINE },
     { std::wstring( L"keyboard_q_outline.png" ), FILE_PATH_PNG_KEYBOARD_Q_OUTLINE },
     { std::wstring( L"keyboard_space_outline.png" ), FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE },
     { std::wstring( L"xbox_button_color_a_outline.png" ), FILE_PATH_PNG_XBOX_BUTTON_COLOR_A_OUTLINE },
@@ -228,6 +231,7 @@ constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ARROW_DOWN_OUTLINE = L"keyboard_
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ARROW_LEFT_OUTLINE = L"keyboard_arrow_left_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ARROW_RIGHT_OUTLINE = L"keyboard_arrow_right_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ARROW_UP_OUTLINE = L"keyboard_arrow_up_outline.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ESCAPE_OUTLINE = L"keyboard_escape_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_Q_OUTLINE = L"keyboard_q_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_SPACE_OUTLINE = L"keyboard_space_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_XBOX_BUTTON_COLOR_A_OUTLINE = L"xbox_button_color_a_outline.png"; 
@@ -295,6 +299,7 @@ const std::vector<const wchar_t*> FILE_NAME_TBL_IMAGES_INPUTICON = {
     FILE_NAME_PNG_KEYBOARD_ARROW_LEFT_OUTLINE,
     FILE_NAME_PNG_KEYBOARD_ARROW_RIGHT_OUTLINE,
     FILE_NAME_PNG_KEYBOARD_ARROW_UP_OUTLINE,
+    FILE_NAME_PNG_KEYBOARD_ESCAPE_OUTLINE,
     FILE_NAME_PNG_KEYBOARD_Q_OUTLINE,
     FILE_NAME_PNG_KEYBOARD_SPACE_OUTLINE,
     FILE_NAME_PNG_XBOX_BUTTON_COLOR_A_OUTLINE,

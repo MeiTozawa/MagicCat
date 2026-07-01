@@ -88,7 +88,6 @@ namespace mc {
                 currentPage++;
             }
 
-            // Mouse click handling
             auto menuClick = inputService.OnMouseClick(InputAction::MenuMouseClick);
             if (menuClick.x != -1 && menuClick.y != -1)
             {
@@ -170,8 +169,8 @@ namespace mc {
             }
 
 
-            int kbrHandle = assetService.GetImageHandle(EImage::KB_R);
-            renderService.DrawGraph(boxX2 - ICON_OFFSET_X, boxY2 - ICON_OFFSET_Y, kbrHandle, true);
+            int kbrHandle = assetService.GetImageHandle(EImage::KB_ESCAPE);
+            renderService.DrawRotaGraphF(boxX2 - ICON_OFFSET_X, boxY2 - ICON_OFFSET_Y, 0.5, 0.0, kbrHandle, true);
             renderService.DrawString(boxX2 - ICON_TEXT_OFFSET_X, boxY2 - ICON_TEXT_OFFSET_Y,
                                      L"押して戻る", COLOR_TEXT_NORMAL);
             renderService.DrawCenterString(renderService.GetWindowWidth() / 2, boxY2 - ICON_TEXT_OFFSET_Y,

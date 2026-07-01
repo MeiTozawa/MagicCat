@@ -67,6 +67,7 @@ namespace mc {
                 dxe::Input::eButton::KB_R,
                 dxe::Input::eButton::PAD_B
             };
+            actionMappings[InputContext::InGame][InputAction::IgMouseClick] = { dxe::Input::eButton::MOUSE_LEFT };
 
             actionMappings[InputContext::Menu][InputAction::MenuConfirm] = {
                 dxe::Input::eButton::KB_SPACE,
@@ -147,18 +148,18 @@ namespace mc {
             activeInputModes.push_back(context);
         }
 
-        tnl::Vector2i OnMouseClick(InputAction action) const override
+        Point<int> OnMouseClick(InputAction action) const override
         {
             auto keys = CheckInput(action);
-            if (!keys || keys->empty()) return tnl::Vector2i(-1, -1);
+            if (!keys || keys->empty()) return Point<int>{-1, -1};
             auto key = keys->at(0);
             if (input->pressed(key))
             {
                 int x = 0, y = 0;
                 GetMousePoint(&x, &y);
-                return tnl::Vector2i(x, y);
+                return Point<int>{x, y};
             }
-            return tnl::Vector2i(-1, -1);
+            return Point<int>{-1, -1};
         }
     };
 

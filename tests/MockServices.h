@@ -38,7 +38,7 @@ public:
     MOCK_METHOD(bool, IsPressed, (InputAction), (const, override));
     MOCK_METHOD(bool, IsHolding, (InputAction), (const, override));
     MOCK_METHOD(bool, IsReleased, (InputAction), (const, override));
-    MOCK_METHOD(tnl::Vector2i, OnMouseClick, (InputAction), (const, override));
+    MOCK_METHOD(Point<int>, OnMouseClick, (InputAction), (const, override));
     MOCK_METHOD(void, PushContext, (InputContext), (override));
     MOCK_METHOD(void, PopContext, (), (override));
     MOCK_METHOD(void, ClearAndSetContext, (InputContext), (override));

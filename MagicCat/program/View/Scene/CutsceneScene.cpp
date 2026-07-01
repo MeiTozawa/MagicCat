@@ -25,7 +25,7 @@ namespace mc {
     static constexpr int BORDER_CORNER_RADIUS = 16;
     static constexpr int BORDER_THICKNESS = 4;
 
-    static Point SlotCenter(float screenW, float screenH, int slotIndex)
+    static Point<float> SlotCenter(float screenW, float screenH, int slotIndex)
     {
         return {screenW * SLOT_X_FRACTIONS[slotIndex], screenH * SLOT_Y_FRACTION};
     }
@@ -36,7 +36,7 @@ namespace mc {
         ESprite sprite;
         int spriteHandle;
         SpriteInfo info;
-        Point center;
+        Point<float> center;
     };
 
     class CutsceneScene : public IScene

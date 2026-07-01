@@ -42,7 +42,7 @@ namespace mc {
         EventHandle handUpdateHandle;
         std::vector<Card> cachedHand;
 
-        std::unique_ptr<Displayer> CreatePrintACardDisplayer(Card card, tnl::Vector2i start_position,
+        std::unique_ptr<Displayer> CreatePrintACardDisplayer(Card card, Point<int> start_position,
                                                              std::wstring message) const
         {
             return CreateLambdaDisplayer([card, start_position, message, this](float deltaTime)
@@ -106,7 +106,7 @@ namespace mc {
         void RebuildDisplayers(bool isDraw = false)
         {
             displayers.clear();
-            auto position = tnl::Vector2i{CARD_START_X, CARD_START_Y};
+            auto position = Point<int>{CARD_START_X, CARD_START_Y};
             for (size_t i = 0; i < cachedHand.size(); ++i)
             {
                 std::wstring msg = std::format(L"+{}", cachedHand[i].Power);

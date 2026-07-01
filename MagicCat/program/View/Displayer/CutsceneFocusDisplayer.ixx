@@ -25,8 +25,8 @@ namespace mc {
         uint32_t m_color;
 
         // 線形補間アニメーション
-        Point m_source;
-        Point m_destination;
+        Point<float> m_source;
+        Point<float> m_destination;
         float m_duration;
         float m_elapsed = 0.f;
 
@@ -34,7 +34,7 @@ namespace mc {
         static constexpr float DEFAULT_DURATION = 0.5f;
 
         CutsceneFocusDisplayer(IRenderService& renderService,
-                               Point source, Point destination,
+                               Point<float> source, Point<float> destination,
                                float halfWidth, float halfHeight,
                                int cornerRadius, int thickness,
                                uint32_t color = 0xFFFFFF,
@@ -70,7 +70,7 @@ namespace mc {
 
     export std::unique_ptr<CutsceneFocusDisplayer> CreateCutsceneFocusDisplayer(
         IRenderService& renderService,
-        Point source, Point destination,
+        Point<float> source, Point<float> destination,
         float halfWidth, float halfHeight,
         int cornerRadius, int thickness,
         uint32_t color = 0xFFFFFF,

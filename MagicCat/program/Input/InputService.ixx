@@ -1,13 +1,13 @@
 module;
 
-#include <tnl_vector2i.h>
+#include <RenderUtils.h>
 
 export module InputService;
 
 namespace mc {
     export enum class InputAction
     {
-        IgUp, IgDown, IgLeft, IgRight, IgConfirm, IgToggleMenu, // IgMouseClick,
+        IgUp, IgDown, IgLeft, IgRight, IgConfirm, IgToggleMenu, IgMouseClick,
         IgDrawCard, IgShowRules,
 
         MenuConfirm = 100,
@@ -37,7 +37,7 @@ namespace mc {
 
         /// @brief マウスクリックアクションが発生した際のカーソル座標を取得する
         /// @return クリックされた画面上の座標（x, y）
-        virtual tnl::Vector2i OnMouseClick(InputAction action) const = 0;
+        virtual Point<int> OnMouseClick(InputAction action) const = 0;
 
         /// @brief 新しい入力コンテキスト（InGame, Menu等）をスタックにプッシュする
         /// 同じコンテキストが連続してプッシュされる場合は無視される

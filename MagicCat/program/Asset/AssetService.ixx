@@ -3,6 +3,7 @@ module;
 #include <dxe.h>
 #include <vector>
 #include <string>
+#include <RenderUtils.h>
 
 export module AssetService;
 
@@ -55,7 +56,7 @@ namespace mc {
 
     export struct SpriteInfo
     {
-        tnl::Vector2i size;
+        Point<int> size;
         size_t frame;
     };
 

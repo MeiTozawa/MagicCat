@@ -1,5 +1,7 @@
 ﻿module;
 
+#include <RenderUtils.h>
+
 export module Displayer:Sprite;
 
 import EventBus;
@@ -21,7 +23,7 @@ namespace mc {
         bool isFlip;
 
         size_t frame;
-        tnl::Vector2i size;
+        Point<int> size;
         int handle;
 
     public:

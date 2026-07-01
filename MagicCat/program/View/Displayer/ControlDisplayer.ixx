@@ -48,8 +48,9 @@ namespace mc {
             const bool isGamepad = (inputService.GetActiveDevice() == InputDevice::Gamepad);
 
             // マウスホバー検出（キーボードモードのみ意味がある）
-            int mx = 0, my = 0;
-            GetMousePoint(&mx, &my);
+            auto mousePos = inputService.GetMousePosition();
+            int mx = mousePos.x;
+            int my = mousePos.y;
 
             bool hoverDraw  = !isGamepad &&
                               mx >= ICON_DRAW_X - ICON_HALF_W && mx < ICON_DRAW_X + ICON_HALF_W &&

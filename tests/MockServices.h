@@ -43,6 +43,7 @@ public:
     MOCK_METHOD(void, PushContext, (InputContext), (override));
     MOCK_METHOD(void, PopContext, (), (override));
     MOCK_METHOD(void, ClearAndSetContext, (InputContext), (override));
+    MOCK_METHOD(Point<int>, GetMousePosition, (), (const, override));
 };
 
 class MockRenderService : public IRenderService {

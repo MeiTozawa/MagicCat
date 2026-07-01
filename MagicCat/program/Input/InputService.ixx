@@ -56,6 +56,10 @@ namespace mc {
 
         /// @brief コンテキストスタックをクリアし、指定されたコンテキストを強制的に設定する
         virtual void ClearAndSetContext(InputContext context) = 0;
+
+        /// @brief マウスカーソルの現在座標を取得する
+        /// @return カーソルの画面上の座標（x, y）
+        virtual Point<int> GetMousePosition() const = 0;
     };
 
     export std::unique_ptr<IInputService> CreateInputService();

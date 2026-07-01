@@ -160,8 +160,9 @@ namespace mc {
 
             // Mouse hover → update focus (no action, just selection highlight)
             {
-                int mx = 0, my = 0;
-                GetMousePoint(&mx, &my);
+                auto mousePos = inputService.GetMousePosition();
+                int mx = mousePos.x;
+                int my = mousePos.y;
                 for (int i = 0; i < 4; ++i)
                 {
                     int hx1 = MC_ACTION_START_X;

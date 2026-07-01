@@ -185,6 +185,13 @@ namespace mc {
             }
             return Point<int>{-1, -1};
         }
+
+        Point<int> GetMousePosition() const override
+        {
+            int x = 0, y = 0;
+            GetMousePoint(&x, &y);
+            return Point<int>{x, y};
+        }
     };
 
     std::unique_ptr<IInputService> CreateInputService()

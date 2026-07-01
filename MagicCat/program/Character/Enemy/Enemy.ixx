@@ -59,9 +59,6 @@ namespace mc {
 
         void AddWeight(EAttackType t, int weight)
         {
-#ifdef _DEBUG
-            this->rockWeightOffset = 7;
-#else
             switch (t)
             {
             case EAttackType::Rock:
@@ -77,7 +74,6 @@ namespace mc {
                 assert(false && "未知の攻撃タイプです");
                 break;
             }
-#endif
         }
 
         EAttackType GetAttackIntent() const

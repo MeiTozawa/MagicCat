@@ -26,6 +26,11 @@ add_executable(MagicCatTests
     test_BattleServiceProperties.cpp
     test_SequentialBattlesIntegration.cpp
     test_BattleServiceCodeQualityProperties.cpp
+    test_BattleServiceParseSpriteProperty.cpp
+    test_AudioService.cpp
+    test_ViewEnumMapper.cpp
+    test_AssetService.cpp
+    test_CombatScene.cpp
 )
 
 target_compile_features(MagicCatTests PRIVATE cxx_std_23)

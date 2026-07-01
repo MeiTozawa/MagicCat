@@ -8,6 +8,9 @@ import AssetService;
 import BattleService;
 
 namespace mc {
+    /// @brief current を target に向けて最大 step だけ近づける。絶対に target を超えない。
+    export float StepTowards(float current, float target, float step);
+
     export class IAudioService
     {
     public:

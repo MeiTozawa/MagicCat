@@ -12,6 +12,13 @@ import SceneService;
 import BattleService;
 import Player;
 namespace mc {
+    float StepTowards(float current, float target, float step)
+    {
+        if (current < target) return std::min(current + step, target);
+        if (current > target) return std::max(current - step, target);
+        return target;
+    }
+
     static constexpr int   BGM_VOLUME_MAX   = 255;
     static constexpr float BGM_FADE_TIME    = 1.5f; ///< フェードイン/アウトの秒数
 
@@ -156,17 +163,9 @@ namespace mc {
             if (bgmHandle == -1) return;
             if (bgmVolume == bgmTarget) return;
 
-            const float step = bgmFadeSpeed * deltaTime;
-            if (bgmVolume < bgmTarget)
-            {
-                bgmVolume = std::min(bgmVolume + step, bgmTarget);
-            }
-            else
-            {
-                bgmVolume = std::max(bgmVolume - step, bgmTarget);
-                if (bgmVolume <= 0.f && CheckSoundMem(bgmHandle))
-                    StopSoundMem(bgmHandle);
-            }
+            bgmVolume = StepTowards(bgmVolume, bgmTarget, bgmFadeSpeed * deltaTime);
+            if (bgmVolume <= 0.f && bgmTarget == 0.f && CheckSoundMem(bgmHandle))
+                StopSoundMem(bgmHandle);
 
             ChangeVolumeSoundMem(static_cast<int>(bgmVolume), bgmHandle);
         }

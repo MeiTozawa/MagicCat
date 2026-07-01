@@ -8,6 +8,7 @@ import InputService;
 import RenderService;
 import ConfigService;
 import BattleService;
+import CardService;
 
 namespace mc {
 
@@ -78,6 +79,16 @@ public:
     MOCK_METHOD(Enemy&, GetEnemy, (), (override));
     MOCK_METHOD(Player&, GetPlayer, (), (override));
     MOCK_METHOD(int, GetTotalEnemyCount, (), (const, override));
+};
+
+class MockCardService : public ICardService {
+public:
+    MOCK_METHOD(void, Start, (), (override));
+    MOCK_METHOD(Card, DrawCard, (), (override));
+    MOCK_METHOD(void, DiscardHand, (), (override));
+    MOCK_METHOD(std::vector<Card>, GetHandCards, (), (override));
+    MOCK_METHOD(std::vector<Card>, GetDrawCards, (), (override));
+    MOCK_METHOD(std::vector<Card>, GetDiscardCards, (), (override));
 };
 
 } // namespace mc

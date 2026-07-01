@@ -21,16 +21,15 @@ namespace {
             cardOut.close();
 
             std::ofstream enemyOut(enemyConfigPath);
-            enemyOut << R"([
-                {
-                    "name": "Test Enemy",
-                    "sprite": "cat.png",
-                    "baseWeight": 10,
-                    "rockDamage": 1,
-                    "scissorsDamage": 2,
-                    "paperDamage": 3
-                }
-            ])";
+            enemyOut << R"([{
+                "name": "Test Enemy",
+                "sprite": "cat.png",
+                "baseWeight": 10,
+                "rockDamage": 1,
+                "scissorsDamage": 2,
+                "paperDamage": 3,
+                "hp": 42
+            }])";
             enemyOut.close();
         }
 
@@ -52,6 +51,7 @@ namespace {
 
         auto& enemyConfigs = configService->GetEnemyConfigs();
         EXPECT_EQ(enemyConfigs.size(), 1);
+        EXPECT_EQ(enemyConfigs[0].hp, 42);
         EXPECT_EQ(enemyConfigs[0].baseWeight, 10);
         EXPECT_EQ(enemyConfigs[0].rockDamage, 1);
         EXPECT_EQ(enemyConfigs[0].scissorsDamage, 2);

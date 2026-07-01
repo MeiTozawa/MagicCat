@@ -64,8 +64,8 @@ namespace mc {
                 dxe::Input::eButton::PAD_X
             };
             actionMappings[InputContext::InGame][InputAction::IgShowRules] = {
-                dxe::Input::eButton::KB_R,
-                dxe::Input::eButton::PAD_B
+                dxe::Input::eButton::KB_ESCAPE,
+                dxe::Input::eButton::PAD_START
             };
             actionMappings[InputContext::InGame][InputAction::IgMouseClick] = { dxe::Input::eButton::MOUSE_LEFT };
 

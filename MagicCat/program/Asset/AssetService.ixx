@@ -19,7 +19,12 @@ namespace mc {
         Null = -1,
         Rock = 0, Scissors = 1, Paper = 2, Magic = 3,
 
-        KB_Q = 100, KB_R, KB_SPACE, KB_UP, KB_DOWN
+        KB_Q = 100, KB_R, KB_SPACE, KB_UP, KB_DOWN,
+        KB_LEFT, KB_RIGHT,
+
+        XBOX_A = 200, XBOX_B, XBOX_X, XBOX_Y,
+        XBOX_DPAD_HORIZONTAL,
+        BUTTON_MENU
     };
 
     export enum class ESound

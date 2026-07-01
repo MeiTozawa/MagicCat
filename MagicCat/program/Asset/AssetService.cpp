@@ -124,15 +124,23 @@ namespace mc {
                     const wchar_t* path;
                 };
                 ImageData images[] = {
-                    {EImage::Rock, FILE_PATH_PNG_STONE},
-                    {EImage::Scissors, FILE_PATH_PNG_SCISSORS},
-                    {EImage::Paper, FILE_PATH_PNG_PAPER},
-                    {EImage::Magic, FILE_PATH_PNG_POINT},
-                    {EImage::KB_Q, FILE_PATH_PNG_KEYBOARD_Q_OUTLINE},
-                    {EImage::KB_R, FILE_PATH_PNG_KEYBOARD_R_OUTLINE},
-                    {EImage::KB_SPACE, FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE},
-                    {EImage::KB_UP, FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE},
-                    {EImage::KB_DOWN, FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE}
+                    {EImage::Rock,                FILE_PATH_PNG_STONE},
+                    {EImage::Scissors,            FILE_PATH_PNG_SCISSORS},
+                    {EImage::Paper,               FILE_PATH_PNG_PAPER},
+                    {EImage::Magic,               FILE_PATH_PNG_POINT},
+                    {EImage::KB_Q,                FILE_PATH_PNG_KEYBOARD_Q_OUTLINE},
+                    {EImage::KB_R,                FILE_PATH_PNG_BUTTON_MENU_OUTLINE},
+                    {EImage::KB_SPACE,            FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE},
+                    {EImage::KB_UP,               FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE},
+                    {EImage::KB_DOWN,             FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE},
+                    {EImage::KB_LEFT,             FILE_PATH_PNG_KEYBOARD_ARROW_LEFT_OUTLINE},
+                    {EImage::KB_RIGHT,            FILE_PATH_PNG_KEYBOARD_ARROW_RIGHT_OUTLINE},
+                    {EImage::XBOX_A,              FILE_PATH_PNG_XBOX_BUTTON_COLOR_A_OUTLINE},
+                    {EImage::XBOX_B,              FILE_PATH_PNG_XBOX_BUTTON_COLOR_B_OUTLINE},
+                    {EImage::XBOX_X,              FILE_PATH_PNG_XBOX_BUTTON_COLOR_X_OUTLINE},
+                    {EImage::XBOX_Y,              FILE_PATH_PNG_XBOX_BUTTON_COLOR_Y_OUTLINE},
+                    {EImage::XBOX_DPAD_HORIZONTAL,FILE_PATH_PNG_XBOX_DPAD_ROUND_HORIZONTAL},
+                    {EImage::BUTTON_MENU,         FILE_PATH_PNG_BUTTON_MENU_OUTLINE},
                 };
 
                 for (const auto& img : images)

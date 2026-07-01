@@ -29,11 +29,18 @@ constexpr const wchar_t* FILE_PATH_PNG_STINKYSKUNK = L"resource/Images/BasicAnim
 constexpr const wchar_t* FILE_PATH_PNG_TIMBERWOLF = L"resource/Images/BasicAnimals/TimberWolf.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_TINYCHICK = L"resource/Images/BasicAnimals/TinyChick.png"; 
 
-constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE = L"resource/Images/Keyboard/keyboard_arrow_down_outline.png"; 
-constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE = L"resource/Images/Keyboard/keyboard_arrow_up_outline.png"; 
-constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_Q_OUTLINE = L"resource/Images/Keyboard/keyboard_q_outline.png"; 
-constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_R_OUTLINE = L"resource/Images/Keyboard/keyboard_r_outline.png"; 
-constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE = L"resource/Images/Keyboard/keyboard_space_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_BUTTON_MENU_OUTLINE = L"resource/Images/InputIcon/button_menu_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE = L"resource/Images/InputIcon/keyboard_arrow_down_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_LEFT_OUTLINE = L"resource/Images/InputIcon/keyboard_arrow_left_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_RIGHT_OUTLINE = L"resource/Images/InputIcon/keyboard_arrow_right_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE = L"resource/Images/InputIcon/keyboard_arrow_up_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_Q_OUTLINE = L"resource/Images/InputIcon/keyboard_q_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE = L"resource/Images/InputIcon/keyboard_space_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_XBOX_BUTTON_COLOR_A_OUTLINE = L"resource/Images/InputIcon/xbox_button_color_a_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_XBOX_BUTTON_COLOR_B_OUTLINE = L"resource/Images/InputIcon/xbox_button_color_b_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_XBOX_BUTTON_COLOR_X_OUTLINE = L"resource/Images/InputIcon/xbox_button_color_x_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_XBOX_BUTTON_COLOR_Y_OUTLINE = L"resource/Images/InputIcon/xbox_button_color_y_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_XBOX_DPAD_ROUND_HORIZONTAL = L"resource/Images/InputIcon/xbox_dpad_round_horizontal.png"; 
 
 constexpr const wchar_t* FILE_PATH_PNG_MINIBUNNY = L"resource/Images/MiniAnimals/MiniBunny.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_MINIWOLF = L"resource/Images/MiniAnimals/MiniWolf.png"; 
@@ -88,12 +95,19 @@ const std::vector<const wchar_t*> FILE_PATH_TBL_IMAGES_BASICANIMALS = {
     FILE_PATH_PNG_TIMBERWOLF,
     FILE_PATH_PNG_TINYCHICK,
 };
-const std::vector<const wchar_t*> FILE_PATH_TBL_IMAGES_KEYBOARD = {
+const std::vector<const wchar_t*> FILE_PATH_TBL_IMAGES_INPUTICON = {
+    FILE_PATH_PNG_BUTTON_MENU_OUTLINE,
     FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE,
+    FILE_PATH_PNG_KEYBOARD_ARROW_LEFT_OUTLINE,
+    FILE_PATH_PNG_KEYBOARD_ARROW_RIGHT_OUTLINE,
     FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE,
     FILE_PATH_PNG_KEYBOARD_Q_OUTLINE,
-    FILE_PATH_PNG_KEYBOARD_R_OUTLINE,
     FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE,
+    FILE_PATH_PNG_XBOX_BUTTON_COLOR_A_OUTLINE,
+    FILE_PATH_PNG_XBOX_BUTTON_COLOR_B_OUTLINE,
+    FILE_PATH_PNG_XBOX_BUTTON_COLOR_X_OUTLINE,
+    FILE_PATH_PNG_XBOX_BUTTON_COLOR_Y_OUTLINE,
+    FILE_PATH_PNG_XBOX_DPAD_ROUND_HORIZONTAL,
 };
 const std::vector<const wchar_t*> FILE_PATH_TBL_IMAGES_MINIANIMALS = {
     FILE_PATH_PNG_MINIBUNNY,
@@ -149,11 +163,18 @@ const std::unordered_map<std::wstring, const wchar_t*> FILE_PATH_DICTIONARY = {
     { std::wstring( L"StinkySkunk.png" ), FILE_PATH_PNG_STINKYSKUNK },
     { std::wstring( L"TimberWolf.png" ), FILE_PATH_PNG_TIMBERWOLF },
     { std::wstring( L"TinyChick.png" ), FILE_PATH_PNG_TINYCHICK },
+    { std::wstring( L"button_menu_outline.png" ), FILE_PATH_PNG_BUTTON_MENU_OUTLINE },
     { std::wstring( L"keyboard_arrow_down_outline.png" ), FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE },
+    { std::wstring( L"keyboard_arrow_left_outline.png" ), FILE_PATH_PNG_KEYBOARD_ARROW_LEFT_OUTLINE },
+    { std::wstring( L"keyboard_arrow_right_outline.png" ), FILE_PATH_PNG_KEYBOARD_ARROW_RIGHT_OUTLINE },
     { std::wstring( L"keyboard_arrow_up_outline.png" ), FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE },
     { std::wstring( L"keyboard_q_outline.png" ), FILE_PATH_PNG_KEYBOARD_Q_OUTLINE },
-    { std::wstring( L"keyboard_r_outline.png" ), FILE_PATH_PNG_KEYBOARD_R_OUTLINE },
     { std::wstring( L"keyboard_space_outline.png" ), FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE },
+    { std::wstring( L"xbox_button_color_a_outline.png" ), FILE_PATH_PNG_XBOX_BUTTON_COLOR_A_OUTLINE },
+    { std::wstring( L"xbox_button_color_b_outline.png" ), FILE_PATH_PNG_XBOX_BUTTON_COLOR_B_OUTLINE },
+    { std::wstring( L"xbox_button_color_x_outline.png" ), FILE_PATH_PNG_XBOX_BUTTON_COLOR_X_OUTLINE },
+    { std::wstring( L"xbox_button_color_y_outline.png" ), FILE_PATH_PNG_XBOX_BUTTON_COLOR_Y_OUTLINE },
+    { std::wstring( L"xbox_dpad_round_horizontal.png" ), FILE_PATH_PNG_XBOX_DPAD_ROUND_HORIZONTAL },
     { std::wstring( L"MiniBunny.png" ), FILE_PATH_PNG_MINIBUNNY },
     { std::wstring( L"MiniWolf.png" ), FILE_PATH_PNG_MINIWOLF },
     { std::wstring( L"paper.png" ), FILE_PATH_PNG_PAPER },
@@ -202,11 +223,18 @@ constexpr const wchar_t* FILE_NAME_PNG_STINKYSKUNK = L"StinkySkunk.png";
 constexpr const wchar_t* FILE_NAME_PNG_TIMBERWOLF = L"TimberWolf.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_TINYCHICK = L"TinyChick.png"; 
 
+constexpr const wchar_t* FILE_NAME_PNG_BUTTON_MENU_OUTLINE = L"button_menu_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ARROW_DOWN_OUTLINE = L"keyboard_arrow_down_outline.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ARROW_LEFT_OUTLINE = L"keyboard_arrow_left_outline.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ARROW_RIGHT_OUTLINE = L"keyboard_arrow_right_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ARROW_UP_OUTLINE = L"keyboard_arrow_up_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_Q_OUTLINE = L"keyboard_q_outline.png"; 
-constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_R_OUTLINE = L"keyboard_r_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_SPACE_OUTLINE = L"keyboard_space_outline.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_XBOX_BUTTON_COLOR_A_OUTLINE = L"xbox_button_color_a_outline.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_XBOX_BUTTON_COLOR_B_OUTLINE = L"xbox_button_color_b_outline.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_XBOX_BUTTON_COLOR_X_OUTLINE = L"xbox_button_color_x_outline.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_XBOX_BUTTON_COLOR_Y_OUTLINE = L"xbox_button_color_y_outline.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_XBOX_DPAD_ROUND_HORIZONTAL = L"xbox_dpad_round_horizontal.png"; 
 
 constexpr const wchar_t* FILE_NAME_PNG_MINIBUNNY = L"MiniBunny.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_MINIWOLF = L"MiniWolf.png"; 
@@ -261,12 +289,19 @@ const std::vector<const wchar_t*> FILE_NAME_TBL_IMAGES_BASICANIMALS = {
     FILE_NAME_PNG_TIMBERWOLF,
     FILE_NAME_PNG_TINYCHICK,
 };
-const std::vector<const wchar_t*> FILE_NAME_TBL_IMAGES_KEYBOARD = {
+const std::vector<const wchar_t*> FILE_NAME_TBL_IMAGES_INPUTICON = {
+    FILE_NAME_PNG_BUTTON_MENU_OUTLINE,
     FILE_NAME_PNG_KEYBOARD_ARROW_DOWN_OUTLINE,
+    FILE_NAME_PNG_KEYBOARD_ARROW_LEFT_OUTLINE,
+    FILE_NAME_PNG_KEYBOARD_ARROW_RIGHT_OUTLINE,
     FILE_NAME_PNG_KEYBOARD_ARROW_UP_OUTLINE,
     FILE_NAME_PNG_KEYBOARD_Q_OUTLINE,
-    FILE_NAME_PNG_KEYBOARD_R_OUTLINE,
     FILE_NAME_PNG_KEYBOARD_SPACE_OUTLINE,
+    FILE_NAME_PNG_XBOX_BUTTON_COLOR_A_OUTLINE,
+    FILE_NAME_PNG_XBOX_BUTTON_COLOR_B_OUTLINE,
+    FILE_NAME_PNG_XBOX_BUTTON_COLOR_X_OUTLINE,
+    FILE_NAME_PNG_XBOX_BUTTON_COLOR_Y_OUTLINE,
+    FILE_NAME_PNG_XBOX_DPAD_ROUND_HORIZONTAL,
 };
 const std::vector<const wchar_t*> FILE_NAME_TBL_IMAGES_MINIANIMALS = {
     FILE_NAME_PNG_MINIBUNNY,

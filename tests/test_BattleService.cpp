@@ -25,10 +25,6 @@ using ::testing::NiceMock;
 namespace mc {
 namespace {
 
-// ---------------------------------------------------------------------------
-// Stub implementations
-// ---------------------------------------------------------------------------
-
 class StubConfigService : public IConfigService
 {
     std::vector<EnemyConfig> enemies_;
@@ -60,10 +56,6 @@ public:
     void TakeDamage(int) const override {}
 };
 
-// ---------------------------------------------------------------------------
-// Test fixture
-// ---------------------------------------------------------------------------
-
 class BattleServiceTest : public ::testing::Test
 {
 protected:
@@ -91,25 +83,18 @@ protected:
     }
 };
 
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
-
-// 1. StartStage generates a sequence of exactly 3 enemies.
 TEST_F(BattleServiceTest, StartStage_GeneratesSequenceOfThree)
 {
     battleService->StartStage();
     EXPECT_EQ(battleService->GetSequence().size(), 3u);
 }
 
-// 2. StartStage resets the current enemy index to 0.
 TEST_F(BattleServiceTest, StartStage_SetsCurrentIndexToZero)
 {
     battleService->StartStage();
     EXPECT_EQ(battleService->GetCurrentEnemyIndex(), 0);
 }
 
-// 3. StartStage publishes StageStartedEvent.
 TEST_F(BattleServiceTest, StartStage_PublishesStageStartedEvent)
 {
     bool received = false;
@@ -122,7 +107,6 @@ TEST_F(BattleServiceTest, StartStage_PublishesStageStartedEvent)
     EventBus::Unsubscribe(handle);
 }
 
-// 4. StartStage loads the first enemy from the sequence into GetEnemy().
 TEST_F(BattleServiceTest, StartStage_LoadsFirstEnemyFromSequence)
 {
     battleService->StartStage();
@@ -136,7 +120,6 @@ TEST_F(BattleServiceTest, StartStage_LoadsFirstEnemyFromSequence)
     EXPECT_EQ(enemy.GetBaseDamage(EAttackType::Paper),    seq[0].paperDamage);
 }
 
-// 5. An enemy death at index 0 advances the index to 1.
 TEST_F(BattleServiceTest, EnemyDeath_AtIndex0_AdvancesIndex)
 {
     battleService->StartStage();
@@ -147,7 +130,6 @@ TEST_F(BattleServiceTest, EnemyDeath_AtIndex0_AdvancesIndex)
     EXPECT_EQ(battleService->GetCurrentEnemyIndex(), 1);
 }
 
-// 6. An enemy death at index 0 publishes EnemyDefeatedEvent with defeatedIndex == 0.
 TEST_F(BattleServiceTest, EnemyDeath_AtIndex0_PublishesEnemyDefeatedEvent)
 {
     battleService->StartStage();
@@ -163,7 +145,6 @@ TEST_F(BattleServiceTest, EnemyDeath_AtIndex0_PublishesEnemyDefeatedEvent)
     EventBus::Unsubscribe(handle);
 }
 
-// 7. Two enemy deaths advance the index to 2.
 TEST_F(BattleServiceTest, EnemyDeath_AtIndex1_AdvancesIndex)
 {
     battleService->StartStage();
@@ -175,7 +156,6 @@ TEST_F(BattleServiceTest, EnemyDeath_AtIndex1_AdvancesIndex)
     EXPECT_EQ(battleService->GetCurrentEnemyIndex(), 2);
 }
 
-// 8. Three enemy deaths publish StageClearEvent.
 TEST_F(BattleServiceTest, EnemyDeath_AtIndex2_PublishesStageClearEvent)
 {
     battleService->StartStage();
@@ -193,7 +173,6 @@ TEST_F(BattleServiceTest, EnemyDeath_AtIndex2_PublishesStageClearEvent)
     EventBus::Unsubscribe(handle);
 }
 
-// 9. After StageClear, index is 0 and sequence is empty.
 TEST_F(BattleServiceTest, EnemyDeath_AtIndex2_ResetsState)
 {
     battleService->StartStage();
@@ -207,7 +186,6 @@ TEST_F(BattleServiceTest, EnemyDeath_AtIndex2_ResetsState)
     EXPECT_TRUE(battleService->GetSequence().empty());
 }
 
-// 10. After the first enemy kill, GetEnemy() matches sequence[1] (captured before kill).
 TEST_F(BattleServiceTest, EnemyDeath_AtIndex0_LoadsNextEnemy)
 {
     battleService->StartStage();
@@ -226,7 +204,6 @@ TEST_F(BattleServiceTest, EnemyDeath_AtIndex0_LoadsNextEnemy)
     EXPECT_EQ(currentEnemy.GetBaseDamage(EAttackType::Paper),    seq[1].paperDamage);
 }
 
-// 11. Player death publishes StageFailEvent.
 TEST_F(BattleServiceTest, PlayerDeath_PublishesStageFailEvent)
 {
     battleService->StartStage();
@@ -242,7 +219,6 @@ TEST_F(BattleServiceTest, PlayerDeath_PublishesStageFailEvent)
     EventBus::Unsubscribe(handle);
 }
 
-// 12. Player death resets index to 0 and clears the sequence.
 TEST_F(BattleServiceTest, PlayerDeath_ResetsState)
 {
     battleService->StartStage();
@@ -254,26 +230,23 @@ TEST_F(BattleServiceTest, PlayerDeath_ResetsState)
     EXPECT_TRUE(battleService->GetSequence().empty());
 }
 
-// 13. Two consecutive StartStage calls each produce a sequence of size 3 at index 0.
 TEST_F(BattleServiceTest, ConsecutiveStartStage_GeneratesNewSequence)
 {
     battleService->StartStage();
     ASSERT_EQ(battleService->GetSequence().size(), 3u);
 
-    // Complete the first stage so state is clean.
     TaggedCharacter enemy(ETag::Enemy);
     PublishDeath(enemy);
     PublishDeath(enemy);
     PublishDeath(enemy);
 
-    // Second stage.
     battleService->StartStage();
     EXPECT_EQ(battleService->GetSequence().size(), 3u);
     EXPECT_EQ(battleService->GetCurrentEnemyIndex(), 0);
 }
 
-// 14. Even with a pool of only 1 enemy, StartStage still produces a sequence of 3
-//     (duplicates are allowed).
+// Even with a pool of only 1 enemy, StartStage still produces a sequence of 3
+// (duplicates are allowed).
 TEST_F(BattleServiceTest, StartStage_WithSmallPool_StillGeneratesThreeEnemies)
 {
     StubConfigService tinyConfig(

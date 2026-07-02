@@ -59,8 +59,7 @@ namespace {
         });
 
         EXPECT_FALSE(health.IsDead());
-        
-        health.TakeDamage(10); // initial health is 10
+        health.TakeDamage(10);
 
         EXPECT_TRUE(health.IsDead());
         EXPECT_TRUE(deathEventFired);
@@ -72,12 +71,12 @@ namespace {
         DummyCharacter character;
         HealthComponent health(&character, 10);
 
-        health.TakeDamage(10); // Kill the character
+        health.TakeDamage(10);
         ASSERT_TRUE(health.IsDead());
         EXPECT_EQ(health.GetHealth(), 0);
 
-        health.TakeDamage(5); // Should be ignored after death
-        EXPECT_EQ(health.GetHealth(), 0); // HP should not go negative
+        health.TakeDamage(5);
+        EXPECT_EQ(health.GetHealth(), 0);
     }
 
     TEST(HealthComponentTest, GetMaxHealth_ReturnsDefaultTen) {
@@ -86,8 +85,6 @@ namespace {
 
         EXPECT_EQ(health.GetMaxHealth(), 10);
     }
-
-    // --- Reset tests (Requirement 2.4) ---
 
     TEST(HealthComponentTest, Reset_SetsHealthToMaxHp) {
         DummyCharacter character;
@@ -103,7 +100,6 @@ namespace {
         DummyCharacter character;
         HealthComponent health(&character, 10);
 
-        // Kill the character first
         health.TakeDamage(10);
         ASSERT_TRUE(health.IsDead());
 
@@ -129,7 +125,6 @@ namespace {
         DummyCharacter character;
         HealthComponent health(&character, 10);
 
-        // Kill first so Reset has something meaningful to reset
         health.TakeDamage(10);
         ASSERT_TRUE(health.IsDead());
 

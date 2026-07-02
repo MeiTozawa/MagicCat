@@ -1,9 +1,3 @@
-// Property-based test for BattleService::LoadEnemy — sprite resolution routing.
-// Verifies that LoadEnemy routes sprite name resolution through IAssetService::ParseSprite.
-//
-// Feature: code-review-fixes, Property 1: LoadEnemy routes sprite resolution
-// Validates: Requirements 3.2, 3.4
-
 // rpcndr.h (pulled in via DxLib) defines `small` as `char`, which conflicts
 // with headers in some dependency chains. Undefine before gtest includes.
 #ifdef small
@@ -31,10 +25,6 @@ using ::testing::StrictMock;
 namespace mc {
 namespace {
 
-// ---------------------------------------------------------------------------
-// Stub helpers
-// ---------------------------------------------------------------------------
-
 /// Minimal config service that vends a single enemy entry.
 class SingleEnemyConfigService : public IConfigService
 {
@@ -53,21 +43,12 @@ public:
     const std::vector<EnemyConfig>& GetEnemyConfigs() const override { return enemies_; }
 };
 
-// ---------------------------------------------------------------------------
-// Property 1: LoadEnemy routes sprite resolution through IAssetService
-//
 // For any spriteName string, BattleService::LoadEnemy must call
-// IAssetService::ParseSprite exactly once with that spriteName and use the
-// returned ESprite value.
-// ---------------------------------------------------------------------------
-
-// **Validates: Requirements 3.2, 3.4**
+// IAssetService::ParseSprite exactly once with that spriteName.
 RC_GTEST_PROP(BattleServiceParseSpriteProperty,
               LoadEnemy_CallsParseSprite_ExactlyOnce_WithGivenSpriteName, ())
 {
-    // Generate an arbitrary sprite name string.
-    // Filter out strings with embedded null characters as std::string equality
-    // matching in GMock works on the full string value.
+    // Filter out strings with embedded null characters (GMock string matching works on full value).
     auto spriteName = *rc::gen::suchThat(
         rc::gen::arbitrary<std::string>(),
         [](const std::string& s) {
@@ -75,8 +56,6 @@ RC_GTEST_PROP(BattleServiceParseSpriteProperty,
         }
     );
 
-    // Build a minimal EnemyConfig using the generated spriteName.
-    // Use fixed values for int fields and a simple wide name.
     EnemyConfig config{
         /* hp            */ 10,
         /* baseWeight    */ 1,
@@ -89,12 +68,9 @@ RC_GTEST_PROP(BattleServiceParseSpriteProperty,
 
     SingleEnemyConfigService configService(config);
 
-    // Use StrictMock to catch any unexpected calls on the asset service.
     StrictMock<MockAssetService> mockAsset;
 
-    // Property assertion: ParseSprite must be called exactly once with spriteName.
-    // Return ESprite::Null (default zero-init) for any unrecognised name — this
-    // matches Requirement 3.4 (fallback behaviour is preserved).
+    // ESprite::Null (0) matches the fallback behaviour for unrecognised names.
     EXPECT_CALL(mockAsset, ParseSprite(spriteName))
         .Times(1)
         .WillOnce(Return(static_cast<ESprite>(0)));
@@ -102,24 +78,14 @@ RC_GTEST_PROP(BattleServiceParseSpriteProperty,
     auto cardService   = CreateCardService(configService);
     auto battleService = CreateBattleService(configService, *cardService, mockAsset);
 
-    // LoadEnemy is what we want to exercise directly.
     battleService->LoadEnemy(config);
-
-    // GMock verifies EXPECT_CALL on mock destruction (end of this iteration).
 }
 
-// ---------------------------------------------------------------------------
-// Property 1b: LoadEnemy routes ParseSprite even when called via StartStage
-//
-// StartStage calls LoadEnemy internally for the first enemy in the sequence.
-// Verify ParseSprite is called for each LoadEnemy invocation that occurs.
-// ---------------------------------------------------------------------------
-
-// **Validates: Requirements 3.2, 3.4**
+// StartStage calls LoadEnemy internally for the first enemy; verify ParseSprite
+// is called at least once during StartStage.
 RC_GTEST_PROP(BattleServiceParseSpriteProperty,
               StartStage_TriggersParseSprite_ForFirstEnemy, ())
 {
-    // Generate a sprite name without embedded nulls.
     auto spriteName = *rc::gen::suchThat(
         rc::gen::arbitrary<std::string>(),
         [](const std::string& s) {
@@ -127,9 +93,7 @@ RC_GTEST_PROP(BattleServiceParseSpriteProperty,
         }
     );
 
-    // Use the same sprite name for all three enemies in the pool so that any
-    // call to ParseSprite hits our expectation regardless of which enemies are
-    // selected by StartStage.
+    // Use the same sprite name for all three enemies so any selection hits our expectation.
     std::vector<EnemyConfig> pool = {
         EnemyConfig{ 10, 1, 1, 1, 1, L"EnemyA", spriteName },
         EnemyConfig{ 12, 1, 2, 1, 1, L"EnemyB", spriteName },
@@ -149,11 +113,8 @@ RC_GTEST_PROP(BattleServiceParseSpriteProperty,
 
     MultiEnemyConfigService configService(pool);
 
-    // NiceMock: we only assert on ParseSprite, other calls (if any) are irrelevant.
     ::testing::NiceMock<MockAssetService> mockAsset;
 
-    // StartStage selects 3 enemies and calls LoadEnemy once for the first enemy.
-    // That single LoadEnemy call must invoke ParseSprite exactly once.
     EXPECT_CALL(mockAsset, ParseSprite(spriteName))
         .Times(::testing::AtLeast(1))
         .WillRepeatedly(Return(static_cast<ESprite>(0)));
@@ -163,7 +124,6 @@ RC_GTEST_PROP(BattleServiceParseSpriteProperty,
 
     battleService->StartStage();
 
-    // Explicitly verify expectations before end of iteration.
     ::testing::Mock::VerifyAndClearExpectations(&mockAsset);
 }
 

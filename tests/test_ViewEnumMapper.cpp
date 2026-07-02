@@ -1,10 +1,3 @@
-// Unit and property-based tests for ViewEnumMapper::ToImage.
-// Verifies all ECardType and EAttackType enumerators map to the documented EImage,
-// and that out-of-range casts return EImage::Null.
-//
-// Feature: code-review-fixes, Property 7: ToImage covers all enumerators
-// Validates: Requirements 12.1, 12.2, 12.3
-
 // rpcndr.h (pulled in via DxLib) defines `small` as `char`, which conflicts
 // with headers in some dependency chains. Undefine before gtest includes.
 #ifdef small
@@ -22,10 +15,6 @@ import AssetService;
 
 namespace mc {
 namespace {
-
-// ---------------------------------------------------------------------------
-// Compile-time tables mapping every defined enumerator to its expected EImage.
-// ---------------------------------------------------------------------------
 
 struct CardTypeMapping
 {
@@ -53,10 +42,6 @@ constexpr AttackTypeMapping kAttackTypeMappings[] = {
     { EAttackType::Paper,    EImage::Paper    },
 };
 
-// ---------------------------------------------------------------------------
-// Req 12.1 — ToImage(ECardType) maps every enumerator to the correct EImage.
-// ---------------------------------------------------------------------------
-
 TEST(ToImage_ECardType, AllEnumeratorsMappedCorrectly)
 {
     for (const auto& m : kCardTypeMappings)
@@ -67,10 +52,6 @@ TEST(ToImage_ECardType, AllEnumeratorsMappedCorrectly)
             << " did not map to the expected EImage";
     }
 }
-
-// ---------------------------------------------------------------------------
-// Req 12.2 — ToImage(EAttackType) maps every enumerator to the correct EImage.
-// ---------------------------------------------------------------------------
 
 TEST(ToImage_EAttackType, AllEnumeratorsMappedCorrectly)
 {
@@ -83,59 +64,38 @@ TEST(ToImage_EAttackType, AllEnumeratorsMappedCorrectly)
     }
 }
 
-// ---------------------------------------------------------------------------
-// Req 12.3 — Out-of-range casts must return EImage::Null.
-//
-// The ViewEnumMapper implementation contains assert(false) in the default branch
-// (debug aid) followed by return EImage::Null.
-//   - Debug builds: the assert fires — EXPECT_DEATH validates this intended behaviour.
-//   - Release builds (NDEBUG): the assert is compiled out, and EImage::Null is returned.
-// ---------------------------------------------------------------------------
-
+// Out-of-range behaviour differs between debug and release builds.
+// Debug: assert(false) fires before the return → EXPECT_DEATH.
+// Release (NDEBUG): assert compiled out, EImage::Null returned.
 #ifdef NDEBUG
 
 TEST(ToImage_ECardType, OutOfRangeReturnsNull)
 {
-    // In release builds the assert is compiled out; the function returns EImage::Null.
     EXPECT_EQ(ToImage(static_cast<ECardType>(9999)), EImage::Null);
 }
 
 TEST(ToImage_EAttackType, OutOfRangeReturnsNull)
 {
-    // In release builds the assert is compiled out; the function returns EImage::Null.
     EXPECT_EQ(ToImage(static_cast<EAttackType>(9999)), EImage::Null);
 }
 
-#else // Debug build — assert fires before the return
+#else
 
 TEST(ToImage_ECardType, OutOfRangeTriggersAssert)
 {
-    // The default branch has assert(false) — the process terminates in debug builds.
-    // This validates that invalid values are caught early during development.
     EXPECT_DEATH(ToImage(static_cast<ECardType>(9999)), "");
 }
 
 TEST(ToImage_EAttackType, OutOfRangeTriggersAssert)
 {
-    // The default branch has assert(false) — the process terminates in debug builds.
     EXPECT_DEATH(ToImage(static_cast<EAttackType>(9999)), "");
 }
 
 #endif // NDEBUG
 
-// ---------------------------------------------------------------------------
-// Property 7: ToImage(ECardType) and ToImage(EAttackType) cover all defined
-// enumerators — verified via property-based test over table indices.
-//
-// Feature: code-review-fixes, Property 7: ToImage covers all enumerators
-// Validates: Requirements 12.1, 12.2, 12.3
-// ---------------------------------------------------------------------------
-
 RC_GTEST_PROP(ToImage_Property, ECardType_AllTableEntriesMapCorrectly, ())
 {
     constexpr int tableSize = static_cast<int>(std::size(kCardTypeMappings));
-
-    // Generate an arbitrary valid index into the ECardType mapping table.
     const int idx = *rc::gen::inRange(0, tableSize);
 
     const auto& m = kCardTypeMappings[idx];
@@ -145,8 +105,6 @@ RC_GTEST_PROP(ToImage_Property, ECardType_AllTableEntriesMapCorrectly, ())
 RC_GTEST_PROP(ToImage_Property, EAttackType_AllTableEntriesMapCorrectly, ())
 {
     constexpr int tableSize = static_cast<int>(std::size(kAttackTypeMappings));
-
-    // Generate an arbitrary valid index into the EAttackType mapping table.
     const int idx = *rc::gen::inRange(0, tableSize);
 
     const auto& m = kAttackTypeMappings[idx];

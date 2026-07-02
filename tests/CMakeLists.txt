@@ -31,6 +31,7 @@ add_executable(MagicCatTests
     test_ViewEnumMapper.cpp
     test_AssetService.cpp
     test_CombatScene.cpp
+    test_MouseInput.cpp
 )
 
 target_compile_features(MagicCatTests PRIVATE cxx_std_23)

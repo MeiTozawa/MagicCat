@@ -1,6 +1,3 @@
-// Property-based tests for IBattleService using RapidCheck.
-// Verifies invariants that must hold for any arbitrary input.
-
 // rpcndr.h (pulled in via DxLib) defines `small` as `char`, which conflicts
 // with headers in some dependency chains. Undefine before gtest includes.
 #ifdef small
@@ -26,10 +23,6 @@ using ::testing::NiceMock;
 
 namespace mc {
 namespace {
-
-// ---------------------------------------------------------------------------
-// Stub helpers (local to this translation unit)
-// ---------------------------------------------------------------------------
 
 class StubConfigService : public IConfigService
 {
@@ -61,10 +54,6 @@ public:
     void TakeDamage(int) const override {}
 };
 
-// ---------------------------------------------------------------------------
-// Property 1: sequence always contains exactly 3 entries after StartStage().
-// ---------------------------------------------------------------------------
-
 RC_GTEST_PROP(BattleServiceProperties, SequenceAlwaysHasThreeEntries, ())
 {
     StubConfigService cfg;
@@ -76,11 +65,6 @@ RC_GTEST_PROP(BattleServiceProperties, SequenceAlwaysHasThreeEntries, ())
 
     RC_ASSERT(bs->GetSequence().size() == 3u);
 }
-
-// ---------------------------------------------------------------------------
-// Property 2: every entry in the sequence is drawn from the config pool
-//             (matched by enemy name).
-// ---------------------------------------------------------------------------
 
 RC_GTEST_PROP(BattleServiceProperties, SequenceEntriesAreFromPool, ())
 {
@@ -107,10 +91,6 @@ RC_GTEST_PROP(BattleServiceProperties, SequenceEntriesAreFromPool, ())
     }
 }
 
-// ---------------------------------------------------------------------------
-// Property 3: GetCurrentEnemyIndex() is always 0 immediately after StartStage().
-// ---------------------------------------------------------------------------
-
 RC_GTEST_PROP(BattleServiceProperties, CurrentIndexAlwaysStartsAtZero, ())
 {
     StubConfigService cfg;
@@ -122,11 +102,6 @@ RC_GTEST_PROP(BattleServiceProperties, CurrentIndexAlwaysStartsAtZero, ())
 
     RC_ASSERT(bs->GetCurrentEnemyIndex() == 0);
 }
-
-// ---------------------------------------------------------------------------
-// Property 4: one enemy death always increments the index from 0 to 1
-//             (when index < 2).
-// ---------------------------------------------------------------------------
 
 RC_GTEST_PROP(BattleServiceProperties, EnemyDeathAlwaysIncrementsIndex, ())
 {
@@ -143,11 +118,6 @@ RC_GTEST_PROP(BattleServiceProperties, EnemyDeathAlwaysIncrementsIndex, ())
 
     RC_ASSERT(bs->GetCurrentEnemyIndex() == 1);
 }
-
-// ---------------------------------------------------------------------------
-// Property 5: three consecutive enemy deaths always fire StageClearEvent
-//             exactly once and reset the index to 0.
-// ---------------------------------------------------------------------------
 
 RC_GTEST_PROP(BattleServiceProperties, ThreeConsecutiveEnemyDeaths_StageClear, ())
 {

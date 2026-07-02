@@ -12,11 +12,8 @@ namespace {
 
     class EventBusTest : public ::testing::Test {
     protected:
-        void SetUp() override {
-            // No easy way to clear global EventBus state, so we use unique variables.
-        }
-        void TearDown() override {
-        }
+        void SetUp() override {}
+        void TearDown() override {}
     };
 
     TEST_F(EventBusTest, SubscribeAndPublish_BasicFlow) {
@@ -36,7 +33,7 @@ namespace {
     TEST_F(EventBusTest, Unsubscribe_RemovesListener) {
         int callCount = 0;
 
-        auto handle = EventBus::Subscribe<DummyEvent>([&](const DummyEvent& e) {
+        auto handle = EventBus::Subscribe<DummyEvent>([&](const DummyEvent&) {
             callCount++;
         });
 
@@ -46,7 +43,7 @@ namespace {
         EventBus::Unsubscribe(handle);
 
         EventBus::Publish<DummyEvent>({2});
-        EXPECT_EQ(callCount, 1); // Should not increase
+        EXPECT_EQ(callCount, 1);
     }
 
     TEST_F(EventBusTest, MultipleSubscribers_AllReceiveEvent) {
@@ -66,7 +63,6 @@ namespace {
     }
 
     TEST_F(EventBusTest, Unsubscribe_InvalidHandle_DoesNotCrash) {
-        // Unsubscribing a handle that was already removed must not crash
         auto handle = EventBus::Subscribe<DummyEvent>([](const DummyEvent&) {});
         EventBus::Unsubscribe(handle);
 

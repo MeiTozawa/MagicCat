@@ -28,10 +28,10 @@ namespace mc {
 
         constexpr int SECTION_SPACING = 280;
 
-        constexpr int ICON_OFFSET_X = 320;
-        constexpr int ICON_OFFSET_Y = 80;
-        constexpr int ICON_TEXT_OFFSET_X = 250;
-        constexpr int ICON_TEXT_OFFSET_Y = 72;
+        constexpr int ICON_OFFSET_X = 300;
+        constexpr int ICON_OFFSET_Y = 60;
+        constexpr int ICON_TEXT_OFFSET_X = 260;
+        constexpr int ICON_TEXT_OFFSET_Y = 83;
 
         constexpr uint32_t COLOR_BOX_BG = 0x1E1E28;
 

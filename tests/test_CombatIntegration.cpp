@@ -56,8 +56,7 @@ namespace {
             combatController = CreateCombatController(*mockInput, *characterService, *sceneService, *cardService);
         }
 
-        void TearDown() override {
-        }
+        void TearDown() override {}
     };
 
     TEST_F(CombatIntegrationTest, MagicAction_SetsEnemyExposed_IfSuccessful) {

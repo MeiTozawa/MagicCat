@@ -11,24 +11,17 @@ namespace {
 
     class PlayerTest : public ::testing::Test {
     protected:
-        void SetUp() override {
-            // Ensure any previous events are cleared or reset if necessary
-        }
-        void TearDown() override {
-        }
+        void SetUp() override {}
+        void TearDown() override {}
     };
 
     TEST_F(PlayerTest, ChangeMp_ClampsBetweenZeroAndMax) {
         Player player;
-        
-        int initialMp = player.GetMp();
         int maxMp = player.GetMaxMp();
 
-        // Drain MP completely
         player.ChangeMp(-100);
         EXPECT_EQ(player.GetMp(), 0);
 
-        // Overfill MP
         player.ChangeMp(100);
         EXPECT_EQ(player.GetMp(), maxMp);
     }
@@ -36,7 +29,6 @@ namespace {
     TEST_F(PlayerTest, UseMagic_ConsumesMpAndFiresEvent) {
         Player player;
         
-        // Ensure we have enough MP
         player.ChangeMp(100);
         int initialMp = player.GetMp();
 
@@ -57,11 +49,10 @@ namespace {
     TEST_F(PlayerTest, UseMagic_LacksMp_FiresLackOfMpEvent) {
         Player player;
 
-        // Drain MP completely
         player.ChangeMp(-100);
         
         bool lackOfMpEventFired = false;
-        auto handle = EventBus::Subscribe<LackOfMpEvent>([&](const LackOfMpEvent& e) {
+        auto handle = EventBus::Subscribe<LackOfMpEvent>([&](const LackOfMpEvent&) {
             lackOfMpEventFired = true;
         });
 
@@ -79,21 +70,19 @@ namespace {
 
         player.TakeDamage(3);
 
-        int currentHealth = player.GetHealthComponent().GetHealth();
-        EXPECT_EQ(currentHealth, initialHealth - 3);
+        EXPECT_EQ(player.GetHealthComponent().GetHealth(), initialHealth - 3);
     }
 
     TEST_F(PlayerTest, UseMagic_Clairvoyance_CannotBeUsedTwice) {
         Player player;
 
-        // Ensure we have enough MP for first cast
         player.ChangeMp(100);
 
         bool firstResult  = player.UseMagic(EMagic::Clairvoyance);
         bool secondResult = player.UseMagic(EMagic::Clairvoyance);
 
         EXPECT_TRUE(firstResult);
-        EXPECT_FALSE(secondResult); // Already used — must be blocked
+        EXPECT_FALSE(secondResult);
     }
 
     TEST_F(PlayerTest, UseMagic_NullMagic_ReturnsFalse) {

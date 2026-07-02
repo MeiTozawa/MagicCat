@@ -12,10 +12,8 @@ namespace {
 
     class EnemyTest : public ::testing::Test {
     protected:
-        void SetUp() override {
-        }
-        void TearDown() override {
-        }
+        void SetUp() override {}
+        void TearDown() override {}
     };
 
     TEST_F(EnemyTest, MagicEvent_Clairvoyance_SetsIsExposed) {
@@ -47,7 +45,6 @@ namespace {
         Enemy enemy;
 
         enemy.AddWeight(EAttackType::Rock, 10);
-        
         enemy.ResetWeights();
 
         EXPECT_EQ(enemy.GetWeightOffset(EAttackType::Rock), 0);
@@ -76,8 +73,7 @@ namespace {
     TEST_F(EnemyTest, GetBaseWeight_ReturnsConstructorValue) {
         Enemy enemy(42, 1, 1, 1, L"TestEnemy");
 
-        // In _DEBUG builds, Enemy::Enemy() forces baseWeight = 1 regardless of the
-        // constructor argument. In release, the constructor argument is used.
+        // In _DEBUG builds Enemy::Enemy() forces baseWeight = 1 regardless of the argument.
 #ifdef _DEBUG
         EXPECT_EQ(enemy.GetBaseWeight(), 1);
 #else

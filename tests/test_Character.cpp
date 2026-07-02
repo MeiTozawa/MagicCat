@@ -16,21 +16,14 @@ namespace {
             sprite = ESprite::Null;
         }
 
-        void TakeDamage(int amount) const override
-        {
-            // Empty for testing LosesTo logic
-        }
+        void TakeDamage(int) const override {}
     };
 
     TEST(CharacterTest, LosesTo_LogicCheck) {
-        // Rock loses to Paper
         EXPECT_TRUE(LosesTo(EAttackType::Rock, EAttackType::Paper));
-        // Scissors loses to Rock
         EXPECT_TRUE(LosesTo(EAttackType::Scissors, EAttackType::Rock));
-        // Paper loses to Scissors
         EXPECT_TRUE(LosesTo(EAttackType::Paper, EAttackType::Scissors));
 
-        // False cases
         EXPECT_FALSE(LosesTo(EAttackType::Rock, EAttackType::Scissors));
         EXPECT_FALSE(LosesTo(EAttackType::Rock, EAttackType::Rock));
         EXPECT_FALSE(LosesTo(EAttackType::Paper, EAttackType::Rock));
@@ -51,19 +44,16 @@ namespace {
 
     TEST(CharacterTest, GetTags_IsEmptyForBaseCharacter) {
         DummyCharacter c;
-        // Base DummyCharacter adds no tags
         EXPECT_TRUE(c.GetTags().empty());
     }
 
     TEST(CharacterTest, LosesTo_DrawCases_ReturnFalse) {
-        // Same type is a draw — should never lose to itself
         EXPECT_FALSE(LosesTo(EAttackType::Rock,     EAttackType::Rock));
         EXPECT_FALSE(LosesTo(EAttackType::Scissors, EAttackType::Scissors));
         EXPECT_FALSE(LosesTo(EAttackType::Paper,    EAttackType::Paper));
     }
 
     TEST(CharacterTest, LosesTo_WinCases_ReturnFalse) {
-        // Winning cases: should return false (these do NOT lose)
         EXPECT_FALSE(LosesTo(EAttackType::Rock,     EAttackType::Scissors));
         EXPECT_FALSE(LosesTo(EAttackType::Scissors, EAttackType::Paper));
         EXPECT_FALSE(LosesTo(EAttackType::Paper,    EAttackType::Rock));

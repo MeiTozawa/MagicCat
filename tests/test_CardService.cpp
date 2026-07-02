@@ -32,8 +32,7 @@ namespace {
                 .WillRepeatedly(ReturnRef(mockCardConfigs));
         }
 
-        void TearDown() override {
-        }
+        void TearDown() override {}
     };
 
     TEST_F(CardServiceTest, Start_InitializesPiles) {
@@ -83,7 +82,6 @@ namespace {
         auto cardService = CreateCardService(*mockConfig);
         cardService->Start();
 
-        // Fill the hand to HAND_SIZE_MAX (4)
         for (int i = 0; i < HAND_SIZE_MAX; i++) {
             cardService->DrawCard();
         }
@@ -92,7 +90,6 @@ namespace {
         Card extra = cardService->DrawCard();
 
         EXPECT_EQ(extra.CardType, ECardType::Null);
-        // Hand size must not exceed the maximum
         EXPECT_EQ(static_cast<int>(cardService->GetHandCards().size()), HAND_SIZE_MAX);
     }
 
@@ -100,16 +97,14 @@ namespace {
         auto cardService = CreateCardService(*mockConfig);
         cardService->Start();
 
-        // Fill hand, discard, then fill hand again to exhaust draw pile
+        // Fill hand, discard, fill hand again to exhaust draw pile
         for (int i = 0; i < HAND_SIZE_MAX; i++) cardService->DrawCard();
         cardService->DiscardHand();
-        // Draw pile is empty; drawing reshuffles from discard
         for (int i = 0; i < HAND_SIZE_MAX; i++) cardService->DrawCard();
-        // Now hand is full, draw pile empty, discard empty
         ASSERT_EQ(cardService->GetDiscardCards().size(), 0uz);
         ASSERT_EQ(cardService->GetDrawCards().size(),    0uz);
 
-        Card result = cardService->DrawCard(); // hand is full — must return Null
+        Card result = cardService->DrawCard();
         EXPECT_EQ(result.CardType, ECardType::Null);
     }
 
@@ -131,7 +126,7 @@ namespace {
     TEST_F(CardServiceTest, DiscardHand_FiresHandUpdatedEvent) {
         auto cardService = CreateCardService(*mockConfig);
         cardService->Start();
-        cardService->DrawCard(); // put a card in hand first
+        cardService->DrawCard();
 
         bool eventFired = false;
         auto handle = EventBus::Subscribe<HandUpdatedEvent>([&](const HandUpdatedEvent&) {

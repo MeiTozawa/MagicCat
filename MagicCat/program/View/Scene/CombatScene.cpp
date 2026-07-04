@@ -1,7 +1,6 @@
 module;
 
 #include <memory>
-#include <format>
 #include <optional>
 #include <RenderUtils.h>
 #include <string>
@@ -73,8 +72,6 @@ namespace mc {
         AttackDisplayer* enemyAttack = nullptr;
         DialogDisplayer* playerDialog = nullptr;
 
-        std::wstring progressText;
-
     public:
         CombatScene(ISceneService& scene, IAssetService& asset, ICardService& card,
                     IInputService& input, IRenderService& render, IBattleService& battle)
@@ -130,10 +127,6 @@ namespace mc {
             auto dlg = CreateDialogDisplayer(renderService, PLAYER_DIALOG_X, PLAYER_DIALOG_Y);
             playerDialog = dlg.get();
             displayers.push_back(std::move(dlg));
-
-            progressText = std::format(L"敵 {}/{}",
-                battleService.GetCurrentEnemyIndex() + 1,
-                battleService.GetTotalEnemyCount());
 
             healthChangedEvent = EventBus::Subscribe<HealthChangedEvent>([this](const HealthChangedEvent& event)
             {
@@ -200,11 +193,6 @@ namespace mc {
                     }
                 }
             });
-
-            stageClearHandle = EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&)
-            {
-                progressText = L"全クリア！";
-            });
         }
 
         ~CombatScene() override
@@ -219,7 +207,6 @@ namespace mc {
             combatController->Update(deltaTime);
             displayers.Update(deltaTime);
             displayers.Draw(deltaTime);
-            renderService.DrawString(20, 10, progressText.c_str(), 0xFFFFFF);
         }
     };
 

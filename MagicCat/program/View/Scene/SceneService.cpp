@@ -23,7 +23,13 @@ namespace mc {
 
     public:
         explicit ScreenFadeDisplayer(IRenderService& rs) : rs(rs) {}
-
+        
+        void Draw(float deltaTime) const override
+        {
+            if (effectors.empty()) return;
+            Displayer::Draw(deltaTime);
+        }
+        
     private:
         void OnDraw(float) const override
         {
@@ -32,12 +38,7 @@ namespace mc {
             rs.DrawBoxAA(0.f, 0.f, w, h, COLOR_BG, true);
         }
 
-        // effector がない場合（フェード完了後）は何も描画しない
-        void Draw(float deltaTime) const override
-        {
-            if (effectors.empty()) return;
-            Displayer::Draw(deltaTime);
-        }
+
     };
 
     class SceneService : public ISceneService

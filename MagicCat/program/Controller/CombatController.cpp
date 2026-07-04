@@ -1,6 +1,7 @@
 module;
 
 #include <memory>
+#include <RenderUtils.h>
 
 module CombatController;
 
@@ -13,18 +14,6 @@ import Player;
 import SceneService;
 
 namespace mc {
-    // ActionMenu HitBox (same values as CharacterDisplayer.ixx constants)
-    constexpr int MC_ACTION_START_X  = 400;   // PLAYER_DAMAGE_START_X
-    constexpr int MC_ACTION_START_Y  = 200;   // PLAYER_DAMAGE_START_Y
-    constexpr int MC_ACTION_RECT_W   = 300;   // RECT_X
-    constexpr int MC_ACTION_RECT_H   = 100;   // RECT_Y
-    constexpr int MC_ACTION_OFFSET_Y = 120;   // OFFSET_Y
-
-    // DrawCard HitBox (same values as CardDisplayer.ixx constants)
-    constexpr int MC_DRAW_CARD_X1 = 50;
-    constexpr int MC_DRAW_CARD_Y1 = 400;
-    constexpr int MC_DRAW_CARD_X2 = 250;   // DRAW_PILE_X + CARD_WIDTH
-    constexpr int MC_DRAW_CARD_Y2 = 700;   // DRAW_PILE_Y + CARD_HEIGHT
 
     class CombatController : public ICombatController
     {
@@ -165,10 +154,10 @@ namespace mc {
                 int my = mousePos.y;
                 for (int i = 0; i < 4; ++i)
                 {
-                    int hx1 = MC_ACTION_START_X;
-                    int hy1 = MC_ACTION_START_Y + i * MC_ACTION_OFFSET_Y;
-                    int hx2 = hx1 + MC_ACTION_RECT_W;
-                    int hy2 = hy1 + MC_ACTION_RECT_H;
+                    int hx1 = ACTION_MENU_X;
+                    int hy1 = ACTION_MENU_Y + i * ACTION_MENU_STEP_Y;
+                    int hx2 = hx1 + ACTION_MENU_W;
+                    int hy2 = hy1 + ACTION_MENU_H;
                     if (mx >= hx1 && mx < hx2 && my >= hy1 && my < hy2)
                     {
                         if (selectedActionIndex != i)
@@ -181,13 +170,11 @@ namespace mc {
                 }
             }
 
-            // Mouse click handling
             auto click = inputService.OnMouseClick(InputAction::MouseClick);
             if (click.x != -1 && click.y != -1)
             {
-                // DrawCard HitBox
-                if (click.x >= MC_DRAW_CARD_X1 && click.x < MC_DRAW_CARD_X2 &&
-                    click.y >= MC_DRAW_CARD_Y1 && click.y < MC_DRAW_CARD_Y2)
+                if (click.x >= DRAW_PILE_X1 && click.x < DRAW_PILE_X2 &&
+                    click.y >= DRAW_PILE_Y1 && click.y < DRAW_PILE_Y2)
                 {
                     auto c = cardService.DrawCard();
                     if (c.CardType == ECardType::Magic)
@@ -205,10 +192,10 @@ namespace mc {
                 // ActionMenu row HitBox
                 for (int i = 0; i < 4; ++i)
                 {
-                    int x1 = MC_ACTION_START_X;
-                    int y1 = MC_ACTION_START_Y + i * MC_ACTION_OFFSET_Y;
-                    int x2 = x1 + MC_ACTION_RECT_W;
-                    int y2 = y1 + MC_ACTION_RECT_H;
+                    int x1 = ACTION_MENU_X;
+                    int y1 = ACTION_MENU_Y + i * ACTION_MENU_STEP_Y;
+                    int x2 = x1 + ACTION_MENU_W;
+                    int y2 = y1 + ACTION_MENU_H;
                     if (click.x >= x1 && click.x < x2 && click.y >= y1 && click.y < y2)
                     {
                         if (isMagicMenuOpen && i >= 1)

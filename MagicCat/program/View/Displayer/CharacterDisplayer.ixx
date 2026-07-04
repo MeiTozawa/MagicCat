@@ -23,8 +23,8 @@ import SceneService;
 
 namespace mc {
     namespace {
-        constexpr int PLAYER_DAMAGE_START_X = 400;
-        constexpr int PLAYER_DAMAGE_START_Y = 200;
+        constexpr int PLAYER_DAMAGE_START_X = ACTION_MENU_X;
+        constexpr int PLAYER_DAMAGE_START_Y = ACTION_MENU_Y;
 
         constexpr int PLAYER_HP_X = 60;
         constexpr int PLAYER_HP_Y = 200;
@@ -43,10 +43,10 @@ namespace mc {
         constexpr int TEXT_OFFSET_X = 30;
         constexpr int TEXT_OFFSET_Y = 28;
 
-        constexpr int OFFSET_Y = 120;
+        constexpr int OFFSET_Y = ACTION_MENU_STEP_Y;
 
-        constexpr int RECT_X = 300;
-        constexpr int RECT_Y = 100;
+        constexpr int RECT_X = ACTION_MENU_W;
+        constexpr int RECT_Y = ACTION_MENU_H;
 
         constexpr int THICKNESS = 2;
     }
@@ -176,8 +176,6 @@ namespace mc {
 
         void InitEnemyWeightDisplayers()
         {
-            // Rock=0, Scissors=1, Paper=2 の順で Displayer を生成する
-            // raw pointer を weightDisplayers に保持し、AddEffector 呼び出しに使う
             constexpr EAttackType types[3] = {EAttackType::Rock, EAttackType::Scissors, EAttackType::Paper};
 
             for (int i = 0; i < 3; ++i)

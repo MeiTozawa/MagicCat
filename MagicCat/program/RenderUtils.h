@@ -23,6 +23,23 @@ namespace mc {
     static constexpr uint32_t COLOR_CARD_PAPER = 0xF5F5DC;
     static constexpr uint32_t COLOR_CARD_SCISSORS = 0xB0C4DE;
     static constexpr uint32_t COLOR_CARD_MAGIC = 0x9370DB;
+    
+    static constexpr int CARD_HEIGHT = 300;
+    static constexpr int CARD_WIDTH = 200;
+    
+    static constexpr int ICON_SIZE_X = 128; 
+    static constexpr int ICON_SIZE_Y = 128; 
+
+    static constexpr int ACTION_MENU_X = 400;  ///< 行動ボタン左端 X
+    static constexpr int ACTION_MENU_Y = 200;  ///< 行動ボタン最上段 Y
+    static constexpr int ACTION_MENU_W = 300;  ///< 行動ボタン幅
+    static constexpr int ACTION_MENU_H = 100;  ///< 行動ボタン高さ
+    static constexpr int ACTION_MENU_STEP_Y = 120;  ///< 行動ボタン間の Y オフセット
+
+    static constexpr int DRAW_PILE_X1 = 50;   ///< 山札領域 左端 X
+    static constexpr int DRAW_PILE_Y1 = 400;  ///< 山札領域 上端 Y
+    static constexpr int DRAW_PILE_X2 = DRAW_PILE_X1 + CARD_WIDTH;  ///< 山札領域 右端 X  
+    static constexpr int DRAW_PILE_Y2 = DRAW_PILE_Y1 + CARD_HEIGHT;  ///< 山札領域 下端 Y  
 
     template <typename T>
     requires std::integral<T> || std::floating_point<T>

@@ -10,8 +10,7 @@ import EventBus;
 import ConfigService;
 
 namespace mc {
-    export constexpr int CARD_HEIGHT = 300;
-    export constexpr int CARD_WIDTH = 200;
+
     export constexpr int HAND_SIZE_MAX = 4;
 
     export enum class ECardType

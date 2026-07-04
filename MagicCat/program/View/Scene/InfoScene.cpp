@@ -32,11 +32,7 @@ namespace {
             : inputService(input), sceneService(scene), renderService(render), battleService(battle)
         {
             infoColor = 0xF259FF;
-            // これらのサブスクリプションはコンストラクタに配置し、デストラクタで Unsubscribe する。
-            // InfoScene はセッション開始時に一度だけ構築され、複数のステージにまたがって生存し続けるため、
-            // winCount と failCount をステージ間で正確に累積できる。
-            // Start() に移動すると、Start() はシーンがアクティブになるたびに呼ばれるため、
-            // 重複サブスクリプションが発生し、カウントが二重以上に加算されてしまう。
+            
             stageClearHandle = EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&)
             {
                 winCount++;
@@ -81,7 +77,6 @@ namespace {
                     click.y >= 0 && click.y < h)
                 {
                     battleService.StartStage();
-                    // return を省略 — キーボードパスと同様にこのフレームの描画を継続する
                 }
             }
 

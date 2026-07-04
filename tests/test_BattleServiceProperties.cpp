@@ -133,9 +133,9 @@ RC_GTEST_PROP(BattleServiceProperties, ThreeConsecutiveEnemyDeaths_StageClear, (
         [&](const StageClearEvent&) { ++stageClearCount; });
 
     TaggedCharacter enemy(ETag::Enemy);
-    EventBus::Publish(DeathEvent(&enemy)); // kill 0 → index 1
-    EventBus::Publish(DeathEvent(&enemy)); // kill 1 → index 2
-    EventBus::Publish(DeathEvent(&enemy)); // kill 2 → StageClearEvent
+    EventBus::Publish(DeathEvent(&enemy));
+    EventBus::Publish(DeathEvent(&enemy));
+    EventBus::Publish(DeathEvent(&enemy));
 
     EventBus::Unsubscribe(handle);
 

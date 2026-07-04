@@ -254,14 +254,14 @@ RC_GTEST_PROP(MouseInput, Property3_SelectionBeforeConfirm_CaseB_ConfirmDoesNotS
         .WillByDefault(Return(Point<int>{cx, cy}));
 
     auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard);
-    controller->Update(0.0f);  // first click: selects row i
+    controller->Update(0.0f);
 
     int actionSelCount = 0;
     auto hSel = EventBus::Subscribe<ActionSelectionEvent>([&](const ActionSelectionEvent& e) {
         if (!e.silent) ++actionSelCount;
     });
 
-    controller->Update(0.0f);  // second click: confirm path
+    controller->Update(0.0f);
 
     RC_ASSERT(actionSelCount == 0);
 

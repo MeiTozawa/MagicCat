@@ -1,4 +1,4 @@
-﻿// Feature: control-display-mouse-hints
+// Feature: control-display-mouse-hints
 
 #ifdef small
 #undef small
@@ -39,7 +39,7 @@ protected:
 };
 
 // ---------------------------------------------------------------------------
-// Placeholder 窶・fixture setup smoke test
+// Placeholder — fixture setup smoke test
 // ---------------------------------------------------------------------------
 TEST_F(ControlDisplayerMouseHints, FixtureSetup_DoesNotCrash) {
     ASSERT_NE(displayer, nullptr);
@@ -47,18 +47,84 @@ TEST_F(ControlDisplayerMouseHints, FixtureSetup_DoesNotCrash) {
 }
 
 // ---------------------------------------------------------------------------
-// Task 5.2 窶・Gamepad: 4 繧｢繧､繧ｳ繝ｳ謠冗判遒ｺ隱・
-// Validates: Requirements 5.1
+// Gamepad: 4 アイコン描画確認
+// OnDraw では BUTTON_MENU (共通) + DrawGamepadHints 4 本 = 計 5 回 DrawRotaGraphF
 // ---------------------------------------------------------------------------
 TEST_F(ControlDisplayerMouseHints, Gamepad_DrawsExactlyFourIcons) {
     ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Gamepad));
-    EXPECT_CALL(renderService, DrawRotaGraphF(_, _, _, _, _, _)).Times(4);
+    // BUTTON_MENU (共通1回) + Gamepad 4 アイコン = 5 回
+    EXPECT_CALL(renderService, DrawRotaGraphF(_, _, _, _, _, _)).Times(5);
     displayer->Draw(0.0f);
 }
 
 // ---------------------------------------------------------------------------
-// Task 5.3 窶・GetMousePosition 蜻ｼ縺ｳ蜃ｺ縺礼｢ｺ隱・
-// Validates: Requirements 6.1
+// Gamepad: SetCursorArrow が呼ばれる
+// ---------------------------------------------------------------------------
+TEST_F(ControlDisplayerMouseHints, Gamepad_SetsCursorArrow) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Gamepad));
+    EXPECT_CALL(renderService, SetCursorArrow()).Times(1);
+    EXPECT_CALL(renderService, SetCursorPointer()).Times(0);
+    displayer->Draw(0.0f);
+}
+
+// ---------------------------------------------------------------------------
+// Gamepad: DrawString が呼ばれない
+// ---------------------------------------------------------------------------
+TEST_F(ControlDisplayerMouseHints, Gamepad_DoesNotDrawString) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Gamepad));
+    EXPECT_CALL(renderService, DrawString(_, _, _, _)).Times(0);
+    displayer->Draw(0.0f);
+}
+
+// ---------------------------------------------------------------------------
+// Keyboard: 4 つのキーボードアイコンが描画される (KB_Q, KB_ESCAPE, KB_UP, KB_DOWN, KB_SPACE) + BUTTON_MENU = 計6回
+// ---------------------------------------------------------------------------
+TEST_F(ControlDisplayerMouseHints, Keyboard_DrawsKeyboardIcons) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Keyboard));
+    // 他の GetImageHandle 呼び出し (BUTTON_MENU 等) は問わない
+    EXPECT_CALL(assetService, GetImageHandle(_)).Times(::testing::AnyNumber());
+    EXPECT_CALL(assetService, GetImageHandle(EImage::KB_Q)).Times(1);
+    EXPECT_CALL(assetService, GetImageHandle(EImage::KB_ESCAPE)).Times(1);
+    EXPECT_CALL(assetService, GetImageHandle(EImage::KB_UP)).Times(1);
+    EXPECT_CALL(assetService, GetImageHandle(EImage::KB_DOWN)).Times(1);
+    EXPECT_CALL(assetService, GetImageHandle(EImage::KB_SPACE)).Times(1);
+    displayer->Draw(0.0f);
+}
+
+// ---------------------------------------------------------------------------
+// Keyboard: 3 つのラベル文字列が描画される (カードを引く, ルールを見る, 選択する)
+// ---------------------------------------------------------------------------
+TEST_F(ControlDisplayerMouseHints, Keyboard_DrawsThreeStringLabels) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Keyboard));
+    EXPECT_CALL(renderService, DrawString(_, _, _, _)).Times(3);
+    displayer->Draw(0.0f);
+}
+
+// ---------------------------------------------------------------------------
+// Keyboard: SetCursorArrow が呼ばれる
+// ---------------------------------------------------------------------------
+TEST_F(ControlDisplayerMouseHints, Keyboard_SetsCursorArrow) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Keyboard));
+    EXPECT_CALL(renderService, SetCursorArrow()).Times(1);
+    EXPECT_CALL(renderService, SetCursorPointer()).Times(0);
+    displayer->Draw(0.0f);
+}
+
+// ---------------------------------------------------------------------------
+// Keyboard: Gamepad 専用アイコンを要求しない
+// ---------------------------------------------------------------------------
+TEST_F(ControlDisplayerMouseHints, Keyboard_DoesNotRequestGamepadIcons) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Keyboard));
+    // Gamepad 専用の 3 種は呼ばれない。他の GetImageHandle 呼び出しは問わない
+    EXPECT_CALL(assetService, GetImageHandle(_)).Times(::testing::AnyNumber());
+    EXPECT_CALL(assetService, GetImageHandle(EImage::XBOX_DPAD_HORIZONTAL)).Times(0);
+    EXPECT_CALL(assetService, GetImageHandle(EImage::XBOX_A)).Times(0);
+    EXPECT_CALL(assetService, GetImageHandle(EImage::XBOX_X)).Times(0);
+    displayer->Draw(0.0f);
+}
+
+// ---------------------------------------------------------------------------
+// Mouse モード: GetMousePosition 呼び出し確認
 // ---------------------------------------------------------------------------
 TEST_F(ControlDisplayerMouseHints, MouseMode_CallsGetMousePositionAtLeastOnce) {
     ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
@@ -67,63 +133,113 @@ TEST_F(ControlDisplayerMouseHints, MouseMode_CallsGetMousePositionAtLeastOnce) {
 }
 
 // ---------------------------------------------------------------------------
-// Task 5.4 窶・MenuHitBox 蠅・阜繝斐け繧ｻ繝ｫ・亥・蛛ｴ繝ｻ螟門・・・
-// Validates: Requirements 2.1, 2.3
-// windowWidth=1280 竊・menuIconX=1220, MenuHitBox=[1180,1260)ﾃ夕32,88)
+// Mouse モード: どの hitbox にも当たらない場合 SetCursorArrow が呼ばれる
 // ---------------------------------------------------------------------------
-
-// mx=1180 (= menuIconX-40, 譛蟾ｦ遶ｯ繝ｻ蜀・・): 繝偵Φ繝郁｡ｨ遉ｺ
-TEST_F(ControlDisplayerMouseHints, MenuHitBox_LeftBoundary_Inside_ShowsHint) {
-    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{1180, 60}));
-    EXPECT_CALL(renderService, DrawString(20, 20, ::testing::StrEq(L"繧ｯ繝ｪ繝・け縺励※繝｡繝九Η繝ｼ繧帝幕縺・), 0xFFFF00u));
-    displayer->Draw(0.0f);
-}
-
-// mx=1179 (= menuIconX-41, 螟門・): 繝偵Φ繝磯撼陦ｨ遉ｺ
-TEST_F(ControlDisplayerMouseHints, MenuHitBox_LeftBoundary_Outside_NoHint) {
-    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{1179, 60}));
-    EXPECT_CALL(renderService, DrawString(20, 20, _, _)).Times(0);
+TEST_F(ControlDisplayerMouseHints, MouseMode_NoHit_SetsCursorArrow) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
+    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{0, 0}));
+    EXPECT_CALL(renderService, SetCursorArrow()).Times(1);
+    EXPECT_CALL(renderService, SetCursorPointer()).Times(0);
     displayer->Draw(0.0f);
 }
 
 // ---------------------------------------------------------------------------
-// Task 5.5 窶・DrawCardHitBox 蠅・阜繝斐け繧ｻ繝ｫ・亥・蛛ｴ繝ｻ螟門・・・
-// Validates: Requirements 3.1, 3.2
-// DrawCardHitBox = [50,250)ﾃ夕400,700)
+// Mouse モード: どの hitbox にも当たらない場合 MOUSE_LEFT アイコンと DrawString は呼ばれない
 // ---------------------------------------------------------------------------
-
-// (50, 400) 窶・蟾ｦ荳願ｧ偵・蜀・・: 繧ｫ繝ｼ繝牙ｼ輔″繝偵Φ繝郁｡ｨ遉ｺ
-TEST_F(ControlDisplayerMouseHints, DrawCardHitBox_TopLeftCorner_ShowsCardHint) {
-    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{50, 400}));
-    EXPECT_CALL(renderService, DrawString(20, 20, ::testing::StrEq(L"繧ｯ繝ｪ繝・け縺励※繧ｫ繝ｼ繝峨ｒ蠑輔￥"), 0xFFFF00u));
+TEST_F(ControlDisplayerMouseHints, MouseMode_NoHit_DoesNotDrawHint) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
+    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{0, 0}));
+    // MOUSE_LEFT は呼ばれない。他の GetImageHandle (BUTTON_MENU 等) は問わない
+    EXPECT_CALL(assetService, GetImageHandle(_)).Times(::testing::AnyNumber());
+    EXPECT_CALL(assetService, GetImageHandle(EImage::MOUSE_LEFT)).Times(0);
+    EXPECT_CALL(renderService, DrawString(_, _, _, _)).Times(0);
     displayer->Draw(0.0f);
 }
 
-// (49, 400) 窶・蟾ｦ螟門・: 繝偵Φ繝磯撼陦ｨ遉ｺ
-TEST_F(ControlDisplayerMouseHints, DrawCardHitBox_LeftOutside_NoHint) {
-    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{49, 400}));
-    EXPECT_CALL(renderService, DrawString(20, 20, _, _)).Times(0);
+// ---------------------------------------------------------------------------
+// Mouse モード: DrawPile hitbox 内にマウスがある場合 SetCursorPointer が呼ばれる
+// DRAW_PILE_X1=50, DRAW_PILE_Y1=400, DRAW_PILE_X2=250, DRAW_PILE_Y2=700
+// ---------------------------------------------------------------------------
+TEST_F(ControlDisplayerMouseHints, MouseMode_HitDrawPile_SetsCursorPointer) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
+    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{150, 550}));
+    EXPECT_CALL(renderService, SetCursorPointer()).Times(1);
+    EXPECT_CALL(renderService, SetCursorArrow()).Times(0);
     displayer->Draw(0.0f);
 }
 
-// (250, 400) 窶・蜿ｳ螟門・・亥承髢句玄髢難ｼ・ 繝偵Φ繝磯撼陦ｨ遉ｺ
-TEST_F(ControlDisplayerMouseHints, DrawCardHitBox_RightOutside_NoHint) {
-    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{250, 400}));
-    EXPECT_CALL(renderService, DrawString(20, 20, _, _)).Times(0);
+// ---------------------------------------------------------------------------
+// Mouse モード: DrawPile hitbox 内にマウスがある場合 MOUSE_LEFT アイコンと DrawString が呼ばれる
+// ---------------------------------------------------------------------------
+TEST_F(ControlDisplayerMouseHints, MouseMode_HitDrawPile_DrawsHintIconAndText) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
+    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{150, 550}));
+    // MOUSE_LEFT が 1 回。他の GetImageHandle (BUTTON_MENU 等) は問わない
+    EXPECT_CALL(assetService, GetImageHandle(_)).Times(::testing::AnyNumber());
+    EXPECT_CALL(assetService, GetImageHandle(EImage::MOUSE_LEFT)).Times(1);
+    EXPECT_CALL(renderService, DrawString(_, _, _, _)).Times(1);
     displayer->Draw(0.0f);
 }
 
-// (50, 399) 窶・荳雁､門・: 繝偵Φ繝磯撼陦ｨ遉ｺ
-TEST_F(ControlDisplayerMouseHints, DrawCardHitBox_TopOutside_NoHint) {
-    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{50, 399}));
-    EXPECT_CALL(renderService, DrawString(20, 20, _, _)).Times(0);
+// ---------------------------------------------------------------------------
+// Mouse モード: ActionMenu row0 (魔法を使う) hitbox 内にマウス → SetCursorPointer
+// ACTION_MENU_X=400, ACTION_MENU_Y=200, ACTION_MENU_W=300, ACTION_MENU_H=100
+// ---------------------------------------------------------------------------
+TEST_F(ControlDisplayerMouseHints, MouseMode_HitActionMenuRow0_SetsCursorPointer) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
+    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{500, 250}));
+    EXPECT_CALL(renderService, SetCursorPointer()).Times(1);
     displayer->Draw(0.0f);
 }
 
-// (50, 700) 窶・荳句､門・・亥承髢句玄髢難ｼ・ 繝偵Φ繝磯撼陦ｨ遉ｺ
-TEST_F(ControlDisplayerMouseHints, DrawCardHitBox_BottomOutside_NoHint) {
-    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{50, 700}));
-    EXPECT_CALL(renderService, DrawString(20, 20, _, _)).Times(0);
+// ---------------------------------------------------------------------------
+// Mouse モード: hitbox の境界上（左端 x1 は含む、右端 x2 は含まない）
+// DrawPile: x1=50(含む), x2=250(含まない)
+// ---------------------------------------------------------------------------
+TEST_F(ControlDisplayerMouseHints, MouseMode_HitboxLeftEdge_Included) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
+    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{50, 550}));
+    EXPECT_CALL(renderService, SetCursorPointer()).Times(1);
+    displayer->Draw(0.0f);
+}
+
+TEST_F(ControlDisplayerMouseHints, MouseMode_HitboxRightEdge_Excluded) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
+    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{250, 550}));
+    EXPECT_CALL(renderService, SetCursorPointer()).Times(0);
+    EXPECT_CALL(renderService, SetCursorArrow()).Times(1);
+    displayer->Draw(0.0f);
+}
+
+// ---------------------------------------------------------------------------
+// Mouse モード: メニューボタン hitbox はウィンドウ幅依存
+// GetWindowWidth=1280 → menuIconX=1220
+// hitbox: x=[1220-28,1220+40)=[1192,1260), y=[60-28,60+40)=[32,100)
+// ---------------------------------------------------------------------------
+TEST_F(ControlDisplayerMouseHints, MouseMode_HitMenuButton_SetsCursorPointer) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
+    // 1280 - 60 = 1220 → hitbox x: [1192, 1260), y: [32, 100)
+    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{1210, 60}));
+    EXPECT_CALL(renderService, SetCursorPointer()).Times(1);
+    displayer->Draw(0.0f);
+}
+
+// ---------------------------------------------------------------------------
+// 共通: BUTTON_MENU アイコンはデバイスに関わらず毎フレーム 1 回描画される
+// (Gamepad では DrawGamepadHints でも BUTTON_MENU を描画するため 2 回)
+// → Keyboard / Mouse では共通部分の 1 回のみ
+// ---------------------------------------------------------------------------
+TEST_F(ControlDisplayerMouseHints, AllModes_MenuIconAlwaysDrawn_Keyboard) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Keyboard));
+    EXPECT_CALL(assetService, GetImageHandle(_)).Times(::testing::AnyNumber());
+    EXPECT_CALL(assetService, GetImageHandle(EImage::BUTTON_MENU)).Times(1);
+    displayer->Draw(0.0f);
+}
+
+TEST_F(ControlDisplayerMouseHints, AllModes_MenuIconAlwaysDrawn_Mouse) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
+    EXPECT_CALL(assetService, GetImageHandle(_)).Times(::testing::AnyNumber());
+    EXPECT_CALL(assetService, GetImageHandle(EImage::BUTTON_MENU)).Times(1);
     displayer->Draw(0.0f);
 }
 
@@ -131,15 +247,12 @@ TEST_F(ControlDisplayerMouseHints, DrawCardHitBox_BottomOutside_NoHint) {
 } // namespace mc
 
 // =============================================================================
-// RapidCheck 繝励Ο繝代ユ繧｣繝・せ繝茨ｼ・BT-1縲・・・
-// RC_GTEST_PROP 縺ｯ TEST() 繝槭け繝ｭ繧剃ｽｿ縺・◆繧√’ixture 繧ｯ繝ｩ繧ｹ蜷阪→陦晉ｪ√＠縺ｪ縺・ｈ縺・
-// "ControlDisplayerMouseHintsProps" 縺ｨ縺・≧繧ｹ繧､繝ｼ繝亥錐繧堤畑縺・ｋ縲・
+// RapidCheck プロパティテスト
 // =============================================================================
 
 // ---------------------------------------------------------------------------
-// Task 6.1 窶・PBT-1: MouseMode 繧｢繧､繧ｳ繝ｳ謗剃ｻ匁ｧ
-// Property 1: MouseMode 繧｢繧､繧ｳ繝ｳ謗剃ｻ匁ｧ
-// Validates: Requirements 1.2, 5.2
+// PBT-1: MouseMode アイコン排他性
+// Mouse モードでは Keyboard/Gamepad 専用アイコンを要求しない
 // ---------------------------------------------------------------------------
 RC_GTEST_PROP(ControlDisplayerMouseHintsProps, Property1_MouseModeIconExclusivity, ()) {
     using ::testing::NiceMock;
@@ -157,7 +270,7 @@ RC_GTEST_PROP(ControlDisplayerMouseHintsProps, Property1_MouseModeIconExclusivit
     auto my = *rc::gen::inRange(0, 1080);
     ON_CALL(inputSvc, GetMousePosition()).WillByDefault(Return(mc::Point<int>{mx, my}));
 
-    // In KeyboardMode these image handles must NEVER be requested
+    EXPECT_CALL(assetSvc, GetImageHandle(::testing::_)).Times(::testing::AnyNumber());
     EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::KB_Q)).Times(0);
     EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::KB_ESCAPE)).Times(0);
     EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::KB_SPACE)).Times(0);
@@ -166,7 +279,6 @@ RC_GTEST_PROP(ControlDisplayerMouseHintsProps, Property1_MouseModeIconExclusivit
     EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::XBOX_DPAD_HORIZONTAL)).Times(0);
     EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::XBOX_A)).Times(0);
     EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::XBOX_X)).Times(0);
-    // In KeyboardMode BUTTON_MENU is drawn once (top-right corner icon)
     EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::BUTTON_MENU)).Times(1);
 
     auto disp = mc::CreateControlDisplayer(assetSvc, renderSvc, inputSvc);
@@ -174,108 +286,8 @@ RC_GTEST_PROP(ControlDisplayerMouseHintsProps, Property1_MouseModeIconExclusivit
 }
 
 // ---------------------------------------------------------------------------
-// Task 6.2 窶・PBT-2: MenuHitBox 繝帙ヰ繝ｼ譎ゅ・隍・粋繝輔ぅ繝ｼ繝峨ヰ繝・け
-// Property 2: MenuHitBox 繝帙ヰ繝ｼ譎ゅ・隍・粋繝輔ぅ繝ｼ繝峨ヰ繝・け
-// Validates: Requirements 2.1, 2.2
-// menuIconX=1220 (windowWidth=1280), MenuHitBox=[1180,1260)ﾃ夕32,88)
-// ---------------------------------------------------------------------------
-RC_GTEST_PROP(ControlDisplayerMouseHintsProps, Property2_MenuHitBoxHoverFeedback, ()) {
-    using ::testing::NiceMock;
-    using ::testing::Return;
-
-    NiceMock<mc::MockAssetService>  assetSvc;
-    NiceMock<mc::MockRenderService> renderSvc;
-    NiceMock<mc::MockInputService>  inputSvc;
-
-    ON_CALL(assetSvc,  GetImageHandle(::testing::_)).WillByDefault(Return(1));
-    ON_CALL(renderSvc, GetWindowWidth()).WillByDefault(Return(1280));
-    ON_CALL(inputSvc,  GetActiveDevice()).WillByDefault(Return(mc::InputDevice::Mouse));
-
-    // Generate (mx, my) strictly inside MenuHitBox
-    auto mx = *rc::gen::inRange(1180, 1260);
-    auto my = *rc::gen::inRange(32, 88);
-    ON_CALL(inputSvc, GetMousePosition()).WillByDefault(Return(mc::Point<int>{mx, my}));
-
-    // Must draw hint text
-    EXPECT_CALL(renderSvc, DrawString(20, 20, ::testing::StrEq(L"繧ｯ繝ｪ繝・け縺励※繝｡繝九Η繝ｼ繧帝幕縺・), 0xFFFF00u))
-        .Times(1);
-    // Must draw hollow box with COLOR_HOVER
-    EXPECT_CALL(renderSvc, DrawHollowBox(::testing::_, ::testing::_, ::testing::_, ::testing::_, 2, 0xFFFF00u))
-        .Times(1);
-
-    auto disp = mc::CreateControlDisplayer(assetSvc, renderSvc, inputSvc);
-    disp->Draw(0.0f);
-}
-
-// ---------------------------------------------------------------------------
-// Task 6.3 窶・PBT-3: DrawCardHitBox 繝帙ヰ繝ｼ譎ゅ・繝偵Φ繝郁｡ｨ遉ｺ
-// Property 3: DrawCardHitBox 繝帙ヰ繝ｼ譎ゅ・繝偵Φ繝郁｡ｨ遉ｺ
-// Validates: Requirements 3.1
-// DrawCardHitBox = [50,250)ﾃ夕400,700)
-// ---------------------------------------------------------------------------
-RC_GTEST_PROP(ControlDisplayerMouseHintsProps, Property3_DrawCardHitBoxHoverHint, ()) {
-    using ::testing::NiceMock;
-    using ::testing::Return;
-
-    NiceMock<mc::MockAssetService>  assetSvc;
-    NiceMock<mc::MockRenderService> renderSvc;
-    NiceMock<mc::MockInputService>  inputSvc;
-
-    ON_CALL(assetSvc,  GetImageHandle(::testing::_)).WillByDefault(Return(1));
-    ON_CALL(renderSvc, GetWindowWidth()).WillByDefault(Return(1280));
-    ON_CALL(inputSvc,  GetActiveDevice()).WillByDefault(Return(mc::InputDevice::Mouse));
-
-    // Generate (mx, my) strictly inside DrawCardHitBox
-    auto mx = *rc::gen::inRange(50, 250);
-    auto my = *rc::gen::inRange(400, 700);
-    ON_CALL(inputSvc, GetMousePosition()).WillByDefault(Return(mc::Point<int>{mx, my}));
-
-    // Must draw card hint text
-    EXPECT_CALL(renderSvc, DrawString(20, 20, ::testing::StrEq(L"繧ｯ繝ｪ繝・け縺励※繧ｫ繝ｼ繝峨ｒ蠑輔￥"), 0xFFFF00u))
-        .Times(1);
-
-    auto disp = mc::CreateControlDisplayer(assetSvc, renderSvc, inputSvc);
-    disp->Draw(0.0f);
-}
-
-// ---------------------------------------------------------------------------
-// Task 6.4 窶・PBT-4: HintArea 蜈育捩荳閾ｴ・域怙螟ｧ 1 繝偵Φ繝茨ｼ・
-// Property 4: HintArea 蜈育捩荳閾ｴ・域怙螟ｧ1繝偵Φ繝茨ｼ・
-// Validates: Requirements 4.1, 4.4, 1.3
-// ---------------------------------------------------------------------------
-RC_GTEST_PROP(ControlDisplayerMouseHintsProps, Property4_HintAreaAtMostOneDrawString, ()) {
-    using ::testing::NiceMock;
-    using ::testing::Return;
-
-    NiceMock<mc::MockAssetService>  assetSvc;
-    NiceMock<mc::MockRenderService> renderSvc;
-    NiceMock<mc::MockInputService>  inputSvc;
-
-    ON_CALL(assetSvc,  GetImageHandle(::testing::_)).WillByDefault(Return(1));
-    ON_CALL(renderSvc, GetWindowWidth()).WillByDefault(Return(1280));
-    ON_CALL(inputSvc,  GetActiveDevice()).WillByDefault(Return(mc::InputDevice::Mouse));
-
-    auto mx = *rc::gen::inRange(0, 1920);
-    auto my = *rc::gen::inRange(0, 1080);
-    ON_CALL(inputSvc, GetMousePosition()).WillByDefault(Return(mc::Point<int>{mx, my}));
-
-    // Count DrawString calls at (HINT_X=20, HINT_Y=20) with COLOR_HOVER
-    int hintDrawCount = 0;
-    ON_CALL(renderSvc, DrawString(20, 20, ::testing::_, 0xFFFF00u))
-        .WillByDefault([&hintDrawCount](int, int, const wchar_t*, uint32_t) {
-            ++hintDrawCount;
-        });
-
-    auto disp = mc::CreateControlDisplayer(assetSvc, renderSvc, inputSvc);
-    disp->Draw(0.0f);
-
-    RC_ASSERT(hintDrawCount <= 1);
-}
-
-// ---------------------------------------------------------------------------
-// Task 2.2 窶・PBT-5: GamepadMode 邏皮ｲ区ｧ
-// Property 5: GamepadMode 邏皮ｲ区ｧ
-// Validates: Requirements 5.1, 6.3
+// PBT-5: GamepadMode 純粋性
+// Gamepad モードでは 4 アイコンを描画し、DrawHollowBox や DrawString を呼ばない
 // ---------------------------------------------------------------------------
 RC_GTEST_PROP(ControlDisplayerMouseHintsProps, Property5_GamepadPurity, ()) {
     using ::testing::NiceMock;
@@ -293,17 +305,98 @@ RC_GTEST_PROP(ControlDisplayerMouseHintsProps, Property5_GamepadPurity, ()) {
     auto my = *rc::gen::arbitrary<int>();
     ON_CALL(inputSvc, GetMousePosition()).WillByDefault(Return(mc::Point<int>{mx, my}));
 
-    // Gamepad mode must draw all 4 gamepad icons
+    // 共通部分でも BUTTON_MENU を描画するので合計 2 回
     EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::XBOX_DPAD_HORIZONTAL)).Times(1);
     EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::XBOX_A)).Times(1);
     EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::XBOX_X)).Times(1);
-    EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::BUTTON_MENU)).Times(1);
+    EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::BUTTON_MENU)).Times(2);
 
-    // Gamepad mode must NOT call DrawHollowBox or HintArea DrawString
-    EXPECT_CALL(renderSvc, DrawHollowBox(::testing::_, ::testing::_, ::testing::_, ::testing::_, ::testing::_, ::testing::_)).Times(0);
-    EXPECT_CALL(renderSvc, DrawString(20, 20, ::testing::_, ::testing::_)).Times(0);
+    EXPECT_CALL(renderSvc, DrawHollowBox(_, _, _, _, _, _)).Times(0);
+    EXPECT_CALL(renderSvc, DrawString(_, _, _, _)).Times(0);
 
     auto disp = mc::CreateControlDisplayer(assetSvc, renderSvc, inputSvc);
     disp->Draw(0.0f);
 }
 
+// ---------------------------------------------------------------------------
+// PBT-2: Keyboard モード純粋性
+// Keyboard モードではキーボードアイコンのみ要求し、Gamepad/Mouse 専用を要求しない
+// ---------------------------------------------------------------------------
+RC_GTEST_PROP(ControlDisplayerMouseHintsProps, Property2_KeyboardPurity, ()) {
+    using ::testing::NiceMock;
+    using ::testing::Return;
+
+    NiceMock<mc::MockAssetService>  assetSvc;
+    NiceMock<mc::MockRenderService> renderSvc;
+    NiceMock<mc::MockInputService>  inputSvc;
+
+    ON_CALL(assetSvc,  GetImageHandle(::testing::_)).WillByDefault(Return(1));
+    ON_CALL(renderSvc, GetWindowWidth()).WillByDefault(Return(1280));
+    ON_CALL(inputSvc,  GetActiveDevice()).WillByDefault(Return(mc::InputDevice::Keyboard));
+
+    EXPECT_CALL(assetSvc, GetImageHandle(::testing::_)).Times(::testing::AnyNumber());
+    EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::XBOX_DPAD_HORIZONTAL)).Times(0);
+    EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::XBOX_A)).Times(0);
+    EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::XBOX_X)).Times(0);
+    EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::MOUSE_LEFT)).Times(0);
+
+    auto disp = mc::CreateControlDisplayer(assetSvc, renderSvc, inputSvc);
+    disp->Draw(0.0f);
+}
+
+// ---------------------------------------------------------------------------
+// PBT-3: Mouse ヒット時カーソルの一貫性
+// DrawPile hitbox 内の任意のマウス座標では常に SetCursorPointer が呼ばれる
+// DRAW_PILE_X1=50, DRAW_PILE_Y1=400, DRAW_PILE_X2=250, DRAW_PILE_Y2=700
+// ---------------------------------------------------------------------------
+RC_GTEST_PROP(ControlDisplayerMouseHintsProps, Property3_MouseHit_AlwaysSetsCursorPointer, ()) {
+    using ::testing::NiceMock;
+    using ::testing::Return;
+
+    NiceMock<mc::MockAssetService>  assetSvc;
+    NiceMock<mc::MockRenderService> renderSvc;
+    NiceMock<mc::MockInputService>  inputSvc;
+
+    ON_CALL(assetSvc,  GetImageHandle(::testing::_)).WillByDefault(Return(1));
+    ON_CALL(renderSvc, GetWindowWidth()).WillByDefault(Return(1280));
+    ON_CALL(inputSvc,  GetActiveDevice()).WillByDefault(Return(mc::InputDevice::Mouse));
+
+    // DrawPile 内のランダム座標
+    auto mx = *rc::gen::inRange(50, 250);   // [DRAW_PILE_X1, DRAW_PILE_X2)
+    auto my = *rc::gen::inRange(400, 700);  // [DRAW_PILE_Y1, DRAW_PILE_Y2)
+    ON_CALL(inputSvc, GetMousePosition()).WillByDefault(Return(mc::Point<int>{mx, my}));
+
+    EXPECT_CALL(renderSvc, SetCursorPointer()).Times(1);
+    EXPECT_CALL(renderSvc, SetCursorArrow()).Times(0);
+
+    auto disp = mc::CreateControlDisplayer(assetSvc, renderSvc, inputSvc);
+    disp->Draw(0.0f);
+}
+
+// ---------------------------------------------------------------------------
+// PBT-4: Mouse 外れ時カーソルの一貫性
+// 全 hitbox 外の任意の座標では常に SetCursorArrow が呼ばれる
+// ---------------------------------------------------------------------------
+RC_GTEST_PROP(ControlDisplayerMouseHintsProps, Property4_MouseMiss_AlwaysSetsCursorArrow, ()) {
+    using ::testing::NiceMock;
+    using ::testing::Return;
+
+    NiceMock<mc::MockAssetService>  assetSvc;
+    NiceMock<mc::MockRenderService> renderSvc;
+    NiceMock<mc::MockInputService>  inputSvc;
+
+    ON_CALL(assetSvc,  GetImageHandle(::testing::_)).WillByDefault(Return(1));
+    ON_CALL(renderSvc, GetWindowWidth()).WillByDefault(Return(1280));
+    ON_CALL(inputSvc,  GetActiveDevice()).WillByDefault(Return(mc::InputDevice::Mouse));
+
+    // 全 hitbox の外: 左上の角は常に安全（x<50 かつ y<32）
+    auto mx = *rc::gen::inRange(-500, 49);
+    auto my = *rc::gen::inRange(-500, 31);
+    ON_CALL(inputSvc, GetMousePosition()).WillByDefault(Return(mc::Point<int>{mx, my}));
+
+    EXPECT_CALL(renderSvc, SetCursorArrow()).Times(1);
+    EXPECT_CALL(renderSvc, SetCursorPointer()).Times(0);
+
+    auto disp = mc::CreateControlDisplayer(assetSvc, renderSvc, inputSvc);
+    disp->Draw(0.0f);
+}

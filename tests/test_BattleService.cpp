@@ -150,8 +150,8 @@ TEST_F(BattleServiceTest, EnemyDeath_AtIndex1_AdvancesIndex)
     battleService->StartStage();
 
     TaggedCharacter enemy(ETag::Enemy);
-    PublishDeath(enemy); // 0 → 1
-    PublishDeath(enemy); // 1 → 2
+    PublishDeath(enemy);
+    PublishDeath(enemy);
 
     EXPECT_EQ(battleService->GetCurrentEnemyIndex(), 2);
 }
@@ -165,9 +165,9 @@ TEST_F(BattleServiceTest, EnemyDeath_AtIndex2_PublishesStageClearEvent)
         [&](const StageClearEvent&) { received = true; });
 
     TaggedCharacter enemy(ETag::Enemy);
-    PublishDeath(enemy); // 0 → 1
-    PublishDeath(enemy); // 1 → 2
-    PublishDeath(enemy); // 2 → StageClearEvent
+    PublishDeath(enemy);
+    PublishDeath(enemy);
+    PublishDeath(enemy);
 
     EXPECT_TRUE(received);
     EventBus::Unsubscribe(handle);
@@ -195,7 +195,7 @@ TEST_F(BattleServiceTest, EnemyDeath_AtIndex0_LoadsNextEnemy)
     ASSERT_GE(seq.size(), 2u);
 
     TaggedCharacter enemy(ETag::Enemy);
-    PublishDeath(enemy); // kills index 0, loads index 1
+    PublishDeath(enemy);
 
     const auto& currentEnemy = battleService->GetEnemy();
     EXPECT_EQ(currentEnemy.GetName(),                             seq[1].name);

@@ -61,10 +61,8 @@ RC_GTEST_PROP(BattleServiceProperties, FadeInEffector_RisingAlpha, ())
 
     auto effector = CreateFadeInEffector(mockRs, durationMs);
 
-    // Before any Update: alpha == 0, so ShouldDraw() must return false
     RC_ASSERT(!effector->ShouldDraw());
 
-    // After stepping through the full duration, alpha should be 255 → ShouldDraw() true
     StepEffector(*effector, durationMs);
     RC_ASSERT(effector->ShouldDraw());
 }
@@ -78,7 +76,6 @@ RC_GTEST_PROP(BattleServiceProperties, FadeOutEffector_FallingAlpha, ())
 
     auto effector = CreateFadeOutEffector(mockRs, durationMs);
 
-    // Before any Update: alpha == 255, so ShouldDraw() must return true
     RC_ASSERT(effector->ShouldDraw());
 
     bool stillRunning = StepEffector(*effector, durationMs);
@@ -103,7 +100,6 @@ RC_GTEST_PROP(BattleServiceProperties, FadeEffector_UpdateReturnsFalseAtCompleti
             (void)running;
         }
 
-        // Step past full duration — must return false (completed, no infinite loop)
         bool completed = StepEffector(*effector, durationMs);
         RC_ASSERT(!completed);
     }
@@ -114,7 +110,6 @@ RC_GTEST_PROP(BattleServiceProperties, FadeEffector_UpdateReturnsFalseAtCompleti
         bool completed = StepEffector(*effectorOut, durationMs);
         RC_ASSERT(!completed);
 
-        // Calling Update again after completion must remain false (stable)
         bool stillDone = effectorOut->Update(0.001f);
         RC_ASSERT(!stillDone);
     }

@@ -1,7 +1,7 @@
 module;
 
 #include <memory>
-#include <DxLib.h>
+#include <array>
 #include <RenderUtils.h>
 
 export module Displayer:Control;
@@ -10,16 +10,19 @@ import DisplayerBase;
 import AssetService;
 import RenderService;
 import InputService;
+import EventBus;
 
 
 namespace mc {
+    export struct DrawPileHoveredEvent : IEvent {};
+    
+    export struct DrawPileUnhoveredEvent : IEvent {};
+
     namespace {
-        // アイコン描画 X 座標
-        constexpr int ICON_DRAW_X  = 100;   // カードを引く
-        constexpr int ICON_NAV_X   = 500;   // 上下移動（キーボード: 上キー / パッド: D-pad）
-        constexpr int ICON_NAV2_X  = 560;   // 下キー（キーボードのみ）
-        constexpr int ICON_CONF_X  = 620;   // 確定（Space / A）
-        constexpr int ICON_RULES_X = 920;   // ルールを見る（Esc / Menu）
+        constexpr int ICON_DRAW_X  = 100;   
+        constexpr int ICON_NAV_X   = 500;   
+        constexpr int ICON_CONF_X  = 620;   
+        constexpr int ICON_RULES_X = 920;   
         constexpr int Y = 100;
 
         constexpr int TEXT_OFFSET_X = 40;
@@ -27,7 +30,21 @@ namespace mc {
 
         constexpr int ICON_HALF_W = 40;
         constexpr int ICON_HALF_H = 28;
-        constexpr uint32_t COLOR_HOVER = 0xFFFF00; // COLOR_YELLOW
+
+        constexpr int MENU_ICON_Y = 60;
+
+        constexpr int HINT_X = 20;
+        constexpr int HINT_Y = 20;
+
+        constexpr int DRAW_CARD_X1 = 50;
+        constexpr int DRAW_CARD_Y1 = 400;
+        constexpr int DRAW_CARD_X2 = 250;
+        constexpr int DRAW_CARD_Y2 = 700;
+
+        struct ClickableArea {
+            int x1, y1, x2, y2;
+            const wchar_t* hintText;
+        };
     }
 
     class ControlDisplayer : public Displayer
@@ -37,6 +54,8 @@ namespace mc {
         IInputService& inputService;
         uint32_t color;
 
+        mutable bool drawPileHovered = false; 
+
     public:
         ControlDisplayer(IAssetService& asset, IRenderService& render,
                          IInputService& input, uint32_t c = 0xFFFFFF)
@@ -45,66 +64,86 @@ namespace mc {
     private:
         void OnDraw(float) const override
         {
-            const bool isGamepad = (inputService.GetActiveDevice() == InputDevice::Gamepad);
+            if ((inputService.GetActiveDevice() == InputDevice::Gamepad))
+            {
+                if (drawPileHovered)
+                {
+                    drawPileHovered = false;
+                    EventBus::Publish(DrawPileUnhoveredEvent{});
+                }
+                renderService.DrawRotaGraphF(ICON_NAV_X,   Y, 0.5, 0.0,
+                    assetService.GetImageHandle(EImage::XBOX_DPAD_HORIZONTAL), true);
+          
+                renderService.DrawRotaGraphF(ICON_CONF_X,  Y, 0.5, 0.0,
+                    assetService.GetImageHandle(EImage::XBOX_A), true);
+       
+                renderService.DrawRotaGraphF(ICON_DRAW_X,  Y, 0.5, 0.0,
+                    assetService.GetImageHandle(EImage::XBOX_X), true);
+     
+                renderService.DrawRotaGraphF(ICON_RULES_X, Y, 0.5, 0.0,
+                    assetService.GetImageHandle(EImage::BUTTON_MENU), true);
+                return;
+            }
 
-            // マウスホバー検出（キーボードモードのみ意味がある）
             auto mousePos = inputService.GetMousePosition();
             int mx = mousePos.x;
             int my = mousePos.y;
+            int menuIconX = renderService.GetWindowWidth() - 60;
 
-            bool hoverDraw  = !isGamepad &&
-                              mx >= ICON_DRAW_X - ICON_HALF_W && mx < ICON_DRAW_X + ICON_HALF_W &&
-                              my >= Y - ICON_HALF_H            && my < Y + ICON_HALF_H;
-            bool hoverRules = !isGamepad &&
-                              mx >= ICON_RULES_X - ICON_HALF_W && mx < ICON_RULES_X + ICON_HALF_W &&
-                              my >= Y - ICON_HALF_H              && my < Y + ICON_HALF_H;
+            const std::array<ClickableArea, 2> areas = {{
+                {
+                    menuIconX - ICON_HALF_W, MENU_ICON_Y - ICON_HALF_H,
+                    menuIconX + ICON_HALF_W, MENU_ICON_Y + ICON_HALF_H,
+                    L"クリックしてメニューを開く"
+                },
+                {
+                    DRAW_CARD_X1, DRAW_CARD_Y1,
+                    DRAW_CARD_X2, DRAW_CARD_Y2,
+                    L"クリックしてカードを引く"
+                }
+            }};
 
-            // ---- カードを引く ----
+            const wchar_t* selectedHint = nullptr;
+            int hitIndex = -1;
+            for (int i = 0; i < static_cast<int>(areas.size()); ++i)
             {
-                EImage drawIcon = isGamepad ? EImage::XBOX_X : EImage::KB_Q;
-                int icon = assetService.GetImageHandle(drawIcon);
-                renderService.DrawRotaGraphF(ICON_DRAW_X, Y, 0.5, 0.0, icon, true);
-                uint32_t c = hoverDraw ? COLOR_HOVER : color;
-                renderService.DrawString(ICON_DRAW_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"カードを引く", c);
-                if (hoverDraw)
-                    renderService.DrawHollowBox(ICON_DRAW_X - ICON_HALF_W, Y - ICON_HALF_H,
-                                                ICON_DRAW_X + ICON_HALF_W, Y + ICON_HALF_H, 2, COLOR_HOVER);
+                const auto& a = areas[i];
+                if (mx >= a.x1 && mx < a.x2 && my >= a.y1 && my < a.y2)
+                {
+                    selectedHint = a.hintText;
+                    hitIndex = i;
+                    break;
+                }
             }
 
-            // ---- ルールを見る ----
             {
-                EImage rulesIcon = isGamepad ? EImage::BUTTON_MENU : EImage::KB_ESCAPE;
-                int icon = assetService.GetImageHandle(rulesIcon);
-                renderService.DrawRotaGraphF(ICON_RULES_X, Y, 0.5, 0.0, icon, true);
-                uint32_t c = hoverRules ? COLOR_HOVER : color;
-                renderService.DrawString(ICON_RULES_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"ルールを見る", c);
-                if (hoverRules)
-                    renderService.DrawHollowBox(ICON_RULES_X - ICON_HALF_W, Y - ICON_HALF_H,
-                                                ICON_RULES_X + ICON_HALF_W, Y + ICON_HALF_H, 2, COLOR_HOVER);
+                const bool currentlyHovered = (hitIndex == 1); // DrawCardHitBox は index 1
+                if (currentlyHovered && !drawPileHovered)
+                {
+                    drawPileHovered = true;
+                    EventBus::Publish(DrawPileHoveredEvent{});
+                }
+                else if (!currentlyHovered && drawPileHovered)
+                {
+                    drawPileHovered = false;
+                    EventBus::Publish(DrawPileUnhoveredEvent{});
+                }
             }
 
-            // ---- 上下移動 ----
-            if (isGamepad)
-            {
-                // D-pad 横アイコン1枚で上下を表現
-                int icon = assetService.GetImageHandle(EImage::XBOX_DPAD_HORIZONTAL);
-                renderService.DrawRotaGraphF(ICON_NAV_X, Y, 0.5, 0.0, icon, true);
-            }
-            else
-            {
-                int icon = assetService.GetImageHandle(EImage::KB_UP);
-                renderService.DrawRotaGraphF(ICON_NAV_X, Y, 0.5, 0.0, icon, true);
+            auto icon = assetService.GetImageHandle(EImage::BUTTON_MENU);
+            renderService.DrawRotaGraphF(menuIconX, MENU_ICON_Y, 0.5, 0.0, icon, true);
 
-                icon = assetService.GetImageHandle(EImage::KB_DOWN);
-                renderService.DrawRotaGraphF(ICON_NAV2_X, Y, 0.5, 0.0, icon, true);
-            }
-
-            // ---- 確定 ----
+            if (selectedHint != nullptr && selectedHint[0] != L'\0')
             {
-                EImage confIcon = isGamepad ? EImage::XBOX_A : EImage::KB_SPACE;
-                int icon = assetService.GetImageHandle(confIcon);
-                renderService.DrawRotaGraphF(ICON_CONF_X, Y, 0.5, 0.0, icon, true);
-                renderService.DrawString(ICON_CONF_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"選択する", color);
+                renderService.DrawString(HINT_X, HINT_Y, selectedHint, color);
+
+                if (hitIndex == 0)
+                {
+                    renderService.DrawHollowBox(
+                        menuIconX - ICON_HALF_W, MENU_ICON_Y - ICON_HALF_H,
+                        menuIconX + ICON_HALF_W, MENU_ICON_Y + ICON_HALF_H,
+                        2, color);
+                }
             }
         }
     };

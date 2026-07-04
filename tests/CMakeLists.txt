@@ -33,6 +33,9 @@ add_executable(MagicCatTests
     test_CombatScene.cpp
     test_MouseInput.cpp
     test_control_displayer_mouse_hints.cpp
+    test_HitFlashEffector.cpp
+    test_CutsceneFocusDisplayer.cpp
+    test_CutsceneScene.cpp
 )
 
 target_compile_features(MagicCatTests PRIVATE cxx_std_23)

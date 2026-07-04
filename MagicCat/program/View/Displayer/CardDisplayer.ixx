@@ -21,8 +21,6 @@ namespace mc {
     namespace {
         constexpr int CARD_START_X = 400;
         constexpr int CARD_START_Y = 750;
-        constexpr int DRAW_PILE_X = 50;
-        constexpr int DRAW_PILE_Y = 400;
         constexpr int DISCARD_PILE_X = 50;
         constexpr int DISCARD_PILE_Y = 750;
         constexpr int OFFSET_X = 250;
@@ -90,7 +88,8 @@ namespace mc {
                     int icon = assetService.GetImageHandle(ToImage(card.CardType));
                     if (icon != -1)
                     {
-                        renderService.DrawRotaGraphF(x + CARD_WIDTH / 2.f, y + CARD_HEIGHT / 3.5f, IMAGE_SCALE, 0.0, icon, true);
+                        renderService.DrawRotaGraphF(x + CARD_WIDTH / 2.f, y + CARD_HEIGHT / 3.5f,
+                                                     IMAGE_SCALE, 0.0, icon, true);
                     }
                     renderService.DrawCenterString(x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10,
                                                    message.c_str(), color);
@@ -126,7 +125,7 @@ namespace mc {
             }
 
             std::wstring drawPileMsg = std::format(L"山札\n{:2}枚", cardService.GetDrawCards().size());
-            push_back(CreatePrintACardDisplayer({ECardType::Null}, {DRAW_PILE_X, DRAW_PILE_Y}, drawPileMsg));
+            push_back(CreatePrintACardDisplayer({ECardType::Null}, {DRAW_PILE_X1, DRAW_PILE_Y1}, drawPileMsg));
 
             std::wstring discardPileMsg = std::format(L"捨札\n{:2}枚", cardService.GetDiscardCards().size());
             push_back(CreatePrintACardDisplayer({ECardType::Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, discardPileMsg));

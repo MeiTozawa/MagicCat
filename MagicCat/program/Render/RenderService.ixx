@@ -44,18 +44,21 @@ namespace mc {
         virtual void DrawRightString(int x, int y, const wchar_t* text, uint32_t color) = 0;
         /// @brief 中空の矩形（枠線）を太さを指定して描画する
         virtual void DrawHollowBox(int x1, int y1, int x2, int y2, int thickness, uint32_t color) = 0;
-
-        // ---- ウィンドウ ----
+        
         virtual int GetWindowWidth() const = 0;
         virtual int GetWindowHeight() const = 0;
 
-        // ---- 初期化・フォント設定 ----
         /// @brief フォントタイプを通常モードに設定する（DX_FONTTYPE_NORMAL）
         virtual void SetFontTypeNormal() = 0;
         virtual void ChangeFont(const wchar_t* fontName) = 0;
         virtual void SetFontSize(int size) = 0;
         virtual void SetFontThickness(int thickness) = 0;
         virtual void SetBackgroundColor(int r, int g, int b) = 0;
+
+        /// @brief マウスカーソルをクリック可能を示す手のポインタに変更する（Win32: IDC_HAND）
+        virtual void SetCursorPointer() = 0;
+        /// @brief マウスカーソルをデフォルトの矢印に戻す（Win32: IDC_ARROW）
+        virtual void SetCursorArrow() = 0;
     };
 
     export std::unique_ptr<IRenderService> CreateRenderService();

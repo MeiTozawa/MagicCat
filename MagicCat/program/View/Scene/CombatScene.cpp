@@ -204,6 +204,22 @@ namespace mc {
 
         void Update(float deltaTime) override
         {
+            // メニューボタン（右上）のマウスクリック検出 — CombatController はウィンドウ幅を
+            // 持たないためここで処理する
+            auto click = inputService.OnMouseClick(InputAction::MouseClick);
+            if (click.x != -1 && click.y != -1)
+            {
+                const int menuIconX = renderService.GetWindowWidth() - MENU_ICON_X_OFFSET;
+                if (click.x >= menuIconX - MENU_ICON_HALF_W && click.x < menuIconX + MENU_ICON_HALF_W &&
+                    click.y >= MENU_ICON_Y - MENU_ICON_HALF_H && click.y < MENU_ICON_Y + MENU_ICON_HALF_H)
+                {
+                    sceneService.PushScene(ESceneState::Rules);
+                    displayers.Update(deltaTime);
+                    displayers.Draw(deltaTime);
+                    return;
+                }
+            }
+
             combatController->Update(deltaTime);
             displayers.Update(deltaTime);
             displayers.Draw(deltaTime);

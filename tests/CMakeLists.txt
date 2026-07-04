@@ -32,6 +32,8 @@ add_executable(MagicCatTests
     test_AssetService.cpp
     test_CombatScene.cpp
     test_MouseInput.cpp
+    test_control_displayer_mouse_hints.cpp
+    test_draw_card_hover_double_border.cpp
 )
 
 target_compile_features(MagicCatTests PRIVATE cxx_std_23)

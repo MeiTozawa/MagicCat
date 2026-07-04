@@ -1,4 +1,4 @@
-module;
+﻿module;
 
 #include <memory>
 #include <RenderUtils.h>
@@ -14,7 +14,6 @@ import Player;
 import SceneService;
 
 namespace mc {
-
     class CombatController : public ICombatController
     {
         IInputService& inputService;
@@ -101,9 +100,9 @@ namespace mc {
 
                         float playerWinRate = characterService.GetEnemy().GetLoseRateAgainst(playerAttackIntent);
 
-                        int rockOffset     = characterService.GetEnemy().GetWeightOffset(EAttackType::Rock);
+                        int rockOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Rock);
                         int scissorsOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Scissors);
-                        int paperOffset    = characterService.GetEnemy().GetWeightOffset(EAttackType::Paper);
+                        int paperOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Paper);
 
                         int playerDamage = characterService.GetPlayer().GetDamage(playerAttackIntent);
                         int enemyDamage = characterService.GetEnemy().GetDamage(enemyAttackIntent);
@@ -147,7 +146,7 @@ namespace mc {
                 sceneService.PushScene(ESceneState::Rules);
             }
 
-            // Mouse hover → update focus (no action, just selection highlight)
+            if (inputService.GetActiveDevice() == InputDevice::Mouse)
             {
                 auto mousePos = inputService.GetMousePosition();
                 int mx = mousePos.x;
@@ -181,7 +180,8 @@ namespace mc {
                     {
                         characterService.GetPlayer().ChangeMp(c.Power);
                     }
-                    else if (c.CardType == ECardType::Rock || c.CardType == ECardType::Scissors || c.CardType == ECardType::Paper)
+                    else if (c.CardType == ECardType::Rock || c.CardType == ECardType::Scissors || c.CardType ==
+                        ECardType::Paper)
                     {
                         characterService.GetEnemy().AddWeight(ToAttackType(c.CardType), c.Power);
                     }
@@ -237,20 +237,22 @@ namespace mc {
                             {
                                 EAttackType playerAttackIntent;
                                 if (selectedActionIndex == ACTION_ROCK) playerAttackIntent = EAttackType::Rock;
-                                else if (selectedActionIndex == ACTION_SCISSORS) playerAttackIntent = EAttackType::Scissors;
+                                else if (selectedActionIndex == ACTION_SCISSORS) playerAttackIntent =
+                                    EAttackType::Scissors;
                                 else if (selectedActionIndex == ACTION_PAPER) playerAttackIntent = EAttackType::Paper;
                                 else return;
 
                                 EAttackType enemyAttackIntent = characterService.GetEnemy().GetAttackIntent();
 
-                                float playerWinRate = characterService.GetEnemy().GetLoseRateAgainst(playerAttackIntent);
+                                float playerWinRate = characterService.GetEnemy().
+                                                                       GetLoseRateAgainst(playerAttackIntent);
 
-                                int rockOffset     = characterService.GetEnemy().GetWeightOffset(EAttackType::Rock);
+                                int rockOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Rock);
                                 int scissorsOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Scissors);
-                                int paperOffset    = characterService.GetEnemy().GetWeightOffset(EAttackType::Paper);
+                                int paperOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Paper);
 
                                 int playerDamage = characterService.GetPlayer().GetDamage(playerAttackIntent);
-                                int enemyDamage  = characterService.GetEnemy().GetDamage(enemyAttackIntent);
+                                int enemyDamage = characterService.GetEnemy().GetDamage(enemyAttackIntent);
 
                                 if (LosesTo(playerAttackIntent, enemyAttackIntent))
                                 {

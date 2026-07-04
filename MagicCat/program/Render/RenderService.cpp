@@ -8,13 +8,11 @@ namespace mc {
     class DxLibRenderService : public IRenderService
     {
     public:
-        // ---- フォントサイズ ----
         int GetFontSize() override
         {
             return ::GetFontSize();
         }
 
-        // ---- 描画 ----
         void DrawString(int x, int y, const wchar_t* text, uint32_t color) override
         {
             ::DrawString(x, y, text, color);
@@ -53,8 +51,10 @@ namespace mc {
             int dxMode = DX_BLENDMODE_NOBLEND;
             switch (mode)
             {
-            case BlendMode::Alpha:   dxMode = DX_BLENDMODE_ALPHA;   break;
-            case BlendMode::NoBlend: dxMode = DX_BLENDMODE_NOBLEND; break;
+            case BlendMode::Alpha: dxMode = DX_BLENDMODE_ALPHA;
+                break;
+            case BlendMode::NoBlend: dxMode = DX_BLENDMODE_NOBLEND;
+                break;
             }
             ::SetDrawBlendMode(dxMode, pal);
         }
@@ -106,7 +106,6 @@ namespace mc {
             DrawBoxAA(x2 - thickness, y1, x2, y2, color, true);
         }
 
-        // ---- ウィンドウサイズ ----
         int GetWindowWidth() const override
         {
             return static_cast<int>(dxe::GetWindowWidthF());
@@ -117,7 +116,6 @@ namespace mc {
             return static_cast<int>(dxe::GetWindowHeightF());
         }
 
-        // ---- 初期化・フォント設定 ----
         void SetFontTypeNormal() override
         {
             ::ChangeFontType(DX_FONTTYPE_NORMAL);
@@ -141,6 +139,16 @@ namespace mc {
         void SetBackgroundColor(int r, int g, int b) override
         {
             ::SetBackgroundColor(r, g, b);
+        }
+
+        void SetCursorPointer() override
+        {
+            SetCursor(::LoadCursor(nullptr, IDC_HAND));
+        }
+
+        void SetCursorArrow() override
+        {
+            SetCursor(::LoadCursor(nullptr, IDC_ARROW));
         }
     };
 

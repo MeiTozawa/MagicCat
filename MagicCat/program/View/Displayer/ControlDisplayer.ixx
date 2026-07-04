@@ -14,34 +14,24 @@ import EventBus;
 
 
 namespace mc {
-    export struct DrawPileHoveredEvent : IEvent {};
-    
-    export struct DrawPileUnhoveredEvent : IEvent {};
-
     namespace {
-        constexpr int ICON_DRAW_X  = 100;   
-        constexpr int ICON_NAV_X   = 500;   
-        constexpr int ICON_CONF_X  = 620;   
-        constexpr int ICON_RULES_X = 920;   
+        constexpr int ICON_DRAW_X = 100;
+        constexpr int ICON_NAV_X = 500;
+        constexpr int ICON_NAV2_X = 560;
+        constexpr int ICON_CONF_X = 620;
+        constexpr int ICON_RULES_X = 920;
         constexpr int Y = 100;
 
         constexpr int TEXT_OFFSET_X = 40;
         constexpr int TEXT_OFFSET_Y = -25;
 
-        constexpr int ICON_HALF_W = 40;
-        constexpr int ICON_HALF_H = 28;
+        constexpr int HINT_X = 20 + ICON_SIZE_X / 4;
+        constexpr int HINT_Y = 20 + ICON_SIZE_Y / 4;
+        constexpr int HINT_TEXT_X = 20 + ICON_SIZE_X / 2 + 10;
+        constexpr int HINT_TEXT_Y = HINT_Y - FONT_SIZE / 2;
 
-        constexpr int MENU_ICON_Y = 60;
-
-        constexpr int HINT_X = 20;
-        constexpr int HINT_Y = 20;
-
-        constexpr int DRAW_CARD_X1 = 50;
-        constexpr int DRAW_CARD_Y1 = 400;
-        constexpr int DRAW_CARD_X2 = 250;
-        constexpr int DRAW_CARD_Y2 = 700;
-
-        struct ClickableArea {
+        struct ClickableArea
+        {
             int x1, y1, x2, y2;
             const wchar_t* hintText;
         };
@@ -54,104 +44,140 @@ namespace mc {
         IInputService& inputService;
         uint32_t color;
 
-        mutable bool drawPileHovered = false; 
-
     public:
         ControlDisplayer(IAssetService& asset, IRenderService& render,
-                         IInputService& input, uint32_t c = 0xFFFFFF)
+                         IInputService& input, uint32_t c = 0xFFFF00)
             : assetService(asset), renderService(render), inputService(input), color(c) {}
 
     private:
         void OnDraw(float) const override
         {
-            if ((inputService.GetActiveDevice() == InputDevice::Gamepad))
+            const InputDevice activeDevice = inputService.GetActiveDevice();
+            int menuIconX = renderService.GetWindowWidth() - MENU_ICON_X_OFFSET;
+
             {
-                if (drawPileHovered)
-                {
-                    drawPileHovered = false;
-                    EventBus::Publish(DrawPileUnhoveredEvent{});
-                }
-                renderService.DrawRotaGraphF(ICON_NAV_X,   Y, 0.5, 0.0,
-                    assetService.GetImageHandle(EImage::XBOX_DPAD_HORIZONTAL), true);
-          
-                renderService.DrawRotaGraphF(ICON_CONF_X,  Y, 0.5, 0.0,
-                    assetService.GetImageHandle(EImage::XBOX_A), true);
-       
-                renderService.DrawRotaGraphF(ICON_DRAW_X,  Y, 0.5, 0.0,
-                    assetService.GetImageHandle(EImage::XBOX_X), true);
-     
+                int icon = assetService.GetImageHandle(EImage::BUTTON_MENU);
+                renderService.DrawRotaGraphF(menuIconX, MENU_ICON_Y, 0.5, 0.0, icon, true);
+            }
+
+            if (activeDevice == InputDevice::Gamepad)
+            {
+                renderService.SetCursorArrow();
+
+                renderService.DrawRotaGraphF(ICON_NAV_X, Y, 0.5, 0.0,
+                                             assetService.GetImageHandle(EImage::XBOX_DPAD_HORIZONTAL), true);
+                renderService.DrawRotaGraphF(ICON_CONF_X, Y, 0.5, 0.0,
+                                             assetService.GetImageHandle(EImage::XBOX_A), true);
+                renderService.DrawRotaGraphF(ICON_DRAW_X, Y, 0.5, 0.0,
+                                             assetService.GetImageHandle(EImage::XBOX_X), true);
                 renderService.DrawRotaGraphF(ICON_RULES_X, Y, 0.5, 0.0,
-                    assetService.GetImageHandle(EImage::BUTTON_MENU), true);
+                                             assetService.GetImageHandle(EImage::BUTTON_MENU), true);
                 return;
             }
 
-            auto mousePos = inputService.GetMousePosition();
-            int mx = mousePos.x;
-            int my = mousePos.y;
-            int menuIconX = renderService.GetWindowWidth() - 60;
-
-            const std::array<ClickableArea, 2> areas = {{
-                {
-                    menuIconX - ICON_HALF_W, MENU_ICON_Y - ICON_HALF_H,
-                    menuIconX + ICON_HALF_W, MENU_ICON_Y + ICON_HALF_H,
-                    L"クリックしてメニューを開く"
-                },
-                {
-                    DRAW_CARD_X1, DRAW_CARD_Y1,
-                    DRAW_CARD_X2, DRAW_CARD_Y2,
-                    L"クリックしてカードを引く"
-                }
-            }};
-
-            const wchar_t* selectedHint = nullptr;
-            int hitIndex = -1;
-            for (int i = 0; i < static_cast<int>(areas.size()); ++i)
+            else if (activeDevice == InputDevice::Keyboard)
             {
-                const auto& a = areas[i];
-                if (mx >= a.x1 && mx < a.x2 && my >= a.y1 && my < a.y2)
+                renderService.SetCursorArrow();
+
                 {
-                    selectedHint = a.hintText;
-                    hitIndex = i;
-                    break;
+                    int icon = assetService.GetImageHandle(EImage::KB_Q);
+                    renderService.DrawRotaGraphF(ICON_DRAW_X, Y, 0.5, 0.0, icon, true);
+                    renderService.DrawString(ICON_DRAW_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"カードを引く", color);
                 }
+
+                {
+                    int icon = assetService.GetImageHandle(EImage::KB_ESCAPE);
+                    renderService.DrawRotaGraphF(ICON_RULES_X, Y, 0.5, 0.0, icon, true);
+                    renderService.DrawString(ICON_RULES_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"ルールを見る", color);
+                }
+
+                {
+                    int icon = assetService.GetImageHandle(EImage::KB_UP);
+                    renderService.DrawRotaGraphF(ICON_NAV_X, Y, 0.5, 0.0, icon, true);
+                    icon = assetService.GetImageHandle(EImage::KB_DOWN);
+                    renderService.DrawRotaGraphF(ICON_NAV2_X, Y, 0.5, 0.0, icon, true);
+                }
+
+                {
+                    int icon = assetService.GetImageHandle(EImage::KB_SPACE);
+                    renderService.DrawRotaGraphF(ICON_CONF_X, Y, 0.5, 0.0, icon, true);
+                    renderService.DrawString(ICON_CONF_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"選択する", color);
+                }
+                return;
             }
 
+            else if (activeDevice == InputDevice::Mouse)
             {
-                const bool currentlyHovered = (hitIndex == 1); // DrawCardHitBox は index 1
-                if (currentlyHovered && !drawPileHovered)
+                auto mousePos = inputService.GetMousePosition();
+                int mx = mousePos.x;
+                int my = mousePos.y;
+
+                const std::array<ClickableArea, 6> areas = {
+                    {
+                        {
+                            menuIconX - MENU_ICON_HALF_H, MENU_ICON_Y - MENU_ICON_HALF_H,
+                            menuIconX + MENU_ICON_HALF_W, MENU_ICON_Y + MENU_ICON_HALF_W,
+                            L"メニューを開く"
+                        },
+                        {
+                            DRAW_PILE_X1, DRAW_PILE_Y1,
+                            DRAW_PILE_X2, DRAW_PILE_Y2,
+                            L"カードを引く"
+                        },
+                        {
+                            ACTION_MENU_X, ACTION_MENU_Y + 0 * ACTION_MENU_STEP_Y,
+                            ACTION_MENU_X + ACTION_MENU_W, ACTION_MENU_Y + 0 * ACTION_MENU_STEP_Y + ACTION_MENU_H,
+                            L"魔法を使う"
+                        },
+                        {
+                            ACTION_MENU_X, ACTION_MENU_Y + 1 * ACTION_MENU_STEP_Y,
+                            ACTION_MENU_X + ACTION_MENU_W, ACTION_MENU_Y + 1 * ACTION_MENU_STEP_Y + ACTION_MENU_H,
+                            L"グーを出す"
+                        },
+                        {
+                            ACTION_MENU_X, ACTION_MENU_Y + 2 * ACTION_MENU_STEP_Y,
+                            ACTION_MENU_X + ACTION_MENU_W, ACTION_MENU_Y + 2 * ACTION_MENU_STEP_Y + ACTION_MENU_H,
+                            L"チョキを出す"
+                        },
+                        {
+                            ACTION_MENU_X, ACTION_MENU_Y + 3 * ACTION_MENU_STEP_Y,
+                            ACTION_MENU_X + ACTION_MENU_W, ACTION_MENU_Y + 3 * ACTION_MENU_STEP_Y + ACTION_MENU_H,
+                            L"パーを出す"
+                        },
+                    }
+                };
+
+                const wchar_t* selectedHint = nullptr;
+                int hitIndex = -1;
+                for (int i = 0; i < static_cast<int>(areas.size()); ++i)
                 {
-                    drawPileHovered = true;
-                    EventBus::Publish(DrawPileHoveredEvent{});
+                    const auto& a = areas[i];
+                    if (mx >= a.x1 && mx < a.x2 && my >= a.y1 && my < a.y2)
+                    {
+                        selectedHint = a.hintText;
+                        hitIndex = i;
+                        break;
+                    }
                 }
-                else if (!currentlyHovered && drawPileHovered)
+
+                if (hitIndex >= 0)
+                    renderService.SetCursorPointer();
+                else
+                    renderService.SetCursorArrow();
+
+                if (selectedHint != nullptr && selectedHint[0] != L'\0')
                 {
-                    drawPileHovered = false;
-                    EventBus::Publish(DrawPileUnhoveredEvent{});
-                }
-            }
-
-            auto icon = assetService.GetImageHandle(EImage::BUTTON_MENU);
-            renderService.DrawRotaGraphF(menuIconX, MENU_ICON_Y, 0.5, 0.0, icon, true);
-
-            if (selectedHint != nullptr && selectedHint[0] != L'\0')
-            {
-                renderService.DrawString(HINT_X, HINT_Y, selectedHint, color);
-
-                if (hitIndex == 0)
-                {
-                    renderService.DrawHollowBox(
-                        menuIconX - ICON_HALF_W, MENU_ICON_Y - ICON_HALF_H,
-                        menuIconX + ICON_HALF_W, MENU_ICON_Y + ICON_HALF_H,
-                        2, color);
+                    int icon = assetService.GetImageHandle(EImage::MOUSE_LEFT);
+                    renderService.DrawRotaGraphF(HINT_X, HINT_Y, 0.5, 0.0, icon, true);
+                    renderService.DrawString(HINT_TEXT_X, HINT_TEXT_Y, selectedHint, color);
                 }
             }
         }
     };
 
-    export std::unique_ptr<Displayer> CreateControlDisplayer(IAssetService& assetService,
-                                                             IRenderService& renderService,
-                                                             IInputService& inputService,
-                                                             uint32_t color = 0xFFFFFF)
+    export std::unique_ptr<Displayer> CreateControlDisplayer(
+        IAssetService& assetService, IRenderService& renderService,
+        IInputService& inputService, uint32_t color = 0xFFFF00)
     {
         return std::make_unique<ControlDisplayer>(assetService, renderService, inputService, color);
     }

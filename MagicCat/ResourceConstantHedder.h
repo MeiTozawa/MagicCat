@@ -37,6 +37,9 @@ constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE = L"resource/Im
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_ESCAPE_OUTLINE = L"resource/Images/InputIcon/keyboard_escape_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_Q_OUTLINE = L"resource/Images/InputIcon/keyboard_q_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE = L"resource/Images/InputIcon/keyboard_space_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_MOUSE_LEFT_OUTLINE = L"resource/Images/InputIcon/mouse_left_outline.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_MOUSE_MOVE = L"resource/Images/InputIcon/mouse_move.png"; 
+constexpr const wchar_t* FILE_PATH_PNG_MOUSE_RIGHT_OUTLINE = L"resource/Images/InputIcon/mouse_right_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_XBOX_BUTTON_COLOR_A_OUTLINE = L"resource/Images/InputIcon/xbox_button_color_a_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_XBOX_BUTTON_COLOR_B_OUTLINE = L"resource/Images/InputIcon/xbox_button_color_b_outline.png"; 
 constexpr const wchar_t* FILE_PATH_PNG_XBOX_BUTTON_COLOR_X_OUTLINE = L"resource/Images/InputIcon/xbox_button_color_x_outline.png"; 
@@ -105,6 +108,9 @@ const std::vector<const wchar_t*> FILE_PATH_TBL_IMAGES_INPUTICON = {
     FILE_PATH_PNG_KEYBOARD_ESCAPE_OUTLINE,
     FILE_PATH_PNG_KEYBOARD_Q_OUTLINE,
     FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE,
+    FILE_PATH_PNG_MOUSE_LEFT_OUTLINE,
+    FILE_PATH_PNG_MOUSE_MOVE,
+    FILE_PATH_PNG_MOUSE_RIGHT_OUTLINE,
     FILE_PATH_PNG_XBOX_BUTTON_COLOR_A_OUTLINE,
     FILE_PATH_PNG_XBOX_BUTTON_COLOR_B_OUTLINE,
     FILE_PATH_PNG_XBOX_BUTTON_COLOR_X_OUTLINE,
@@ -173,6 +179,9 @@ const std::unordered_map<std::wstring, const wchar_t*> FILE_PATH_DICTIONARY = {
     { std::wstring( L"keyboard_escape_outline.png" ), FILE_PATH_PNG_KEYBOARD_ESCAPE_OUTLINE },
     { std::wstring( L"keyboard_q_outline.png" ), FILE_PATH_PNG_KEYBOARD_Q_OUTLINE },
     { std::wstring( L"keyboard_space_outline.png" ), FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE },
+    { std::wstring( L"mouse_left_outline.png" ), FILE_PATH_PNG_MOUSE_LEFT_OUTLINE },
+    { std::wstring( L"mouse_move.png" ), FILE_PATH_PNG_MOUSE_MOVE },
+    { std::wstring( L"mouse_right_outline.png" ), FILE_PATH_PNG_MOUSE_RIGHT_OUTLINE },
     { std::wstring( L"xbox_button_color_a_outline.png" ), FILE_PATH_PNG_XBOX_BUTTON_COLOR_A_OUTLINE },
     { std::wstring( L"xbox_button_color_b_outline.png" ), FILE_PATH_PNG_XBOX_BUTTON_COLOR_B_OUTLINE },
     { std::wstring( L"xbox_button_color_x_outline.png" ), FILE_PATH_PNG_XBOX_BUTTON_COLOR_X_OUTLINE },
@@ -234,6 +243,9 @@ constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ARROW_UP_OUTLINE = L"keyboard_ar
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_ESCAPE_OUTLINE = L"keyboard_escape_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_Q_OUTLINE = L"keyboard_q_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_KEYBOARD_SPACE_OUTLINE = L"keyboard_space_outline.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_MOUSE_LEFT_OUTLINE = L"mouse_left_outline.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_MOUSE_MOVE = L"mouse_move.png"; 
+constexpr const wchar_t* FILE_NAME_PNG_MOUSE_RIGHT_OUTLINE = L"mouse_right_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_XBOX_BUTTON_COLOR_A_OUTLINE = L"xbox_button_color_a_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_XBOX_BUTTON_COLOR_B_OUTLINE = L"xbox_button_color_b_outline.png"; 
 constexpr const wchar_t* FILE_NAME_PNG_XBOX_BUTTON_COLOR_X_OUTLINE = L"xbox_button_color_x_outline.png"; 
@@ -302,6 +314,9 @@ const std::vector<const wchar_t*> FILE_NAME_TBL_IMAGES_INPUTICON = {
     FILE_NAME_PNG_KEYBOARD_ESCAPE_OUTLINE,
     FILE_NAME_PNG_KEYBOARD_Q_OUTLINE,
     FILE_NAME_PNG_KEYBOARD_SPACE_OUTLINE,
+    FILE_NAME_PNG_MOUSE_LEFT_OUTLINE,
+    FILE_NAME_PNG_MOUSE_MOVE,
+    FILE_NAME_PNG_MOUSE_RIGHT_OUTLINE,
     FILE_NAME_PNG_XBOX_BUTTON_COLOR_A_OUTLINE,
     FILE_NAME_PNG_XBOX_BUTTON_COLOR_B_OUTLINE,
     FILE_NAME_PNG_XBOX_BUTTON_COLOR_X_OUTLINE,

@@ -21,8 +21,10 @@ namespace mc {
 
         KB_Q = 100, KB_ESCAPE, KB_SPACE, KB_UP, KB_DOWN,
         KB_LEFT, KB_RIGHT,
+        
+        MOUSE_MOVE = 200, MOUSE_LEFT, MOUSE_RIGHT,
 
-        XBOX_A = 200, XBOX_B, XBOX_X, XBOX_Y,
+        XBOX_A = 300, XBOX_B, XBOX_X, XBOX_Y,
         XBOX_DPAD_HORIZONTAL,
         BUTTON_MENU
     };

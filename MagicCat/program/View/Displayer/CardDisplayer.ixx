@@ -33,13 +33,27 @@ namespace mc {
 
     class CardDisplayer : public Displayers
     {
-        ICardService& cardService;
-        IAssetService& assetService;
-        IRenderService& renderService;
+    public:
+        CardDisplayer(ICardService& card, IAssetService& asset, IRenderService& render)
+            : cardService(card), assetService(asset), renderService(render)
+        {
+            cachedHand = cardService.GetHandCards();
+            RebuildDisplayers(false);
 
-        EventHandle handUpdateHandle;
-        std::vector<Card> cachedHand;
+            handUpdateHandle = EventBus::Subscribe<HandUpdatedEvent>([this](const HandUpdatedEvent& e)
+            {
+                bool isDraw = e.cards.size() > cachedHand.size();
+                cachedHand = e.cards;
+                RebuildDisplayers(isDraw);
+            });
+        }
 
+        ~CardDisplayer() override
+        {
+            EventBus::Unsubscribe(handUpdateHandle);
+        }
+
+    private:
         std::unique_ptr<Displayer> CreatePrintACardDisplayer(Card card, Point<int> start_position,
                                                              std::wstring message) const
         {
@@ -51,18 +65,10 @@ namespace mc {
                 bool has_icon = true;
                 switch (card.CardType)
                 {
-                case ECardType::Rock:
-                    color = COLOR_CARD_ROCK;
-                    break;
-                case ECardType::Paper:
-                    color = COLOR_CARD_PAPER;
-                    break;
-                case ECardType::Scissors:
-                    color = COLOR_CARD_SCISSORS;
-                    break;
-                case ECardType::Magic:
-                    color = COLOR_CARD_MAGIC;
-                    break;
+                case ECardType::Rock:     color = COLOR_CARD_ROCK;     break;
+                case ECardType::Paper:    color = COLOR_CARD_PAPER;    break;
+                case ECardType::Scissors: color = COLOR_CARD_SCISSORS; break;
+                case ECardType::Magic:    color = COLOR_CARD_MAGIC;    break;
                 default:
                     has_icon = false;
                     color = COLOR_CARD_DEFAULT;
@@ -112,15 +118,9 @@ namespace mc {
                 auto cardDisplay = CreatePrintACardDisplayer(cachedHand[i], position, msg);
 
                 if (isDraw && i == cachedHand.size() - 1)
-                {
                     cardDisplay->AddEffector(CreateHitFlashEffector(renderService, 0x000000, 300));
-                    push_back(std::move(cardDisplay));
-                }
-                else
-                {
-                    push_back(std::move(cardDisplay));
-                }
 
+                push_back(std::move(cardDisplay));
                 position.x += OFFSET_X;
             }
 
@@ -131,25 +131,11 @@ namespace mc {
             push_back(CreatePrintACardDisplayer({ECardType::Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, discardPileMsg));
         }
 
-    public:
-        CardDisplayer(ICardService& card, IAssetService& asset, IRenderService& render)
-            : cardService(card), assetService(asset), renderService(render)
-        {
-            cachedHand = cardService.GetHandCards();
-            RebuildDisplayers(false);
-
-            handUpdateHandle = EventBus::Subscribe<HandUpdatedEvent>([this](const HandUpdatedEvent& e)
-            {
-                bool isDraw = e.cards.size() > cachedHand.size();
-                cachedHand = e.cards;
-                RebuildDisplayers(isDraw);
-            });
-        }
-
-        ~CardDisplayer() override
-        {
-            EventBus::Unsubscribe(handUpdateHandle);
-        }
+        ICardService& cardService;
+        IAssetService& assetService;
+        IRenderService& renderService;
+        EventHandle handUpdateHandle;
+        std::vector<Card> cachedHand;
     };
 
     export std::unique_ptr<Displayer> CreateCardDisplayer(ICardService& cardService, IAssetService& assetService,

@@ -39,11 +39,6 @@ namespace mc {
 
     class ControlDisplayer : public Displayer
     {
-        IAssetService& assetService;
-        IRenderService& renderService;
-        IInputService& inputService;
-        uint32_t color;
-
     public:
         ControlDisplayer(IAssetService& asset, IRenderService& render,
                          IInputService& input, uint32_t c = 0xFFFF00)
@@ -173,6 +168,11 @@ namespace mc {
                 }
             }
         }
+
+        IAssetService& assetService;
+        IRenderService& renderService;
+        IInputService& inputService;
+        uint32_t color;
     };
 
     export std::unique_ptr<Displayer> CreateControlDisplayer(

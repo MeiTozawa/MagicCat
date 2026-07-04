@@ -12,12 +12,6 @@ namespace
 
 class Random
 {
-private:
-    static std::mt19937& GetEngine()
-    {
-        return gen;
-    }
-
 public:
     Random() = delete;
 
@@ -47,6 +41,12 @@ public:
     static void Shuffle(R& container)
     {
         std::shuffle(std::ranges::begin(container), std::ranges::end(container), GetEngine());
+    }
+
+private:
+    static std::mt19937& GetEngine()
+    {
+        return gen;
     }
 };
 

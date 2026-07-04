@@ -15,21 +15,6 @@ namespace mc {
     /// 内部に線形補間アニメーションを持ち、source から destination へ duration 秒で移動する。
     export class CutsceneFocusDisplayer : public Displayer
     {
-        IRenderService& m_renderService;
-
-        // レイアウト
-        float m_halfWidth;
-        float m_halfHeight;
-        int m_cornerRadius;
-        int m_thickness;
-        uint32_t m_color;
-
-        // 線形補間アニメーション
-        Point<float> m_source;
-        Point<float> m_destination;
-        float m_duration;
-        float m_elapsed = 0.f;
-
     public:
         static constexpr float DEFAULT_DURATION = 0.5f;
 
@@ -66,6 +51,21 @@ namespace mc {
                 static_cast<int>(cy + m_halfHeight),
                 m_cornerRadius, m_thickness, m_color);
         }
+
+        IRenderService& m_renderService;
+
+        // レイアウト
+        float m_halfWidth;
+        float m_halfHeight;
+        int m_cornerRadius;
+        int m_thickness;
+        uint32_t m_color;
+
+        // 線形補間アニメーション
+        Point<float> m_source;
+        Point<float> m_destination;
+        float m_duration;
+        float m_elapsed = 0.f;
     };
 
     export std::unique_ptr<CutsceneFocusDisplayer> CreateCutsceneFocusDisplayer(

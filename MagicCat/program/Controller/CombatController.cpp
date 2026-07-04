@@ -16,13 +16,6 @@ import SceneService;
 namespace mc {
     class CombatController : public ICombatController
     {
-        IInputService& inputService;
-        IBattleService& characterService;
-        ISceneService& sceneService;
-        ICardService& cardService;
-        int selectedActionIndex = 0;
-        bool isMagicMenuOpen = false;
-
     public:
         CombatController(IInputService& input, IBattleService& character, ISceneService& scene, ICardService& card)
             : inputService(input), characterService(character), sceneService(scene), cardService(card) {}
@@ -35,6 +28,14 @@ namespace mc {
         }
 
         void Update(float deltaTime) override
+        {
+            HandleKeyboardInput();
+            HandleMouseHover();
+            HandleMouseClick();
+        }
+
+    private:
+        void HandleKeyboardInput()
         {
             if (inputService.IsPressed(InputAction::Up))
             {
@@ -54,6 +55,173 @@ namespace mc {
             }
             else if (inputService.IsPressed(InputAction::Confirm))
             {
+                HandleConfirm();
+            }
+            else if (inputService.IsPressed(InputAction::DrawCard))
+            {
+                ProcessDrawCard(cardService.DrawCard());
+                EventBus::Publish(DrawCardEvent());
+            }
+            else if (inputService.IsPressed(InputAction::ToggleMenu))
+            {
+                sceneService.PushScene(ESceneState::Rules);
+            }
+        }
+
+        void HandleConfirm()
+        {
+            if (selectedActionIndex == ACTION_MAGIC)
+            {
+                isMagicMenuOpen = !isMagicMenuOpen;
+                EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
+            }
+            else if (isMagicMenuOpen)
+            {
+                if (TryUseMagic(selectedActionIndex))
+                {
+                    isMagicMenuOpen = false;
+                    selectedActionIndex = ACTION_MAGIC;
+                    EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
+                }
+            }
+            else
+            {
+                ResolveAttack(selectedActionIndex);
+            }
+        }
+
+        bool TryUseMagic(int index)
+        {
+            bool success = false;
+            if (index == 1)
+            {
+                success = characterService.GetPlayer().UseMagic(EMagic::Clairvoyance);
+                if (success) characterService.GetEnemy().SetExposed(true);
+            }
+            else if (index == 2)
+            {
+                success = characterService.GetPlayer().UseMagic(EMagic::PowerBoost);
+            }
+            else if (index == 3)
+            {
+                success = characterService.GetPlayer().UseMagic(EMagic::Heal);
+            }
+            return success;
+        }
+
+        void ResolveAttack(int actionIndex)
+        {
+            EAttackType playerAttackIntent;
+            if      (actionIndex == ACTION_ROCK)     playerAttackIntent = EAttackType::Rock;
+            else if (actionIndex == ACTION_SCISSORS) playerAttackIntent = EAttackType::Scissors;
+            else if (actionIndex == ACTION_PAPER)    playerAttackIntent = EAttackType::Paper;
+            else return;
+
+            EAttackType enemyAttackIntent = characterService.GetEnemy().GetAttackIntent();
+            float playerWinRate = characterService.GetEnemy().GetLoseRateAgainst(playerAttackIntent);
+
+            int rockOffset     = characterService.GetEnemy().GetWeightOffset(EAttackType::Rock);
+            int scissorsOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Scissors);
+            int paperOffset    = characterService.GetEnemy().GetWeightOffset(EAttackType::Paper);
+
+            int playerDamage = characterService.GetPlayer().GetDamage(playerAttackIntent);
+            int enemyDamage  = characterService.GetEnemy().GetDamage(enemyAttackIntent);
+
+            if (LosesTo(playerAttackIntent, enemyAttackIntent))
+                characterService.GetPlayer().TakeDamage(enemyDamage);
+            if (LosesTo(enemyAttackIntent, playerAttackIntent))
+                characterService.GetEnemy().TakeDamage(playerDamage);
+
+            characterService.GetEnemy().ResetWeights();
+            cardService.DiscardHand();
+            characterService.GetPlayer().ResetDamageOffset();
+
+            EventBus::Publish(
+                CombatEvent(playerAttackIntent, enemyAttackIntent, playerDamage, enemyDamage,
+                            playerWinRate, rockOffset, scissorsOffset, paperOffset)
+            );
+        }
+
+        void ProcessDrawCard(Card c)
+        {
+            if (c.CardType == ECardType::Magic)
+            {
+                characterService.GetPlayer().ChangeMp(c.Power);
+            }
+            else if (c.CardType == ECardType::Rock || c.CardType == ECardType::Scissors || c.CardType == ECardType::Paper)
+            {
+                characterService.GetEnemy().AddWeight(ToAttackType(c.CardType), c.Power);
+            }
+        }
+
+        void HandleMouseHover()
+        {
+            if (inputService.GetActiveDevice() != InputDevice::Mouse) return;
+
+            auto mousePos = inputService.GetMousePosition();
+            int mx = mousePos.x;
+            int my = mousePos.y;
+            for (int i = 0; i < 4; ++i)
+            {
+                int hx1 = ACTION_MENU_X;
+                int hy1 = ACTION_MENU_Y + i * ACTION_MENU_STEP_Y;
+                int hx2 = hx1 + ACTION_MENU_W;
+                int hy2 = hy1 + ACTION_MENU_H;
+                if (mx >= hx1 && mx < hx2 && my >= hy1 && my < hy2)
+                {
+                    if (selectedActionIndex != i)
+                    {
+                        selectedActionIndex = i;
+                        EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
+                    }
+                    break;
+                }
+            }
+        }
+
+        void HandleMouseClick()
+        {
+            auto click = inputService.OnMouseClick(InputAction::MouseClick);
+            if (click.x == -1 || click.y == -1) return;
+
+            // 山札クリック
+            if (click.x >= DRAW_PILE_X1 && click.x < DRAW_PILE_X2 &&
+                click.y >= DRAW_PILE_Y1 && click.y < DRAW_PILE_Y2)
+            {
+                ProcessDrawCard(cardService.DrawCard());
+                EventBus::Publish(DrawCardEvent());
+                return;
+            }
+
+            // ActionMenu 行クリック
+            for (int i = 0; i < 4; ++i)
+            {
+                int x1 = ACTION_MENU_X;
+                int y1 = ACTION_MENU_Y + i * ACTION_MENU_STEP_Y;
+                int x2 = x1 + ACTION_MENU_W;
+                int y2 = y1 + ACTION_MENU_H;
+                if (click.x >= x1 && click.x < x2 && click.y >= y1 && click.y < y2)
+                {
+                    HandleActionMenuClick(i);
+                    return;
+                }
+            }
+        }
+
+        void HandleActionMenuClick(int clickedRow)
+        {
+            if (isMagicMenuOpen && clickedRow >= 1)
+            {
+                if (TryUseMagic(clickedRow))
+                {
+                    isMagicMenuOpen = false;
+                    selectedActionIndex = ACTION_MAGIC;
+                    EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
+                }
+            }
+            else if (selectedActionIndex == clickedRow)
+            {
+                // 同じ行を再クリック → Confirm 相当
                 if (selectedActionIndex == ACTION_MAGIC)
                 {
                     isMagicMenuOpen = !isMagicMenuOpen;
@@ -61,229 +229,22 @@ namespace mc {
                 }
                 else
                 {
-                    if (isMagicMenuOpen)
-                    {
-                        bool success = false;
-                        if (selectedActionIndex == 1)
-                        {
-                            success = characterService.GetPlayer().UseMagic(EMagic::Clairvoyance);
-                            if (success)
-                            {
-                                characterService.GetEnemy().SetExposed(true);
-                            }
-                        }
-                        else if (selectedActionIndex == 2)
-                        {
-                            success = characterService.GetPlayer().UseMagic(EMagic::PowerBoost);
-                        }
-                        else if (selectedActionIndex == 3)
-                        {
-                            success = characterService.GetPlayer().UseMagic(EMagic::Heal);
-                        }
-
-                        if (success)
-                        {
-                            isMagicMenuOpen = false;
-                            selectedActionIndex = ACTION_MAGIC;
-                            EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
-                        }
-                    }
-                    else
-                    {
-                        EAttackType playerAttackIntent;
-                        if (selectedActionIndex == ACTION_ROCK) playerAttackIntent = EAttackType::Rock;
-                        else if (selectedActionIndex == ACTION_SCISSORS) playerAttackIntent = EAttackType::Scissors;
-                        else if (selectedActionIndex == ACTION_PAPER) playerAttackIntent = EAttackType::Paper;
-                        else return;
-
-                        EAttackType enemyAttackIntent = characterService.GetEnemy().GetAttackIntent();
-
-                        float playerWinRate = characterService.GetEnemy().GetLoseRateAgainst(playerAttackIntent);
-
-                        int rockOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Rock);
-                        int scissorsOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Scissors);
-                        int paperOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Paper);
-
-                        int playerDamage = characterService.GetPlayer().GetDamage(playerAttackIntent);
-                        int enemyDamage = characterService.GetEnemy().GetDamage(enemyAttackIntent);
-
-                        if (LosesTo(playerAttackIntent, enemyAttackIntent))
-                        {
-                            characterService.GetPlayer().TakeDamage(enemyDamage);
-                        }
-                        if (LosesTo(enemyAttackIntent, playerAttackIntent))
-                        {
-                            characterService.GetEnemy().TakeDamage(playerDamage);
-                        }
-
-                        characterService.GetEnemy().ResetWeights();
-                        cardService.DiscardHand();
-                        characterService.GetPlayer().ResetDamageOffset();
-
-                        EventBus::Publish(
-                            CombatEvent(playerAttackIntent, enemyAttackIntent, playerDamage, enemyDamage,
-                                        playerWinRate, rockOffset, scissorsOffset, paperOffset)
-                        );
-                    }
+                    ResolveAttack(selectedActionIndex);
                 }
             }
-            else if (inputService.IsPressed(InputAction::DrawCard))
+            else
             {
-                auto c = cardService.DrawCard();
-                if (c.CardType == ECardType::Magic)
-                {
-                    characterService.GetPlayer().ChangeMp(c.Power);
-                }
-                else if (c.CardType == ECardType::Rock || c.CardType == ECardType::Scissors || c.CardType ==
-                    ECardType::Paper)
-                {
-                    characterService.GetEnemy().AddWeight(ToAttackType(c.CardType), c.Power);
-                }
-                EventBus::Publish(DrawCardEvent());
-            }
-            else if (inputService.IsPressed(InputAction::ToggleMenu))
-            {
-                sceneService.PushScene(ESceneState::Rules);
-            }
-
-            if (inputService.GetActiveDevice() == InputDevice::Mouse)
-            {
-                auto mousePos = inputService.GetMousePosition();
-                int mx = mousePos.x;
-                int my = mousePos.y;
-                for (int i = 0; i < 4; ++i)
-                {
-                    int hx1 = ACTION_MENU_X;
-                    int hy1 = ACTION_MENU_Y + i * ACTION_MENU_STEP_Y;
-                    int hx2 = hx1 + ACTION_MENU_W;
-                    int hy2 = hy1 + ACTION_MENU_H;
-                    if (mx >= hx1 && mx < hx2 && my >= hy1 && my < hy2)
-                    {
-                        if (selectedActionIndex != i)
-                        {
-                            selectedActionIndex = i;
-                            EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
-                        }
-                        break;
-                    }
-                }
-            }
-
-            auto click = inputService.OnMouseClick(InputAction::MouseClick);
-            if (click.x != -1 && click.y != -1)
-            {
-                if (click.x >= DRAW_PILE_X1 && click.x < DRAW_PILE_X2 &&
-                    click.y >= DRAW_PILE_Y1 && click.y < DRAW_PILE_Y2)
-                {
-                    auto c = cardService.DrawCard();
-                    if (c.CardType == ECardType::Magic)
-                    {
-                        characterService.GetPlayer().ChangeMp(c.Power);
-                    }
-                    else if (c.CardType == ECardType::Rock || c.CardType == ECardType::Scissors || c.CardType ==
-                        ECardType::Paper)
-                    {
-                        characterService.GetEnemy().AddWeight(ToAttackType(c.CardType), c.Power);
-                    }
-                    EventBus::Publish(DrawCardEvent());
-                    return;
-                }
-
-                // ActionMenu row HitBox
-                for (int i = 0; i < 4; ++i)
-                {
-                    int x1 = ACTION_MENU_X;
-                    int y1 = ACTION_MENU_Y + i * ACTION_MENU_STEP_Y;
-                    int x2 = x1 + ACTION_MENU_W;
-                    int y2 = y1 + ACTION_MENU_H;
-                    if (click.x >= x1 && click.x < x2 && click.y >= y1 && click.y < y2)
-                    {
-                        if (isMagicMenuOpen && i >= 1)
-                        {
-                            // MagicSubMenu: j=i (1=Clairvoyance, 2=PowerBoost, 3=Heal)
-                            bool success = false;
-                            if (i == 1)
-                            {
-                                success = characterService.GetPlayer().UseMagic(EMagic::Clairvoyance);
-                                if (success)
-                                {
-                                    characterService.GetEnemy().SetExposed(true);
-                                }
-                            }
-                            else if (i == 2)
-                            {
-                                success = characterService.GetPlayer().UseMagic(EMagic::PowerBoost);
-                            }
-                            else if (i == 3)
-                            {
-                                success = characterService.GetPlayer().UseMagic(EMagic::Heal);
-                            }
-                            if (success)
-                            {
-                                isMagicMenuOpen = false;
-                                selectedActionIndex = ACTION_MAGIC;
-                                EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
-                            }
-                        }
-                        else if (selectedActionIndex == i)
-                        {
-                            // Same row re-click → Confirm equivalent
-                            if (selectedActionIndex == ACTION_MAGIC)
-                            {
-                                isMagicMenuOpen = !isMagicMenuOpen;
-                                EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
-                            }
-                            else
-                            {
-                                EAttackType playerAttackIntent;
-                                if (selectedActionIndex == ACTION_ROCK) playerAttackIntent = EAttackType::Rock;
-                                else if (selectedActionIndex == ACTION_SCISSORS) playerAttackIntent =
-                                    EAttackType::Scissors;
-                                else if (selectedActionIndex == ACTION_PAPER) playerAttackIntent = EAttackType::Paper;
-                                else return;
-
-                                EAttackType enemyAttackIntent = characterService.GetEnemy().GetAttackIntent();
-
-                                float playerWinRate = characterService.GetEnemy().
-                                                                       GetLoseRateAgainst(playerAttackIntent);
-
-                                int rockOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Rock);
-                                int scissorsOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Scissors);
-                                int paperOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Paper);
-
-                                int playerDamage = characterService.GetPlayer().GetDamage(playerAttackIntent);
-                                int enemyDamage = characterService.GetEnemy().GetDamage(enemyAttackIntent);
-
-                                if (LosesTo(playerAttackIntent, enemyAttackIntent))
-                                {
-                                    characterService.GetPlayer().TakeDamage(enemyDamage);
-                                }
-                                if (LosesTo(enemyAttackIntent, playerAttackIntent))
-                                {
-                                    characterService.GetEnemy().TakeDamage(playerDamage);
-                                }
-
-                                characterService.GetEnemy().ResetWeights();
-                                cardService.DiscardHand();
-                                characterService.GetPlayer().ResetDamageOffset();
-
-                                EventBus::Publish(
-                                    CombatEvent(playerAttackIntent, enemyAttackIntent, playerDamage, enemyDamage,
-                                                playerWinRate, rockOffset, scissorsOffset, paperOffset)
-                                );
-                            }
-                        }
-                        else
-                        {
-                            // Different row click → select it
-                            selectedActionIndex = i;
-                            EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
-                        }
-                        return;
-                    }
-                }
+                selectedActionIndex = clickedRow;
+                EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
             }
         }
+
+        IInputService& inputService;
+        IBattleService& characterService;
+        ISceneService& sceneService;
+        ICardService& cardService;
+        int selectedActionIndex = 0;
+        bool isMagicMenuOpen = false;
     };
 
     std::unique_ptr<ICombatController> CreateCombatController(IInputService& inputService,

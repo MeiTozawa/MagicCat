@@ -16,23 +16,12 @@ namespace {
 
     class InfoScene : public IScene
     {
-        IInputService& inputService;
-        ISceneService& sceneService;
-        IRenderService& renderService;
-        IBattleService& battleService;
-        EventHandle stageClearHandle;
-        EventHandle stageFailHandle;
-        std::wstring info = {};
-        uint32_t infoColor;
-        int winCount = 0;
-        int failCount = 0;
-
     public:
         InfoScene(IInputService& input, ISceneService& scene, IRenderService& render, IBattleService& battle)
             : inputService(input), sceneService(scene), renderService(render), battleService(battle)
         {
             infoColor = 0xF259FF;
-            
+
             stageClearHandle = EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&)
             {
                 winCount++;
@@ -73,43 +62,61 @@ namespace {
             auto click = inputService.OnMouseClick(InputAction::MouseClick);
             if (click.x != -1 && click.y != -1)
             {
-                if (click.x >= 0 && click.x < w &&
-                    click.y >= 0 && click.y < h)
-                {
+                if (click.x >= 0 && click.x < w && click.y >= 0 && click.y < h)
                     battleService.StartStage();
-                }
             }
 
             if (!info.empty())
             {
                 renderService.SetFontSize(240);
-                renderService.DrawCenterString(renderService.GetWindowWidth() / 2, renderService.GetWindowHeight() * 4 / 10,
+                renderService.DrawCenterString(renderService.GetWindowWidth() / 2,
+                                               renderService.GetWindowHeight() * 4 / 10,
                                                info.c_str(), infoColor);
                 renderService.SetFontSize(48);
             }
             else
             {
-                renderService.SetFontSize(160);
-                renderService.DrawCenterString(renderService.GetWindowWidth() / 2, renderService.GetWindowHeight() * 2 / 10,
-                                               L"MagicCat", infoColor);
-                renderService.SetFontSize(48);
-                renderService.DrawCenterString(renderService.GetWindowWidth() / 2, renderService.GetWindowHeight() * 4 / 10,
-                                               L"吾輩はマジックキャットである！\n"
-                                               "これはじゃんけんの対決にゃん！\n"
-                                               "吾輩は魔法のカードを使って敵の精神状態を操り、\n"
-                                               "相手の出し手を左右できるにゃん。\n"
-                                               "ESCキーを押してルールを読んでご覧。\n"
-                                               "スタート後もいつでも読めるにゃん。"
-                                               , COLOR_WHITE);
+                DrawTitleScreen();
             }
 
             renderService.DrawLeftString(20, 40,
                                          std::format(L" 勝利回数: {} ", winCount).c_str(), COLOR_WHITE);
             renderService.DrawRightString(renderService.GetWindowWidth(), 40,
                                           std::format(L" 失敗回数: {} ", failCount).c_str(), COLOR_WHITE);
-            renderService.DrawCenterString(renderService.GetWindowWidth() / 2, renderService.GetWindowHeight() * 8 / 10,
+            renderService.DrawCenterString(renderService.GetWindowWidth() / 2,
+                                           renderService.GetWindowHeight() * 8 / 10,
                                            L"Enterキーを押してゲームをスタートにゃ！", COLOR_WHITE);
         }
+
+    private:
+        void DrawTitleScreen() const
+        {
+            renderService.SetFontSize(160);
+            renderService.DrawCenterString(renderService.GetWindowWidth() / 2,
+                                           renderService.GetWindowHeight() * 2 / 10,
+                                           L"MagicCat", infoColor);
+            renderService.SetFontSize(48);
+            renderService.DrawCenterString(renderService.GetWindowWidth() / 2,
+                                           renderService.GetWindowHeight() * 4 / 10,
+                                           L"吾輩はマジックキャットである！\n"
+                                           "これはじゃんけんの対決にゃん！\n"
+                                           "吾輩は魔法のカードを使って敵の精神状態を操り、\n"
+                                           "相手の出し手を左右できるにゃん。\n"
+                                           "ESCキーを押してルールを読んでご覧。\n"
+                                           "スタート後もいつでも読めるにゃん。"
+                                           , COLOR_WHITE);
+        }
+
+        IInputService& inputService;
+        ISceneService& sceneService;
+        IRenderService& renderService;
+        IBattleService& battleService;
+        EventHandle stageClearHandle;
+        EventHandle stageFailHandle;
+        std::wstring info = {};
+        uint32_t infoColor;
+        int winCount = 0;
+        int failCount = 0;
     };
 
     std::unique_ptr<IScene> CreateInfoScene(IInputService& inputService, ISceneService& sceneService,

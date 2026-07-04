@@ -41,17 +41,6 @@ namespace mc {
 
     class CutsceneScene : public IScene
     {
-        ISceneService& sceneService;
-        IAssetService& assetService;
-        IRenderService& renderService;
-        IBattleService& battleService;
-
-        std::vector<EnemySlotView> slots;
-        std::unique_ptr<CutsceneFocusDisplayer> borderDisplayer;
-
-        float timer = 0.f;
-        bool finished = false;
-
     public:
         CutsceneScene(ISceneService& sceneService,
                       IAssetService& assetService, IRenderService& renderService,
@@ -98,9 +87,23 @@ namespace mc {
 
         void Update(float dt) override
         {
-            if (!finished)
-                timer += dt;
+            if (!finished) timer += dt;
 
+            DrawSlots();
+
+            borderDisplayer->Update(dt);
+            borderDisplayer->Draw(dt);
+
+            if (!finished && timer >= CUTSCENE_DURATION)
+            {
+                finished = true;
+                EventBus::Publish(CutsceneFinishedEvent{});
+            }
+        }
+
+    private:
+        void DrawSlots() const
+        {
             for (const auto& sv : slots)
             {
                 const float cx = sv.center.x;
@@ -119,16 +122,18 @@ namespace mc {
                                             cx + 48.f, cy + 48.f, 0x808080, true);
                 }
             }
-
-            borderDisplayer->Update(dt);
-            borderDisplayer->Draw(dt);
-
-            if (!finished && timer >= CUTSCENE_DURATION)
-            {
-                finished = true;
-                EventBus::Publish(CutsceneFinishedEvent{});
-            }
         }
+
+        ISceneService& sceneService;
+        IAssetService& assetService;
+        IRenderService& renderService;
+        IBattleService& battleService;
+
+        std::vector<EnemySlotView> slots;
+        std::unique_ptr<CutsceneFocusDisplayer> borderDisplayer;
+
+        float timer = 0.f;
+        bool finished = false;
     };
 
     std::unique_ptr<IScene> CreateCutsceneScene(

@@ -26,21 +26,15 @@ namespace mc {
 
     export class HealthComponent : public IDamageable
     {
-        int maxHp;
-        int hp;
-        bool isDead = false;
-        Character* owner;
-
     public:
         explicit HealthComponent(Character* owner, int hp)
-            : maxHp(hp), hp(hp), owner(owner){}
+            : maxHp(hp), hp(hp), owner(owner) {}
 
         void TakeDamage(int damage) override
         {
             if (isDead) return;
 
             hp -= damage;
-
             EventBus::Publish(HealthChangedEvent(GetOwner(), hp));
             if (hp <= 0)
             {
@@ -54,30 +48,8 @@ namespace mc {
             if (isDead) return;
 
             hp += amount;
-            if (hp > maxHp)
-                hp = maxHp;
-
+            if (hp > maxHp) hp = maxHp;
             EventBus::Publish(HealthChangedEvent(GetOwner(), hp));
-        }
-
-        bool IsDead() const override
-        {
-            return isDead;
-        }
-
-        int GetHealth() const override
-        {
-            return hp;
-        }
-
-        int GetMaxHealth() const override
-        {
-            return maxHp;
-        }
-
-        const Character* GetOwner() const override
-        {
-            return owner;
         }
 
         /// @brief 静かに HP を最大値にリセットする（イベント発行なし）。
@@ -87,5 +59,16 @@ namespace mc {
             hp = newMaxHp;
             isDead = false;
         }
+
+        bool IsDead() const override { return isDead; }
+        int GetHealth() const override { return hp; }
+        int GetMaxHealth() const override { return maxHp; }
+        const Character* GetOwner() const override { return owner; }
+
+    private:
+        int maxHp;
+        int hp;
+        bool isDead = false;
+        Character* owner;
     };
 } // namespace mc

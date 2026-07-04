@@ -24,38 +24,6 @@ namespace mc {
 
     class AudioService : public IAudioService
     {
-        IAssetService& assetService;
-        IBattleService& characterService;
-        std::vector<EventHandle> eventHandles;
-
-        int   bgmHandle     = -1;
-        float bgmVolume     = 0.f;   ///< 現在の実音量（0–255）
-        float bgmTarget     = 0.f;   ///< 目標音量
-        float bgmFadeSpeed  = 0.f;   ///< 1秒あたりの変化量
-
-        void SetBgmTarget(float target)
-        {
-            bgmTarget    = target;
-            bgmFadeSpeed = BGM_VOLUME_MAX / BGM_FADE_TIME;
-        }
-
-        void StartBgmFadeIn()
-        {
-            if (bgmHandle == -1) return;
-            if (CheckSoundMem(bgmHandle))
-                StopSoundMem(bgmHandle);
-            PlaySoundMem(bgmHandle, DX_PLAYTYPE_LOOP);
-            bgmVolume = 0.f;
-            ChangeVolumeSoundMem(0, bgmHandle);
-            SetBgmTarget(static_cast<float>(BGM_VOLUME_MAX));
-        }
-
-        void StartBgmFadeOut()
-        {
-            if (bgmHandle == -1) return;
-            SetBgmTarget(0.f);
-        }
-
     public:
         AudioService(IAssetService& asset, IBattleService& character)
             : assetService(asset), characterService(character)
@@ -73,9 +41,7 @@ namespace mc {
                     const auto& player = characterService.GetPlayer();
                     const auto& healthComp = player.GetHealthComponent();
                     if (e.CurrentHealth > 0 && e.CurrentHealth <= healthComp.GetMaxHealth() * 0.3f)
-                    {
                         PlaySoundMem(assetService.GetSoundHandle(ESound::Warning), DX_PLAYTYPE_BACK);
-                    }
                 }
                 else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
                 {
@@ -118,23 +84,18 @@ namespace mc {
             {
                 auto tags = e.Victim->GetTags();
                 if (std::ranges::find(tags, ETag::Player) != tags.end())
-                {
                     PlaySoundMem(assetService.GetSoundHandle(ESound::Fail), DX_PLAYTYPE_BACK);
-                }
                 else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
-                {
                     PlaySoundMem(assetService.GetSoundHandle(ESound::Win), DX_PLAYTYPE_BACK);
-                }
             }));
 
             // --- BGM フェードイン：戦闘開始 ---
-            // CutsceneFinishedEvent でカットシーン → Combat へ遷移するタイミングで開始する
             eventHandles.push_back(EventBus::Subscribe<CutsceneFinishedEvent>([this](const CutsceneFinishedEvent&)
             {
                 StartBgmFadeIn();
             }));
 
-            // --- BGM フェードアウト：敵撃破（次の敵へ移行）／ゲーム終了 ---
+            // --- BGM フェードアウト：敵撃破／ゲーム終了 ---
             eventHandles.push_back(EventBus::Subscribe<EnemyDefeatedEvent>([this](const EnemyDefeatedEvent&)
             {
                 StartBgmFadeOut();
@@ -153,7 +114,6 @@ namespace mc {
         {
             if (bgmHandle != -1 && CheckSoundMem(bgmHandle))
                 StopSoundMem(bgmHandle);
-
             for (auto handle : eventHandles)
                 EventBus::Unsubscribe(handle);
         }
@@ -169,6 +129,39 @@ namespace mc {
 
             ChangeVolumeSoundMem(static_cast<int>(bgmVolume), bgmHandle);
         }
+
+    private:
+        void SetBgmTarget(float target)
+        {
+            bgmTarget    = target;
+            bgmFadeSpeed = BGM_VOLUME_MAX / BGM_FADE_TIME;
+        }
+
+        void StartBgmFadeIn()
+        {
+            if (bgmHandle == -1) return;
+            if (CheckSoundMem(bgmHandle))
+                StopSoundMem(bgmHandle);
+            PlaySoundMem(bgmHandle, DX_PLAYTYPE_LOOP);
+            bgmVolume = 0.f;
+            ChangeVolumeSoundMem(0, bgmHandle);
+            SetBgmTarget(static_cast<float>(BGM_VOLUME_MAX));
+        }
+
+        void StartBgmFadeOut()
+        {
+            if (bgmHandle == -1) return;
+            SetBgmTarget(0.f);
+        }
+
+        IAssetService& assetService;
+        IBattleService& characterService;
+        std::vector<EventHandle> eventHandles;
+
+        int   bgmHandle    = -1;
+        float bgmVolume    = 0.f;   ///< 現在の実音量（0–255）
+        float bgmTarget    = 0.f;   ///< 目標音量
+        float bgmFadeSpeed = 0.f;   ///< 1秒あたりの変化量
     };
 
     std::unique_ptr<IAudioService> CreateAudioService(IAssetService& assetService, IBattleService& characterService)

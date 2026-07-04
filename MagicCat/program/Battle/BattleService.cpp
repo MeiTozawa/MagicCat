@@ -56,29 +56,19 @@ namespace mc {
                 // プールが少ない場合は重複を許して補充する
                 std::vector<EnemyConfig> mutablePool(pool.begin(), pool.end());
                 while (sequence.size() < 3)
-                {
                     sequence.push_back(Random::Choice(mutablePool));
-                }
             }
 
             currentIndex = 0;
-
-            // Create a fresh Player, then load the first enemy of the sequence.
             currentPlayer = std::make_unique<Player>();
             LoadEnemy(sequence[0]);
             cardService.Start();
             EventBus::Publish(StageStartedEvent{});
         }
 
-        int GetCurrentEnemyIndex() const override
-        {
-            return currentIndex;
-        }
+        int GetCurrentEnemyIndex() const override { return currentIndex; }
 
-        const std::vector<EnemyConfig>& GetSequence() const override
-        {
-            return sequence;
-        }
+        const std::vector<EnemyConfig>& GetSequence() const override { return sequence; }
 
         void LoadEnemy(const EnemyConfig& config) override
         {
@@ -100,20 +90,9 @@ namespace mc {
             }
         }
 
-        Enemy& GetEnemy() override
-        {
-            return *currentEnemy;
-        }
-
-        Player& GetPlayer() override
-        {
-            return *currentPlayer;
-        }
-
-        int GetTotalEnemyCount() const override
-        {
-            return static_cast<int>(sequence.size());
-        }
+        Enemy& GetEnemy() override { return *currentEnemy; }
+        Player& GetPlayer() override { return *currentPlayer; }
+        int GetTotalEnemyCount() const override { return static_cast<int>(sequence.size()); }
 
     private:
         void OnDeathEvent(const DeathEvent& e)
@@ -121,7 +100,7 @@ namespace mc {
             if (e.Victim == nullptr) return;
 
             const auto& tags = e.Victim->GetTags();
-            bool isEnemy = std::ranges::contains(tags, ETag::Enemy);
+            bool isEnemy  = std::ranges::contains(tags, ETag::Enemy);
             bool isPlayer = std::ranges::contains(tags, ETag::Player);
 
             if (isEnemy)

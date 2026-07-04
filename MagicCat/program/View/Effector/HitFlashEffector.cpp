@@ -8,12 +8,6 @@ import RenderService;
 namespace mc {
     class HitFlashEffector : public Effector
     {
-        const int flashTime = 0;
-        int bright = 255;
-        tweeny::tween<int> colorTween = {};
-        uint32_t flashColor = 0xFF0000;
-        IRenderService& renderService;
-
     public:
         HitFlashEffector(IRenderService& rs, const int flashTime, uint32_t color) :
             flashTime(flashTime), flashColor(color), renderService(rs)
@@ -27,7 +21,6 @@ namespace mc {
         {
             int deltaMs = static_cast<int>(deltaTime * 1000.0f);
             colorTween.step(deltaMs);
-
             bright = colorTween.peek();
 
             if (colorTween.progress() >= 1.0f)
@@ -51,10 +44,14 @@ namespace mc {
             renderService.SetDrawBright(curR, curG, curB);
         }
 
-        void AfterDraw() const override
-        {
-            renderService.SetDrawBright(255, 255, 255);
-        }
+        void AfterDraw() const override { renderService.SetDrawBright(255, 255, 255); }
+
+    private:
+        const int flashTime = 0;
+        int bright = 255;
+        tweeny::tween<int> colorTween = {};
+        uint32_t flashColor = 0xFF0000;
+        IRenderService& renderService;
     };
 
     std::unique_ptr<Effector> CreateHitFlashEffector(

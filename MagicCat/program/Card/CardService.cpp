@@ -21,42 +21,25 @@ namespace mc {
         {
             auto& deckConfig = configService.GetCardConfigs();
             for (const auto& c : deckConfig)
-            {
-                auto card = Card{ToCardType(c.type), c.value};
-                deck.push_back(card);
-            }
+                deck.push_back(Card{ToCardType(c.type), c.value});
         }
+
+        ~CardService() override {}
 
         void Start() override
         {
             drawPile = std::vector(deck);
             discardPile.clear();
             hand.clear();
-
             Random::Shuffle(drawPile);
             EventBus::Publish(DeckUpdatedEvent{drawPile.size(), discardPile.size()});
-        }
-
-        ~CardService() override {}
-
-        std::vector<Card> GetHandCards() override
-        {
-            return hand;
-        }
-
-        void DiscardHand() override
-        {
-            discardPile.insert(discardPile.end(), hand.begin(), hand.end());
-            hand.clear();
-            EventBus::Publish(HandUpdatedEvent{hand});
         }
 
         Card DrawCard() override
         {
             if (hand.size() >= HAND_SIZE_MAX)
-            {
                 return Card{ECardType::Null, 0};
-            }
+
             if (drawPile.empty())
             {
                 if (discardPile.empty()) return Card{ECardType::Null, 0};
@@ -67,34 +50,26 @@ namespace mc {
             }
             assert(drawPile.size() > 0 && "山札が空です");
             auto c = drawPile.back();
-
             drawPile.pop_back();
-
             hand.push_back(c);
 
             EventBus::Publish(DeckUpdatedEvent{drawPile.size(), discardPile.size()});
             EventBus::Publish(HandUpdatedEvent{hand});
-
             return c;
         }
 
-
-        std::vector<Card> GetDrawCards() override
+        void DiscardHand() override
         {
-            return drawPile;
+            discardPile.insert(discardPile.end(), hand.begin(), hand.end());
+            hand.clear();
+            EventBus::Publish(HandUpdatedEvent{hand});
         }
 
-        std::vector<Card> GetDiscardCards() override
-        {
-            return discardPile;
-        }
+        std::vector<Card> GetHandCards() override    { return hand; }
+        std::vector<Card> GetDrawCards() override    { return drawPile; }
+        std::vector<Card> GetDiscardCards() override { return discardPile; }
 
     private:
-        std::vector<Card> deck = std::vector<Card>();
-        std::vector<Card> hand = std::vector<Card>();
-        std::vector<Card> drawPile = std::vector<Card>();
-        std::vector<Card> discardPile = std::vector<Card>();
-
         static ECardType ToCardType(int type)
         {
             switch (type)
@@ -108,6 +83,11 @@ namespace mc {
                 return ECardType::Null;
             }
         }
+
+        std::vector<Card> deck = std::vector<Card>();
+        std::vector<Card> hand = std::vector<Card>();
+        std::vector<Card> drawPile = std::vector<Card>();
+        std::vector<Card> discardPile = std::vector<Card>();
     };
 
     std::unique_ptr<ICardService> CreateCardService(IConfigService& configService)

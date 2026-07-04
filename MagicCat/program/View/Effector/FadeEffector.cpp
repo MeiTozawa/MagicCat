@@ -29,11 +29,6 @@ namespace mc {
 
     class FadeEffector : public Effector
     {
-        tweeny::tween<int> alphaTween;
-        int currentAlpha = 0;
-        int fadeInTime, holdTime, fadeOutTime;
-        IRenderService& renderService;
-
     public:
         FadeEffector(IRenderService& rs, int fadeInTime, int holdTime, int fadeOutTime)
             : fadeInTime(fadeInTime), holdTime(holdTime), fadeOutTime(fadeOutTime),
@@ -55,9 +50,7 @@ namespace mc {
         bool Update(float deltaTime) override
         {
             if (fadeInTime == 0 && holdTime == 0 && fadeOutTime == 0)
-            {
                 return false;
-            }
 
             int dtMs = static_cast<int>(std::lround(deltaTime * 1000.0f));
             alphaTween.step(dtMs);
@@ -70,8 +63,7 @@ namespace mc {
 
         void BeforeDraw() const override
         {
-            if (currentAlpha <= 0)
-                return;
+            if (currentAlpha <= 0) return;
             if (currentAlpha < 255)
                 renderService.SetDrawBlendMode(BlendMode::Alpha, currentAlpha);
         }
@@ -83,6 +75,12 @@ namespace mc {
         }
 
         bool ShouldDraw() const override { return currentAlpha > 0; }
+
+    private:
+        tweeny::tween<int> alphaTween;
+        int currentAlpha = 0;
+        int fadeInTime, holdTime, fadeOutTime;
+        IRenderService& renderService;
     };
 
     std::unique_ptr<Effector> CreateFadeEffector(

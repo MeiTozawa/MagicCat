@@ -10,24 +10,6 @@ import EffectorFactory;
 namespace mc {
     export class Displayer
     {
-    protected:
-        int x = 0, y = 0;
-        bool isVisible = true;
-        bool isPlaying = true;
-        bool stopOnEffectEnd = false; ///< 全 Effector 完了時に自動 Stop するか
-
-        struct EffectorEntry
-        {
-            std::unique_ptr<Effector> effector;
-            std::function<void()> onComplete; ///< 完了時コールバック（省略可）
-        };
-
-        std::vector<EffectorEntry> effectors = {};
-
-    private:
-        virtual void OnUpdate(float deltaTime) {}
-        virtual void OnDraw(float deltaTime) const = 0;
-
     public:
         virtual ~Displayer() = default;
 
@@ -112,6 +94,24 @@ namespace mc {
             x = newX;
             y = newY;
         }
+
+    protected:
+        int x = 0, y = 0;
+        bool isVisible = true;
+        bool isPlaying = true;
+        bool stopOnEffectEnd = false; ///< 全 Effector 完了時に自動 Stop するか
+
+        struct EffectorEntry
+        {
+            std::unique_ptr<Effector> effector;
+            std::function<void()> onComplete; ///< 完了時コールバック（省略可）
+        };
+
+        std::vector<EffectorEntry> effectors = {};
+
+    private:
+        virtual void OnUpdate(float deltaTime) {}
+        virtual void OnDraw(float deltaTime) const = 0;
     };
 
     export struct Displayers : Displayer
@@ -154,9 +154,6 @@ namespace mc {
 
     export class LambdaDisplayer : public Displayer
     {
-        std::function<void(float)> onDrawFunc;
-        std::function<void(float)> onUpdateFunc;
-
     public:
         LambdaDisplayer(std::function<void(float)> drawFunc, std::function<void(float)> updateFunc = nullptr)
             : onDrawFunc(std::move(drawFunc)), onUpdateFunc(std::move(updateFunc)) {}
@@ -171,6 +168,9 @@ namespace mc {
         {
             if (onDrawFunc) onDrawFunc(deltaTime);
         }
+
+        std::function<void(float)> onDrawFunc;
+        std::function<void(float)> onUpdateFunc;
     };
 
     export std::unique_ptr<Displayer> CreateLambdaDisplayer(

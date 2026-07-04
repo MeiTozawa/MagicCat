@@ -21,9 +21,6 @@ namespace mc {
 
     export class Enemy : public Character
     {
-        std::unique_ptr<HealthComponent> healthComp;
-        bool isExposed = false;
-
     public:
         Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0,
               const std::wstring& name = L"Unknown", ESprite sprite = ESprite::Null, int hp = 10)
@@ -61,15 +58,9 @@ namespace mc {
         {
             switch (t)
             {
-            case EAttackType::Rock:
-                AddRockWeight(weight);
-                break;
-            case EAttackType::Scissors:
-                AddScissorsWeight(weight);
-                break;
-            case EAttackType::Paper:
-                AddPaperWeight(weight);
-                break;
+            case EAttackType::Rock:     AddRockWeight(weight);     break;
+            case EAttackType::Scissors: AddScissorsWeight(weight); break;
+            case EAttackType::Paper:    AddPaperWeight(weight);    break;
             default:
                 assert(false && "未知の攻撃タイプです");
                 break;
@@ -78,12 +69,10 @@ namespace mc {
 
         EAttackType GetAttackIntent() const
         {
-            int rockWeight = baseWeight + rockWeightOffset;
+            int rockWeight     = baseWeight + rockWeightOffset;
             int scissorsWeight = baseWeight + scissorsWeightOffset;
-            int paperWeight = baseWeight + paperWeightOffset;
-            int index = Random::RandomSelection(
-                rockWeight, scissorsWeight, paperWeight
-            );
+            int paperWeight    = baseWeight + paperWeightOffset;
+            int index = Random::RandomSelection(rockWeight, scissorsWeight, paperWeight);
             assert(index >= 0 && index <= 2 && "ランダム攻撃のインデックスが範囲外です");
             constexpr EAttackType mappedTypes[] = {EAttackType::Rock, EAttackType::Scissors, EAttackType::Paper};
             return mappedTypes[index];
@@ -91,40 +80,36 @@ namespace mc {
 
         float GetLoseRateAgainst(EAttackType playerAttack) const
         {
-            int rockWeight = baseWeight + rockWeightOffset;
+            int rockWeight     = baseWeight + rockWeightOffset;
             int scissorsWeight = baseWeight + scissorsWeightOffset;
-            int paperWeight = baseWeight + paperWeightOffset;
+            int paperWeight    = baseWeight + paperWeightOffset;
             int total = rockWeight + scissorsWeight + paperWeight;
-            if (total <= 0)
-                return 0.f;
+            if (total <= 0) return 0.f;
 
             int losingWeight = 0;
-            if (LosesTo(EAttackType::Rock, playerAttack)) losingWeight += rockWeight;
+            if (LosesTo(EAttackType::Rock,     playerAttack)) losingWeight += rockWeight;
             if (LosesTo(EAttackType::Scissors, playerAttack)) losingWeight += scissorsWeight;
-            if (LosesTo(EAttackType::Paper, playerAttack)) losingWeight += paperWeight;
+            if (LosesTo(EAttackType::Paper,    playerAttack)) losingWeight += paperWeight;
 
             return static_cast<float>(losingWeight) / total;
         }
 
         bool operator==(const Enemy& e) const
         {
-            return this->name == e.name &&
-                this->baseWeight == e.baseWeight &&
-                this->rockDamage == e.rockDamage &&
-                this->scissorsDamage == e.scissorsDamage &&
-                this->paperDamage == e.paperDamage;
+            return name == e.name &&
+                baseWeight == e.baseWeight &&
+                rockDamage == e.rockDamage &&
+                scissorsDamage == e.scissorsDamage &&
+                paperDamage == e.paperDamage;
         }
 
         int GetWeightOffset(EAttackType t) const
         {
             switch (t)
             {
-            case EAttackType::Rock:
-                return rockWeightOffset;
-            case EAttackType::Scissors:
-                return scissorsWeightOffset;
-            case EAttackType::Paper:
-                return paperWeightOffset;
+            case EAttackType::Rock:     return rockWeightOffset;
+            case EAttackType::Scissors: return scissorsWeightOffset;
+            case EAttackType::Paper:    return paperWeightOffset;
             default:
                 assert(false && "未知の攻撃タイプです");
                 return 0;
@@ -132,15 +117,10 @@ namespace mc {
         }
 
         bool IsExposed() const { return isExposed; }
-
         int GetBaseWeight() const { return baseWeight; }
-
         const HealthComponent& GetHealthComponent() const { return *healthComp; }
 
-        void TakeDamage(int amount) const override
-        {
-            healthComp->TakeDamage(amount);
-        }
+        void TakeDamage(int amount) const override { healthComp->TakeDamage(amount); }
 
         void ResetWeights()
         {
@@ -149,30 +129,18 @@ namespace mc {
             paperWeightOffset = 0;
         }
 
-        void SetExposed(bool exposed)
-        {
-            isExposed = exposed;
-        }
+        void SetExposed(bool exposed) { isExposed = exposed; }
 
     private:
+        std::unique_ptr<HealthComponent> healthComp;
+        bool isExposed = false;
         int baseWeight = 0;
         int rockWeightOffset = 0;
         int scissorsWeightOffset = 0;
         int paperWeightOffset = 0;
 
-        void AddRockWeight(int weight)
-        {
-            rockWeightOffset += weight;
-        }
-
-        void AddScissorsWeight(int weight)
-        {
-            scissorsWeightOffset += weight;
-        }
-
-        void AddPaperWeight(int weight)
-        {
-            paperWeightOffset += weight;
-        }
+        void AddRockWeight(int weight)     { rockWeightOffset += weight; }
+        void AddScissorsWeight(int weight) { scissorsWeightOffset += weight; }
+        void AddPaperWeight(int weight)    { paperWeightOffset += weight; }
     };
 } // namespace mc

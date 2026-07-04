@@ -10,34 +10,10 @@ module InputService;
 namespace mc {
     class InputService : public IInputService
     {
-        Shared<dxe::Input> input;
-        std::vector<InputContext> activeInputModes;
-        std::unordered_map<InputContext, std::unordered_map<InputAction, std::vector<dxe::Input::eButton>>>
-        actionMappings;
-
-        // 最後に入力を検出したデバイス種別
-        InputDevice activeDevice = InputDevice::Keyboard;
-
-        const std::vector<dxe::Input::eButton>* CheckInput(InputAction action) const
-        {
-            if (activeInputModes.empty()) return nullptr;
-
-            InputContext currentContext = activeInputModes.back();
-
-            auto contextIt = actionMappings.find(currentContext);
-            if (contextIt == actionMappings.end()) return nullptr;
-
-            auto actionIt = contextIt->second.find(action);
-            if (actionIt == contextIt->second.end()) return nullptr;
-
-            return &actionIt->second;
-        }
-
     public:
         InputService()
         {
             input = dxe::Input::Create(0, dxe::Input::eJoypad::PAD1);
-
             activeInputModes.push_back(InputContext::InGame);
 
             actionMappings[InputContext::InGame][InputAction::Confirm] = {
@@ -128,9 +104,7 @@ namespace mc {
             const float velX = input->getValue(dxe::Input::eVariable::MOUSE_VEL_X);
             const float velY = input->getValue(dxe::Input::eVariable::MOUSE_VEL_Y);
             if (velX != 0.0f || velY != 0.0f)
-            {
                 activeDevice = InputDevice::Mouse;
-            }
         }
 
         bool IsPressed(InputAction action) const override
@@ -139,10 +113,7 @@ namespace mc {
             if (keys != nullptr)
             {
                 for (auto key : *keys)
-                {
-                    if (input->pressed(key))
-                        return true;
-                }
+                    if (input->pressed(key)) return true;
             }
             return false;
         }
@@ -153,10 +124,7 @@ namespace mc {
             if (keys != nullptr)
             {
                 for (auto key : *keys)
-                {
-                    if (input->keep(key))
-                        return true;
-                }
+                    if (input->keep(key)) return true;
             }
             return false;
         }
@@ -167,10 +135,7 @@ namespace mc {
             if (keys != nullptr)
             {
                 for (auto key : *keys)
-                {
-                    if (input->released(key))
-                        return true;
-                }
+                    if (input->released(key)) return true;
             }
             return false;
         }
@@ -178,17 +143,13 @@ namespace mc {
         void PushContext(InputContext context) override
         {
             if (activeInputModes.empty() || activeInputModes.back() != context)
-            {
                 activeInputModes.push_back(context);
-            }
         }
 
         void PopContext() override
         {
             if (activeInputModes.size() > 1)
-            {
                 activeInputModes.pop_back();
-            }
         }
 
         void ClearAndSetContext(InputContext context) override
@@ -197,10 +158,7 @@ namespace mc {
             activeInputModes.push_back(context);
         }
 
-        InputDevice GetActiveDevice() const override
-        {
-            return activeDevice;
-        }
+        InputDevice GetActiveDevice() const override { return activeDevice; }
 
         Point<int> OnMouseClick(InputAction action) const override
         {
@@ -222,6 +180,27 @@ namespace mc {
             GetMousePoint(&x, &y);
             return Point<int>{x, y};
         }
+
+    private:
+        const std::vector<dxe::Input::eButton>* CheckInput(InputAction action) const
+        {
+            if (activeInputModes.empty()) return nullptr;
+
+            InputContext currentContext = activeInputModes.back();
+            auto contextIt = actionMappings.find(currentContext);
+            if (contextIt == actionMappings.end()) return nullptr;
+
+            auto actionIt = contextIt->second.find(action);
+            if (actionIt == contextIt->second.end()) return nullptr;
+
+            return &actionIt->second;
+        }
+
+        Shared<dxe::Input> input;
+        std::vector<InputContext> activeInputModes;
+        std::unordered_map<InputContext, std::unordered_map<InputAction, std::vector<dxe::Input::eButton>>>
+        actionMappings;
+        InputDevice activeDevice = InputDevice::Keyboard;
     };
 
     std::unique_ptr<IInputService> CreateInputService()

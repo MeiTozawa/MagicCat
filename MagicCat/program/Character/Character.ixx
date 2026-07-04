@@ -54,6 +54,44 @@ namespace mc {
      */
     export class Character
     {
+    public:
+        virtual ~Character() = default;
+
+        virtual void TakeDamage(int amount) const = 0;
+
+        ESprite GetSprite() const { return sprite; }
+        std::wstring GetName() const { return name; }
+        void SetDamageOffset(int offset) { damageOffset = offset; }
+        int GetDamageOffset() const { return damageOffset; }
+        void ResetDamageOffset() { damageOffset = 0; }
+        const std::vector<ETag>& GetTags() const { return tags; }
+
+        int GetBaseDamage(EAttackType t) const
+        {
+            switch (t)
+            {
+            case EAttackType::Rock:     return rockDamage;
+            case EAttackType::Scissors: return scissorsDamage;
+            case EAttackType::Paper:    return paperDamage;
+            default:
+                assert(false && "未知の攻撃タイプです");
+                return 0;
+            }
+        }
+
+        int GetDamage(EAttackType t) const
+        {
+            switch (t)
+            {
+            case EAttackType::Rock:     return rockDamage + damageOffset;
+            case EAttackType::Scissors: return scissorsDamage + damageOffset;
+            case EAttackType::Paper:    return paperDamage + damageOffset;
+            default:
+                assert(false && "未知の攻撃タイプです");
+                return 0;
+            }
+        }
+
     protected:
         std::wstring name;
         int rockDamage = 1;
@@ -61,51 +99,6 @@ namespace mc {
         int paperDamage = 1;
         int damageOffset = 0;
         ESprite sprite = ESprite::Null;
-
         std::vector<ETag> tags;
-
-    public:
-        virtual ~Character() = default;
-        virtual void TakeDamage(int amount) const = 0;
-        ESprite GetSprite() const { return sprite; }
-        std::wstring GetName() const { return name; }
-        void SetDamageOffset(int offset) { damageOffset = offset; }
-        int GetDamageOffset() const { return damageOffset; }
-        void ResetDamageOffset() { damageOffset = 0; }
-
-        const std::vector<ETag>& GetTags() const { return tags; }
-
-        int GetBaseDamage(EAttackType t) const
-        {
-            switch (t)
-            {
-            case EAttackType::Rock:
-                return rockDamage;
-            case EAttackType::Scissors:
-                return scissorsDamage;
-            case EAttackType::Paper:
-                return paperDamage;
-            default:
-                assert(false && "未知の攻撃タイプです");
-                return 0;
-            }
-        }
-        
-        int GetDamage(EAttackType t) const
-        {
-            switch (t)
-            {
-            case EAttackType::Rock:
-                return rockDamage + damageOffset;
-            case EAttackType::Scissors:
-                return scissorsDamage + damageOffset;
-            case EAttackType::Paper:
-                return paperDamage + damageOffset;
-            default:
-                assert(false && "未知の攻撃タイプです");
-                return 0;
-            }
-        }
-        
     };
 } // namespace mc

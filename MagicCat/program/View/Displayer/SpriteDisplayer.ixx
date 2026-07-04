@@ -15,17 +15,6 @@ namespace mc {
 
     class SpriteDisplayer : public Displayer
     {
-        IAssetService* assetService;
-        IRenderService& renderService;
-        float timer = 0;
-        int frame_index = 0;
-        float extraRate;
-        bool isFlip;
-
-        size_t frame;
-        Point<int> size;
-        int handle;
-
     public:
         SpriteDisplayer(IAssetService* assetService, IRenderService& renderService,
                         ESprite sprite, float extraRate = 1.f, bool isFlip = false) :
@@ -67,6 +56,16 @@ namespace mc {
                 isFlip
             );
         }
+
+        IAssetService* assetService;
+        IRenderService& renderService;
+        float timer = 0;
+        int frame_index = 0;
+        float extraRate;
+        bool isFlip;
+        size_t frame;
+        Point<int> size;
+        int handle;
     };
 
     export std::unique_ptr<Displayer> CreateSpriteDisplayer(

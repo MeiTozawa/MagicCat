@@ -21,36 +21,6 @@ namespace mc {
 
     export class EventBus
     {
-        struct CallbackWrapper
-        {
-            EventHandle Handle;
-            std::function<void(const IEvent&)> Callback;
-        };
-
-        static std::unordered_map<std::type_index, std::shared_ptr<std::vector<CallbackWrapper>>>& GetListeners()
-        {
-            static std::unordered_map<std::type_index, std::shared_ptr<std::vector<CallbackWrapper>>> listeners;
-            return listeners;
-        }
-
-        static std::unordered_map<EventHandle, std::type_index>& GetHandleToTypeMap()
-        {
-            static std::unordered_map<EventHandle, std::type_index> map;
-            return map;
-        }
-
-        static std::shared_mutex& GetMutex()
-        {
-            static std::shared_mutex mtx;
-            return mtx;
-        }
-
-        static EventHandle& GetNextHandle()
-        {
-            static EventHandle nextHandle = 0;
-            return nextHandle;
-        }
-
     public:
         template <std::derived_from<IEvent> TEvent>
         static EventHandle Subscribe(std::function<void(const TEvent&)> callback)
@@ -112,7 +82,6 @@ namespace mc {
             map.erase(itMap);
         }
 
-
         template <std::derived_from<IEvent> TEvent>
         static void Publish(const TEvent& event)
         {
@@ -133,6 +102,37 @@ namespace mc {
                     wrapper.Callback(event);
                 }
             }
+        }
+
+    private:
+        struct CallbackWrapper
+        {
+            EventHandle Handle;
+            std::function<void(const IEvent&)> Callback;
+        };
+
+        static std::unordered_map<std::type_index, std::shared_ptr<std::vector<CallbackWrapper>>>& GetListeners()
+        {
+            static std::unordered_map<std::type_index, std::shared_ptr<std::vector<CallbackWrapper>>> listeners;
+            return listeners;
+        }
+
+        static std::unordered_map<EventHandle, std::type_index>& GetHandleToTypeMap()
+        {
+            static std::unordered_map<EventHandle, std::type_index> map;
+            return map;
+        }
+
+        static std::shared_mutex& GetMutex()
+        {
+            static std::shared_mutex mtx;
+            return mtx;
+        }
+
+        static EventHandle& GetNextHandle()
+        {
+            static EventHandle nextHandle = 0;
+            return nextHandle;
         }
     };
 } // namespace mc

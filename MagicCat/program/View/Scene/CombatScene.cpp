@@ -51,27 +51,6 @@ namespace mc {
 
     class CombatScene : public IScene
     {
-        ISceneService& sceneService;
-        IAssetService& assetService;
-        ICardService& cardService;
-        IInputService& inputService;
-        IRenderService& renderService;
-        IBattleService& battleService;
-
-        Displayers displayers;
-
-        std::unique_ptr<ICombatController> combatController;
-        std::optional<EventHandle> healthChangedEvent;
-        std::optional<EventHandle> combatEvent;
-        std::optional<EventHandle> stageClearHandle;
-
-        // 各 Displayer の raw pointer（effector を追加するために保持）
-        Displayer* playerAnimDisp = nullptr;
-        Displayer* enemyAnimDisp = nullptr;
-        AttackDisplayer* playerAttack = nullptr;
-        AttackDisplayer* enemyAttack = nullptr;
-        DialogDisplayer* playerDialog = nullptr;
-
     public:
         CombatScene(ISceneService& scene, IAssetService& asset, ICardService& card,
                     IInputService& input, IRenderService& render, IBattleService& battle)
@@ -79,6 +58,30 @@ namespace mc {
               inputService(input), renderService(render), battleService(battle) {}
 
         void Start() override
+        {
+            UnsubscribeAll();
+            displayers.clear();
+            SetupDisplayers();
+            SetupController();
+            SetupEventHandlers();
+        }
+
+        ~CombatScene() override
+        {
+            UnsubscribeAll();
+        }
+
+        void Update(float deltaTime) override
+        {
+            if (HandleMenuClick(deltaTime)) return;
+
+            combatController->Update(deltaTime);
+            displayers.Update(deltaTime);
+            displayers.Draw(deltaTime);
+        }
+
+    private:
+        void UnsubscribeAll()
         {
             if (healthChangedEvent.has_value())
             {
@@ -95,14 +98,13 @@ namespace mc {
                 EventBus::Unsubscribe(*stageClearHandle);
                 stageClearHandle = std::nullopt;
             }
+        }
 
-            displayers.clear();
+        void SetupDisplayers()
+        {
             displayers.push_back(CreateCardDisplayer(cardService, assetService, renderService));
             displayers.push_back(CreateCharacterDisplayer(battleService, renderService));
             displayers.push_back(CreateControlDisplayer(assetService, renderService, inputService));
-
-            combatController = CreateCombatController(inputService, battleService, sceneService, cardService);
-            combatController->Reset();
 
             auto playerAnim = CreateSpriteDisplayer(&assetService, &renderService,
                                                     battleService.GetPlayer().GetSprite(), EXTRA_RATE);
@@ -127,7 +129,16 @@ namespace mc {
             auto dlg = CreateDialogDisplayer(renderService, PLAYER_DIALOG_X, PLAYER_DIALOG_Y);
             playerDialog = dlg.get();
             displayers.push_back(std::move(dlg));
+        }
 
+        void SetupController()
+        {
+            combatController = CreateCombatController(inputService, battleService, sceneService, cardService);
+            combatController->Reset();
+        }
+
+        void SetupEventHandlers()
+        {
             healthChangedEvent = EventBus::Subscribe<HealthChangedEvent>([this](const HealthChangedEvent& event)
             {
                 auto tags = event.Victim->GetTags();
@@ -139,91 +150,96 @@ namespace mc {
 
             combatEvent = EventBus::Subscribe<CombatEvent>([this](const CombatEvent& event)
             {
-                playerAttack->SetImage(assetService.GetImageHandle(ToImage(event.playerAttackType)));
-                enemyAttack->SetImage(assetService.GetImageHandle(ToImage(event.enemyAttackType)));
-
-                playerAttack->ResetAndAddEffector(
-                    CreateFadeEffector(renderService, ATTACK_FADE_IN_TIME, ATTACK_HOLD_TIME, ATTACK_FADE_OUT_TIME));
-                enemyAttack->ResetAndAddEffector(
-                    CreateFadeEffector(renderService, ATTACK_FADE_IN_TIME, ATTACK_HOLD_TIME, ATTACK_FADE_OUT_TIME));
-
-                // クッソー条件：
-                //   敵のいずれかの offset が他の2手の offset に対して差分 >= 閾値
-                //   かつ プレイヤーがその「正解手」を打っていた
-                //   かつ それでも負けた
-                if (LosesTo(event.playerAttackType, event.enemyAttackType))
-                {
-                    const int offsets[3] = {
-                        event.enemyWeightOffsets[0], // Rock
-                        event.enemyWeightOffsets[1], // Scissors
-                        event.enemyWeightOffsets[2]  // Paper
-                    };
-                    constexpr EAttackType types[3] = {
-                        EAttackType::Rock, EAttackType::Scissors, EAttackType::Paper
-                    };
-
-                    bool playedCorrectCounter = false;
-                    for (int i = 0; i < 3; ++i)
-                    {
-                        bool dominates = true;
-                        for (int j = 0; j < 3; ++j)
-                        {
-                            if (i == j) continue;
-                            if (offsets[i] - offsets[j] < KUSSOU_WEIGHT_DIFF_THRESHOLD)
-                            {
-                                dominates = false;
-                                break;
-                            }
-                        }
-                        if (dominates)
-                        {
-                            if (LosesTo(types[i], event.playerAttackType))
-                            {
-                                playedCorrectCounter = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (playedCorrectCounter)
-                    {
-                        playerDialog->SetMessage(L"クッソー", DIALOG_COLOR_DAMN);
-                        playerDialog->ResetAndAddEffector(
-                            CreateFadeEffector(renderService, DIALOG_FADE_IN_TIME, DIALOG_HOLD_TIME, DIALOG_FADE_OUT_TIME));
-                    }
-                }
+                OnCombatEvent(event);
             });
         }
 
-        ~CombatScene() override
+        void OnCombatEvent(const CombatEvent& event)
         {
-            if (healthChangedEvent.has_value()) EventBus::Unsubscribe(*healthChangedEvent);
-            if (combatEvent.has_value()) EventBus::Unsubscribe(*combatEvent);
-            if (stageClearHandle.has_value()) EventBus::Unsubscribe(*stageClearHandle);
-        }
+            playerAttack->SetImage(assetService.GetImageHandle(ToImage(event.playerAttackType)));
+            enemyAttack->SetImage(assetService.GetImageHandle(ToImage(event.enemyAttackType)));
 
-        void Update(float deltaTime) override
-        {
-            // メニューボタン（右上）のマウスクリック検出 — CombatController はウィンドウ幅を
-            // 持たないためここで処理する
-            auto click = inputService.OnMouseClick(InputAction::MouseClick);
-            if (click.x != -1 && click.y != -1)
+            playerAttack->ResetAndAddEffector(
+                CreateFadeEffector(renderService, ATTACK_FADE_IN_TIME, ATTACK_HOLD_TIME, ATTACK_FADE_OUT_TIME));
+            enemyAttack->ResetAndAddEffector(
+                CreateFadeEffector(renderService, ATTACK_FADE_IN_TIME, ATTACK_HOLD_TIME, ATTACK_FADE_OUT_TIME));
+
+            if (LosesTo(event.playerAttackType, event.enemyAttackType) && DidPlayerPlayCorrectCounter(event))
             {
-                const int menuIconX = renderService.GetWindowWidth() - MENU_ICON_X_OFFSET;
-                if (click.x >= menuIconX - MENU_ICON_HALF_W && click.x < menuIconX + MENU_ICON_HALF_W &&
-                    click.y >= MENU_ICON_Y - MENU_ICON_HALF_H && click.y < MENU_ICON_Y + MENU_ICON_HALF_H)
-                {
-                    sceneService.PushScene(ESceneState::Rules);
-                    displayers.Update(deltaTime);
-                    displayers.Draw(deltaTime);
-                    return;
-                }
+                playerDialog->SetMessage(L"クッソー", DIALOG_COLOR_DAMN);
+                playerDialog->ResetAndAddEffector(
+                    CreateFadeEffector(renderService, DIALOG_FADE_IN_TIME, DIALOG_HOLD_TIME, DIALOG_FADE_OUT_TIME));
             }
-
-            combatController->Update(deltaTime);
-            displayers.Update(deltaTime);
-            displayers.Draw(deltaTime);
         }
+
+        /// @brief 敵のいずれかの手の weight offset が他の手との差分がこの値以上の場合、
+        /// プレイヤーは「正解の手」を判断できるとみなす。
+        bool DidPlayerPlayCorrectCounter(const CombatEvent& event) const
+        {
+            const int offsets[3] = {
+                event.enemyWeightOffsets[0], // Rock
+                event.enemyWeightOffsets[1], // Scissors
+                event.enemyWeightOffsets[2]  // Paper
+            };
+            constexpr EAttackType types[3] = {
+                EAttackType::Rock, EAttackType::Scissors, EAttackType::Paper
+            };
+
+            for (int i = 0; i < 3; ++i)
+            {
+                bool dominates = true;
+                for (int j = 0; j < 3; ++j)
+                {
+                    if (i == j) continue;
+                    if (offsets[i] - offsets[j] < KUSSOU_WEIGHT_DIFF_THRESHOLD)
+                    {
+                        dominates = false;
+                        break;
+                    }
+                }
+                if (dominates && LosesTo(types[i], event.playerAttackType))
+                    return true;
+            }
+            return false;
+        }
+
+        /// @brief メニューボタンのマウスクリックを処理する。クリックされた場合 true を返す。
+        bool HandleMenuClick(float deltaTime)
+        {
+            auto click = inputService.OnMouseClick(InputAction::MouseClick);
+            if (click.x == -1 || click.y == -1) return false;
+
+            const int menuIconX = renderService.GetWindowWidth() - MENU_ICON_X_OFFSET;
+            if (click.x >= menuIconX - MENU_ICON_HALF_W && click.x < menuIconX + MENU_ICON_HALF_W &&
+                click.y >= MENU_ICON_Y - MENU_ICON_HALF_H && click.y < MENU_ICON_Y + MENU_ICON_HALF_H)
+            {
+                sceneService.PushScene(ESceneState::Rules);
+                displayers.Update(deltaTime);
+                displayers.Draw(deltaTime);
+                return true;
+            }
+            return false;
+        }
+
+        ISceneService& sceneService;
+        IAssetService& assetService;
+        ICardService& cardService;
+        IInputService& inputService;
+        IRenderService& renderService;
+        IBattleService& battleService;
+
+        Displayers displayers;
+        std::unique_ptr<ICombatController> combatController;
+        std::optional<EventHandle> healthChangedEvent;
+        std::optional<EventHandle> combatEvent;
+        std::optional<EventHandle> stageClearHandle;
+
+        // 各 Displayer の raw pointer（effector を追加するために保持）
+        Displayer* playerAnimDisp = nullptr;
+        Displayer* enemyAnimDisp = nullptr;
+        AttackDisplayer* playerAttack = nullptr;
+        AttackDisplayer* enemyAttack = nullptr;
+        DialogDisplayer* playerDialog = nullptr;
     };
 
     std::unique_ptr<IScene> CreateCombatScene(ISceneService& sceneService,

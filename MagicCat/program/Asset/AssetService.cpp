@@ -30,18 +30,15 @@ namespace mc {
         int GetFontHandle(EFont e) override
         {
             if (e == EFont::Null) return -1;
-            if (fontMappings.contains(e))
-                return fontMappings.at(e);
+            if (fontMappings.contains(e)) return fontMappings.at(e);
             assert(false && "未登録のフォントにアクセスしようとしています");
             return -1;
         }
 
-
         int GetImageHandle(EImage e) override
         {
             if (e == EImage::Null) return -1;
-            if (imageMappings.contains(e))
-                return imageMappings.at(e);
+            if (imageMappings.contains(e)) return imageMappings.at(e);
             assert(false && "未登録の画像にアクセスしようとしています");
             return -1;
         }
@@ -49,8 +46,7 @@ namespace mc {
         int GetSpriteHandle(ESprite e) override
         {
             if (e == ESprite::Null) return -1;
-            if (spriteMappings.contains(e))
-                return spriteMappings[e];
+            if (spriteMappings.contains(e)) return spriteMappings[e];
             assert(false && "未登録のスプライトにアクセスしようとしています");
             return -1;
         }
@@ -58,17 +54,14 @@ namespace mc {
         SpriteInfo GetSpriteInfo(ESprite e) override
         {
             if (static_cast<int>(e) < LARGE_SPRITE_ENUM_THRESHOLD)
-            {
                 return {{32, 32}, 4};
-            }
             return {{16, 16}, 4};
         }
 
         int GetSoundHandle(ESound e) override
         {
             if (e == ESound::Null) return -1;
-            if (soundMappings.contains(e))
-                return soundMappings.at(e);
+            if (soundMappings.contains(e)) return soundMappings.at(e);
             assert(false && "未登録の音声にアクセスしようとしています");
             return -1;
         }
@@ -100,11 +93,6 @@ namespace mc {
         }
 
     private:
-        std::unordered_map<EImage, int> imageMappings = {};
-        std::unordered_map<ESprite, int> spriteMappings = {};
-        std::unordered_map<EFont, int> fontMappings = {};
-        std::unordered_map<ESound, int> soundMappings = {};
-
         void LoadFonts()
         {
             ChangeFontType(DX_FONTTYPE_NORMAL);
@@ -113,16 +101,11 @@ namespace mc {
             fontMappings.insert({EFont::UNIFONT_17, handle});
         }
 
-
         void LoadImages()
         {
             try
             {
-                struct ImageData
-                {
-                    EImage id;
-                    const wchar_t* path;
-                };
+                struct ImageData { EImage id; const wchar_t* path; };
                 ImageData images[] = {
                     {EImage::Rock, FILE_PATH_PNG_STONE},
                     {EImage::Scissors, FILE_PATH_PNG_SCISSORS},
@@ -149,21 +132,14 @@ namespace mc {
                 for (const auto& img : images)
                 {
                     int handle = LoadGraph(img.path);
-                    if (handle == -1)
-                        printfDx(L"%sの読み込みに失敗", img.path);
-                    else
-                        imageMappings.insert({img.id, handle});
+                    if (handle == -1) printfDx(L"%sの読み込みに失敗", img.path);
+                    else              imageMappings.insert({img.id, handle});
                 }
 
-                struct SpriteData
-                {
-                    ESprite id;
-                    const wchar_t* path;
-                };
+                struct SpriteData { ESprite id; const wchar_t* path; };
                 SpriteData sprites[] = {
                     {ESprite::Bunny, FILE_PATH_PNG_MINIBUNNY},
                     {ESprite::Wolf, FILE_PATH_PNG_MINIWOLF},
-
                     {ESprite::CluckingChicken, FILE_PATH_PNG_CLUCKINGCHICKEN},
                     {ESprite::CoralCrab, FILE_PATH_PNG_CORALCRAB},
                     {ESprite::CroakingToad, FILE_PATH_PNG_CROAKINGTOAD},
@@ -184,27 +160,18 @@ namespace mc {
                 for (const auto& spr : sprites)
                 {
                     auto resource = LoadGraph(spr.path);
-                    if (resource == -1)
-                        printfDx(L"%sの読み込みに失敗", spr.path);
-                    else
-                        spriteMappings.insert({spr.id, resource});
+                    if (resource == -1) printfDx(L"%sの読み込みに失敗", spr.path);
+                    else                spriteMappings.insert({spr.id, resource});
                 }
             }
-            catch (const std::exception&)
-            {
-                printfDx(L"画像の読み込みに失敗");
-            }
+            catch (const std::exception&) { printfDx(L"画像の読み込みに失敗"); }
         }
 
         void LoadSounds()
         {
             try
             {
-                struct SoundData
-                {
-                    ESound id;
-                    const wchar_t* path;
-                };
+                struct SoundData { ESound id; const wchar_t* path; };
                 SoundData sounds[] = {
                     {ESound::Confirm, FILE_PATH_MP3_CONFIRM},
                     {ESound::DrawCard, FILE_PATH_MP3_DRAWCARD},
@@ -223,17 +190,17 @@ namespace mc {
                 for (const auto& snd : sounds)
                 {
                     int handle = LoadSoundMem(snd.path);
-                    if (handle == -1)
-                        printfDx(L"%sの読み込みに失敗", snd.path);
-                    else
-                        soundMappings.insert({snd.id, handle});
+                    if (handle == -1) printfDx(L"%sの読み込みに失敗", snd.path);
+                    else              soundMappings.insert({snd.id, handle});
                 }
             }
-            catch (const std::exception&)
-            {
-                printfDx(L"音声の読み込みに失敗");
-            }
+            catch (const std::exception&) { printfDx(L"音声の読み込みに失敗"); }
         }
+
+        std::unordered_map<EImage, int> imageMappings = {};
+        std::unordered_map<ESprite, int> spriteMappings = {};
+        std::unordered_map<EFont, int> fontMappings = {};
+        std::unordered_map<ESound, int> soundMappings = {};
     };
 
     std::unique_ptr<IAssetService> CreateAssetService()

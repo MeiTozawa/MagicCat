@@ -45,23 +45,11 @@ namespace mc {
      */
     export class Player : public Character
     {
-        static constexpr int DEFAULT_MAX_MP = 10;
-        static constexpr int CLAIRVOYANCE_MP_COST = 10;
-        static constexpr int POWER_BOOST_MP_COST = 7;
-        static constexpr int HEAL_MP_COST = 5;
-
-        std::unique_ptr<HealthComponent> healthComp;
-        bool hasUsedClairvoyance = false;
-        int healUses = 0;
-        int mp = 0;
-        int maxMp = DEFAULT_MAX_MP;
-
     public:
         Player()
         {
             name = L"Player";
             sprite = ESprite::MeowingCat;
-            
             rockDamage = 2;
             scissorsDamage = 2;
             paperDamage = 2;
@@ -81,28 +69,21 @@ namespace mc {
         void ChangeMp(int offset)
         {
             mp += offset;
-            if (mp > maxMp)
-                mp = maxMp;
-            if (mp < 0)
-                mp = 0;
+            if (mp > maxMp) mp = maxMp;
+            if (mp < 0)     mp = 0;
         }
 
         int GetMp() const { return mp; }
-
         int GetMaxMp() const { return maxMp; }
 
         bool IsMagicUsable(EMagic e) const
         {
             switch (e)
             {
-            case EMagic::Clairvoyance:
-                return !hasUsedClairvoyance && mp >= CLAIRVOYANCE_MP_COST;
-            case EMagic::PowerBoost:
-                return mp >= POWER_BOOST_MP_COST;
-            case EMagic::Heal:
-                return healUses < 3 && mp >= HEAL_MP_COST;
-            default:
-                return false;
+            case EMagic::Clairvoyance: return !hasUsedClairvoyance && mp >= CLAIRVOYANCE_MP_COST;
+            case EMagic::PowerBoost:   return mp >= POWER_BOOST_MP_COST;
+            case EMagic::Heal:         return healUses < 3 && mp >= HEAL_MP_COST;
+            default:                   return false;
             }
         }
 
@@ -117,8 +98,7 @@ namespace mc {
             case EMagic::Null:
                 return false;
             case EMagic::Clairvoyance:
-                if (hasUsedClairvoyance)
-                    return false;
+                if (hasUsedClairvoyance) return false;
                 if (mp >= CLAIRVOYANCE_MP_COST)
                 {
                     ChangeMp(-CLAIRVOYANCE_MP_COST);
@@ -129,20 +109,17 @@ namespace mc {
                 EventBus::Publish<LackOfMpEvent>({});
                 return false;
             case EMagic::PowerBoost:
+                if (mp >= POWER_BOOST_MP_COST)
                 {
-                    if (mp >= POWER_BOOST_MP_COST)
-                    {
-                        ChangeMp(-POWER_BOOST_MP_COST);
-                        SetDamageOffset(2);
-                        EventBus::Publish<MagicEvent>(MagicEvent{EMagic::PowerBoost});
-                        return true;
-                    }
-                    EventBus::Publish<LackOfMpEvent>({});
-                    return false;
+                    ChangeMp(-POWER_BOOST_MP_COST);
+                    SetDamageOffset(2);
+                    EventBus::Publish<MagicEvent>(MagicEvent{EMagic::PowerBoost});
+                    return true;
                 }
+                EventBus::Publish<LackOfMpEvent>({});
+                return false;
             case EMagic::Heal:
-                if (healUses >= 3)
-                    return false;
+                if (healUses >= 3) return false;
                 if (mp >= HEAL_MP_COST)
                 {
                     ChangeMp(-HEAL_MP_COST);
@@ -161,9 +138,18 @@ namespace mc {
 
         const HealthComponent& GetHealthComponent() const { return *healthComp; }
 
-        void TakeDamage(int amount) const override
-        {
-            healthComp->TakeDamage(amount);
-        }
+        void TakeDamage(int amount) const override { healthComp->TakeDamage(amount); }
+
+    private:
+        static constexpr int DEFAULT_MAX_MP      = 10;
+        static constexpr int CLAIRVOYANCE_MP_COST = 10;
+        static constexpr int POWER_BOOST_MP_COST  = 7;
+        static constexpr int HEAL_MP_COST         = 5;
+
+        std::unique_ptr<HealthComponent> healthComp;
+        bool hasUsedClairvoyance = false;
+        int healUses = 0;
+        int mp = 0;
+        int maxMp = DEFAULT_MAX_MP;
     };
 } // namespace mc

@@ -20,12 +20,6 @@ namespace mc {
 
     export class DialogDisplayer : public Displayer
     {
-        IRenderService& renderService;
-        int centerX;
-        int topY;
-        std::wstring text;
-        uint32_t color = COLOR_WHITE;
-
     public:
         DialogDisplayer(IRenderService& renderService, int centerX, int topY)
             : renderService(renderService), centerX(centerX), topY(topY) {}
@@ -39,13 +33,12 @@ namespace mc {
     private:
         void OnDraw(float deltaTime) const override
         {
-            if (text.empty())
-                return;
+            if (text.empty()) return;
 
-            int textWidth = renderService.GetDrawStringWidth(text.c_str());
+            int textWidth  = renderService.GetDrawStringWidth(text.c_str());
             int textHeight = renderService.GetFontSize();
 
-            int boxWidth = textWidth + DIALOG_PADDING_X * 2;
+            int boxWidth  = textWidth + DIALOG_PADDING_X * 2;
             int boxHeight = textHeight + DIALOG_PADDING_Y * 2;
             int x1 = centerX - boxWidth / 2;
             int y1 = topY;
@@ -54,15 +47,20 @@ namespace mc {
 
             // プレイヤー（吹き出しの左上方向）を指す小さな三角形
             int tailCenterX = x1 + boxWidth / 4;
-            int tailHalf = DIALOG_TAIL_WIDTH / 2;
+            int tailHalf    = DIALOG_TAIL_WIDTH / 2;
             renderService.DrawFilledTriangle(tailCenterX - tailHalf, y1, tailCenterX + tailHalf, y1,
                                              tailCenterX, y1 - DIALOG_TAIL_HEIGHT, color);
 
             // 背景は透明にして、角丸の枠線のみを描画する
             renderService.DrawRoundRectFrame(x1, y1, x2, y2, DIALOG_RADIUS, DIALOG_BORDER, color);
-
             renderService.DrawCenterString(centerX, y1 + boxHeight / 2, text.c_str(), color);
         }
+
+        IRenderService& renderService;
+        int centerX;
+        int topY;
+        std::wstring text;
+        uint32_t color = COLOR_WHITE;
     };
 
     export std::unique_ptr<DialogDisplayer> CreateDialogDisplayer(

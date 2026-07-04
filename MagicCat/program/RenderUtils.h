@@ -24,6 +24,8 @@ namespace mc {
     static constexpr uint32_t COLOR_CARD_SCISSORS = 0xB0C4DE;
     static constexpr uint32_t COLOR_CARD_MAGIC = 0x9370DB;
     
+    static constexpr int FONT_SIZE = 48;  
+    
     static constexpr int CARD_HEIGHT = 300;
     static constexpr int CARD_WIDTH = 200;
     
@@ -40,6 +42,15 @@ namespace mc {
     static constexpr int DRAW_PILE_Y1 = 400;  ///< 山札領域 上端 Y
     static constexpr int DRAW_PILE_X2 = DRAW_PILE_X1 + CARD_WIDTH;  ///< 山札領域 右端 X  
     static constexpr int DRAW_PILE_Y2 = DRAW_PILE_Y1 + CARD_HEIGHT;  ///< 山札領域 下端 Y  
+
+    // -------------------------------------------------------------------------
+    // メニューボタン HitBox（ControlDisplayer / CombatScene 共用）
+    // menuIconX = windowWidth - MENU_ICON_X_OFFSET  （X はウィンドウ幅依存）
+    // -------------------------------------------------------------------------
+    static constexpr int MENU_ICON_X_OFFSET = 60;   ///< 右端からのオフセット
+    static constexpr int MENU_ICON_Y        = 60;   ///< ボタン中心 Y
+    static constexpr int MENU_ICON_HALF_W   = 40;   ///< 判定半幅 X
+    static constexpr int MENU_ICON_HALF_H   = 28;   ///< 判定半幅 Y
 
     template <typename T>
     requires std::integral<T> || std::floating_point<T>

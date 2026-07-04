@@ -16,7 +16,7 @@ namespace mc {
         actionMappings;
 
         // 最後に入力を検出したデバイス種別
-        mutable InputDevice activeDevice = InputDevice::Keyboard;
+        InputDevice activeDevice = InputDevice::Keyboard;
 
         const std::vector<dxe::Input::eButton>* CheckInput(InputAction action) const
         {
@@ -69,7 +69,7 @@ namespace mc {
                 dxe::Input::eButton::KB_ESCAPE,
                 dxe::Input::eButton::PAD_START
             };
-            actionMappings[InputContext::InGame][InputAction::MouseClick] = { dxe::Input::eButton::MOUSE_LEFT };
+            actionMappings[InputContext::InGame][InputAction::MouseClick] = {dxe::Input::eButton::MOUSE_LEFT};
 
             actionMappings[InputContext::Menu][InputAction::Confirm] = {
                 dxe::Input::eButton::KB_SPACE,
@@ -84,7 +84,6 @@ namespace mc {
             actionMappings[InputContext::Menu][InputAction::MouseClick] = {
                 dxe::Input::eButton::MOUSE_LEFT
             };
-            // ページ切り替えはゲームパッドの十字キー左右でも操作できる
             actionMappings[InputContext::Menu][InputAction::Left] = {
                 dxe::Input::eButton::KB_LEFT,
                 dxe::Input::eButton::PAD_LEFT
@@ -95,6 +94,44 @@ namespace mc {
             };
         }
 
+        void Update() override
+        {
+            for (int i = static_cast<int>(dxe::Input::eButton::PAD_MIN);
+                 i < static_cast<int>(dxe::Input::eButton::PAD_MAX); ++i)
+            {
+                if (input->pressed(static_cast<dxe::Input::eButton>(i)))
+                {
+                    activeDevice = InputDevice::Gamepad;
+                    return;
+                }
+            }
+
+            for (int i = 0; i < static_cast<int>(dxe::Input::eButton::KB_MAX); ++i)
+            {
+                if (input->pressed(static_cast<dxe::Input::eButton>(i)))
+                {
+                    activeDevice = InputDevice::Keyboard;
+                    return;
+                }
+            }
+
+            for (int i = static_cast<int>(dxe::Input::eButton::MOUSE_MIN);
+                 i < static_cast<int>(dxe::Input::eButton::MOUSE_MAX); ++i)
+            {
+                if (input->pressed(static_cast<dxe::Input::eButton>(i)))
+                {
+                    activeDevice = InputDevice::Mouse;
+                    return;
+                }
+            }
+
+            const float velX = input->getValue(dxe::Input::eVariable::MOUSE_VEL_X);
+            const float velY = input->getValue(dxe::Input::eVariable::MOUSE_VEL_Y);
+            if (velX != 0.0f || velY != 0.0f)
+            {
+                activeDevice = InputDevice::Mouse;
+            }
+        }
 
         bool IsPressed(InputAction action) const override
         {
@@ -104,13 +141,7 @@ namespace mc {
                 for (auto key : *keys)
                 {
                     if (input->pressed(key))
-                    {
-                        if (static_cast<int>(key) >= static_cast<int>(dxe::Input::eButton::PAD_MIN))
-                            activeDevice = InputDevice::Gamepad;
-                        else
-                            activeDevice = InputDevice::Keyboard;
                         return true;
-                    }
                 }
             }
             return false;
@@ -178,7 +209,6 @@ namespace mc {
             auto key = keys->at(0);
             if (input->pressed(key))
             {
-                activeDevice = InputDevice::Keyboard;
                 int x = 0, y = 0;
                 GetMousePoint(&x, &y);
                 return Point<int>{x, y};

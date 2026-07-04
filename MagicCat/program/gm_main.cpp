@@ -3,7 +3,6 @@
 
 #include <RenderUtils.h>
 #include <windows.h>
-
 #include <ResourceConstantHedder.h>
 
 import AssetService;
@@ -56,7 +55,7 @@ void GameStart()
     AddFontResourceEx(FILE_PATH_OTF_UNIFONT_17, FR_PRIVATE, nullptr);
     renderService->SetFontTypeNormal();
     renderService->ChangeFont(FONT_NAME_UNIFONT);
-    renderService->SetFontSize(48);
+    renderService->SetFontSize(FONT_SIZE);
     renderService->SetFontTypeNormal();
     renderService->SetFontThickness(1);
     renderService->SetBackgroundColor(
@@ -67,6 +66,7 @@ void GameStart()
 
 void GameMain(float deltaTime)
 {
+    inputService->Update();
     audioService->Update(deltaTime);
     sceneService->Update(deltaTime);
 }

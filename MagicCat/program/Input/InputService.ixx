@@ -19,8 +19,9 @@ namespace mc {
     /// @brief 最後に入力を受け付けたデバイスの種別
     export enum class InputDevice
     {
-        Keyboard,   ///< キーボード（またはマウス）
-        Gamepad     ///< ゲームパッド（Xbox等）
+        Keyboard,
+        Mouse,
+        Gamepad
     };
 
     /// @brief 入力（キーボード、マウス等）の監視とコンテキスト管理を行うサービス
@@ -28,6 +29,9 @@ namespace mc {
     {
     public:
         virtual ~IInputService() = default;
+
+        /// @brief 毎フレーム呼び出す。アクティブデバイスの検出など内部状態を更新する
+        virtual void Update() = 0;
 
         /// @brief 指定されたアクションが現在押されているか（押しっぱなし含む）を判定する
         virtual bool IsPressed(InputAction action) const = 0;

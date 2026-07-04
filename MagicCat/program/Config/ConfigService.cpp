@@ -83,16 +83,18 @@ namespace mc {
                 e.scissorsDamage = item["scissorsDamage"].int_value();
                 e.paperDamage    = item["paperDamage"].int_value();
                 e.spriteName     = item["sprite"].string_value();
-                std::string s    = item["name"].string_value();
-                int len = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, nullptr, 0);
-                if (len > 0)
-                {
-                    std::vector<wchar_t> buf(len);
-                    MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, buf.data(), len);
-                    e.name = buf.data();
-                }
+                e.name           = ParseUtf8Name(item["name"].string_value());
                 enemyConfigs.push_back(e);
             }
+        }
+
+        static std::wstring ParseUtf8Name(const std::string& s)
+        {
+            int len = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, nullptr, 0);
+            if (len <= 0) return {};
+            std::vector<wchar_t> buf(len);
+            MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, buf.data(), len);
+            return buf.data();
         }
 
         std::vector<CardConfig> cardConfigs;

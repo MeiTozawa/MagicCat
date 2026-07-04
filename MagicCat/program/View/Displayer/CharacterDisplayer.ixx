@@ -203,50 +203,47 @@ namespace mc {
             const Enemy& enemy = characterService.GetEnemy();
             const auto enemyHealthComp = enemy.GetHealthComponent();
 
-            auto message = enemy.GetName();
-            renderService.DrawString(ENEMY_NAME_X, ENEMY_NAME_Y, message.c_str(), COLOR_WHITE);
+            renderService.DrawString(ENEMY_NAME_X, ENEMY_NAME_Y, enemy.GetName().c_str(), COLOR_WHITE);
+            renderService.DrawString(ENEMY_HP_X, ENEMY_HP_Y,
+                std::format(L"HP: {}/{}", enemyHealthComp.GetHealth(), enemyHealthComp.GetMaxHealth()).c_str(),
+                COLOR_WHITE);
 
-            message = std::format(L"HP: {}/{}", enemyHealthComp.GetHealth(), enemyHealthComp.GetMaxHealth());
-            renderService.DrawString(ENEMY_HP_X, ENEMY_HP_Y, message.c_str(), COLOR_WHITE);
+            DrawEnemyBoxes();
+            DrawEnemyDamageValues(enemy);
+        }
 
+        void DrawEnemyBoxes() const
+        {
             for (int i = 0; i < 3; ++i)
             {
-                float x1 = ENEMY_WEIGHT_START_X;
-                float y1 = ENEMY_WEIGHT_START_Y + i * OFFSET_Y;
-                float x2 = ENEMY_WEIGHT_START_X + RECT_X;
-                float y2 = ENEMY_WEIGHT_START_Y + RECT_Y + i * OFFSET_Y;
-                renderService.DrawHollowBox(x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
+                renderService.DrawHollowBox(
+                    ENEMY_WEIGHT_START_X,               ENEMY_WEIGHT_START_Y + i * OFFSET_Y,
+                    ENEMY_WEIGHT_START_X + RECT_X,      ENEMY_WEIGHT_START_Y + RECT_Y + i * OFFSET_Y,
+                    THICKNESS, COLOR_WHITE);
+                renderService.DrawHollowBox(
+                    ENEMY_DAMAGE_START_X,               ENEMY_DAMAGE_START_Y + i * OFFSET_Y,
+                    ENEMY_DAMAGE_START_X + RECT_X,      ENEMY_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y,
+                    THICKNESS, COLOR_WHITE);
             }
+        }
 
+        void DrawEnemyDamageValues(const Enemy& enemy) const
+        {
+            constexpr std::pair<EAttackType, const wchar_t*> rows[3] = {
+                {EAttackType::Rock,     L"✊⚔："},
+                {EAttackType::Scissors, L"✌⚔："},
+                {EAttackType::Paper,    L"✋⚔："},
+            };
             for (int i = 0; i < 3; ++i)
             {
-                float x1 = ENEMY_DAMAGE_START_X;
-                float y1 = ENEMY_DAMAGE_START_Y + i * OFFSET_Y;
-                float x2 = ENEMY_DAMAGE_START_X + RECT_X;
-                float y2 = ENEMY_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y;
-                renderService.DrawHollowBox(x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
-            }
-
-            if (enemy.IsExposed())
-            {
-                renderService.DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                           ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                           std::format(L"✊⚔：{}", enemy.GetBaseDamage(EAttackType::Rock)).c_str(), COLOR_WHITE);
-                renderService.DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                           ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                           std::format(L"✌⚔：{}", enemy.GetBaseDamage(EAttackType::Scissors)).c_str(), COLOR_WHITE);
-                renderService.DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                           ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                           std::format(L"✋⚔：{}", enemy.GetBaseDamage(EAttackType::Paper)).c_str(), COLOR_WHITE);
-            }
-            else
-            {
-                renderService.DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                           ENEMY_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y, L"✊⚔：?", COLOR_WHITE);
-                renderService.DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                           ENEMY_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y, L"✌⚔：?", COLOR_WHITE);
-                renderService.DrawString(ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
-                           ENEMY_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y, L"✋⚔：?", COLOR_WHITE);
+                std::wstring msg = rows[i].second;
+                msg += enemy.IsExposed()
+                    ? std::to_wstring(enemy.GetBaseDamage(rows[i].first))
+                    : L"?";
+                renderService.DrawString(
+                    ENEMY_DAMAGE_START_X + TEXT_OFFSET_X,
+                    ENEMY_DAMAGE_START_Y + i * OFFSET_Y + TEXT_OFFSET_Y,
+                    msg.c_str(), COLOR_WHITE);
             }
         }
 

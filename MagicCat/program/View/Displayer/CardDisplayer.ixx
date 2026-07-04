@@ -5,6 +5,7 @@
 #include <string>
 #include <format>
 #include <cassert>
+#include <algorithm>
 #include <RenderUtils.h>
 
 export module Displayer:Card;
@@ -57,11 +58,10 @@ namespace mc {
         std::unique_ptr<Displayer> CreatePrintACardDisplayer(Card card, Point<int> start_position,
                                                              std::wstring message) const
         {
-            return CreateLambdaDisplayer([card, start_position, message, this](float deltaTime)
+            return CreateLambdaDisplayer([card, start_position, message, this](float)
             {
                 auto x = start_position.x, y = start_position.y;
                 uint32_t color;
-                int thickness = THICKNESS;
                 bool has_icon = true;
                 switch (card.CardType)
                 {
@@ -74,38 +74,43 @@ namespace mc {
                     color = COLOR_CARD_DEFAULT;
                     break;
                 }
-
-                for (int i = 0; i < thickness; ++i)
-                {
-                    float currentX1 = x + i;
-                    float currentY1 = y + i;
-                    float currentX2 = x + CARD_WIDTH - i;
-                    float currentY2 = y + CARD_HEIGHT - i;
-                    float currentRadius = RADIUS - i;
-                    if (currentRadius < 0) currentRadius = 0;
-
-                    DrawRoundRectAA(currentX1, currentY1,
-                                    currentX2, currentY2,
-                                    currentRadius, currentRadius,
-                                    32, color, FALSE);
-                }
-                if (has_icon)
-                {
-                    int icon = assetService.GetImageHandle(ToImage(card.CardType));
-                    if (icon != -1)
-                    {
-                        renderService.DrawRotaGraphF(x + CARD_WIDTH / 2.f, y + CARD_HEIGHT / 3.5f,
-                                                     IMAGE_SCALE, 0.0, icon, true);
-                    }
-                    renderService.DrawCenterString(x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10,
-                                                   message.c_str(), color);
-                }
-                else
-                {
-                    renderService.DrawCenterString(x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 - 30,
-                                                   message.c_str(), color);
-                }
+                DrawCardBorder(x, y, color);
+                DrawCardContent(x, y, card, message, color, has_icon);
             });
+        }
+
+        void DrawCardBorder(int x, int y, uint32_t color) const
+        {
+            for (int i = 0; i < THICKNESS; ++i)
+            {
+                float x1 = x + i;
+                float y1 = y + i;
+                float x2 = x + CARD_WIDTH - i;
+                float y2 = y + CARD_HEIGHT - i;
+                float radius = std::max(0.f, static_cast<float>(RADIUS - i));
+                DrawRoundRectAA(x1, y1, x2, y2, radius, radius, 32, color, FALSE);
+            }
+        }
+
+        void DrawCardContent(int x, int y, Card card, const std::wstring& message,
+                             uint32_t color, bool has_icon) const
+        {
+            if (has_icon)
+            {
+                int icon = assetService.GetImageHandle(ToImage(card.CardType));
+                if (icon != -1)
+                {
+                    renderService.DrawRotaGraphF(x + CARD_WIDTH / 2.f, y + CARD_HEIGHT / 3.5f,
+                                                 IMAGE_SCALE, 0.0, icon, true);
+                }
+                renderService.DrawCenterString(x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 + 10,
+                                               message.c_str(), color);
+            }
+            else
+            {
+                renderService.DrawCenterString(x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2 - 30,
+                                               message.c_str(), color);
+            }
         }
 
         void RebuildDisplayers(bool isDraw = false)

@@ -95,41 +95,10 @@ namespace mc {
         {
             switch (e)
             {
-            case EMagic::Null:
-                return false;
-            case EMagic::Clairvoyance:
-                if (hasUsedClairvoyance) return false;
-                if (mp >= CLAIRVOYANCE_MP_COST)
-                {
-                    ChangeMp(-CLAIRVOYANCE_MP_COST);
-                    hasUsedClairvoyance = true;
-                    EventBus::Publish<MagicEvent>(MagicEvent{EMagic::Clairvoyance});
-                    return true;
-                }
-                EventBus::Publish<LackOfMpEvent>({});
-                return false;
-            case EMagic::PowerBoost:
-                if (mp >= POWER_BOOST_MP_COST)
-                {
-                    ChangeMp(-POWER_BOOST_MP_COST);
-                    SetDamageOffset(2);
-                    EventBus::Publish<MagicEvent>(MagicEvent{EMagic::PowerBoost});
-                    return true;
-                }
-                EventBus::Publish<LackOfMpEvent>({});
-                return false;
-            case EMagic::Heal:
-                if (healUses >= 3) return false;
-                if (mp >= HEAL_MP_COST)
-                {
-                    ChangeMp(-HEAL_MP_COST);
-                    healUses++;
-                    healthComp->Heal(2);
-                    EventBus::Publish<MagicEvent>(MagicEvent{EMagic::Heal});
-                    return true;
-                }
-                EventBus::Publish<LackOfMpEvent>({});
-                return false;
+            case EMagic::Null:         return false;
+            case EMagic::Clairvoyance: return UseClairvoyance();
+            case EMagic::PowerBoost:   return UsePowerBoost();
+            case EMagic::Heal:         return UseHeal();
             default:
                 assert(false && "未実装、または未知の魔法タイプです");
                 return false;
@@ -141,6 +110,48 @@ namespace mc {
         void TakeDamage(int amount) const override { healthComp->TakeDamage(amount); }
 
     private:
+        bool UseClairvoyance()
+        {
+            if (hasUsedClairvoyance) return false;
+            if (mp >= CLAIRVOYANCE_MP_COST)
+            {
+                ChangeMp(-CLAIRVOYANCE_MP_COST);
+                hasUsedClairvoyance = true;
+                EventBus::Publish<MagicEvent>(MagicEvent{EMagic::Clairvoyance});
+                return true;
+            }
+            EventBus::Publish<LackOfMpEvent>({});
+            return false;
+        }
+
+        bool UsePowerBoost()
+        {
+            if (mp >= POWER_BOOST_MP_COST)
+            {
+                ChangeMp(-POWER_BOOST_MP_COST);
+                SetDamageOffset(2);
+                EventBus::Publish<MagicEvent>(MagicEvent{EMagic::PowerBoost});
+                return true;
+            }
+            EventBus::Publish<LackOfMpEvent>({});
+            return false;
+        }
+
+        bool UseHeal()
+        {
+            if (healUses >= 3) return false;
+            if (mp >= HEAL_MP_COST)
+            {
+                ChangeMp(-HEAL_MP_COST);
+                healUses++;
+                healthComp->Heal(2);
+                EventBus::Publish<MagicEvent>(MagicEvent{EMagic::Heal});
+                return true;
+            }
+            EventBus::Publish<LackOfMpEvent>({});
+            return false;
+        }
+
         static constexpr int DEFAULT_MAX_MP      = 10;
         static constexpr int CLAIRVOYANCE_MP_COST = 10;
         static constexpr int POWER_BOOST_MP_COST  = 7;

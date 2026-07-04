@@ -105,66 +105,73 @@ namespace mc {
         {
             try
             {
-                struct ImageData { EImage id; const wchar_t* path; };
-                ImageData images[] = {
-                    {EImage::Rock, FILE_PATH_PNG_STONE},
-                    {EImage::Scissors, FILE_PATH_PNG_SCISSORS},
-                    {EImage::Paper, FILE_PATH_PNG_PAPER},
-                    {EImage::Magic, FILE_PATH_PNG_POINT},
-                    {EImage::KB_Q, FILE_PATH_PNG_KEYBOARD_Q_OUTLINE},
-                    {EImage::KB_ESCAPE, FILE_PATH_PNG_KEYBOARD_ESCAPE_OUTLINE},
-                    {EImage::KB_SPACE, FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE},
-                    {EImage::KB_UP, FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE},
-                    {EImage::KB_DOWN, FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE},
-                    {EImage::KB_LEFT, FILE_PATH_PNG_KEYBOARD_ARROW_LEFT_OUTLINE},
-                    {EImage::KB_RIGHT, FILE_PATH_PNG_KEYBOARD_ARROW_RIGHT_OUTLINE},
-                    {EImage::MOUSE_MOVE, FILE_PATH_PNG_MOUSE_MOVE},
-                    {EImage::MOUSE_LEFT, FILE_PATH_PNG_MOUSE_LEFT_OUTLINE},
-                    {EImage::MOUSE_RIGHT, FILE_PATH_PNG_MOUSE_RIGHT_OUTLINE},
-                    {EImage::XBOX_A, FILE_PATH_PNG_XBOX_BUTTON_COLOR_A_OUTLINE},
-                    {EImage::XBOX_B, FILE_PATH_PNG_XBOX_BUTTON_COLOR_B_OUTLINE},
-                    {EImage::XBOX_X, FILE_PATH_PNG_XBOX_BUTTON_COLOR_X_OUTLINE},
-                    {EImage::XBOX_Y, FILE_PATH_PNG_XBOX_BUTTON_COLOR_Y_OUTLINE},
-                    {EImage::XBOX_DPAD_HORIZONTAL, FILE_PATH_PNG_XBOX_DPAD_ROUND_HORIZONTAL},
-                    {EImage::BUTTON_MENU, FILE_PATH_PNG_BUTTON_MENU_OUTLINE},
-                };
-
-                for (const auto& img : images)
-                {
-                    int handle = LoadGraph(img.path);
-                    if (handle == -1) printfDx(L"%sの読み込みに失敗", img.path);
-                    else              imageMappings.insert({img.id, handle});
-                }
-
-                struct SpriteData { ESprite id; const wchar_t* path; };
-                SpriteData sprites[] = {
-                    {ESprite::Bunny, FILE_PATH_PNG_MINIBUNNY},
-                    {ESprite::Wolf, FILE_PATH_PNG_MINIWOLF},
-                    {ESprite::CluckingChicken, FILE_PATH_PNG_CLUCKINGCHICKEN},
-                    {ESprite::CoralCrab, FILE_PATH_PNG_CORALCRAB},
-                    {ESprite::CroakingToad, FILE_PATH_PNG_CROAKINGTOAD},
-                    {ESprite::DaintyPig, FILE_PATH_PNG_DAINTYPIG},
-                    {ESprite::HonkingGoose, FILE_PATH_PNG_HONKINGGOOSE},
-                    {ESprite::LeapingFrog, FILE_PATH_PNG_LEAPINGFROG},
-                    {ESprite::MadBoar, FILE_PATH_PNG_MADBOAR},
-                    {ESprite::MeowingCat, FILE_PATH_PNG_MEOWINGCAT},
-                    {ESprite::PasturingSheep, FILE_PATH_PNG_PASTURINGSHEEP},
-                    {ESprite::SlowTurtle, FILE_PATH_PNG_SLOWTURTLE},
-                    {ESprite::SnowFox, FILE_PATH_PNG_SNOWFOX},
-                    {ESprite::SpikeyPorcupine, FILE_PATH_PNG_SPIKEYPORCUPINE},
-                    {ESprite::StinkySkunk, FILE_PATH_PNG_STINKYSKUNK},
-                    {ESprite::TimberWolf, FILE_PATH_PNG_TIMBERWOLF},
-                    {ESprite::TinyChick, FILE_PATH_PNG_TINYCHICK}
-                };
-
-                for (const auto& spr : sprites)
-                {
-                    auto resource = LoadGraph(spr.path);
-                    if (resource == -1) printfDx(L"%sの読み込みに失敗", spr.path);
-                    else                spriteMappings.insert({spr.id, resource});
-                }
+                LoadImageFiles();
+                LoadSpriteFiles();
             }
             catch (const std::exception&) { printfDx(L"画像の読み込みに失敗"); }
+        }
+
+        void LoadImageFiles()
+        {
+            struct ImageData { EImage id; const wchar_t* path; };
+            const ImageData images[] = {
+                {EImage::Rock, FILE_PATH_PNG_STONE},
+                {EImage::Scissors, FILE_PATH_PNG_SCISSORS},
+                {EImage::Paper, FILE_PATH_PNG_PAPER},
+                {EImage::Magic, FILE_PATH_PNG_POINT},
+                {EImage::KB_Q, FILE_PATH_PNG_KEYBOARD_Q_OUTLINE},
+                {EImage::KB_ESCAPE, FILE_PATH_PNG_KEYBOARD_ESCAPE_OUTLINE},
+                {EImage::KB_SPACE, FILE_PATH_PNG_KEYBOARD_SPACE_OUTLINE},
+                {EImage::KB_UP, FILE_PATH_PNG_KEYBOARD_ARROW_UP_OUTLINE},
+                {EImage::KB_DOWN, FILE_PATH_PNG_KEYBOARD_ARROW_DOWN_OUTLINE},
+                {EImage::KB_LEFT, FILE_PATH_PNG_KEYBOARD_ARROW_LEFT_OUTLINE},
+                {EImage::KB_RIGHT, FILE_PATH_PNG_KEYBOARD_ARROW_RIGHT_OUTLINE},
+                {EImage::MOUSE_MOVE, FILE_PATH_PNG_MOUSE_MOVE},
+                {EImage::MOUSE_LEFT, FILE_PATH_PNG_MOUSE_LEFT_OUTLINE},
+                {EImage::MOUSE_RIGHT, FILE_PATH_PNG_MOUSE_RIGHT_OUTLINE},
+                {EImage::XBOX_A, FILE_PATH_PNG_XBOX_BUTTON_COLOR_A_OUTLINE},
+                {EImage::XBOX_B, FILE_PATH_PNG_XBOX_BUTTON_COLOR_B_OUTLINE},
+                {EImage::XBOX_X, FILE_PATH_PNG_XBOX_BUTTON_COLOR_X_OUTLINE},
+                {EImage::XBOX_Y, FILE_PATH_PNG_XBOX_BUTTON_COLOR_Y_OUTLINE},
+                {EImage::XBOX_DPAD_HORIZONTAL, FILE_PATH_PNG_XBOX_DPAD_ROUND_HORIZONTAL},
+                {EImage::BUTTON_MENU, FILE_PATH_PNG_BUTTON_MENU_OUTLINE},
+            };
+            for (const auto& img : images)
+            {
+                int handle = LoadGraph(img.path);
+                if (handle == -1) printfDx(L"%sの読み込みに失敗", img.path);
+                else              imageMappings.insert({img.id, handle});
+            }
+        }
+
+        void LoadSpriteFiles()
+        {
+            struct SpriteData { ESprite id; const wchar_t* path; };
+            const SpriteData sprites[] = {
+                {ESprite::Bunny, FILE_PATH_PNG_MINIBUNNY},
+                {ESprite::Wolf, FILE_PATH_PNG_MINIWOLF},
+                {ESprite::CluckingChicken, FILE_PATH_PNG_CLUCKINGCHICKEN},
+                {ESprite::CoralCrab, FILE_PATH_PNG_CORALCRAB},
+                {ESprite::CroakingToad, FILE_PATH_PNG_CROAKINGTOAD},
+                {ESprite::DaintyPig, FILE_PATH_PNG_DAINTYPIG},
+                {ESprite::HonkingGoose, FILE_PATH_PNG_HONKINGGOOSE},
+                {ESprite::LeapingFrog, FILE_PATH_PNG_LEAPINGFROG},
+                {ESprite::MadBoar, FILE_PATH_PNG_MADBOAR},
+                {ESprite::MeowingCat, FILE_PATH_PNG_MEOWINGCAT},
+                {ESprite::PasturingSheep, FILE_PATH_PNG_PASTURINGSHEEP},
+                {ESprite::SlowTurtle, FILE_PATH_PNG_SLOWTURTLE},
+                {ESprite::SnowFox, FILE_PATH_PNG_SNOWFOX},
+                {ESprite::SpikeyPorcupine, FILE_PATH_PNG_SPIKEYPORCUPINE},
+                {ESprite::StinkySkunk, FILE_PATH_PNG_STINKYSKUNK},
+                {ESprite::TimberWolf, FILE_PATH_PNG_TIMBERWOLF},
+                {ESprite::TinyChick, FILE_PATH_PNG_TINYCHICK}
+            };
+            for (const auto& spr : sprites)
+            {
+                auto resource = LoadGraph(spr.path);
+                if (resource == -1) printfDx(L"%sの読み込みに失敗", spr.path);
+                else                spriteMappings.insert({spr.id, resource});
+            }
         }
 
         void LoadSounds()

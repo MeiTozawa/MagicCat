@@ -15,59 +15,8 @@ namespace mc {
         {
             input = dxe::Input::Create(0, dxe::Input::eJoypad::PAD1);
             activeInputModes.push_back(InputContext::InGame);
-
-            actionMappings[InputContext::InGame][InputAction::Confirm] = {
-                dxe::Input::eButton::KB_SPACE,
-                dxe::Input::eButton::KB_RETURN,
-                dxe::Input::eButton::PAD_A
-            };
-            actionMappings[InputContext::InGame][InputAction::Up] = {
-                dxe::Input::eButton::KB_UP,
-                dxe::Input::eButton::PAD_UP
-            };
-            actionMappings[InputContext::InGame][InputAction::Down] = {
-                dxe::Input::eButton::KB_DOWN,
-                dxe::Input::eButton::PAD_DOWN
-            };
-            actionMappings[InputContext::InGame][InputAction::Left] = {
-                dxe::Input::eButton::KB_LEFT,
-                dxe::Input::eButton::PAD_LEFT
-            };
-            actionMappings[InputContext::InGame][InputAction::Right] = {
-                dxe::Input::eButton::KB_RIGHT,
-                dxe::Input::eButton::PAD_RIGHT
-            };
-            actionMappings[InputContext::InGame][InputAction::DrawCard] = {
-                dxe::Input::eButton::KB_Q,
-                dxe::Input::eButton::PAD_X
-            };
-            actionMappings[InputContext::InGame][InputAction::ToggleMenu] = {
-                dxe::Input::eButton::KB_ESCAPE,
-                dxe::Input::eButton::PAD_START
-            };
-            actionMappings[InputContext::InGame][InputAction::MouseClick] = {dxe::Input::eButton::MOUSE_LEFT};
-
-            actionMappings[InputContext::Menu][InputAction::Confirm] = {
-                dxe::Input::eButton::KB_SPACE,
-                dxe::Input::eButton::KB_RETURN,
-                dxe::Input::eButton::PAD_A
-            };
-            actionMappings[InputContext::Menu][InputAction::ToggleMenu] = {
-                dxe::Input::eButton::KB_ESCAPE,
-                dxe::Input::eButton::PAD_START,
-                dxe::Input::eButton::PAD_B
-            };
-            actionMappings[InputContext::Menu][InputAction::MouseClick] = {
-                dxe::Input::eButton::MOUSE_LEFT
-            };
-            actionMappings[InputContext::Menu][InputAction::Left] = {
-                dxe::Input::eButton::KB_LEFT,
-                dxe::Input::eButton::PAD_LEFT
-            };
-            actionMappings[InputContext::Menu][InputAction::Right] = {
-                dxe::Input::eButton::KB_RIGHT,
-                dxe::Input::eButton::PAD_RIGHT
-            };
+            RegisterInGameActions();
+            RegisterMenuActions();
         }
 
         void Update() override
@@ -182,6 +131,43 @@ namespace mc {
         }
 
     private:
+        void RegisterInGameActions()
+        {
+            auto& m = actionMappings[InputContext::InGame];
+            m[InputAction::Confirm]     = {dxe::Input::eButton::KB_SPACE,
+                                           dxe::Input::eButton::KB_RETURN,
+                                           dxe::Input::eButton::PAD_A};
+            m[InputAction::Up]          = {dxe::Input::eButton::KB_UP,
+                                           dxe::Input::eButton::PAD_UP};
+            m[InputAction::Down]        = {dxe::Input::eButton::KB_DOWN,
+                                           dxe::Input::eButton::PAD_DOWN};
+            m[InputAction::Left]        = {dxe::Input::eButton::KB_LEFT,
+                                           dxe::Input::eButton::PAD_LEFT};
+            m[InputAction::Right]       = {dxe::Input::eButton::KB_RIGHT,
+                                           dxe::Input::eButton::PAD_RIGHT};
+            m[InputAction::DrawCard]    = {dxe::Input::eButton::KB_Q,
+                                           dxe::Input::eButton::PAD_X};
+            m[InputAction::ToggleMenu]  = {dxe::Input::eButton::KB_ESCAPE,
+                                           dxe::Input::eButton::PAD_START};
+            m[InputAction::MouseClick]  = {dxe::Input::eButton::MOUSE_LEFT};
+        }
+
+        void RegisterMenuActions()
+        {
+            auto& m = actionMappings[InputContext::Menu];
+            m[InputAction::Confirm]     = {dxe::Input::eButton::KB_SPACE,
+                                           dxe::Input::eButton::KB_RETURN,
+                                           dxe::Input::eButton::PAD_A};
+            m[InputAction::ToggleMenu]  = {dxe::Input::eButton::KB_ESCAPE,
+                                           dxe::Input::eButton::PAD_START,
+                                           dxe::Input::eButton::PAD_B};
+            m[InputAction::MouseClick]  = {dxe::Input::eButton::MOUSE_LEFT};
+            m[InputAction::Left]        = {dxe::Input::eButton::KB_LEFT,
+                                           dxe::Input::eButton::PAD_LEFT};
+            m[InputAction::Right]       = {dxe::Input::eButton::KB_RIGHT,
+                                           dxe::Input::eButton::PAD_RIGHT};
+        }
+
         const std::vector<dxe::Input::eButton>* CheckInput(InputAction action) const
         {
             if (activeInputModes.empty()) return nullptr;

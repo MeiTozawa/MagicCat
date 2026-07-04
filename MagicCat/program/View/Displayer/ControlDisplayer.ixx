@@ -48,125 +48,121 @@ namespace mc {
         void OnDraw(float) const override
         {
             const InputDevice activeDevice = inputService.GetActiveDevice();
-            int menuIconX = renderService.GetWindowWidth() - MENU_ICON_X_OFFSET;
+            const int menuIconX = renderService.GetWindowWidth() - MENU_ICON_X_OFFSET;
 
-            {
-                int icon = assetService.GetImageHandle(EImage::BUTTON_MENU);
-                renderService.DrawRotaGraphF(menuIconX, MENU_ICON_Y, 0.5, 0.0, icon, true);
-            }
+            int menuIcon = assetService.GetImageHandle(EImage::BUTTON_MENU);
+            renderService.DrawRotaGraphF(menuIconX, MENU_ICON_Y, 0.5, 0.0, menuIcon, true);
 
             if (activeDevice == InputDevice::Gamepad)
-            {
-                renderService.SetCursorArrow();
-
-                renderService.DrawRotaGraphF(ICON_NAV_X, Y, 0.5, 0.0,
-                                             assetService.GetImageHandle(EImage::XBOX_DPAD_HORIZONTAL), true);
-                renderService.DrawRotaGraphF(ICON_CONF_X, Y, 0.5, 0.0,
-                                             assetService.GetImageHandle(EImage::XBOX_A), true);
-                renderService.DrawRotaGraphF(ICON_DRAW_X, Y, 0.5, 0.0,
-                                             assetService.GetImageHandle(EImage::XBOX_X), true);
-                renderService.DrawRotaGraphF(ICON_RULES_X, Y, 0.5, 0.0,
-                                             assetService.GetImageHandle(EImage::BUTTON_MENU), true);
-                return;
-            }
-
+                DrawGamepadHints();
             else if (activeDevice == InputDevice::Keyboard)
+                DrawKeyboardHints();
+            else if (activeDevice == InputDevice::Mouse)
+                DrawMouseHints(menuIconX);
+        }
+
+        void DrawGamepadHints() const
+        {
+            renderService.SetCursorArrow();
+            renderService.DrawRotaGraphF(ICON_NAV_X, Y, 0.5, 0.0,
+                                         assetService.GetImageHandle(EImage::XBOX_DPAD_HORIZONTAL), true);
+            renderService.DrawRotaGraphF(ICON_CONF_X, Y, 0.5, 0.0,
+                                         assetService.GetImageHandle(EImage::XBOX_A), true);
+            renderService.DrawRotaGraphF(ICON_DRAW_X, Y, 0.5, 0.0,
+                                         assetService.GetImageHandle(EImage::XBOX_X), true);
+            renderService.DrawRotaGraphF(ICON_RULES_X, Y, 0.5, 0.0,
+                                         assetService.GetImageHandle(EImage::BUTTON_MENU), true);
+        }
+
+        void DrawKeyboardHints() const
+        {
+            renderService.SetCursorArrow();
+
+            renderService.DrawRotaGraphF(ICON_DRAW_X, Y, 0.5, 0.0,
+                                         assetService.GetImageHandle(EImage::KB_Q), true);
+            renderService.DrawString(ICON_DRAW_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"カードを引く", color);
+
+            renderService.DrawRotaGraphF(ICON_RULES_X, Y, 0.5, 0.0,
+                                         assetService.GetImageHandle(EImage::KB_ESCAPE), true);
+            renderService.DrawString(ICON_RULES_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"ルールを見る", color);
+
+            renderService.DrawRotaGraphF(ICON_NAV_X, Y, 0.5, 0.0,
+                                         assetService.GetImageHandle(EImage::KB_UP), true);
+            renderService.DrawRotaGraphF(ICON_NAV2_X, Y, 0.5, 0.0,
+                                         assetService.GetImageHandle(EImage::KB_DOWN), true);
+
+            renderService.DrawRotaGraphF(ICON_CONF_X, Y, 0.5, 0.0,
+                                         assetService.GetImageHandle(EImage::KB_SPACE), true);
+            renderService.DrawString(ICON_CONF_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"選択する", color);
+        }
+
+        void DrawMouseHints(int menuIconX) const
+        {
+            const auto mousePos = inputService.GetMousePosition();
+            const int mx = mousePos.x;
+            const int my = mousePos.y;
+
+            const std::array<ClickableArea, 6> areas = BuildMouseClickableAreas(menuIconX);
+
+            const wchar_t* selectedHint = nullptr;
+            bool hitAny = false;
+            for (const auto& a : areas)
             {
+                if (mx >= a.x1 && mx < a.x2 && my >= a.y1 && my < a.y2)
+                {
+                    selectedHint = a.hintText;
+                    hitAny = true;
+                    break;
+                }
+            }
+
+            if (hitAny)
+                renderService.SetCursorPointer();
+            else
                 renderService.SetCursorArrow();
 
-                {
-                    int icon = assetService.GetImageHandle(EImage::KB_Q);
-                    renderService.DrawRotaGraphF(ICON_DRAW_X, Y, 0.5, 0.0, icon, true);
-                    renderService.DrawString(ICON_DRAW_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"カードを引く", color);
-                }
-
-                {
-                    int icon = assetService.GetImageHandle(EImage::KB_ESCAPE);
-                    renderService.DrawRotaGraphF(ICON_RULES_X, Y, 0.5, 0.0, icon, true);
-                    renderService.DrawString(ICON_RULES_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"ルールを見る", color);
-                }
-
-                {
-                    int icon = assetService.GetImageHandle(EImage::KB_UP);
-                    renderService.DrawRotaGraphF(ICON_NAV_X, Y, 0.5, 0.0, icon, true);
-                    icon = assetService.GetImageHandle(EImage::KB_DOWN);
-                    renderService.DrawRotaGraphF(ICON_NAV2_X, Y, 0.5, 0.0, icon, true);
-                }
-
-                {
-                    int icon = assetService.GetImageHandle(EImage::KB_SPACE);
-                    renderService.DrawRotaGraphF(ICON_CONF_X, Y, 0.5, 0.0, icon, true);
-                    renderService.DrawString(ICON_CONF_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"選択する", color);
-                }
-                return;
-            }
-
-            else if (activeDevice == InputDevice::Mouse)
+            if (selectedHint != nullptr && selectedHint[0] != L'\0')
             {
-                auto mousePos = inputService.GetMousePosition();
-                int mx = mousePos.x;
-                int my = mousePos.y;
-
-                const std::array<ClickableArea, 6> areas = {
-                    {
-                        {
-                            menuIconX - MENU_ICON_HALF_H, MENU_ICON_Y - MENU_ICON_HALF_H,
-                            menuIconX + MENU_ICON_HALF_W, MENU_ICON_Y + MENU_ICON_HALF_W,
-                            L"メニューを開く"
-                        },
-                        {
-                            DRAW_PILE_X1, DRAW_PILE_Y1,
-                            DRAW_PILE_X2, DRAW_PILE_Y2,
-                            L"カードを引く"
-                        },
-                        {
-                            ACTION_MENU_X, ACTION_MENU_Y + 0 * ACTION_MENU_STEP_Y,
-                            ACTION_MENU_X + ACTION_MENU_W, ACTION_MENU_Y + 0 * ACTION_MENU_STEP_Y + ACTION_MENU_H,
-                            L"魔法を使う"
-                        },
-                        {
-                            ACTION_MENU_X, ACTION_MENU_Y + 1 * ACTION_MENU_STEP_Y,
-                            ACTION_MENU_X + ACTION_MENU_W, ACTION_MENU_Y + 1 * ACTION_MENU_STEP_Y + ACTION_MENU_H,
-                            L"グーを出す"
-                        },
-                        {
-                            ACTION_MENU_X, ACTION_MENU_Y + 2 * ACTION_MENU_STEP_Y,
-                            ACTION_MENU_X + ACTION_MENU_W, ACTION_MENU_Y + 2 * ACTION_MENU_STEP_Y + ACTION_MENU_H,
-                            L"チョキを出す"
-                        },
-                        {
-                            ACTION_MENU_X, ACTION_MENU_Y + 3 * ACTION_MENU_STEP_Y,
-                            ACTION_MENU_X + ACTION_MENU_W, ACTION_MENU_Y + 3 * ACTION_MENU_STEP_Y + ACTION_MENU_H,
-                            L"パーを出す"
-                        },
-                    }
-                };
-
-                const wchar_t* selectedHint = nullptr;
-                int hitIndex = -1;
-                for (int i = 0; i < static_cast<int>(areas.size()); ++i)
-                {
-                    const auto& a = areas[i];
-                    if (mx >= a.x1 && mx < a.x2 && my >= a.y1 && my < a.y2)
-                    {
-                        selectedHint = a.hintText;
-                        hitIndex = i;
-                        break;
-                    }
-                }
-
-                if (hitIndex >= 0)
-                    renderService.SetCursorPointer();
-                else
-                    renderService.SetCursorArrow();
-
-                if (selectedHint != nullptr && selectedHint[0] != L'\0')
-                {
-                    int icon = assetService.GetImageHandle(EImage::MOUSE_LEFT);
-                    renderService.DrawRotaGraphF(HINT_X, HINT_Y, 0.5, 0.0, icon, true);
-                    renderService.DrawString(HINT_TEXT_X, HINT_TEXT_Y, selectedHint, color);
-                }
+                int icon = assetService.GetImageHandle(EImage::MOUSE_LEFT);
+                renderService.DrawRotaGraphF(HINT_X, HINT_Y, 0.5, 0.0, icon, true);
+                renderService.DrawString(HINT_TEXT_X, HINT_TEXT_Y, selectedHint, color);
             }
+        }
+
+        std::array<ClickableArea, 6> BuildMouseClickableAreas(int menuIconX) const
+        {
+            return {{
+                {
+                    menuIconX - MENU_ICON_HALF_H, MENU_ICON_Y - MENU_ICON_HALF_H,
+                    menuIconX + MENU_ICON_HALF_W, MENU_ICON_Y + MENU_ICON_HALF_W,
+                    L"メニューを開く"
+                },
+                {
+                    DRAW_PILE_X1, DRAW_PILE_Y1,
+                    DRAW_PILE_X2, DRAW_PILE_Y2,
+                    L"カードを引く"
+                },
+                {
+                    ACTION_MENU_X, ACTION_MENU_Y + 0 * ACTION_MENU_STEP_Y,
+                    ACTION_MENU_X + ACTION_MENU_W, ACTION_MENU_Y + 0 * ACTION_MENU_STEP_Y + ACTION_MENU_H,
+                    L"魔法を使う"
+                },
+                {
+                    ACTION_MENU_X, ACTION_MENU_Y + 1 * ACTION_MENU_STEP_Y,
+                    ACTION_MENU_X + ACTION_MENU_W, ACTION_MENU_Y + 1 * ACTION_MENU_STEP_Y + ACTION_MENU_H,
+                    L"グーを出す"
+                },
+                {
+                    ACTION_MENU_X, ACTION_MENU_Y + 2 * ACTION_MENU_STEP_Y,
+                    ACTION_MENU_X + ACTION_MENU_W, ACTION_MENU_Y + 2 * ACTION_MENU_STEP_Y + ACTION_MENU_H,
+                    L"チョキを出す"
+                },
+                {
+                    ACTION_MENU_X, ACTION_MENU_Y + 3 * ACTION_MENU_STEP_Y,
+                    ACTION_MENU_X + ACTION_MENU_W, ACTION_MENU_Y + 3 * ACTION_MENU_STEP_Y + ACTION_MENU_H,
+                    L"パーを出す"
+                },
+            }};
         }
 
         IAssetService& assetService;

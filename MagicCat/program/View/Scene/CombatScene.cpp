@@ -154,7 +154,7 @@ namespace mc {
             });
         }
 
-        void OnCombatEvent(const CombatEvent& event)
+        void OnCombatEvent(const CombatEvent& event) const
         {
             playerAttack->SetImage(assetService.GetImageHandle(ToImage(event.playerAttackType)));
             enemyAttack->SetImage(assetService.GetImageHandle(ToImage(event.enemyAttackType)));
@@ -234,7 +234,6 @@ namespace mc {
         std::optional<EventHandle> combatEvent;
         std::optional<EventHandle> stageClearHandle;
 
-        // 各 Displayer の raw pointer（effector を追加するために保持）
         Displayer* playerAnimDisp = nullptr;
         Displayer* enemyAnimDisp = nullptr;
         AttackDisplayer* playerAttack = nullptr;

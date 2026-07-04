@@ -46,11 +46,19 @@ namespace {
 
         void Update(float deltaTime) override
         {
+            HandleInput();
+            DrawScene();
+        }
+
+    private:
+        void HandleInput() const
+        {
             if (inputService.IsPressed(InputAction::Confirm))
             {
                 battleService.StartStage();
+                return;
             }
-            else if (inputService.IsPressed(InputAction::ToggleMenu))
+            if (inputService.IsPressed(InputAction::ToggleMenu))
             {
                 sceneService.PushScene(ESceneState::Rules);
                 return;
@@ -58,14 +66,16 @@ namespace {
 
             const int w = renderService.GetWindowWidth();
             const int h = renderService.GetWindowHeight();
-
             auto click = inputService.OnMouseClick(InputAction::MouseClick);
             if (click.x != -1 && click.y != -1)
             {
                 if (click.x >= 0 && click.x < w && click.y >= 0 && click.y < h)
                     battleService.StartStage();
             }
+        }
 
+        void DrawScene() const
+        {
             if (!info.empty())
             {
                 renderService.SetFontSize(240);
@@ -87,8 +97,6 @@ namespace {
                                            renderService.GetWindowHeight() * 8 / 10,
                                            L"Enterキーを押してゲームをスタートにゃ！", COLOR_WHITE);
         }
-
-    private:
         void DrawTitleScreen() const
         {
             renderService.SetFontSize(160);

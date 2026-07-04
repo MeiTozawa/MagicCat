@@ -29,85 +29,8 @@ namespace mc {
             : assetService(asset), characterService(character)
         {
             bgmHandle = assetService.GetSoundHandle(ESound::BGM);
-
-            // --- SFX イベント ---
-            eventHandles.push_back(EventBus::Subscribe<HealthChangedEvent>([this](const HealthChangedEvent& e)
-            {
-                auto tags = e.Victim->GetTags();
-                if (std::ranges::find(tags, ETag::Player) != tags.end())
-                {
-                    PlaySoundMem(assetService.GetSoundHandle(ESound::PlayerHurt), DX_PLAYTYPE_BACK);
-
-                    const auto& player = characterService.GetPlayer();
-                    const auto& healthComp = player.GetHealthComponent();
-                    if (e.CurrentHealth > 0 && e.CurrentHealth <= healthComp.GetMaxHealth() * 0.3f)
-                        PlaySoundMem(assetService.GetSoundHandle(ESound::Warning), DX_PLAYTYPE_BACK);
-                }
-                else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
-                {
-                    PlaySoundMem(assetService.GetSoundHandle(ESound::EnemyHurt), DX_PLAYTYPE_BACK);
-                }
-            }));
-
-            eventHandles.push_back(EventBus::Subscribe<DrawCardEvent>([this](const DrawCardEvent&)
-            {
-                PlaySoundMem(assetService.GetSoundHandle(ESound::DrawCard), DX_PLAYTYPE_BACK);
-            }));
-
-            eventHandles.push_back(EventBus::Subscribe<ShuffleEvent>([this](const ShuffleEvent&)
-            {
-                PlaySoundMem(assetService.GetSoundHandle(ESound::Shuffle), DX_PLAYTYPE_BACK);
-            }));
-
-            eventHandles.push_back(EventBus::Subscribe<ActionSelectionEvent>([this](const ActionSelectionEvent& e)
-            {
-                if (!e.silent)
-                    PlaySoundMem(assetService.GetSoundHandle(ESound::Select), DX_PLAYTYPE_BACK);
-            }));
-
-            eventHandles.push_back(EventBus::Subscribe<CombatEvent>([this](const CombatEvent&)
-            {
-                PlaySoundMem(assetService.GetSoundHandle(ESound::Confirm), DX_PLAYTYPE_BACK);
-            }));
-
-            eventHandles.push_back(EventBus::Subscribe<MagicEvent>([this](const MagicEvent&)
-            {
-                PlaySoundMem(assetService.GetSoundHandle(ESound::Magic), DX_PLAYTYPE_BACK);
-            }));
-
-            eventHandles.push_back(EventBus::Subscribe<LackOfMpEvent>([this](const LackOfMpEvent&)
-            {
-                PlaySoundMem(assetService.GetSoundHandle(ESound::Beep), DX_PLAYTYPE_BACK);
-            }));
-
-            eventHandles.push_back(EventBus::Subscribe<DeathEvent>([this](const DeathEvent& e)
-            {
-                auto tags = e.Victim->GetTags();
-                if (std::ranges::find(tags, ETag::Player) != tags.end())
-                    PlaySoundMem(assetService.GetSoundHandle(ESound::Fail), DX_PLAYTYPE_BACK);
-                else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
-                    PlaySoundMem(assetService.GetSoundHandle(ESound::Win), DX_PLAYTYPE_BACK);
-            }));
-
-            // --- BGM フェードイン：戦闘開始 ---
-            eventHandles.push_back(EventBus::Subscribe<CutsceneFinishedEvent>([this](const CutsceneFinishedEvent&)
-            {
-                StartBgmFadeIn();
-            }));
-
-            // --- BGM フェードアウト：敵撃破／ゲーム終了 ---
-            eventHandles.push_back(EventBus::Subscribe<EnemyDefeatedEvent>([this](const EnemyDefeatedEvent&)
-            {
-                StartBgmFadeOut();
-            }));
-            eventHandles.push_back(EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&)
-            {
-                StartBgmFadeOut();
-            }));
-            eventHandles.push_back(EventBus::Subscribe<StageFailEvent>([this](const StageFailEvent&)
-            {
-                StartBgmFadeOut();
-            }));
+            SubscribeSfxEvents();
+            SubscribeBgmEvents();
         }
 
         ~AudioService() override
@@ -131,6 +54,80 @@ namespace mc {
         }
 
     private:
+        void SubscribeSfxEvents()
+        {
+            eventHandles.push_back(EventBus::Subscribe<HealthChangedEvent>([this](const HealthChangedEvent& e)
+            {
+                auto tags = e.Victim->GetTags();
+                if (std::ranges::find(tags, ETag::Player) != tags.end())
+                {
+                    PlaySoundMem(assetService.GetSoundHandle(ESound::PlayerHurt), DX_PLAYTYPE_BACK);
+                    const auto& player = characterService.GetPlayer();
+                    const auto& healthComp = player.GetHealthComponent();
+                    if (e.CurrentHealth > 0 && e.CurrentHealth <= healthComp.GetMaxHealth() * 0.3f)
+                        PlaySoundMem(assetService.GetSoundHandle(ESound::Warning), DX_PLAYTYPE_BACK);
+                }
+                else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
+                {
+                    PlaySoundMem(assetService.GetSoundHandle(ESound::EnemyHurt), DX_PLAYTYPE_BACK);
+                }
+            }));
+
+            eventHandles.push_back(EventBus::Subscribe<DrawCardEvent>([this](const DrawCardEvent&)
+            {
+                PlaySoundMem(assetService.GetSoundHandle(ESound::DrawCard), DX_PLAYTYPE_BACK);
+            }));
+            eventHandles.push_back(EventBus::Subscribe<ShuffleEvent>([this](const ShuffleEvent&)
+            {
+                PlaySoundMem(assetService.GetSoundHandle(ESound::Shuffle), DX_PLAYTYPE_BACK);
+            }));
+            eventHandles.push_back(EventBus::Subscribe<ActionSelectionEvent>([this](const ActionSelectionEvent& e)
+            {
+                if (!e.silent)
+                    PlaySoundMem(assetService.GetSoundHandle(ESound::Select), DX_PLAYTYPE_BACK);
+            }));
+            eventHandles.push_back(EventBus::Subscribe<CombatEvent>([this](const CombatEvent&)
+            {
+                PlaySoundMem(assetService.GetSoundHandle(ESound::Confirm), DX_PLAYTYPE_BACK);
+            }));
+            eventHandles.push_back(EventBus::Subscribe<MagicEvent>([this](const MagicEvent&)
+            {
+                PlaySoundMem(assetService.GetSoundHandle(ESound::Magic), DX_PLAYTYPE_BACK);
+            }));
+            eventHandles.push_back(EventBus::Subscribe<LackOfMpEvent>([this](const LackOfMpEvent&)
+            {
+                PlaySoundMem(assetService.GetSoundHandle(ESound::Beep), DX_PLAYTYPE_BACK);
+            }));
+            eventHandles.push_back(EventBus::Subscribe<DeathEvent>([this](const DeathEvent& e)
+            {
+                auto tags = e.Victim->GetTags();
+                if (std::ranges::find(tags, ETag::Player) != tags.end())
+                    PlaySoundMem(assetService.GetSoundHandle(ESound::Fail), DX_PLAYTYPE_BACK);
+                else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
+                    PlaySoundMem(assetService.GetSoundHandle(ESound::Win), DX_PLAYTYPE_BACK);
+            }));
+        }
+
+        void SubscribeBgmEvents()
+        {
+            eventHandles.push_back(EventBus::Subscribe<CutsceneFinishedEvent>([this](const CutsceneFinishedEvent&)
+            {
+                StartBgmFadeIn();
+            }));
+            eventHandles.push_back(EventBus::Subscribe<EnemyDefeatedEvent>([this](const EnemyDefeatedEvent&)
+            {
+                StartBgmFadeOut();
+            }));
+            eventHandles.push_back(EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&)
+            {
+                StartBgmFadeOut();
+            }));
+            eventHandles.push_back(EventBus::Subscribe<StageFailEvent>([this](const StageFailEvent&)
+            {
+                StartBgmFadeOut();
+            }));
+        }
+
         void SetBgmTarget(float target)
         {
             bgmTarget    = target;

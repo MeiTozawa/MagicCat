@@ -77,16 +77,27 @@ namespace mc {
     private:
         void HandleInput()
         {
+            if (HandleOtherInput()) return;
+            HandleMouseInput();
+        }
+        
+        /// @brief Handle Keyboard Input and Gamepad Input
+        bool HandleOtherInput()
+        {
             if (inputService.IsPressed(InputAction::ToggleMenu))
             {
                 inputService.PopContext();
                 sceneService.PopScene();
-                return;
+                return true;
             }
 
             if (inputService.IsPressed(InputAction::Left) && currentPage > 0) currentPage--;
             if (inputService.IsPressed(InputAction::Right) && currentPage < 1) currentPage++;
+            return false;
+        }
 
+        void HandleMouseInput()
+        {
             auto menuClick = inputService.OnMouseClick(InputAction::MouseClick);
             if (menuClick.x == -1 || menuClick.y == -1) return;
 

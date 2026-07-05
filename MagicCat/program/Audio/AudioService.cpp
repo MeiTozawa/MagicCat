@@ -58,19 +58,7 @@ namespace mc {
         {
             eventHandles.push_back(EventBus::Subscribe<HealthChangedEvent>([this](const HealthChangedEvent& e)
             {
-                auto tags = e.Victim->GetTags();
-                if (std::ranges::find(tags, ETag::Player) != tags.end())
-                {
-                    PlaySoundMem(assetService.GetSoundHandle(ESound::PlayerHurt), DX_PLAYTYPE_BACK);
-                    const auto& player = characterService.GetPlayer();
-                    const auto& healthComp = player.GetHealthComponent();
-                    if (e.CurrentHealth > 0 && e.CurrentHealth <= healthComp.GetMaxHealth() * 0.3f)
-                        PlaySoundMem(assetService.GetSoundHandle(ESound::Warning), DX_PLAYTYPE_BACK);
-                }
-                else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
-                {
-                    PlaySoundMem(assetService.GetSoundHandle(ESound::EnemyHurt), DX_PLAYTYPE_BACK);
-                }
+                OnHealthChanged(e);
             }));
 
             eventHandles.push_back(EventBus::Subscribe<DrawCardEvent>([this](const DrawCardEvent&)
@@ -100,11 +88,7 @@ namespace mc {
             }));
             eventHandles.push_back(EventBus::Subscribe<DeathEvent>([this](const DeathEvent& e)
             {
-                auto tags = e.Victim->GetTags();
-                if (std::ranges::find(tags, ETag::Player) != tags.end())
-                    PlaySoundMem(assetService.GetSoundHandle(ESound::Fail), DX_PLAYTYPE_BACK);
-                else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
-                    PlaySoundMem(assetService.GetSoundHandle(ESound::Win), DX_PLAYTYPE_BACK);
+                OnDeath(e);
             }));
         }
 
@@ -126,6 +110,32 @@ namespace mc {
             {
                 StartBgmFadeOut();
             }));
+        }
+        
+        void OnHealthChanged(const HealthChangedEvent& e) const
+        {
+            auto tags = e.Victim->GetTags();
+            if (std::ranges::find(tags, ETag::Player) != tags.end())
+            {
+                PlaySoundMem(assetService.GetSoundHandle(ESound::PlayerHurt), DX_PLAYTYPE_BACK);
+                const auto& player = characterService.GetPlayer();
+                const auto& healthComp = player.GetHealthComponent();
+                if (e.CurrentHealth > 0 && e.CurrentHealth <= healthComp.GetMaxHealth() * 0.3f)
+                    PlaySoundMem(assetService.GetSoundHandle(ESound::Warning), DX_PLAYTYPE_BACK);
+            }
+            else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
+            {
+                PlaySoundMem(assetService.GetSoundHandle(ESound::EnemyHurt), DX_PLAYTYPE_BACK);
+            }
+        }
+
+        void OnDeath(const DeathEvent& e) const
+        {
+            auto tags = e.Victim->GetTags();
+            if (std::ranges::find(tags, ETag::Player) != tags.end())
+                PlaySoundMem(assetService.GetSoundHandle(ESound::Fail), DX_PLAYTYPE_BACK);
+            else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
+                PlaySoundMem(assetService.GetSoundHandle(ESound::Win), DX_PLAYTYPE_BACK);
         }
 
         void SetBgmTarget(float target)

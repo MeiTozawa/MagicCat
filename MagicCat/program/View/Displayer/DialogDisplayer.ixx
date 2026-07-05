@@ -18,12 +18,20 @@ namespace mc {
         constexpr int DIALOG_TAIL_HEIGHT = 16;
     }
 
+    /// @brief キャラクターの発言（吹き出しダイアログ）を画面上に描画するディスプレイヤー
     export class DialogDisplayer : public Displayer
     {
     public:
+        /// @brief 描画先の基準位置を指定してDialogDisplayerを構築する
+        /// @param renderService レンダリング服务への参照
+        /// @param centerX 吹き出しの横方向の中心X座標
+        /// @param topY 吹き出しの上端Y座標
         DialogDisplayer(IRenderService& renderService, int centerX, int topY)
             : renderService(renderService), centerX(centerX), topY(topY) {}
 
+        /// @brief ダイアログ内に表示するメッセージと文字色を設定する
+        /// @param message 表示するワイド文字列
+        /// @param messageColor 文字とダイアログ枠の色（RGB16進数）
         void SetMessage(const std::wstring& message, uint32_t messageColor)
         {
             text = message;

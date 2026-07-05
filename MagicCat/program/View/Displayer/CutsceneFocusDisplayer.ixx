@@ -18,6 +18,16 @@ namespace mc {
     public:
         static constexpr float DEFAULT_DURATION = 0.5f;
 
+        /// @brief アニメーション情報と枠の形状を指定してCutsceneFocusDisplayerを構築する
+        /// @param renderService レンダリングサービスへの参照
+        /// @param source 移動開始の中心座標(x, y)
+        /// @param destination 移動終着の中心座標(x, y)
+        /// @param halfWidth 枠の半幅
+        /// @param halfHeight 枠の半高
+        /// @param cornerRadius 枠の角の丸み半径
+        /// @param thickness 枠の太さ
+        /// @param color 枠の色（RGB16進数）
+        /// @param duration アニメーションの総時間（秒）
         CutsceneFocusDisplayer(IRenderService& renderService,
                                Point<float> source, Point<float> destination,
                                float halfWidth, float halfHeight,

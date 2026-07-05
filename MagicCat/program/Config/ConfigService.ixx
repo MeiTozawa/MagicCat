@@ -7,6 +7,7 @@ module;
 export module ConfigService;
 
 namespace mc {
+    /// @brief 敵キャラクターの初期ステータスを設定する構造体
     export struct EnemyConfig
     {
         int hp;
@@ -18,12 +19,14 @@ namespace mc {
         std::string spriteName;
     };
 
+    /// @brief カードの初期設定（種類と数値）を保持する構造体
     export struct CardConfig
     {
         int type;
         int value;
     };
 
+    /// @brief プレイヤーキャラクターの初期パラメータと魔法のバランス調整用数値を保持する構造体
     export struct PlayerConfig
     {
         int initialHp;
@@ -40,18 +43,32 @@ namespace mc {
         int maxHealUses;
     };
 
+    /// @brief ゲーム進行に関わる全体的な設定を保持する構造体
     export struct GameConfig
     {
         int battleCount;
     };
 
+    /// @brief 各種設定データ（カード、敵、プレイヤー、ゲーム設定）のロードおよび管理を担当するインターフェース
     export class IConfigService
     {
     public:
         virtual ~IConfigService() = default;
+
+        /// @brief ロードされたカード設定のリストを取得する
+        /// @return カード設定のリスト
         virtual const std::vector<CardConfig>& GetCardConfigs() const = 0;
+
+        /// @brief ロードされた敵設定のリストを取得する
+        /// @return 敵設定のリスト
         virtual const std::vector<EnemyConfig>& GetEnemyConfigs() const = 0;
+
+        /// @brief プレイヤーの初期パラメータや魔法の設定を取得する
+        /// @return プレイヤーの設定
         virtual const PlayerConfig& GetPlayerConfig() const = 0;
+
+        /// @brief ゲーム進行に関する全体設定を取得する
+        /// @return ゲーム設定
         virtual const GameConfig& GetGameConfig() const = 0;
     };
 

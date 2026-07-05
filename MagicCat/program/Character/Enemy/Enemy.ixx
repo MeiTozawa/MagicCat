@@ -12,6 +12,7 @@ import AssetService;
 import Player;
 
 namespace mc {
+    /// @brief 敵の手の出現重み（ウェイト）が変更されたときに発行されるイベント
     export struct AddWeightEvent : IEvent
     {
         EAttackType AttackType;
@@ -19,9 +20,18 @@ namespace mc {
         AddWeightEvent(EAttackType attackType, int offset) : AttackType(attackType), Offset(offset) {}
     };
 
+    /// @brief 敵キャラクターを表すクラス。行動パターンの確率制御や状態管理を行います。
     export class Enemy : public Character
     {
     public:
+        /// @brief パラメータを指定して敵キャラクターを構築する
+        /// @param baseWeight 基本ウェイト値（各手の出現確率の基本値）
+        /// @param rockDamage 石の基礎ダメージ
+        /// @param scissorsDamage 鋏の基礎ダメージ
+        /// @param paperDamage 紙の基礎ダメージ
+        /// @param name 敵キャラクターの名前
+        /// @param sprite スプライトID
+        /// @param hp 敵キャラクターの初期HP
         Enemy(int baseWeight = 0, int rockDamage = 0, int scissorsDamage = 0, int paperDamage = 0,
               const std::wstring& name = L"Unknown", ESprite sprite = ESprite::Null, int hp = 10)
             : baseWeight(baseWeight)
@@ -40,6 +50,13 @@ namespace mc {
 
         /// @brief 既存の Enemy インスタンスを破棄・再生成せず、その内部データを
         /// 新しい敵の設定で上書きする。HealthComponent や Enemy への参照は維持される。
+        /// @param baseWeight 基本ウェイト値
+        /// @param rockDamage 石の基礎ダメージ
+        /// @param scissorsDamage 鋏の基礎ダメージ
+        /// @param paperDamage 紙の基礎ダメージ
+        /// @param name 敵キャラクターの名前
+        /// @param sprite スプライトID
+        /// @param hp 敵キャラクターの初期HP
         void Reset(int baseWeight, int rockDamage, int scissorsDamage, int paperDamage,
                    const std::wstring& name, ESprite sprite, int hp)
         {
@@ -54,6 +71,9 @@ namespace mc {
             isExposed = false;
         }
 
+        /// @brief 指定した攻撃タイプ（手）の出現ウェイトにオフセットを追加する
+        /// @param t 攻撃タイプ
+        /// @param weight 追加するウェイト値
         void AddWeight(EAttackType t, int weight)
         {
             switch (t)
@@ -67,6 +87,8 @@ namespace mc {
             }
         }
 
+        /// @brief 敵の次の攻撃（手）を現在の出現ウェイトの比率からランダムに決定する
+        /// @return 決定した攻撃タイプ
         EAttackType GetAttackIntent() const
         {
             int rockWeight     = baseWeight + rockWeightOffset;
@@ -78,6 +100,9 @@ namespace mc {
             return mappedTypes[index];
         }
 
+        /// @brief プレイヤーが特定の攻撃を出したとき、この敵が「負ける確率」を計算する
+        /// @param playerAttack プレイヤーの攻撃タイプ
+        /// @return 負ける確率（0.0f 〜 1.0f）
         float GetLoseRateAgainst(EAttackType playerAttack) const
         {
             int rockWeight     = baseWeight + rockWeightOffset;
@@ -94,6 +119,7 @@ namespace mc {
             return static_cast<float>(losingWeight) / total;
         }
 
+        /// @brief 敵の等価比較演算子
         bool operator==(const Enemy& e) const
         {
             return name == e.name &&
@@ -103,6 +129,9 @@ namespace mc {
                 paperDamage == e.paperDamage;
         }
 
+        /// @brief 特定の攻撃タイプに対する出現ウェイトオフセットを取得する
+        /// @param t 攻撃タイプ
+        /// @return ウェイトオフセット値
         int GetWeightOffset(EAttackType t) const
         {
             switch (t)
@@ -116,12 +145,23 @@ namespace mc {
             }
         }
 
+        /// @brief 敵の次の攻撃意図（手）がプレイヤーに見えている（露出している）かどうかを取得する
+        /// @return 露出している場合はtrue、そうでない場合はfalse
         bool IsExposed() const { return isExposed; }
+
+        /// @brief 敵の基本出現ウェイトを取得する
+        /// @return 基本ウェイト値
         int GetBaseWeight() const { return baseWeight; }
+
+        /// @brief 敵のライフ（HealthComponent）への参照を取得する
+        /// @return HealthComponentへの参照
         const HealthComponent& GetHealthComponent() const { return *healthComp; }
 
+        /// @brief 敵がダメージを受ける処理
+        /// @param amount ダメージ量
         void TakeDamage(int amount) const override { healthComp->TakeDamage(amount); }
 
+        /// @brief 各手の出現ウェイトオフセットをリセット（0）する
         void ResetWeights()
         {
             rockWeightOffset = 0;
@@ -129,6 +169,8 @@ namespace mc {
             paperWeightOffset = 0;
         }
 
+        /// @brief 敵の攻撃意図の露出状態を設定する
+        /// @param exposed 設定する露出状態
         void SetExposed(bool exposed) { isExposed = exposed; }
 
     private:

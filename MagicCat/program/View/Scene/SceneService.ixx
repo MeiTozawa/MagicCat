@@ -19,12 +19,16 @@ namespace mc {
     };
 
 
+    /// @brief カットシーンシーンに遷移した際に発行されるイベント
     export struct EnterCutSceneEvent : IEvent {};
 
+    /// @brief カットシーンシーンから退出した際に発行されるイベント
     export struct ExitCutSceneEvent : IEvent {};
 
+    /// @brief カットシーン全体の演出アニメーションが完了した際に発行されるイベント
     export struct CutsceneFinishedEvent : IEvent {};
 
+    /// @brief プレイヤーがカード選択や魔法選択を変更した際に発行されるイベント
     export struct ActionSelectionEvent : IEvent
     {
         int selectedIndex;
@@ -42,7 +46,7 @@ namespace mc {
         virtual ~IView() = default;
 
         /// @brief フレームごとの更新処理を行う
-        /// @param deltaTime 前回のフレームからの経過時間
+        /// @param deltaTime 前回のフレームからの経過時間（秒）
         virtual void Update(float deltaTime) = 0;
     };
 
@@ -56,7 +60,7 @@ namespace mc {
         virtual void Start() = 0;
 
         /// @brief シーンの毎フレームの更新処理を行う
-        /// @param deltaTime 前回のフレームからの経過時間
+        /// @param deltaTime 前回のフレームからの経過時間（秒）
         virtual void Update(float deltaTime) = 0;
     };
 
@@ -68,7 +72,7 @@ namespace mc {
         virtual ~ISceneService() = default;
 
         /// @brief 現在アクティブなシーンの更新処理を行う
-        /// @param deltaTime 前回のフレームからの経過時間
+        /// @param deltaTime 前回のフレームからの経過時間（秒）
         virtual void Update(float deltaTime) = 0;
 
         /// @brief 新しいシーンをスタックに積み、アクティブにする

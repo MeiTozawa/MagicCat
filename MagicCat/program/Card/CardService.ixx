@@ -31,6 +31,7 @@ namespace mc {
         }
     }
 
+    /// @brief カードのデータ（種類とパワー値）を表す構造体
     export struct Card
     {
         ECardType CardType;
@@ -54,19 +55,25 @@ namespace mc {
         virtual void DiscardHand() = 0;
 
         /// @brief 現在の手札のリストを取得する
+        /// @return 手札のカードリスト
         virtual std::vector<Card> GetHandCards() = 0;
 
         /// @brief 現在の山札のリストを取得する
+        /// @return 山札のカードリスト
         virtual std::vector<Card> GetDrawCards() = 0;
 
         /// @brief 現在の捨て札のリストを取得する
+        /// @return 捨て札のカードリスト
         virtual std::vector<Card> GetDiscardCards() = 0;
     };
 
+    /// @brief プレイヤーがカードを引いたときに発行されるイベント
     export struct DrawCardEvent : IEvent {};
 
+    /// @brief 捨て札から山札へのリシャッフルが発生したときに発行されるイベント
     export struct ShuffleEvent : IEvent {};
 
+    /// @brief 山札または捨て札の枚数が更新されたときに発行されるイベント
     export struct DeckUpdatedEvent : IEvent
     {
         DeckUpdatedEvent(const size_t draw_pile_count, const size_t discard_pile_count)
@@ -77,6 +84,7 @@ namespace mc {
         const size_t discardPileCount;
     };
 
+    /// @brief 手札が更新されたときに発行されるイベント
     export struct HandUpdatedEvent : IEvent
     {
         explicit HandUpdatedEvent(std::vector<Card> cards)

@@ -29,8 +29,7 @@ namespace mc {
     /// @brief ステージ開始時（敵 Sequence の準備完了後）に発行されるイベント
     export struct StageStartedEvent : IEvent {};
 
-    /// @brief このゲームでは、プレイヤーは {BATTLE_COUNT} 回の戦闘を行う必要があります
-    /// ステージの進行状態（Sequence、Current_Enemy_Index、ステージ結果）と
+    /// @brief ステージの進行状態（Sequence、Current_Enemy_Index、ステージ結果）と
     /// キャラクター（プレイヤーおよび敵）の管理を行うサービス
     export class IBattleService
     {
@@ -38,28 +37,31 @@ namespace mc {
         virtual ~IBattleService() = default;
 
         /// @brief 新しいステージを開始する。
-        /// EnemyPool から BATTLE_COUNT 体を抽選し、プレイヤー・CardService を初期化する。
+        /// EnemyPool から敵を抽選し、プレイヤー・CardService を初期化する。
         virtual void StartStage() = 0;
 
-        /// @brief 現在挑戦中の敵インデックスを返す（0–2）。
+        /// @brief 現在挑戦中の敵のインデックスを取得する。
+        /// @return 敵のインデックス
         virtual int GetCurrentEnemyIndex() const = 0;
 
-        /// @brief 今ステージで選ばれた敵の Sequence を返す（長さ 3）。
+        /// @brief 今ステージで選ばれた敵の Sequence を取得する。
+        /// @return 敵の構成情報のリスト
         virtual const std::vector<EnemyConfig>& GetSequence() const = 0;
 
-        /// @brief 指定した EnemyConfig に基づいて敵キャラクターを読み込む
+        /// @brief 指定した EnemyConfig に基づいて敵キャラクターを読み込む、または再初期化する
         /// @param config 読み込む敵の設定
         virtual void LoadEnemy(const EnemyConfig& config) = 0;
 
-        /// @brief 敵キャラクターのインスタンスを取得する
+        /// @brief 現在の敵キャラクターのインスタンスへの参照を取得する
         /// @return 敵キャラクターの参照
         virtual Enemy& GetEnemy() = 0;
 
-        /// @brief プレイヤーキャラクターのインスタンスを取得する
+        /// @brief プレイヤーキャラクターのインスタンスへの参照を取得する
         /// @return プレイヤーキャラクターの参照
         virtual Player& GetPlayer() = 0;
 
-        /// @brief 現在のステージにおける敵の総数を返す。
+        /// @brief 現在のステージにおける敵の総数を取得する。
+        /// @return 敵の総数
         virtual int GetTotalEnemyCount() const = 0;
     };
 

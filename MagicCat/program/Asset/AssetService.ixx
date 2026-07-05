@@ -61,22 +61,47 @@ namespace mc {
         TinyChick
     };
 
+    /// @brief スプライト画像の詳細情報（サイズとフレーム数）を保持する構造体
     export struct SpriteInfo
     {
         Point<int> size;
         size_t frame;
     };
 
+    /// @brief 画像、フォント、スプライト、音源などのアセットハンドル管理を担当するインターフェース
     export class IAssetService
     {
     public:
         virtual ~IAssetService() = default;
-        virtual int GetImageHandle(EImage) = 0;
-        virtual int GetFontHandle(EFont) = 0;
-        virtual int GetSpriteHandle(ESprite) = 0;
-        virtual SpriteInfo GetSpriteInfo(ESprite) = 0;
-        virtual int GetSoundHandle(ESound) = 0;
+
+        /// @brief 指定した画像アセットのDxLibグラフィックハンドルを取得する
+        /// @param image 画像アセットのID
+        /// @return グラフィックハンドル
+        virtual int GetImageHandle(EImage image) = 0;
+
+        /// @brief 指定したフォントアセットのDxLibフォントハンドルを取得する
+        /// @param font フォントアセットのID
+        /// @return フォントハンドル
+        virtual int GetFontHandle(EFont font) = 0;
+
+        /// @brief 指定したスプライトアセットのDxLibグラフィックハンドルを取得する
+        /// @param sprite スプライトアセットのID
+        /// @return グラフィックハンドル
+        virtual int GetSpriteHandle(ESprite sprite) = 0;
+
+        /// @brief スプライトアセットの詳細情報（サイズやフレーム数）を取得する
+        /// @param sprite スプライトアセットのID
+        /// @return SpriteInfo構造体
+        virtual SpriteInfo GetSpriteInfo(ESprite sprite) = 0;
+
+        /// @brief 指定した音源アセットのDxLibサウンドハンドルを取得する
+        /// @param sound 音源アセットのID
+        /// @return サウンドハンドル
+        virtual int GetSoundHandle(ESound sound) = 0;
+
         /// @brief スプライト名の文字列を ESprite 列挙値に変換する。未知の名前は ESprite::Null を返す。
+        /// @param name スプライト名の文字列
+        /// @return 対応するESprite列挙値
         virtual ESprite ParseSprite(const std::string& name) const = 0;
     };
 

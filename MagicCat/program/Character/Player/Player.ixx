@@ -12,12 +12,14 @@ import AssetService;
 import ConfigService;
 
 namespace mc {
+    /// @brief プレイヤーの戦闘アクション（手）を表す列挙型
     export enum class EPlayerAction
     {
         Null = -1,
         Rock, Scissors, Paper, Magic
     };
 
+    /// @brief プレイヤーが使用できる魔法の種類を表す列挙型
     export enum class EMagic
     {
         Null = -1,
@@ -26,14 +28,17 @@ namespace mc {
         Heal
     };
 
+    /// @brief プレイヤーのMP増減時に発行されるイベント
     export struct ChangeMpEvent : IEvent
     {
         int offset;
         explicit ChangeMpEvent(int offset) : offset(offset) {}
     };
 
+    /// @brief プレイヤーのMPが不足しているときに発行されるイベント
     export struct LackOfMpEvent : IEvent {};
 
+    /// @brief プレイヤーが魔法を発動したときに発行されるイベント
     export struct MagicEvent : IEvent
     {
         EMagic magic;
@@ -47,6 +52,8 @@ namespace mc {
     export class Player : public Character
     {
     public:
+        /// @brief デフォルトの設定データを取得する（テストおよびフォールバック用）
+        /// @return デフォルトのプレイヤー設定
         static PlayerConfig GetDefaultConfig()
         {
             PlayerConfig config;
@@ -65,8 +72,12 @@ namespace mc {
             return config;
         }
 
+        /// @brief デフォルト設定でプレイヤーを構築する
         Player() : Player(GetDefaultConfig(), ESprite::MeowingCat) {}
 
+        /// @brief 設定データとスプライトを指定してプレイヤーを構築する
+        /// @param config プレイヤー設定データ
+        /// @param spriteVal プレイヤースプライト
         Player(const PlayerConfig& config, ESprite spriteVal)
         {
             name = L"Player";
@@ -103,9 +114,17 @@ namespace mc {
             if (mp < 0)     mp = 0;
         }
 
+        /// @brief 現在のMPを取得する
+        /// @return 現在のMP
         int GetMp() const { return mp; }
+
+        /// @brief 最大MPを取得する
+        /// @return 最大MP
         int GetMaxMp() const { return maxMp; }
 
+        /// @brief 指定した魔法が使用可能か（MPや回数の制限をクリアしているか）判定する
+        /// @param e 魔法の種類
+        /// @return 使用可能ならtrue、そうでなければfalse
         bool IsMagicUsable(EMagic e) const
         {
             switch (e)
@@ -120,6 +139,7 @@ namespace mc {
         /**
          * @brief 魔法を使用します。
          * @param e 使用する魔法の種類
+         * @return 発動に成功した場合はtrue、失敗した場合はfalse
          */
         bool UseMagic(EMagic e)
         {
@@ -135,8 +155,12 @@ namespace mc {
             }
         }
 
+        /// @brief プレイヤーのライフ（HealthComponent）への参照を取得する
+        /// @return HealthComponentへの参照
         const HealthComponent& GetHealthComponent() const { return *healthComp; }
 
+        /// @brief プレイヤーがダメージを受ける処理
+        /// @param amount ダメージ量
         void TakeDamage(int amount) const override { healthComp->TakeDamage(amount); }
 
     private:

@@ -12,6 +12,7 @@ module;
 export module EventBus;
 
 namespace mc {
+    /// @brief ゲーム内イベントクラスの基底インターフェース
     export struct IEvent
     {
         virtual ~IEvent() = default;
@@ -19,9 +20,14 @@ namespace mc {
 
     export using EventHandle = uint64_t;
 
+    /// @brief イベントの購読（Subscribe）、解除（Unsubscribe）、および発火（Publish）を仲介する静的イベントバス
     export class EventBus
     {
     public:
+        /// @brief 特定のイベントに対するコールバックを登録する
+        /// @tparam TEvent 購読対象のイベントクラス
+        /// @param callback イベント発生時に呼び出される関数
+        /// @return 登録の解除に使用するEventHandle
         template <std::derived_from<IEvent> TEvent>
         static EventHandle Subscribe(std::function<void(const TEvent&)> callback)
         {
@@ -51,6 +57,8 @@ namespace mc {
             return handle;
         }
 
+        /// @brief 指定したハンドルを用いてイベント購読を解除する
+        /// @param handle 解除対象のEventHandle
         static void Unsubscribe(EventHandle handle)
         {
             std::unique_lock lock(GetMutex());
@@ -82,6 +90,9 @@ namespace mc {
             map.erase(itMap);
         }
 
+        /// @brief 指定したイベントを発行し、購読しているすべてのコールバックを実行する
+        /// @tparam TEvent 発行するイベントクラス
+        /// @param event 発行するイベントインスタンス
         template <std::derived_from<IEvent> TEvent>
         static void Publish(const TEvent& event)
         {

@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 #include <memory>
 #include <RenderUtils.h>
@@ -44,27 +44,32 @@ namespace mc {
                     selectedActionIndex--;
                     EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
                 }
+                return;
             }
-            else if (inputService.IsPressed(InputAction::Down))
+            if (inputService.IsPressed(InputAction::Down))
             {
                 if (selectedActionIndex < ACTION_MAX)
                 {
                     selectedActionIndex++;
                     EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
                 }
+                return;
             }
-            else if (inputService.IsPressed(InputAction::Confirm))
+            if (inputService.IsPressed(InputAction::Confirm))
             {
                 HandleConfirm();
+                return;
             }
-            else if (inputService.IsPressed(InputAction::DrawCard))
+            if (inputService.IsPressed(InputAction::DrawCard))
             {
                 ProcessDrawCard(cardService.DrawCard());
                 EventBus::Publish(DrawCardEvent());
+                return;
             }
-            else if (inputService.IsPressed(InputAction::ToggleMenu))
+            if (inputService.IsPressed(InputAction::ToggleMenu))
             {
                 sceneService.PushScene(ESceneState::Rules);
+                return;
             }
         }
 
@@ -74,8 +79,9 @@ namespace mc {
             {
                 isMagicMenuOpen = !isMagicMenuOpen;
                 EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
+                return;
             }
-            else if (isMagicMenuOpen)
+            if (isMagicMenuOpen)
             {
                 if (TryUseMagic(selectedActionIndex))
                 {
@@ -83,39 +89,46 @@ namespace mc {
                     selectedActionIndex = ACTION_MAGIC;
                     EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
                 }
+                return;
             }
-            else
+            ResolveAttack(selectedActionIndex);
+        }
+
+        bool TryUseMagic(int index) const
+        {
+            switch (index)
             {
-                ResolveAttack(selectedActionIndex);
+            case 1:
+                {
+                    bool success = characterService.GetPlayer().UseMagic(EMagic::Clairvoyance);
+                    if (success) characterService.GetEnemy().SetExposed(true);
+                    return success;
+                }
+            case 2:
+                return characterService.GetPlayer().UseMagic(EMagic::PowerBoost);
+            case 3:
+                return characterService.GetPlayer().UseMagic(EMagic::Heal);
+            default:
+                return false;
             }
         }
 
-        bool TryUseMagic(int index)
+        std::optional<EAttackType> GetAttackTypeFromIndex(int index) const
         {
-            bool success = false;
-            if (index == 1)
+            switch (index)
             {
-                success = characterService.GetPlayer().UseMagic(EMagic::Clairvoyance);
-                if (success) characterService.GetEnemy().SetExposed(true);
+            case ACTION_ROCK:     return EAttackType::Rock;
+            case ACTION_SCISSORS: return EAttackType::Scissors;
+            case ACTION_PAPER:    return EAttackType::Paper;
+            default:              return std::nullopt;
             }
-            else if (index == 2)
-            {
-                success = characterService.GetPlayer().UseMagic(EMagic::PowerBoost);
-            }
-            else if (index == 3)
-            {
-                success = characterService.GetPlayer().UseMagic(EMagic::Heal);
-            }
-            return success;
         }
 
-        void ResolveAttack(int actionIndex)
+        void ResolveAttack(int actionIndex) const
         {
-            EAttackType playerAttackIntent;
-            if      (actionIndex == ACTION_ROCK)     playerAttackIntent = EAttackType::Rock;
-            else if (actionIndex == ACTION_SCISSORS) playerAttackIntent = EAttackType::Scissors;
-            else if (actionIndex == ACTION_PAPER)    playerAttackIntent = EAttackType::Paper;
-            else return;
+            auto playerAttackIntentOpt = GetAttackTypeFromIndex(actionIndex);
+            if (!playerAttackIntentOpt) return;
+            EAttackType playerAttackIntent = *playerAttackIntentOpt;
 
             EAttackType enemyAttackIntent = characterService.GetEnemy().GetAttackIntent();
             float playerWinRate = characterService.GetEnemy().GetLoseRateAgainst(playerAttackIntent);
@@ -142,7 +155,7 @@ namespace mc {
             );
         }
 
-        void ProcessDrawCard(Card c)
+        void ProcessDrawCard(Card c) const
         {
             if (c.CardType == ECardType::Magic)
             {
@@ -154,28 +167,30 @@ namespace mc {
             }
         }
 
+        std::optional<int> GetHoveredActionMenuRow(int mx, int my) const
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                int x1 = ACTION_MENU_X;
+                int y1 = ACTION_MENU_Y + i * ACTION_MENU_STEP_Y;
+                int x2 = x1 + ACTION_MENU_W;
+                int y2 = y1 + ACTION_MENU_H;
+                if (mx >= x1 && mx < x2 && my >= y1 && my < y2)
+                    return i;
+            }
+            return std::nullopt;
+        }
+
         void HandleMouseHover()
         {
             if (inputService.GetActiveDevice() != InputDevice::Mouse) return;
 
             auto mousePos = inputService.GetMousePosition();
-            int mx = mousePos.x;
-            int my = mousePos.y;
-            for (int i = 0; i < 4; ++i)
+            auto rowOpt = GetHoveredActionMenuRow(mousePos.x, mousePos.y);
+            if (rowOpt && selectedActionIndex != *rowOpt)
             {
-                int hx1 = ACTION_MENU_X;
-                int hy1 = ACTION_MENU_Y + i * ACTION_MENU_STEP_Y;
-                int hx2 = hx1 + ACTION_MENU_W;
-                int hy2 = hy1 + ACTION_MENU_H;
-                if (mx >= hx1 && mx < hx2 && my >= hy1 && my < hy2)
-                {
-                    if (selectedActionIndex != i)
-                    {
-                        selectedActionIndex = i;
-                        EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
-                    }
-                    break;
-                }
+                selectedActionIndex = *rowOpt;
+                EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
             }
         }
 
@@ -194,17 +209,9 @@ namespace mc {
             }
 
             // ActionMenu 行クリック
-            for (int i = 0; i < 4; ++i)
+            if (auto rowOpt = GetHoveredActionMenuRow(click.x, click.y))
             {
-                int x1 = ACTION_MENU_X;
-                int y1 = ACTION_MENU_Y + i * ACTION_MENU_STEP_Y;
-                int x2 = x1 + ACTION_MENU_W;
-                int y2 = y1 + ACTION_MENU_H;
-                if (click.x >= x1 && click.x < x2 && click.y >= y1 && click.y < y2)
-                {
-                    HandleActionMenuClick(i);
-                    return;
-                }
+                HandleActionMenuClick(*rowOpt);
             }
         }
 
@@ -218,8 +225,10 @@ namespace mc {
                     selectedActionIndex = ACTION_MAGIC;
                     EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
                 }
+                return;
             }
-            else if (selectedActionIndex == clickedRow)
+
+            if (selectedActionIndex == clickedRow)
             {
                 // 同じ行を再クリック → Confirm 相当
                 if (selectedActionIndex == ACTION_MAGIC)
@@ -231,12 +240,11 @@ namespace mc {
                 {
                     ResolveAttack(selectedActionIndex);
                 }
+                return;
             }
-            else
-            {
-                selectedActionIndex = clickedRow;
-                EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
-            }
+
+            selectedActionIndex = clickedRow;
+            EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
         }
 
         IInputService& inputService;

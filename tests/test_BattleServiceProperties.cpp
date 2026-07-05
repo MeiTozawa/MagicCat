@@ -28,6 +28,8 @@ class StubConfigService : public IConfigService
 {
     std::vector<EnemyConfig> enemies_;
     std::vector<CardConfig>  cards_;
+    PlayerConfig playerConfig_ = Player::GetDefaultConfig();
+    GameConfig gameConfig_{ 3 };
 public:
     explicit StubConfigService(
         std::vector<EnemyConfig> enemies = {
@@ -42,6 +44,8 @@ public:
 
     const std::vector<CardConfig>&  GetCardConfigs()  const override { return cards_;   }
     const std::vector<EnemyConfig>& GetEnemyConfigs() const override { return enemies_; }
+    const PlayerConfig& GetPlayerConfig() const override { return playerConfig_; }
+    const GameConfig& GetGameConfig() const override { return gameConfig_; }
 };
 
 class TaggedCharacter : public Character

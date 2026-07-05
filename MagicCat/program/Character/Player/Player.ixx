@@ -9,6 +9,7 @@ import Character;
 import HealthComponent;
 import EventBus;
 import AssetService;
+import ConfigService;
 
 namespace mc {
     export enum class EPlayerAction
@@ -46,19 +47,48 @@ namespace mc {
     export class Player : public Character
     {
     public:
-        Player()
+        static PlayerConfig GetDefaultConfig()
+        {
+            PlayerConfig config;
+            config.initialHp = 15;
+            config.maxMp = 10;
+            config.rockDamage = 2;
+            config.scissorsDamage = 2;
+            config.paperDamage = 2;
+            config.spriteName = "MeowingCat";
+            config.clairvoyanceMpCost = 10;
+            config.powerBoostMpCost = 7;
+            config.powerBoostDamageOffset = 2;
+            config.healMpCost = 5;
+            config.healAmount = 2;
+            config.maxHealUses = 3;
+            return config;
+        }
+
+        Player() : Player(GetDefaultConfig(), ESprite::MeowingCat) {}
+
+        Player(const PlayerConfig& config, ESprite spriteVal)
         {
             name = L"Player";
-            sprite = ESprite::MeowingCat;
-            rockDamage = 2;
-            scissorsDamage = 2;
-            paperDamage = 2;
+            sprite = spriteVal;
+            rockDamage = config.rockDamage;
+            scissorsDamage = config.scissorsDamage;
+            paperDamage = config.paperDamage;
+            maxMp = config.maxMp;
+            mp = 0;
 #ifdef _DEBUG
             maxMp = 100;
             mp = 10;
 #endif
-            healthComp = std::make_unique<HealthComponent>(this, 15);
+            healthComp = std::make_unique<HealthComponent>(this, config.initialHp);
             tags.push_back(ETag::Player);
+
+            clairvoyanceMpCost = config.clairvoyanceMpCost;
+            powerBoostMpCost = config.powerBoostMpCost;
+            powerBoostDamageOffset = config.powerBoostDamageOffset;
+            healMpCost = config.healMpCost;
+            healAmount = config.healAmount;
+            maxHealUses = config.maxHealUses;
         }
 
         /**
@@ -80,9 +110,9 @@ namespace mc {
         {
             switch (e)
             {
-            case EMagic::Clairvoyance: return !hasUsedClairvoyance && mp >= CLAIRVOYANCE_MP_COST;
-            case EMagic::PowerBoost:   return mp >= POWER_BOOST_MP_COST;
-            case EMagic::Heal:         return healUses < 3 && mp >= HEAL_MP_COST;
+            case EMagic::Clairvoyance: return !hasUsedClairvoyance && mp >= clairvoyanceMpCost;
+            case EMagic::PowerBoost:   return mp >= powerBoostMpCost;
+            case EMagic::Heal:         return healUses < maxHealUses && mp >= healMpCost;
             default:                   return false;
             }
         }
@@ -113,9 +143,9 @@ namespace mc {
         bool UseClairvoyance()
         {
             if (hasUsedClairvoyance) return false;
-            if (mp >= CLAIRVOYANCE_MP_COST)
+            if (mp >= clairvoyanceMpCost)
             {
-                ChangeMp(-CLAIRVOYANCE_MP_COST);
+                ChangeMp(-clairvoyanceMpCost);
                 hasUsedClairvoyance = true;
                 EventBus::Publish<MagicEvent>(MagicEvent{EMagic::Clairvoyance});
                 return true;
@@ -126,10 +156,10 @@ namespace mc {
 
         bool UsePowerBoost()
         {
-            if (mp >= POWER_BOOST_MP_COST)
+            if (mp >= powerBoostMpCost)
             {
-                ChangeMp(-POWER_BOOST_MP_COST);
-                SetDamageOffset(2);
+                ChangeMp(-powerBoostMpCost);
+                SetDamageOffset(powerBoostDamageOffset);
                 EventBus::Publish<MagicEvent>(MagicEvent{EMagic::PowerBoost});
                 return true;
             }
@@ -139,12 +169,12 @@ namespace mc {
 
         bool UseHeal()
         {
-            if (healUses >= 3) return false;
-            if (mp >= HEAL_MP_COST)
+            if (healUses >= maxHealUses) return false;
+            if (mp >= healMpCost)
             {
-                ChangeMp(-HEAL_MP_COST);
+                ChangeMp(-healMpCost);
                 healUses++;
-                healthComp->Heal(2);
+                healthComp->Heal(healAmount);
                 EventBus::Publish<MagicEvent>(MagicEvent{EMagic::Heal});
                 return true;
             }
@@ -152,15 +182,16 @@ namespace mc {
             return false;
         }
 
-        static constexpr int DEFAULT_MAX_MP      = 10;
-        static constexpr int CLAIRVOYANCE_MP_COST = 10;
-        static constexpr int POWER_BOOST_MP_COST  = 7;
-        static constexpr int HEAL_MP_COST         = 5;
-
         std::unique_ptr<HealthComponent> healthComp;
         bool hasUsedClairvoyance = false;
         int healUses = 0;
         int mp = 0;
-        int maxMp = DEFAULT_MAX_MP;
+        int maxMp = 10;
+        int clairvoyanceMpCost = 10;
+        int powerBoostMpCost = 7;
+        int powerBoostDamageOffset = 2;
+        int healMpCost = 5;
+        int healAmount = 2;
+        int maxHealUses = 3;
     };
 } // namespace mc

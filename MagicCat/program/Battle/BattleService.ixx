@@ -29,7 +29,8 @@ namespace mc {
     /// @brief ステージ開始時（敵 Sequence の準備完了後）に発行されるイベント
     export struct StageStartedEvent : IEvent {};
 
-    /// @brief ステージの進行状態（Sequence、Current_Enemy_Index、ステージ結果）と
+    /// @brief このゲームでは、プレイヤーは {BATTLE_COUNT} 回の戦闘を行う必要があります
+    /// ステージの進行状態（Sequence、Current_Enemy_Index、ステージ結果）と
     /// キャラクター（プレイヤーおよび敵）の管理を行うサービス
     export class IBattleService
     {
@@ -37,7 +38,7 @@ namespace mc {
         virtual ~IBattleService() = default;
 
         /// @brief 新しいステージを開始する。
-        /// EnemyPool から 3 体を抽選し、プレイヤー・CardService を初期化する。
+        /// EnemyPool から BATTLE_COUNT 体を抽選し、プレイヤー・CardService を初期化する。
         virtual void StartStage() = 0;
 
         /// @brief 現在挑戦中の敵インデックスを返す（0–2）。

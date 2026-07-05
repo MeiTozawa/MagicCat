@@ -1,0 +1,29 @@
+{
+  "stage": {
+    "battleCount": 3
+  },
+  "player": {
+    "initialHp": 15,
+    "maxMp": 10,
+    "sprite": "MeowingCat",
+    "damage": {
+      "rock": 2,
+      "scissors": 2,
+      "paper": 2
+    },
+    "magic": {
+      "clairvoyance": {
+        "mpCost": 10
+      },
+      "powerBoost": {
+        "mpCost": 7,
+        "damageOffset": 2
+      },
+      "heal": {
+        "mpCost": 5,
+        "healAmount": 2,
+        "maxUses": 3
+      }
+    }
+  }
+}

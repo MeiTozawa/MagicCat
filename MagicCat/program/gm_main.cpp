@@ -27,7 +27,7 @@ std::unique_ptr<IBattleService> battleService;
 
 void InitGameServices()
 {
-    configService = CreateConfigService("resource/json/card_config.json", "resource/json/enemy_config.json");
+    configService = CreateConfigService("resource/json/card_config.json", "resource/json/enemy_config.json", "resource/json/game_config.json");
     assetService = CreateAssetService();
     inputService = CreateInputService();
 

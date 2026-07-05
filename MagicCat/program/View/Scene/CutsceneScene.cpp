@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 #include <memory>
 #include <vector>
@@ -17,17 +17,15 @@ namespace mc {
     static constexpr float CUTSCENE_DURATION = 1.0f;
     static constexpr float SPRITE_EXT_RATE = 8.f;
 
-    static constexpr int SLOT_COUNT = 3;
-    static constexpr float SLOT_X_FRACTIONS[3] = {0.25f, 0.50f, 0.75f};
     static constexpr float SLOT_Y_FRACTION = 0.45f;
     static constexpr float BORDER_HALF_WIDTH = 96.f;
     static constexpr float BORDER_HALF_HEIGHT = 96.f;
     static constexpr int BORDER_CORNER_RADIUS = 16;
     static constexpr int BORDER_THICKNESS = 4;
 
-    static Point<float> SlotCenter(float screenW, float screenH, int slotIndex)
+    static Point<float> SlotCenter(float screenW, float screenH, int slotIndex, int slotCount)
     {
-        return {screenW * SLOT_X_FRACTIONS[slotIndex], screenH * SLOT_Y_FRACTION};
+        return {screenW * (slotIndex + 1) * (1.f / (1 + slotCount)), screenH * SLOT_Y_FRACTION};
     }
 
     struct EnemySlotView
@@ -42,13 +40,10 @@ namespace mc {
     class CutsceneScene : public IScene
     {
     public:
-        CutsceneScene(ISceneService& sceneService,
-                      IAssetService& assetService, IRenderService& renderService,
-                      IBattleService& battleService)
-            : sceneService(sceneService)
-              , assetService(assetService)
-              , renderService(renderService)
-              , battleService(battleService) {}
+        CutsceneScene(ISceneService& sceneService, IAssetService& assetService,
+                      IRenderService& renderService, IBattleService& battleService)
+            : sceneService(sceneService), assetService(assetService)
+              , renderService(renderService), battleService(battleService) {}
 
         void Start() override
         {
@@ -61,8 +56,8 @@ namespace mc {
             const auto& sequence = battleService.GetSequence();
             int rawIndex = battleService.GetCurrentEnemyIndex();
 
-            const int slotCount = std::min(SLOT_COUNT, static_cast<int>(sequence.size()));
-            const int currentIdx = std::clamp(rawIndex, 0, SLOT_COUNT - 1);
+            const int slotCount = static_cast<int>(sequence.size());
+            const int currentIdx = std::clamp(rawIndex, 0, slotCount - 1);
 
             slots.clear();
             for (int i = 0; i < slotCount; ++i)
@@ -72,15 +67,15 @@ namespace mc {
                 sv.sprite = assetService.ParseSprite(sequence[i].spriteName);
                 sv.spriteHandle = assetService.GetSpriteHandle(sv.sprite);
                 sv.info = assetService.GetSpriteInfo(sv.sprite);
-                sv.center = SlotCenter(screenW, screenH, i);
+                sv.center = SlotCenter(screenW, screenH, i, slotCount);
                 slots.push_back(sv);
             }
 
             const int srcIdx = std::max(0, currentIdx - 1);
             borderDisplayer = CreateCutsceneFocusDisplayer(
                 renderService,
-                SlotCenter(screenW, screenH, srcIdx),
-                SlotCenter(screenW, screenH, currentIdx),
+                SlotCenter(screenW, screenH, srcIdx, slotCount),
+                SlotCenter(screenW, screenH, currentIdx, slotCount),
                 BORDER_HALF_WIDTH, BORDER_HALF_HEIGHT,
                 BORDER_CORNER_RADIUS, BORDER_THICKNESS);
         }

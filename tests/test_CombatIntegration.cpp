@@ -33,6 +33,8 @@ namespace {
 
         std::vector<EnemyConfig> enemyConfigs;
         std::vector<CardConfig> cardConfigs;
+        PlayerConfig playerConfig = Player::GetDefaultConfig();
+        GameConfig gameConfig{ 3 };
 
         void SetUp() override {
             mockInput = std::make_unique<NiceMock<MockInputService>>();
@@ -45,6 +47,8 @@ namespace {
             };
             ON_CALL(*mockConfig, GetEnemyConfigs()).WillByDefault(testing::ReturnRef(enemyConfigs));
             ON_CALL(*mockConfig, GetCardConfigs()).WillByDefault(testing::ReturnRef(cardConfigs));
+            ON_CALL(*mockConfig, GetPlayerConfig()).WillByDefault(testing::ReturnRef(playerConfig));
+            ON_CALL(*mockConfig, GetGameConfig()).WillByDefault(testing::ReturnRef(gameConfig));
 
             cardService = CreateCardService(*mockConfig);
             sceneService = CreateSceneService();

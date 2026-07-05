@@ -16,6 +16,8 @@ class MockConfigService : public IConfigService {
 public:
     MOCK_METHOD(const std::vector<CardConfig>&, GetCardConfigs, (), (const, override));
     MOCK_METHOD(const std::vector<EnemyConfig>&, GetEnemyConfigs, (), (const, override));
+    MOCK_METHOD(const PlayerConfig&, GetPlayerConfig, (), (const, override));
+    MOCK_METHOD(const GameConfig&, GetGameConfig, (), (const, override));
 };
 
 class MockAssetService : public IAssetService {

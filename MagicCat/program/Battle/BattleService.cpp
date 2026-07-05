@@ -45,22 +45,25 @@ namespace mc {
 
             sequence.clear();
 
-            if (pool.size() >= 3)
+            int battleCount = configService.GetGameConfig().battleCount;
+
+            if (pool.size() >= battleCount)
             {
                 std::vector<EnemyConfig> copy(pool.begin(), pool.end());
                 Random::Shuffle(copy);
-                sequence.assign(copy.begin(), copy.begin() + 3);
+                sequence.assign(copy.begin(), copy.begin() + battleCount);
             }
             else
             {
-                // プールが少ない場合は重複を許して補充する
                 std::vector<EnemyConfig> mutablePool(pool.begin(), pool.end());
-                while (sequence.size() < 3)
+                while (sequence.size() < battleCount)
                     sequence.push_back(Random::Choice(mutablePool));
             }
 
             currentIndex = 0;
-            currentPlayer = std::make_unique<Player>();
+            const auto& playerConfig = configService.GetPlayerConfig();
+            ESprite playerSprite = assetService.ParseSprite(playerConfig.spriteName);
+            currentPlayer = std::make_unique<Player>(playerConfig, playerSprite);
             LoadEnemy(sequence[0]);
             cardService.Start();
             EventBus::Publish(StageStartedEvent{});

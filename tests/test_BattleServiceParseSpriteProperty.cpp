@@ -30,6 +30,8 @@ class SingleEnemyConfigService : public IConfigService
 {
     std::vector<EnemyConfig> enemies_;
     std::vector<CardConfig>  cards_;
+    PlayerConfig playerConfig_ = Player::GetDefaultConfig();
+    GameConfig gameConfig_{ 3 };
 public:
     explicit SingleEnemyConfigService(EnemyConfig enemy,
                                       std::vector<CardConfig> cards = {
@@ -41,6 +43,8 @@ public:
 
     const std::vector<CardConfig>&  GetCardConfigs()  const override { return cards_;   }
     const std::vector<EnemyConfig>& GetEnemyConfigs() const override { return enemies_; }
+    const PlayerConfig& GetPlayerConfig() const override { return playerConfig_; }
+    const GameConfig& GetGameConfig() const override { return gameConfig_; }
 };
 
 // For any spriteName string, BattleService::LoadEnemy must call
@@ -104,16 +108,24 @@ RC_GTEST_PROP(BattleServiceParseSpriteProperty,
     {
         std::vector<EnemyConfig> enemies_;
         std::vector<CardConfig>  cards_ = { { 0, 2 }, { 1, 2 }, { 2, 2 }, { 3, 2 } };
+        PlayerConfig playerConfig_ = Player::GetDefaultConfig();
+        GameConfig gameConfig_{ 3 };
     public:
         explicit MultiEnemyConfigService(std::vector<EnemyConfig> e)
             : enemies_(std::move(e)) {}
         const std::vector<CardConfig>&  GetCardConfigs()  const override { return cards_; }
         const std::vector<EnemyConfig>& GetEnemyConfigs() const override { return enemies_; }
+        const PlayerConfig& GetPlayerConfig() const override { return playerConfig_; }
+        const GameConfig& GetGameConfig() const override { return gameConfig_; }
     };
 
     MultiEnemyConfigService configService(pool);
 
     ::testing::NiceMock<MockAssetService> mockAsset;
+
+    EXPECT_CALL(mockAsset, ParseSprite("MeowingCat"))
+        .Times(::testing::AnyNumber())
+        .WillRepeatedly(Return(static_cast<ESprite>(0)));
 
     EXPECT_CALL(mockAsset, ParseSprite(spriteName))
         .Times(::testing::AtLeast(1))

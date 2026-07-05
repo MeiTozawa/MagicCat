@@ -139,19 +139,17 @@ namespace mc {
 
         void SetupEventHandlers()
         {
-            healthChangedEvent = EventBus::Subscribe<HealthChangedEvent>([this](const HealthChangedEvent& event)
-            {
-                auto tags = event.Victim->GetTags();
-                if (std::ranges::find(tags, ETag::Player) != tags.end())
-                    playerAnimDisp->AddEffector(CreateHitFlashEffector(renderService, 0xFF0000));
-                else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
-                    enemyAnimDisp->AddEffector(CreateHitFlashEffector(renderService, 0xFF0000));
-            });
+            healthChangedEvent = EventBus::Subscribe<HealthChangedEvent>(
+                [this](const HealthChangedEvent& event)
+                {
+                    HandleHealthChanged(event);
+                });
 
-            combatEvent = EventBus::Subscribe<CombatEvent>([this](const CombatEvent& event)
-            {
-                OnCombatEvent(event);
-            });
+            combatEvent = EventBus::Subscribe<CombatEvent>(
+                [this](const CombatEvent& event)
+                {
+                    OnCombatEvent(event);
+                });
         }
 
         void OnCombatEvent(const CombatEvent& event) const
@@ -179,7 +177,7 @@ namespace mc {
             const int offsets[3] = {
                 event.enemyWeightOffsets[0], // Rock
                 event.enemyWeightOffsets[1], // Scissors
-                event.enemyWeightOffsets[2]  // Paper
+                event.enemyWeightOffsets[2] // Paper
             };
             constexpr EAttackType types[3] = {
                 EAttackType::Rock, EAttackType::Scissors, EAttackType::Paper
@@ -187,17 +185,7 @@ namespace mc {
 
             for (int i = 0; i < 3; ++i)
             {
-                bool dominates = true;
-                for (int j = 0; j < 3; ++j)
-                {
-                    if (i == j) continue;
-                    if (offsets[i] - offsets[j] < KUSSOU_WEIGHT_DIFF_THRESHOLD)
-                    {
-                        dominates = false;
-                        break;
-                    }
-                }
-                if (dominates && LosesTo(types[i], event.playerAttackType))
+                if (IsDominantHand(i, offsets) && LosesTo(types[i], event.playerAttackType))
                     return true;
             }
             return false;
@@ -219,6 +207,26 @@ namespace mc {
                 return true;
             }
             return false;
+        }
+
+        void HandleHealthChanged(const HealthChangedEvent& event) const
+        {
+            auto tags = event.Victim->GetTags();
+            if (std::ranges::find(tags, ETag::Player) != tags.end())
+                playerAnimDisp->AddEffector(CreateHitFlashEffector(renderService, 0xFF0000));
+            else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
+                enemyAnimDisp->AddEffector(CreateHitFlashEffector(renderService, 0xFF0000));
+        }
+
+        bool IsDominantHand(int i, const int offsets[3]) const
+        {
+            for (int j = 0; j < 3; ++j)
+            {
+                if (i == j) continue;
+                if (offsets[i] - offsets[j] < KUSSOU_WEIGHT_DIFF_THRESHOLD)
+                    return false;
+            }
+            return true;
         }
 
         ISceneService& sceneService;

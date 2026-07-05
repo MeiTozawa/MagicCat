@@ -113,7 +113,11 @@ namespace mc {
 
         void LoadImageFiles()
         {
-            struct ImageData { EImage id; const wchar_t* path; };
+            struct ImageData
+            {
+                EImage id;
+                const wchar_t* path;
+            };
             const ImageData images[] = {
                 {EImage::Rock, FILE_PATH_PNG_STONE},
                 {EImage::Scissors, FILE_PATH_PNG_SCISSORS},
@@ -138,15 +142,21 @@ namespace mc {
             };
             for (const auto& img : images)
             {
-                int handle = LoadGraph(img.path);
-                if (handle == -1) printfDx(L"%sの読み込みに失敗", img.path);
-                else              imageMappings.insert({img.id, handle});
+                LoadAndMapResource(
+                    imageMappings, img.id, img.path, [](const wchar_t* p)
+                    {
+                        return LoadGraph(p);
+                    });
             }
         }
 
         void LoadSpriteFiles()
         {
-            struct SpriteData { ESprite id; const wchar_t* path; };
+            struct SpriteData
+            {
+                ESprite id;
+                const wchar_t* path;
+            };
             const SpriteData sprites[] = {
                 {ESprite::Bunny, FILE_PATH_PNG_MINIBUNNY},
                 {ESprite::Wolf, FILE_PATH_PNG_MINIWOLF},
@@ -168,9 +178,11 @@ namespace mc {
             };
             for (const auto& spr : sprites)
             {
-                auto resource = LoadGraph(spr.path);
-                if (resource == -1) printfDx(L"%sの読み込みに失敗", spr.path);
-                else                spriteMappings.insert({spr.id, resource});
+                LoadAndMapResource(
+                    spriteMappings, spr.id, spr.path, [](const wchar_t* p)
+                    {
+                        return LoadGraph(p);
+                    });
             }
         }
 
@@ -178,7 +190,11 @@ namespace mc {
         {
             try
             {
-                struct SoundData { ESound id; const wchar_t* path; };
+                struct SoundData
+                {
+                    ESound id;
+                    const wchar_t* path;
+                };
                 SoundData sounds[] = {
                     {ESound::Confirm, FILE_PATH_MP3_CONFIRM},
                     {ESound::DrawCard, FILE_PATH_MP3_DRAWCARD},
@@ -196,13 +212,24 @@ namespace mc {
 
                 for (const auto& snd : sounds)
                 {
-                    int handle = LoadSoundMem(snd.path);
-                    if (handle == -1) printfDx(L"%sの読み込みに失敗", snd.path);
-                    else              soundMappings.insert({snd.id, handle});
+                    LoadAndMapResource(
+                        soundMappings, snd.id, snd.path, [](const wchar_t* p)
+                        {
+                            return LoadSoundMem(p);
+                        });
                 }
             }
             catch (const std::exception&) { printfDx(L"音声の読み込みに失敗"); }
         }
+
+        template <typename MapType, typename KeyType, typename LoadFunc>
+        void LoadAndMapResource(MapType& mappings, KeyType id, const wchar_t* path, LoadFunc&& loadFunc)
+        {
+            int handle = loadFunc(path);
+            if (handle == -1) printfDx(L"%sの読み込みに失敗\n", path);
+            else mappings.insert({id, handle});
+        }
+
 
         std::unordered_map<EImage, int> imageMappings = {};
         std::unordered_map<ESprite, int> spriteMappings = {};

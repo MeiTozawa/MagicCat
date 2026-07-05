@@ -58,35 +58,26 @@ namespace mc {
 
         bool IsPressed(InputAction action) const override
         {
-            auto keys = CheckInput(action);
-            if (keys != nullptr)
+            return CheckInputState(action, [this](dxe::Input::eButton key)
             {
-                for (auto key : *keys)
-                    if (input->pressed(key)) return true;
-            }
-            return false;
+                return input->pressed(key);
+            });
         }
 
         bool IsHolding(InputAction action) const override
         {
-            auto keys = CheckInput(action);
-            if (keys != nullptr)
+            return CheckInputState(action, [this](dxe::Input::eButton key)
             {
-                for (auto key : *keys)
-                    if (input->keep(key)) return true;
-            }
-            return false;
+                return input->keep(key);
+            });
         }
 
         bool IsReleased(InputAction action) const override
         {
-            auto keys = CheckInput(action);
-            if (keys != nullptr)
+            return CheckInputState(action, [this](dxe::Input::eButton key)
             {
-                for (auto key : *keys)
-                    if (input->released(key)) return true;
-            }
-            return false;
+                return input->released(key);
+            });
         }
 
         void PushContext(InputContext context) override
@@ -131,41 +122,75 @@ namespace mc {
         }
 
     private:
+        template <typename Func>
+        bool CheckInputState(InputAction action, Func&& stateFunc) const
+        {
+            auto keys = CheckInput(action);
+            if (!keys) return false;
+            for (auto key : *keys)
+            {
+                if (stateFunc(key)) return true;
+            }
+            return false;
+        }
+
         void RegisterInGameActions()
         {
             auto& m = actionMappings[InputContext::InGame];
-            m[InputAction::Confirm]     = {dxe::Input::eButton::KB_SPACE,
-                                           dxe::Input::eButton::KB_RETURN,
-                                           dxe::Input::eButton::PAD_A};
-            m[InputAction::Up]          = {dxe::Input::eButton::KB_UP,
-                                           dxe::Input::eButton::PAD_UP};
-            m[InputAction::Down]        = {dxe::Input::eButton::KB_DOWN,
-                                           dxe::Input::eButton::PAD_DOWN};
-            m[InputAction::Left]        = {dxe::Input::eButton::KB_LEFT,
-                                           dxe::Input::eButton::PAD_LEFT};
-            m[InputAction::Right]       = {dxe::Input::eButton::KB_RIGHT,
-                                           dxe::Input::eButton::PAD_RIGHT};
-            m[InputAction::DrawCard]    = {dxe::Input::eButton::KB_Q,
-                                           dxe::Input::eButton::PAD_X};
-            m[InputAction::ToggleMenu]  = {dxe::Input::eButton::KB_ESCAPE,
-                                           dxe::Input::eButton::PAD_START};
-            m[InputAction::MouseClick]  = {dxe::Input::eButton::MOUSE_LEFT};
+            m[InputAction::Confirm] = {
+                dxe::Input::eButton::KB_SPACE,
+                dxe::Input::eButton::KB_RETURN,
+                dxe::Input::eButton::PAD_A
+            };
+            m[InputAction::Up] = {
+                dxe::Input::eButton::KB_UP,
+                dxe::Input::eButton::PAD_UP
+            };
+            m[InputAction::Down] = {
+                dxe::Input::eButton::KB_DOWN,
+                dxe::Input::eButton::PAD_DOWN
+            };
+            m[InputAction::Left] = {
+                dxe::Input::eButton::KB_LEFT,
+                dxe::Input::eButton::PAD_LEFT
+            };
+            m[InputAction::Right] = {
+                dxe::Input::eButton::KB_RIGHT,
+                dxe::Input::eButton::PAD_RIGHT
+            };
+            m[InputAction::DrawCard] = {
+                dxe::Input::eButton::KB_Q,
+                dxe::Input::eButton::PAD_X
+            };
+            m[InputAction::ToggleMenu] = {
+                dxe::Input::eButton::KB_ESCAPE,
+                dxe::Input::eButton::PAD_START
+            };
+            m[InputAction::MouseClick] = {dxe::Input::eButton::MOUSE_LEFT};
         }
 
         void RegisterMenuActions()
         {
             auto& m = actionMappings[InputContext::Menu];
-            m[InputAction::Confirm]     = {dxe::Input::eButton::KB_SPACE,
-                                           dxe::Input::eButton::KB_RETURN,
-                                           dxe::Input::eButton::PAD_A};
-            m[InputAction::ToggleMenu]  = {dxe::Input::eButton::KB_ESCAPE,
-                                           dxe::Input::eButton::PAD_START,
-                                           dxe::Input::eButton::PAD_B};
-            m[InputAction::MouseClick]  = {dxe::Input::eButton::MOUSE_LEFT};
-            m[InputAction::Left]        = {dxe::Input::eButton::KB_LEFT,
-                                           dxe::Input::eButton::PAD_LEFT};
-            m[InputAction::Right]       = {dxe::Input::eButton::KB_RIGHT,
-                                           dxe::Input::eButton::PAD_RIGHT};
+            m[InputAction::Confirm] = {
+                dxe::Input::eButton::KB_SPACE,
+                dxe::Input::eButton::KB_RETURN,
+                dxe::Input::eButton::PAD_A
+            };
+            m[InputAction::ToggleMenu] = {
+                dxe::Input::eButton::KB_ESCAPE,
+                dxe::Input::eButton::PAD_START,
+                dxe::Input::eButton::PAD_B
+            };
+            m[InputAction::MouseClick] = {dxe::Input::eButton::MOUSE_LEFT};
+            m[InputAction::Left] = {
+                dxe::Input::eButton::KB_LEFT,
+                dxe::Input::eButton::PAD_LEFT
+            };
+            m[InputAction::Right] = {
+                dxe::Input::eButton::KB_RIGHT,
+                dxe::Input::eButton::PAD_RIGHT
+            };
         }
 
         const std::vector<dxe::Input::eButton>* CheckInput(InputAction action) const

@@ -1,7 +1,5 @@
 module;
 
-#include <functional>
-#include <vector>
 export module HealthComponent;
 
 import IDamageable;
@@ -43,10 +41,13 @@ namespace mc {
             if (isDead) return;
 
             hp -= damage;
-            EventBus::Publish(HealthChangedEvent(GetOwner(), hp));
             if (hp <= 0)
             {
                 isDead = true;
+            }
+            EventBus::Publish(HealthChangedEvent(GetOwner(), hp));
+            if (isDead)
+            {
                 EventBus::Publish(DeathEvent(GetOwner()));
             }
         }

@@ -156,5 +156,21 @@ namespace {
         EventBus::Unsubscribe(handle);
     }
 
+    TEST(HealthComponentTest, TakeDamage_Fatal_SetsDeadStateBeforeFiringHealthChangedEvent) {
+        DummyCharacter character;
+        HealthComponent health(&character, 10);
+
+        bool isDeadDuringEvent = false;
+        auto handle = EventBus::Subscribe<HealthChangedEvent>([&](const HealthChangedEvent&) {
+            isDeadDuringEvent = health.IsDead();
+        });
+
+        health.TakeDamage(10);
+
+        EXPECT_TRUE(isDeadDuringEvent);
+
+        EventBus::Unsubscribe(handle);
+    }
+
 } // namespace
 } // namespace mc

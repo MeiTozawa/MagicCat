@@ -98,7 +98,9 @@ namespace mc {
     };
 
     export std::unique_ptr<ISceneService> CreateSceneService(IRenderService* renderService = nullptr,
-                                                             IInputService* inputService = nullptr);
+                                                             IInputService* inputService = nullptr,
+                                                             IAssetService* assetService = nullptr,
+                                                             IOSService* osService = nullptr);
     export std::unique_ptr<IScene> CreateMenuScene(IInputService& inputService, ISceneService& sceneService,
                                                     IAssetService& assetService, IRenderService& renderService,
                                                     IOSService& osService);

@@ -51,9 +51,6 @@ namespace mc {
         void OnDraw(float) const override
         {
             const InputDevice activeDevice = inputService.GetActiveDevice();
-            
-            renderService.DrawRotaGraphF(MENU_ICON_X, MENU_ICON_Y, 0.5, 0.0,
-                                         assetService.GetImageHandle(EImage::BUTTON_MENU), true);
 
             if (activeDevice == InputDevice::Gamepad)
                 DrawGamepadHints();
@@ -138,8 +135,8 @@ namespace mc {
             return {
                 {
                     {
-                        MENU_ICON_X - MENU_ICON_HALF_H, MENU_ICON_Y - MENU_ICON_HALF_H,
-                        MENU_ICON_X + MENU_ICON_HALF_W, MENU_ICON_Y + MENU_ICON_HALF_W,
+                        MENU_ICON_X - MENU_ICON_HALF_W, MENU_ICON_Y - MENU_ICON_HALF_H,
+                        MENU_ICON_X + MENU_ICON_HALF_W, MENU_ICON_Y + MENU_ICON_HALF_H,
                         L"メニューを開く"
                     },
                     {

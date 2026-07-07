@@ -1,5 +1,6 @@
 module;
 
+#include <algorithm>
 #include <app_build_setting.h>
 #include <unordered_map>
 #include <memory>
@@ -12,6 +13,7 @@ import EventBus;
 import BattleService;
 import EffectorFactory;
 import DisplayerBase;
+import AssetService;
 
 namespace mc {
     static constexpr int SCENE_FADE_DURATION_MS = 500;
@@ -41,8 +43,9 @@ namespace mc {
     class SceneService : public ISceneService
     {
     public:
-        explicit SceneService(IRenderService* rs, IInputService* is = nullptr)
-            : renderService(rs), inputService(is)
+        explicit SceneService(IRenderService* rs, IInputService* is = nullptr,
+                              IAssetService* as = nullptr, IOSService* os = nullptr)
+            : renderService(rs), inputService(is), assetService(as), osService(os)
         {
             stageClearHandle = EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&)
             {
@@ -94,7 +97,11 @@ namespace mc {
         {
             EnsureInitialized();
             if (sceneStack.size() > 1)
+            {
+                if (sceneStack.back() == ESceneState::Menu)
+                    menuJustClosed = true;
                 sceneStack.pop_back();
+            }
         }
 
         void Update(float deltaTime) override
@@ -106,6 +113,8 @@ namespace mc {
 
             if (!sceneStack.empty())
                 scenes[sceneStack.back()]->Update(deltaTime);
+            
+            HandleMenuButton(deltaTime);
 
             if (fadeDisplayer)
                 fadeDisplayer->Draw(deltaTime);
@@ -127,6 +136,67 @@ namespace mc {
         }
 
     private:
+        void HandleMenuButton(float deltaTime)
+        {
+            if (!inputService || !renderService) return;
+
+            const bool hasCutscene = std::ranges::any_of(sceneStack, [](ESceneState s)
+            {
+                return s == ESceneState::Cutscene;
+            });
+            if (hasCutscene) return;
+
+            const bool isMenuOpen = std::ranges::any_of(sceneStack, [](ESceneState s)
+            {
+                return s == ESceneState::Menu;
+            });
+
+            if (assetService)
+            {
+                const int iconHandle = assetService->GetImageHandle(EImage::BUTTON_MENU);
+                if (iconHandle >= 0)
+                    renderService->DrawRotaGraphF(
+                        static_cast<float>(MENU_ICON_X),
+                        static_cast<float>(MENU_ICON_Y),
+                        0.8, 0.0, iconHandle, true);
+            }
+
+            if (osService && inputService->GetActiveDevice() == InputDevice::Mouse
+                && inputService->IsMouseOver(MENU_ICON_RECT))
+                osService->SetCursorPointer();
+
+            const auto click = inputService->OnMouseClick(InputAction::MouseClick);
+            const bool iconClicked = click.x != -1 && click.y != -1 && click.In(MENU_ICON_RECT);
+
+            if (isMenuOpen)
+            {
+                if (iconClicked)
+                {
+                    inputService->PopContext();
+                    PopScene();
+                }
+            }
+            else
+            {
+                if (menuJustClosed)
+                {
+                    menuJustClosed = false;
+                    return;
+                }
+
+                if (inputService->IsPressed(InputAction::ToggleMenu))
+                {
+                    PushScene(ESceneState::Menu);
+                    return;
+                }
+
+                if (iconClicked)
+                {
+                    PushScene(ESceneState::Menu);
+                }
+            }
+        }
+        
         void EnsureInitialized()
         {
             if (!initialized)
@@ -160,14 +230,12 @@ namespace mc {
 
         void TransitionTo(ESceneState next)
         {
-            // 入力コンテキストはフェード（淡出）を開始する前に切り替える
             SetCutsceneInputContext(next == ESceneState::Cutscene);
 
             pendingScene = next;
             if (renderService)
             {
                 fadeDisplayer = std::make_unique<ScreenFadeDisplayer>(*renderService);
-                // 旧シーンを BG で覆う（alpha 0→255）。完了後にシーンを差し替える。
                 fadeDisplayer->AddEffector(
                     CreateFadeInEffector(*renderService, SCENE_FADE_DURATION_MS),
                     [this]() { ApplyPendingTransition(); }
@@ -185,7 +253,6 @@ namespace mc {
             if (renderService)
             {
                 fadeDisplayer = std::make_unique<ScreenFadeDisplayer>(*renderService);
-                // 新シーンを表示する（BG 覆いを alpha 255→0 で剥がす）。
                 fadeDisplayer->AddEffector(CreateFadeOutEffector(*renderService, SCENE_FADE_DURATION_MS));
                 fadeDisplayer->Play();
             }
@@ -212,11 +279,14 @@ namespace mc {
 
         IRenderService* renderService = nullptr;
         IInputService* inputService = nullptr;
+        IAssetService* assetService = nullptr;
+        IOSService* osService = nullptr;
         std::unique_ptr<Displayer> fadeDisplayer;
 
         std::optional<ESceneState> pendingScene;
 
         bool cutsceneContextPushed = false;
+        bool menuJustClosed = false;
 
         EventHandle stageClearHandle;
         EventHandle stageFailHandle;
@@ -225,8 +295,9 @@ namespace mc {
         EventHandle cutsceneFinishedHandle;
     };
 
-    std::unique_ptr<ISceneService> CreateSceneService(IRenderService* renderService, IInputService* inputService)
+    std::unique_ptr<ISceneService> CreateSceneService(IRenderService* renderService, IInputService* inputService,
+                                                      IAssetService* assetService, IOSService* osService)
     {
-        return std::make_unique<SceneService>(renderService, inputService);
+        return std::make_unique<SceneService>(renderService, inputService, assetService, osService);
     }
 } // namespace mc

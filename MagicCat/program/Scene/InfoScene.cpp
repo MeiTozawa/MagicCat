@@ -59,15 +59,11 @@ namespace {
                 battleService.StartStage();
                 return;
             }
-            if (inputService.IsPressed(InputAction::ToggleMenu))
-            {
-                sceneService.PushScene(ESceneState::Menu);
-                return;
-            }
             auto click = inputService.OnMouseClick(InputAction::MouseClick);
             if (click.x != -1 && click.y != -1)
             {
-                if (click.x >= 0 && click.x < WINDOW_WIDTH && click.y >= 0 && click.y < WINDOW_HEIGHT)
+                if (click.x >= 0 && click.x < WINDOW_WIDTH && click.y >= 0 && click.y < WINDOW_HEIGHT
+                    && !click.In(MENU_ICON_RECT))
                     battleService.StartStage();
             }
         }

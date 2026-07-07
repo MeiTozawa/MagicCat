@@ -76,8 +76,6 @@ namespace mc {
 
         void Update(float deltaTime) override
         {
-            if (HandleMenuClick(deltaTime)) return;
-
             combatController->Update(deltaTime);
             displayers.Update(deltaTime);
             displayers.Draw(deltaTime);
@@ -191,22 +189,6 @@ namespace mc {
             {
                 if (IsDominantHand(i, offsets) && LosesTo(types[i], event.playerAttackType))
                     return true;
-            }
-            return false;
-        }
-
-        /// @brief メニューボタンのマウスクリックを処理する。クリックされた場合 true を返す。
-        bool HandleMenuClick(float deltaTime)
-        {
-            auto click = inputService.OnMouseClick(InputAction::MouseClick);
-            if (click.x == -1 || click.y == -1) return false;
-            
-            if (click.In(MENU_ICON_RECT))
-            {
-                sceneService.PushScene(ESceneState::Menu);
-                displayers.Update(deltaTime);
-                displayers.Draw(deltaTime);
-                return true;
             }
             return false;
         }

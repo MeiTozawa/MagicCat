@@ -38,7 +38,7 @@ void InitGameServices()
     inputService = CreateInputService();
 
     cardService = CreateCardService(*configService);
-    sceneService = CreateSceneService(renderService.get(), inputService.get());
+    sceneService = CreateSceneService(renderService.get(), inputService.get(), assetService.get(), osService.get());
     battleService = CreateBattleService(*configService, *cardService, *assetService);
     audioService = CreateAudioService(*assetService, *battleService);
 

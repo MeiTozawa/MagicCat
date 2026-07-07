@@ -48,7 +48,8 @@ void InitGameServices()
                                 CreateCombatScene(*sceneService, *assetService, *cardService, *inputService,
                                                   *renderService, *battleService, *osService));
     sceneService->RegisterScene(ESceneState::Menu,
-                                CreateMenuScene(*inputService, *sceneService, *assetService, *renderService));
+                                CreateMenuScene(*inputService, *sceneService, *assetService, *renderService,
+                                                *osService));
     sceneService->RegisterScene(ESceneState::Cutscene,
                                 CreateCutsceneScene(*sceneService, *assetService, *renderService,
                                                     *battleService));

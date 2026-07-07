@@ -1,6 +1,7 @@
 module;
 
 #include <algorithm>
+#include <array>
 #include <app_build_setting.h>
 #include <memory>
 #include <RenderUtils.h>
@@ -10,6 +11,8 @@ module SceneService;
 import InputService;
 import RenderService;
 import AssetService;
+import OSService;
+import ButtonGroup;
 
 namespace mc {
     namespace {
@@ -61,13 +64,22 @@ namespace mc {
         constexpr Rect<int> BTN2_RECT = {BUTTON2_X, BUTTON_Y1, BUTTON2_X + BUTTON_WIDTH, BUTTON_Y2};
         constexpr Rect<int> BTN3_RECT = {BUTTON3_X, BUTTON_Y1, BUTTON3_X + BUTTON_WIDTH, BUTTON_Y2};
         constexpr Rect<int> BTN4_RECT = {BUTTON4_X, BUTTON_Y1, BUTTON4_X + BUTTON_WIDTH, BUTTON_Y2};
+        constexpr std::array<Rect<int>, BUTTON_COUNT> BTN_RECTS = {{
+            BTN0_RECT, BTN1_RECT, BTN2_RECT, BTN3_RECT, BTN4_RECT
+        }};
+        constexpr const wchar_t* BTN_LABELS[BUTTON_COUNT] = {
+            L"戻る", L"音量設定", L"セーブ", L"ロード", L"終了"
+        };
     }
 
     class MenuScene : public IScene
     {
     public:
-        MenuScene(IInputService& input, ISceneService& scene, IAssetService& asset, IRenderService& render)
-            : inputService(input), sceneService(scene), assetService(asset), renderService(render) {}
+        MenuScene(IInputService& input, ISceneService& scene, IAssetService& asset,
+                  IRenderService& render, IOSService& os)
+            : inputService(input), sceneService(scene), assetService(asset), renderService(render)
+            , buttons(BTN_RECTS, input, os, ButtonGroupLayout::Horizontal)
+        {}
 
         void Start() override
         {
@@ -76,6 +88,7 @@ namespace mc {
 
         void Update(float deltaTime) override
         {
+            buttons.Update();
             HandleInput();
 
             currentPage = std::clamp(currentPage, 0, 1);
@@ -89,60 +102,35 @@ namespace mc {
     private:
         void HandleInput()
         {
-            if (HandleOtherInput()) return;
-            HandleMouseInput();
-        }
-
-        /// @brief Handle Keyboard Input and Gamepad Input
-        bool HandleOtherInput()
-        {
             if (inputService.IsPressed(InputAction::ToggleMenu))
             {
                 inputService.PopContext();
                 sceneService.PopScene();
-                return true;
+                return;
             }
 
-            if (inputService.IsPressed(InputAction::Confirm)) NextPage();
-            return false;
+            if (auto confirmed = buttons.ConsumeConfirm())
+            {
+                ActivateButton(*confirmed);
+                return;
+            }
+
+            // ボタン以外のエリアをクリック → ページ切替
+            auto click = inputService.OnMouseClick(InputAction::MouseClick);
+            if (click.x != -1 && click.y != -1 && click.In(BOX_RECT))
+                NextPage();
         }
 
-        void HandleMouseInput()
+        void ActivateButton(int index)
         {
-            auto menuClick = inputService.OnMouseClick(InputAction::MouseClick);
-            if (menuClick.x == -1 || menuClick.y == -1) return;
-
-            if (menuClick.In(BOX_RECT))
+            switch (index)
             {
-                NextPage();
-                return;
-            }
-            else if (menuClick.In(BTN0_RECT))
-            {
-                inputService.PopContext();
-                sceneService.PopScene();
-                return;
-            }
-            else if (menuClick.In(BTN1_RECT))
-            {
-                // 音量設定
-                return;
-            }
-            else if (menuClick.In(BTN2_RECT))
-            {
-                // セーブ
-                return;
-            }
-            else if (menuClick.In(BTN3_RECT))
-            {
-                // ロード
-                return;
-            }
-            else if (menuClick.In(BTN4_RECT))
-            {
-                inputService.PopContext();
-                sceneService.PopScene();
-                return;
+            case 0: inputService.PopContext(); sceneService.PopScene(); break;
+            case 1: /* 音量設定 */ break;
+            case 2: /* セーブ   */ break;
+            case 3: /* ロード   */ break;
+            case 4: inputService.PopContext(); sceneService.PopScene(); break;
+            default: break;
             }
         }
 
@@ -162,11 +150,8 @@ namespace mc {
 
         void DrawButtons() const
         {
-            renderService.DrawButton(BTN0_RECT, L"戻る");
-            renderService.DrawButton(BTN1_RECT, L"音量設定");
-            renderService.DrawButton(BTN2_RECT, L"セーブ");
-            renderService.DrawButton(BTN3_RECT, L"ロード");
-            renderService.DrawButton(BTN4_RECT, L"終了");
+            for (int i = 0; i < BUTTON_COUNT; ++i)
+                renderService.DrawButton(BTN_RECTS[i], BTN_LABELS[i], buttons.GetFocusedIndex() == i);
         }
 
         void DrawContent() const
@@ -256,12 +241,14 @@ namespace mc {
         IAssetService& assetService;
         IRenderService& renderService;
 
+        ButtonGroup buttons;
         int currentPage = 0;
     };
 
     std::unique_ptr<IScene> CreateMenuScene(IInputService& inputService, ISceneService& sceneService,
-                                            IAssetService& assetService, IRenderService& renderService)
+                                            IAssetService& assetService, IRenderService& renderService,
+                                            IOSService& osService)
     {
-        return std::make_unique<MenuScene>(inputService, sceneService, assetService, renderService);
+        return std::make_unique<MenuScene>(inputService, sceneService, assetService, renderService, osService);
     }
 }

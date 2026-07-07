@@ -30,7 +30,7 @@ namespace mc {
     public:
         /// @param rects         ボタンの矩形リスト（インデックス順）
         /// @param input         入力サービス
-        /// @param render        レンダーサービス（カーソル変更に使用）
+        /// @param os        レンダーサービス（カーソル変更に使用）
         /// @param layout        ナビゲーション方向（デフォルト: Vertical）
         /// @param initialFocus  初期フォーカスインデックス（デフォルト: 0）
         ButtonGroup(std::span<const Rect<int>> rects,
@@ -67,7 +67,7 @@ namespace mc {
         std::optional<int> ConsumeConfirm()
         {
             auto click = inputService.OnMouseClick(InputAction::MouseClick);
-            if (click.x != -1 || click.y != -1)
+            if (click.x != -1 && click.y != -1)
             {
                 for (int i = 0; i < static_cast<int>(rects.size()); ++i)
                 {

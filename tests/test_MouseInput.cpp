@@ -899,12 +899,13 @@ RC_GTEST_PROP(MouseInput, Property7_MenuScene_PushContext_CalledOncePerStart, ()
     NiceMock<MockSceneServiceP3> mockScene;
     NiceMock<MockAssetService>   mockAsset;
     NiceMock<MockRenderService>  mockRender;
+    NiceMock<MockOSService>      mockOsService;
 
     int pushContextCount = 0;
     ON_CALL(mockInput, PushContext(InputContext::Menu))
         .WillByDefault([&](InputContext) { ++pushContextCount; });
 
-    auto scene = CreateMenuScene(mockInput, mockScene, mockAsset, mockRender);
+    auto scene = CreateMenuScene(mockInput, mockScene, mockAsset, mockRender, mockOsService);
     for (int i = 0; i < n; ++i)
         scene->Start();
 
@@ -917,6 +918,7 @@ TEST(MouseInput, Property7_MenuScene_PushContext_NotCalledInUpdate)
     NiceMock<MockSceneServiceP3> mockScene;
     NiceMock<MockAssetService>   mockAsset;
     NiceMock<MockRenderService>  mockRender;
+    NiceMock<MockOSService>      mockOsService;
     ON_CALL(mockInput, IsPressed(_)).WillByDefault(Return(false));
     ON_CALL(mockInput, OnMouseClick(_)).WillByDefault(Return(Point<int>{-1, -1}));
     ON_CALL(mockAsset, GetImageHandle(_)).WillByDefault(Return(0));
@@ -925,7 +927,7 @@ TEST(MouseInput, Property7_MenuScene_PushContext_NotCalledInUpdate)
     ON_CALL(mockInput, PushContext(InputContext::Menu))
         .WillByDefault([&](InputContext) { ++pushContextCount; });
 
-    auto scene = CreateMenuScene(mockInput, mockScene, mockAsset, mockRender);
+    auto scene = CreateMenuScene(mockInput, mockScene, mockAsset, mockRender, mockOsService);
     scene->Start();
 
     for (int i = 0; i < 10; ++i)

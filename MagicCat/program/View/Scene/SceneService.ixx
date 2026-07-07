@@ -100,7 +100,8 @@ namespace mc {
     export std::unique_ptr<ISceneService> CreateSceneService(IRenderService* renderService = nullptr,
                                                              IInputService* inputService = nullptr);
     export std::unique_ptr<IScene> CreateMenuScene(IInputService& inputService, ISceneService& sceneService,
-                                                    IAssetService& assetService, IRenderService& renderService);
+                                                    IAssetService& assetService, IRenderService& renderService,
+                                                    IOSService& osService);
     export std::unique_ptr<IScene> CreateInfoScene(IInputService& inputService, ISceneService& sceneService,
                                                    IRenderService& renderService, IBattleService& battleService);
     export std::unique_ptr<IScene> CreateCombatScene(ISceneService& sceneService, IAssetService& assetService,

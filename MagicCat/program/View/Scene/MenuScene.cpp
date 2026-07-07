@@ -19,6 +19,11 @@ namespace mc {
         constexpr int BOX_MARGIN_Y_UP = 75;
         constexpr int BOX_MARGIN_Y_DOWN = 250;
 
+        constexpr Rect<int> BOX_RECT = {
+            BOX_MARGIN_X, BOX_MARGIN_Y_UP,
+            WINDOW_WIDTH - BOX_MARGIN_X, WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN
+        };
+
         constexpr int TEXT_START_OFFSET_X = 50;
         constexpr int TEXT_START_OFFSET_Y = 50;
 
@@ -30,34 +35,17 @@ namespace mc {
 
         constexpr int SECTION_SPACING = 280;
 
-        constexpr int ICON_OFFSET_X = 300;
-        constexpr int ICON_OFFSET_Y = 60;
-        constexpr int ICON_TEXT_OFFSET_X = 260;
-        constexpr int ICON_TEXT_OFFSET_Y = 83;
+        constexpr int NEXT_PAGE_ICON_X = 780;
+        constexpr int NEXT_PAGE_Y = WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN - 50;
 
         constexpr uint32_t COLOR_BOX_BG = 0x1E1E28;
-
-        constexpr int BACK_BUTTON_X1 = 732;
-        constexpr int BACK_BUTTON_Y1 = 462;
-        constexpr int BACK_BUTTON_X2 = 788;
-        constexpr int BACK_BUTTON_Y2 = 518;
-
-        constexpr int NEXT_BUTTON_X1 = 1000;
-        constexpr int NEXT_BUTTON_X2 = 1080;
-        constexpr int NEXT_BUTTON_Y1 = 150;
-        constexpr int NEXT_BUTTON_Y2 = 570;
-
-        constexpr int PREV_BUTTON_X1 = 200;
-        constexpr int PREV_BUTTON_X2 = 280;
-        constexpr int PREV_BUTTON_Y1 = 150;
-        constexpr int PREV_BUTTON_Y2 = 570;
 
         constexpr int BUTTON_HEIGHT = 100;
         constexpr int BUTTON_WIDTH = 300;
         constexpr int BUTTON_OFFSET_X = 50;
         constexpr int BUTTON_COUNT = 5;
 
-        constexpr int BUTTON_Y1 = 850;
+        constexpr int BUTTON_Y1 = 880;
         constexpr int BUTTON_Y2 = BUTTON_Y1 + BUTTON_HEIGHT;
         constexpr int BUTTON0_X = (WINDOW_WIDTH - BUTTON_WIDTH * BUTTON_COUNT - BUTTON_OFFSET_X * (BUTTON_COUNT - 1)) /
             2;
@@ -70,11 +58,11 @@ namespace mc {
 
         constexpr int BUTTON4_X = BUTTON0_X + 4 * BUTTON_WIDTH + 4 * BUTTON_OFFSET_X;
 
-        constexpr Rect<int> BTN0_RECT = { BUTTON0_X, BUTTON0_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 };
-        constexpr Rect<int> BTN1_RECT = { BUTTON1_X, BUTTON1_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 };
-        constexpr Rect<int> BTN2_RECT = { BUTTON2_X, BUTTON2_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 };
-        constexpr Rect<int> BTN3_RECT = { BUTTON3_X, BUTTON3_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 };
-        constexpr Rect<int> BTN4_RECT = { BUTTON4_X, BUTTON4_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 };
+        constexpr Rect<int> BTN0_RECT = {BUTTON0_X, BUTTON_Y1, BUTTON0_X + BUTTON_WIDTH, BUTTON_Y2};
+        constexpr Rect<int> BTN1_RECT = {BUTTON1_X, BUTTON_Y1, BUTTON1_X + BUTTON_WIDTH, BUTTON_Y2};
+        constexpr Rect<int> BTN2_RECT = {BUTTON2_X, BUTTON_Y1, BUTTON2_X + BUTTON_WIDTH, BUTTON_Y2};
+        constexpr Rect<int> BTN3_RECT = {BUTTON3_X, BUTTON_Y1, BUTTON3_X + BUTTON_WIDTH, BUTTON_Y2};
+        constexpr Rect<int> BTN4_RECT = {BUTTON4_X, BUTTON_Y1, BUTTON4_X + BUTTON_WIDTH, BUTTON_Y2};
     }
 
     class MenuScene : public IScene
@@ -94,7 +82,6 @@ namespace mc {
 
             currentPage = std::clamp(currentPage, 0, 1);
 
-            DrawOverlay();
             DrawBox();
             DrawContent();
             DrawButtons();
@@ -118,8 +105,7 @@ namespace mc {
                 return true;
             }
 
-            if (inputService.IsPressed(InputAction::Left) && currentPage > 0) currentPage--;
-            if (inputService.IsPressed(InputAction::Right) && currentPage < 1) currentPage++;
+            if (inputService.IsPressed(InputAction::Confirm)) NextPage();
             return false;
         }
 
@@ -128,61 +114,38 @@ namespace mc {
             auto menuClick = inputService.OnMouseClick(InputAction::MouseClick);
             if (menuClick.x == -1 || menuClick.y == -1) return;
 
-            if (menuClick.In(BTN0_RECT))
+            if (menuClick.In(BOX_RECT))
+            {
+                NextPage();
+                return;
+            }
+            else if (menuClick.In(BTN0_RECT))
             {
                 inputService.PopContext();
                 sceneService.PopScene();
                 return;
             }
-            if (menuClick.In(BTN1_RECT))
+            else if (menuClick.In(BTN1_RECT))
             {
                 // 音量設定
                 return;
             }
-            if (menuClick.In(BTN2_RECT))
+            else if (menuClick.In(BTN2_RECT))
             {
                 // セーブ
                 return;
             }
-            if (menuClick.In(BTN3_RECT))
+            else if (menuClick.In(BTN3_RECT))
             {
                 // ロード
                 return;
             }
-            if (menuClick.In(BTN4_RECT))
+            else if (menuClick.In(BTN4_RECT))
             {
                 inputService.PopContext();
                 sceneService.PopScene();
                 return;
             }
-
-            if (menuClick.x >= BACK_BUTTON_X1 && menuClick.x < BACK_BUTTON_X2 &&
-                menuClick.y >= BACK_BUTTON_Y1 && menuClick.y < BACK_BUTTON_Y2)
-            {
-                inputService.PopContext();
-                sceneService.PopScene();
-                return;
-            }
-            if (menuClick.x >= NEXT_BUTTON_X1 && menuClick.x < NEXT_BUTTON_X2 &&
-                menuClick.y >= NEXT_BUTTON_Y1 && menuClick.y < NEXT_BUTTON_Y2)
-            {
-                currentPage++;
-            }
-            else if (menuClick.x >= PREV_BUTTON_X1 && menuClick.x < PREV_BUTTON_X2 &&
-                menuClick.y >= PREV_BUTTON_Y1 && menuClick.y < PREV_BUTTON_Y2)
-            {
-                currentPage--;
-            }
-        }
-
-        void DrawOverlay() const
-        {
-            renderService.SetDrawBlendMode(BlendMode::Alpha, OVERLAY_ALPHA);
-            renderService.DrawBoxAA(0.f, 0.f,
-                                    static_cast<float>(WINDOW_WIDTH),
-                                    static_cast<float>(WINDOW_HEIGHT),
-                                    COLOR_BLACK, true);
-            renderService.SetDrawBlendMode(BlendMode::NoBlend, 0);
         }
 
         void DrawBox() const
@@ -262,15 +225,32 @@ namespace mc {
 
         void DrawNavigationHints() const
         {
-            constexpr int boxX2 = WINDOW_WIDTH- BOX_MARGIN_X;
-            constexpr int boxY2 = WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN;
+            int iconHandle;
+            switch (inputService.GetActiveDevice())
+            {
+            case InputDevice::Keyboard:
+                iconHandle = assetService.GetImageHandle(EImage::KB_SPACE);
+                break;
+            case InputDevice::Mouse:
+                iconHandle = assetService.GetImageHandle(EImage::MOUSE_LEFT);
+                break;
+            case InputDevice::Gamepad:
+                iconHandle = assetService.GetImageHandle(EImage::XBOX_A);
+                break;
+            default:
+                assert(false && "未知のデバイス");
+                iconHandle = assetService.GetImageHandle(EImage::MOUSE_LEFT);
+            }
+            renderService.DrawRotaGraphF(NEXT_PAGE_ICON_X, NEXT_PAGE_Y, 0.5, 0.0, iconHandle, true);
+            renderService.DrawCenterString(WINDOW_WIDTH / 2, NEXT_PAGE_Y,
+                                           L"でページ切替", COLOR_TEXT_NORMAL);
+        }
 
-            int kbrHandle = assetService.GetImageHandle(EImage::KB_ESCAPE);
-            renderService.DrawRotaGraphF(boxX2 - ICON_OFFSET_X, boxY2 - ICON_OFFSET_Y, 0.5, 0.0, kbrHandle, true);
-            renderService.DrawString(boxX2 - ICON_TEXT_OFFSET_X, boxY2 - ICON_TEXT_OFFSET_Y,
-                                     L"押して戻る", COLOR_TEXT_NORMAL);
-            renderService.DrawCenterString(WINDOW_WIDTH/ 2, boxY2 - ICON_TEXT_OFFSET_Y,
-                                           L"(◀/▶ でページ切替)", COLOR_TEXT_NORMAL);
+        void NextPage()
+        {
+            currentPage++;
+            if (currentPage < 0 || currentPage > 1)
+                currentPage = 0;
         }
 
         IInputService& inputService;

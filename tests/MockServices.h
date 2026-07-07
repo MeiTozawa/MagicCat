@@ -1,6 +1,7 @@
 #pragma once
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include "json11.hpp"
 
 import AssetService;
 import AudioService;
@@ -19,6 +20,8 @@ public:
     MOCK_METHOD(const std::vector<EnemyConfig>&, GetEnemyConfigs, (), (const, override));
     MOCK_METHOD(const PlayerConfig&, GetPlayerConfig, (), (const, override));
     MOCK_METHOD(const GameConfig&, GetGameConfig, (), (const, override));
+    MOCK_METHOD(json11::Json, LoadSoundSettings, (), (override));
+    MOCK_METHOD(bool, SaveSoundSettings, (const json11::Json& data), (override));
 };
 
 class MockAssetService : public IAssetService {

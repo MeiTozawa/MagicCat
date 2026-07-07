@@ -24,6 +24,39 @@ namespace mc {
         const PlayerConfig& GetPlayerConfig() const override { return playerConfig; }
         const GameConfig& GetGameConfig() const override { return gameConfig; }
 
+        json11::Json LoadSoundSettings() override
+        {
+            std::ifstream ifs("resource/sound_settings.json");
+            if (!ifs.is_open())
+            {
+                return json11::Json();  // NUL
+            }
+            std::stringstream ss;
+            ss << ifs.rdbuf();
+            std::string err;
+            auto json = json11::Json::parse(ss.str(), err);
+            if (!err.empty())
+            {
+                return json11::Json();  // NUL
+            }
+            return json;
+        }
+
+        bool SaveSoundSettings(const json11::Json& data) override
+        {
+            std::ofstream ofs("resource/sound_settings.json");
+            if (!ofs.is_open())
+            {
+                return false;
+            }
+            ofs << data.dump();
+            if (ofs.fail())
+            {
+                return false;
+            }
+            return true;
+        }
+
     private:
         void LoadGameConfig(const std::string& cardConfigPath, const std::string& enemyConfigPath, const std::string& gameConfigPath)
         {

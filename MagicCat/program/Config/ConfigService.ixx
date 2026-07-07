@@ -3,6 +3,7 @@ module;
 #include <string>
 #include <vector>
 #include <memory>
+#include "json11.hpp"
 
 export module ConfigService;
 
@@ -70,6 +71,15 @@ namespace mc {
         /// @brief ゲーム進行に関する全体設定を取得する
         /// @return ゲーム設定
         virtual const GameConfig& GetGameConfig() const = 0;
+
+        /// @brief サウンド設定を resource/sound_settings.json からロードする
+        /// @return パース済みの json11::Json オブジェクト。ファイルが存在しないか不正な場合は json11::Json::NUL を返す（例外なし）
+        virtual json11::Json LoadSoundSettings() = 0;
+
+        /// @brief サウンド設定を resource/sound_settings.json に保存する
+        /// @param data 保存する json11::Json オブジェクト
+        /// @return 成功時 true、I/O エラー時 false（例外なし）
+        virtual bool SaveSoundSettings(const json11::Json& data) = 0;
     };
 
     export std::unique_ptr<IConfigService> CreateConfigService(const std::string& cardConfigPath,

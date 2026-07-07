@@ -1,6 +1,8 @@
 module;
 
+#include <array>
 #include <memory>
+#include <optional>
 #include <RenderUtils.h>
 
 module CombatController;
@@ -12,52 +14,58 @@ import CardService;
 import Character;
 import Player;
 import SceneService;
+import ButtonGroup;
 
 namespace mc {
     class CombatController : public ICombatController
     {
     public:
-        CombatController(IInputService& input, IBattleService& character, ISceneService& scene, ICardService& card)
-            : inputService(input), characterService(character), sceneService(scene), cardService(card) {}
+        CombatController(IInputService& input, IBattleService& character, ISceneService& scene,
+                         ICardService& card, IRenderService& render)
+            : inputService(input), characterService(character), sceneService(scene), cardService(card)
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                actionMenuRects[i] = {
+                    ACTION_MENU_X,
+                    ACTION_MENU_Y + i * ACTION_MENU_STEP_Y,
+                    ACTION_MENU_X + ACTION_MENU_W,
+                    ACTION_MENU_Y + i * ACTION_MENU_STEP_Y + ACTION_MENU_H
+                };
+            }
+            actionMenu = std::make_unique<ButtonGroup>(actionMenuRects, input, render,
+                                                       ButtonGroupLayout::Vertical, ACTION_MAGIC);
+        }
 
         void Reset() override
         {
-            selectedActionIndex = 0;
+            actionMenu->SetFocusedIndex(ACTION_MAGIC);
             isMagicMenuOpen = false;
-            EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen, true));
+            EventBus::Publish(ActionSelectionEvent(actionMenu->GetFocusedIndex(), isMagicMenuOpen, true));
         }
 
         void Update(float deltaTime) override
         {
+            actionMenu->Update();
+
+            // フォーカス変化を ActionSelectionEvent として発行
+            const int newIndex = actionMenu->GetFocusedIndex();
+            if (newIndex != lastPublishedIndex)
+            {
+                lastPublishedIndex = newIndex;
+                EventBus::Publish(ActionSelectionEvent(newIndex, isMagicMenuOpen));
+            }
+
             HandleKeyboardInput();
-            HandleMouseHover();
             HandleMouseClick();
         }
 
     private:
         void HandleKeyboardInput()
         {
-            if (inputService.IsPressed(InputAction::Up))
-            {
-                if (selectedActionIndex > ACTION_MAGIC)
-                {
-                    selectedActionIndex--;
-                    EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
-                }
-                return;
-            }
-            if (inputService.IsPressed(InputAction::Down))
-            {
-                if (selectedActionIndex < ACTION_MAX)
-                {
-                    selectedActionIndex++;
-                    EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
-                }
-                return;
-            }
             if (inputService.IsPressed(InputAction::Confirm))
             {
-                HandleConfirm();
+                HandleConfirm(actionMenu->GetFocusedIndex());
                 return;
             }
             if (inputService.IsPressed(InputAction::DrawCard))
@@ -73,25 +81,26 @@ namespace mc {
             }
         }
 
-        void HandleConfirm()
+        void HandleConfirm(int index)
         {
-            if (selectedActionIndex == ACTION_MAGIC)
+            if (index == ACTION_MAGIC)
             {
                 isMagicMenuOpen = !isMagicMenuOpen;
-                EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
+                EventBus::Publish(ActionSelectionEvent(index, isMagicMenuOpen));
                 return;
             }
             if (isMagicMenuOpen)
             {
-                if (TryUseMagic(selectedActionIndex))
+                if (TryUseMagic(index))
                 {
                     isMagicMenuOpen = false;
-                    selectedActionIndex = ACTION_MAGIC;
-                    EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
+                    actionMenu->SetFocusedIndex(ACTION_MAGIC);
+                    lastPublishedIndex = ACTION_MAGIC;
+                    EventBus::Publish(ActionSelectionEvent(ACTION_MAGIC, isMagicMenuOpen));
                 }
                 return;
             }
-            ResolveAttack(selectedActionIndex);
+            ResolveAttack(index);
         }
 
         bool TryUseMagic(int index) const
@@ -161,36 +170,10 @@ namespace mc {
             {
                 characterService.GetPlayer().ChangeMp(c.Power);
             }
-            else if (c.CardType == ECardType::Rock || c.CardType == ECardType::Scissors || c.CardType == ECardType::Paper)
+            else if (c.CardType == ECardType::Rock || c.CardType == ECardType::Scissors ||
+                     c.CardType == ECardType::Paper)
             {
                 characterService.GetEnemy().AddWeight(ToAttackType(c.CardType), c.Power);
-            }
-        }
-
-        std::optional<int> GetHoveredActionMenuRow(int mx, int my) const
-        {
-            for (int i = 0; i < 4; ++i)
-            {
-                int x1 = ACTION_MENU_X;
-                int y1 = ACTION_MENU_Y + i * ACTION_MENU_STEP_Y;
-                int x2 = x1 + ACTION_MENU_W;
-                int y2 = y1 + ACTION_MENU_H;
-                if (mx >= x1 && mx < x2 && my >= y1 && my < y2)
-                    return i;
-            }
-            return std::nullopt;
-        }
-
-        void HandleMouseHover()
-        {
-            if (inputService.GetActiveDevice() != InputDevice::Mouse) return;
-
-            auto mousePos = inputService.GetMousePosition();
-            auto rowOpt = GetHoveredActionMenuRow(mousePos.x, mousePos.y);
-            if (rowOpt && selectedActionIndex != *rowOpt)
-            {
-                selectedActionIndex = *rowOpt;
-                EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
             }
         }
 
@@ -200,65 +183,69 @@ namespace mc {
             if (click.x == -1 || click.y == -1) return;
 
             // 山札クリック
-            if (click.x >= DRAW_PILE_X1 && click.x < DRAW_PILE_X2 &&
-                click.y >= DRAW_PILE_Y1 && click.y < DRAW_PILE_Y2)
+            if (click.In(DRAW_PILE_RECT))
             {
                 ProcessDrawCard(cardService.DrawCard());
                 EventBus::Publish(DrawCardEvent());
                 return;
             }
 
-            // ActionMenu 行クリック
-            if (auto rowOpt = GetHoveredActionMenuRow(click.x, click.y))
+            // ActionMenu クリック — クリック座標でヒットテストして行を特定する
+            for (int i = 0; i < actionMenu->Count(); ++i)
             {
-                HandleActionMenuClick(*rowOpt);
-            }
-        }
-
-        void HandleActionMenuClick(int clickedRow)
-        {
-            if (isMagicMenuOpen && clickedRow >= 1)
-            {
-                if (TryUseMagic(clickedRow))
+                const Rect<int>& r = actionMenuRects[i];
+                if (click.x >= r.x1 && click.x < r.x2 && click.y >= r.y1 && click.y < r.y2)
                 {
-                    isMagicMenuOpen = false;
-                    selectedActionIndex = ACTION_MAGIC;
-                    EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
-                }
-                return;
-            }
+                    if (isMagicMenuOpen && i >= 1)
+                    {
+                        if (TryUseMagic(i))
+                        {
+                            isMagicMenuOpen = false;
+                            actionMenu->SetFocusedIndex(ACTION_MAGIC);
+                            lastPublishedIndex = ACTION_MAGIC;
+                            EventBus::Publish(ActionSelectionEvent(ACTION_MAGIC, isMagicMenuOpen));
+                        }
+                        return;
+                    }
 
-            if (selectedActionIndex == clickedRow)
-            {
-                // 同じ行を再クリック → Confirm 相当
-                if (selectedActionIndex == ACTION_MAGIC)
-                {
-                    isMagicMenuOpen = !isMagicMenuOpen;
-                    EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
+                    if (actionMenu->GetFocusedIndex() == i && lastPublishedIndex == i)
+                    {
+                        // 同じ行を再クリック → Confirm 相当
+                        HandleConfirm(i);
+                    }
+                    else
+                    {
+                        // 新しい行をクリック → フォーカス更新のみ（Update() 内で既に発行済み）
+                        actionMenu->SetFocusedIndex(i);
+                        if (lastPublishedIndex != i)
+                        {
+                            lastPublishedIndex = i;
+                            EventBus::Publish(ActionSelectionEvent(i, isMagicMenuOpen));
+                        }
+                    }
+                    return;
                 }
-                else
-                {
-                    ResolveAttack(selectedActionIndex);
-                }
-                return;
             }
-
-            selectedActionIndex = clickedRow;
-            EventBus::Publish(ActionSelectionEvent(selectedActionIndex, isMagicMenuOpen));
         }
 
         IInputService& inputService;
         IBattleService& characterService;
         ISceneService& sceneService;
         ICardService& cardService;
-        int selectedActionIndex = 0;
+
+        std::array<Rect<int>, 4> actionMenuRects{};
+        std::unique_ptr<ButtonGroup> actionMenu;
+        int lastPublishedIndex = ACTION_MAGIC;
         bool isMagicMenuOpen = false;
     };
 
     std::unique_ptr<ICombatController> CreateCombatController(IInputService& inputService,
                                                               IBattleService& characterService,
-                                                              ISceneService& sceneService, ICardService& cardService)
+                                                              ISceneService& sceneService,
+                                                              ICardService& cardService,
+                                                              IRenderService& renderService)
     {
-        return std::make_unique<CombatController>(inputService, characterService, sceneService, cardService);
+        return std::make_unique<CombatController>(inputService, characterService, sceneService,
+                                                  cardService, renderService);
     }
 }

@@ -209,7 +209,8 @@ RC_GTEST_PROP(MouseInput, Property3_SelectionBeforeConfirm_CaseA_SelectsAndPubli
     ON_CALL(mockInput, OnMouseClick(InputAction::MouseClick))
         .WillByDefault(Return(Point<int>{cx, cy}));
 
-    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard);
+    NiceMock<MockRenderService> mockRender;
+    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard, mockRender);
 
     int actionSelCount = 0;
     int actionSelIndex = -1;
@@ -253,7 +254,8 @@ RC_GTEST_PROP(MouseInput, Property3_SelectionBeforeConfirm_CaseB_ConfirmDoesNotS
     ON_CALL(mockInput, OnMouseClick(InputAction::MouseClick))
         .WillByDefault(Return(Point<int>{cx, cy}));
 
-    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard);
+    NiceMock<MockRenderService> mockRender;
+    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard, mockRender);
     controller->Update(0.0f);
 
     int actionSelCount = 0;
@@ -312,7 +314,8 @@ RC_GTEST_PROP(MouseInput, Property4_DrawCard_MousePath_CallsDrawCardOnce, ())
     EXPECT_CALL(mockCard, DrawCard()).Times(1).WillOnce(Return(card));
     ON_CALL(mockCard, DiscardHand()).WillByDefault(testing::Return());
 
-    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard);
+    NiceMock<MockRenderService> mockRender;
+    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard, mockRender);
 
     int drawCardEventCount = 0;
     auto hDraw = EventBus::Subscribe<DrawCardEvent>([&](const DrawCardEvent&) { ++drawCardEventCount; });
@@ -367,7 +370,8 @@ RC_GTEST_PROP(MouseInput, Property4_DrawCard_KeyboardPath_CallsDrawCardOnce, ())
     EXPECT_CALL(mockCard, DrawCard()).Times(1).WillOnce(Return(card));
     ON_CALL(mockCard, DiscardHand()).WillByDefault(testing::Return());
 
-    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard);
+    NiceMock<MockRenderService> mockRender;
+    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard, mockRender);
 
     int drawCardEventCount = 0;
     auto hDraw = EventBus::Subscribe<DrawCardEvent>([&](const DrawCardEvent&) { ++drawCardEventCount; });
@@ -426,7 +430,8 @@ RC_GTEST_PROP(MouseInput, Property4_DrawCard_BothPaths_ProduceSameEffect, ())
         int mouseDrawEvents = 0;
         auto hDraw = EventBus::Subscribe<DrawCardEvent>([&](const DrawCardEvent&) { ++mouseDrawEvents; });
 
-        CreateCombatController(mockInput, mockBattle, mockScene, mockCard)->Update(0.0f);
+        NiceMock<MockRenderService> mockRender;
+        CreateCombatController(mockInput, mockBattle, mockScene, mockCard, mockRender)->Update(0.0f);
         RC_ASSERT(mouseDrawEvents == 1);
         EventBus::Unsubscribe(hDraw);
     }
@@ -453,7 +458,8 @@ RC_GTEST_PROP(MouseInput, Property4_DrawCard_BothPaths_ProduceSameEffect, ())
         int kbDrawEvents = 0;
         auto hDraw2 = EventBus::Subscribe<DrawCardEvent>([&](const DrawCardEvent&) { ++kbDrawEvents; });
 
-        CreateCombatController(mockInput2, mockBattle2, mockScene2, mockCard2)->Update(0.0f);
+        NiceMock<MockRenderService> mockRender2;
+        CreateCombatController(mockInput2, mockBattle2, mockScene2, mockCard2, mockRender2)->Update(0.0f);
         RC_ASSERT(kbDrawEvents == 1);
         EventBus::Unsubscribe(hDraw2);
     }
@@ -475,7 +481,7 @@ RC_GTEST_PROP(MouseInput, Property4_DrawCard_BothPaths_ProduceSameEffect, ())
 namespace mc {
 namespace {
 
-// Part A: closed menu — click on row j just selects, does not call UseMagic
+// Part A: closed menu  Eclick on row j just selects, does not call UseMagic
 RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_ClosedMenu_NoUseMagic, ())
 {
     const int j  = *rc::gen::inRange(1, 4);
@@ -500,7 +506,8 @@ RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_ClosedMenu_NoUseMagic, ())
     ON_CALL(mockInput, OnMouseClick(InputAction::MouseClick))
         .WillByDefault(Return(Point<int>{cx, cy}));
 
-    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard);
+    NiceMock<MockRenderService> mockRender;
+    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard, mockRender);
 
     int actionSelCount = 0;
     int actionSelIndex = -1;
@@ -518,7 +525,7 @@ RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_ClosedMenu_NoUseMagic, ())
     EventBus::Unsubscribe(hSel);
 }
 
-// Part B: open menu — correct EMagic dispatched, state reset on success
+// Part B: open menu  Ecorrect EMagic dispatched, state reset on success
 RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_OpenMenu_CorrectMapping, ())
 {
     const int j  = *rc::gen::inRange(1, 4);
@@ -544,7 +551,8 @@ RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_OpenMenu_CorrectMapping, (
     ON_CALL(mockInput, GetMousePosition()).WillByDefault(Return(Point<int>{0, 0}));
     ON_CALL(mockInput, OnMouseClick(_)).WillByDefault(Return(Point<int>{-1, -1}));
 
-    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard);
+    NiceMock<MockRenderService> mockRender;
+    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard, mockRender);
 
     // Open MagicMenu: click row 0 while selectedActionIndex==0 toggles isMagicMenuOpen to true
     const int openCx = *rc::gen::inRange(400, 700);
@@ -608,7 +616,8 @@ RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_AfterSuccess_StateReset, (
     ON_CALL(mockInput, GetMousePosition()).WillByDefault(Return(Point<int>{0, 0}));
     ON_CALL(mockInput, OnMouseClick(_)).WillByDefault(Return(Point<int>{-1, -1}));
 
-    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard);
+    NiceMock<MockRenderService> mockRender;
+    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard, mockRender);
 
     // Open MagicMenu
     ON_CALL(mockInput, OnMouseClick(InputAction::MouseClick))
@@ -639,7 +648,7 @@ RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_AfterSuccess_StateReset, (
 } // namespace
 } // namespace mc
 
-// Property 1: (-1,-1) guard — when OnMouseClick returns (-1,-1), no game state must change
+// Property 1: (-1,-1) guard  Ewhen OnMouseClick returns (-1,-1), no game state must change
 // Covers: CombatController (no DrawCard/ActionSelectionEvent/CombatEvent) and InfoScene (no StartStage/PushScene)
 
 import SceneService;
@@ -666,7 +675,8 @@ RC_GTEST_PROP(MouseInput, Property1_CombatController_NegOneNegOne_Guard, ())
     ON_CALL(mockInput, GetMousePosition()).WillByDefault(Return(Point<int>{0, 0}));
     ON_CALL(mockInput, OnMouseClick(_)).WillByDefault(Return(Point<int>{-1, -1}));
 
-    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard);
+    NiceMock<MockRenderService> mockRender;
+    auto controller = CreateCombatController(mockInput, mockBattle, mockScene, mockCard, mockRender);
 
     int drawCardEventCount  = 0;
     int actionSelEventCount = 0;
@@ -709,7 +719,8 @@ RC_GTEST_PROP(MouseInput, Property1_CombatController_NegOneNegOne_DrawCardNotCal
     EXPECT_CALL(mockCard, DrawCard()).Times(0);
     ON_CALL(mockCard, DiscardHand()).WillByDefault(testing::Return());
 
-    CreateCombatController(mockInput, mockBattle, mockScene, mockCard)->Update(0.0f);
+    NiceMock<MockRenderService> mockRender;
+    CreateCombatController(mockInput, mockBattle, mockScene, mockCard, mockRender)->Update(0.0f);
 
     EXPECT_CALL(mockScene, PushScene(_)).Times(0);
 }
@@ -805,7 +816,7 @@ TEST(MouseInput, Property6_MenuScene_PageClamp_Adversarial_1000Next)
 } // namespace mc
 
 // InfoScene mouse routing unit tests
-// Actual InfoScene behavior: any click with x∈[0,w) y∈[0,h) calls StartStage();
+// Actual InfoScene behavior: any click with x∁E0,w) y∁E0,h) calls StartStage();
 // (-1,-1) does nothing; ToggleMenu key opens Menu screen.
 
 namespace mc {
@@ -925,3 +936,4 @@ TEST(MouseInput, Property7_MenuScene_PushContext_NotCalledInUpdate)
 
 } // namespace
 } // namespace mc
+

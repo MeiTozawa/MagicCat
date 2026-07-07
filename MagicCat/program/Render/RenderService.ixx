@@ -234,9 +234,9 @@ namespace mc {
 
         /// @brief ボタンを描画する（Rect）
         void DrawButton(Rect<int> r, const wchar_t* text, bool isFocus = false,
-                        uint32_t bgClr = 0x2A2A3A, uint32_t fgClr = 0xFFFFFF)
+                        uint32_t bgColor = COLOR_BG, uint32_t fgColor = COLOR_WHITE)
         {
-            DrawButton(r.x1, r.y1, r.x2, r.y2, text, isFocus, bgClr, fgClr);
+            DrawButton(r.x1, r.y1, r.x2, r.y2, text, isFocus, bgColor, fgColor);
         }
 
         /// @brief 画像ハンドルを指定してグラフィックを描画する（Point）

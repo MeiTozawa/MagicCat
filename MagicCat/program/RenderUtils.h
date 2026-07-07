@@ -79,6 +79,11 @@ namespace mc {
         return x >= r.x1 && x <= r.x2 && y >= r.y1 && y <= r.y2;
     }
     
+    constexpr Rect<int> DRAW_PILE_RECT = {
+        DRAW_PILE_X1, DRAW_PILE_Y1,
+        DRAW_PILE_X2, DRAW_PILE_Y2
+    };
+    
     constexpr Rect<int> MENU_ICON_RECT = {
         MENU_ICON_X - MENU_ICON_HALF_W, MENU_ICON_Y - MENU_ICON_HALF_H,
         MENU_ICON_X + MENU_ICON_HALF_W, MENU_ICON_Y + MENU_ICON_HALF_H

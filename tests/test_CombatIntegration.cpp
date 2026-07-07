@@ -30,6 +30,7 @@ namespace {
         std::unique_ptr<ICardService> cardService;
         std::unique_ptr<ISceneService> sceneService;
         std::unique_ptr<ICombatController> combatController;
+        NiceMock<MockRenderService> mockRender;
 
         std::vector<EnemyConfig> enemyConfigs;
         std::vector<CardConfig> cardConfigs;
@@ -57,7 +58,7 @@ namespace {
             characterService->StartStage();
             cardService->Start();
             
-            combatController = CreateCombatController(*mockInput, *characterService, *sceneService, *cardService);
+            combatController = CreateCombatController(*mockInput, *characterService, *sceneService, *cardService, mockRender);
         }
 
         void TearDown() override {}

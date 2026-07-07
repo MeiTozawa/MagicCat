@@ -8,6 +8,7 @@ import InputService;
 import BattleService;
 import SceneService;
 import CardService;
+import RenderService;
 
 namespace mc {
     export constexpr int ACTION_MAGIC = 0;
@@ -30,8 +31,7 @@ namespace mc {
         virtual void Reset() = 0;
     };
 
-    export std::unique_ptr<ICombatController> CreateCombatController(IInputService& inputService,
-                                                                     IBattleService& battleService,
-                                                                     ISceneService& sceneService,
-                                                                     ICardService& cardService);
+    export std::unique_ptr<ICombatController> CreateCombatController(
+        IInputService& inputService, IBattleService& battleService, ISceneService& sceneService,
+        ICardService& cardService, IRenderService& renderService);
 }

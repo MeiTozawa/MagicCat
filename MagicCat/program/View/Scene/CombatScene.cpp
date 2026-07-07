@@ -133,7 +133,8 @@ namespace mc {
 
         void SetupController()
         {
-            combatController = CreateCombatController(inputService, battleService, sceneService, cardService);
+            combatController = CreateCombatController(inputService, battleService, sceneService,
+                                                      cardService, renderService);
             combatController->Reset();
         }
 

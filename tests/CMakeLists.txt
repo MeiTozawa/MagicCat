@@ -36,6 +36,7 @@ add_executable(MagicCatTests
     test_HitFlashEffector.cpp
     test_CutsceneFocusDisplayer.cpp
     test_CutsceneScene.cpp
+    test_RandomUtils.cpp
 )
 
 target_compile_features(MagicCatTests PRIVATE cxx_std_23)

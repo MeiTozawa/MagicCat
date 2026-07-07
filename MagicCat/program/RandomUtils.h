@@ -4,16 +4,15 @@
 
 namespace mc {
 
-namespace
-{
-    inline thread_local std::random_device rd;
-    inline thread_local std::mt19937 gen(rd());
-}
-
 class Random
 {
 public:
     Random() = delete;
+
+    static void Seed(unsigned int seed)
+    {
+        GetEngine().seed(seed);
+    }
 
     template <typename... T>
     static int RandomSelection(T... list)
@@ -46,6 +45,7 @@ public:
 private:
     static std::mt19937& GetEngine()
     {
+        static std::mt19937 gen;
         return gen;
     }
 };

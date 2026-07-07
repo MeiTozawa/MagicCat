@@ -4,6 +4,7 @@
 #include <RenderUtils.h>
 #include <windows.h>
 #include <ResourceConstantHedder.h>
+#include <RandomUtils.h>
 
 import AssetService;
 import CardService;
@@ -50,6 +51,12 @@ void InitGameServices()
 
 void GameStart()
 {
+#ifdef _DEBUG
+    Random::Seed(0);
+#else
+    std::random_device rd;
+    Random::Seed(rd());
+#endif
     renderService = CreateRenderService();
     InitGameServices();
     AddFontResourceEx(FILE_PATH_OTF_UNIFONT_17, FR_PRIVATE, nullptr);
@@ -71,4 +78,7 @@ void GameMain(float deltaTime)
     sceneService->Update(deltaTime);
 }
 
-void GameEnd() {}
+void GameEnd()
+{
+    RemoveFontResourceEx(FILE_PATH_OTF_UNIFONT_17, FR_PRIVATE, nullptr);
+}

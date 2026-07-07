@@ -38,6 +38,8 @@ namespace mc {
 
         constexpr int NEXT_PAGE_ICON_X = 780;
         constexpr int NEXT_PAGE_Y = WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN - 50;
+        
+        constexpr int PAGE_COUNT = 3;
 
         constexpr uint32_t COLOR_BOX_BG = 0x1E1E28;
 
@@ -64,11 +66,13 @@ namespace mc {
         constexpr Rect<int> BTN2_RECT = {BUTTON2_X, BUTTON_Y1, BUTTON2_X + BUTTON_WIDTH, BUTTON_Y2};
         constexpr Rect<int> BTN3_RECT = {BUTTON3_X, BUTTON_Y1, BUTTON3_X + BUTTON_WIDTH, BUTTON_Y2};
         constexpr Rect<int> BTN4_RECT = {BUTTON4_X, BUTTON_Y1, BUTTON4_X + BUTTON_WIDTH, BUTTON_Y2};
-        constexpr std::array<Rect<int>, BUTTON_COUNT> BTN_RECTS = {{
-            BTN0_RECT, BTN1_RECT, BTN2_RECT, BTN3_RECT, BTN4_RECT
-        }};
+        constexpr std::array<Rect<int>, BUTTON_COUNT> BTN_RECTS = {
+            {
+                BTN0_RECT, BTN1_RECT, BTN2_RECT, BTN3_RECT, BTN4_RECT
+            }
+        };
         constexpr const wchar_t* BTN_LABELS[BUTTON_COUNT] = {
-            L"戻る", L"音量設定", L"セーブ", L"ロード", L"終了"
+            L"ルール", L"音量設定", L"セーブ", L"ロード", L"終了"
         };
     }
 
@@ -78,8 +82,7 @@ namespace mc {
         MenuScene(IInputService& input, ISceneService& scene, IAssetService& asset,
                   IRenderService& render, IOSService& os)
             : inputService(input), sceneService(scene), assetService(asset), renderService(render)
-            , buttons(BTN_RECTS, input, os, ButtonGroupLayout::Horizontal)
-        {}
+              , buttons(BTN_RECTS, input, os, ButtonGroupLayout::Horizontal) {}
 
         void Start() override
         {
@@ -90,8 +93,6 @@ namespace mc {
         {
             buttons.Update();
             HandleInput();
-
-            currentPage = std::clamp(currentPage, 0, 1);
 
             DrawBox();
             DrawContent();
@@ -115,7 +116,6 @@ namespace mc {
                 return;
             }
 
-            // ボタン以外のエリアをクリック → ページ切替
             auto click = inputService.OnMouseClick(InputAction::MouseClick);
             if (click.x != -1 && click.y != -1 && click.In(BOX_RECT))
                 NextPage();
@@ -125,11 +125,13 @@ namespace mc {
         {
             switch (index)
             {
-            case 0: inputService.PopContext(); sceneService.PopScene(); break;
+            case 0: 
+                NextPage();
+                break;
             case 1: /* 音量設定 */ break;
             case 2: /* セーブ   */ break;
             case 3: /* ロード   */ break;
-            case 4: inputService.PopContext(); sceneService.PopScene(); break;
+            case 4: /*exit the game*/ break;
             default: break;
             }
         }
@@ -160,13 +162,52 @@ namespace mc {
             constexpr int boxY1 = BOX_MARGIN_Y_UP;
             int textY = boxY1 + CONTENT_START_OFFSET_Y;
 
-            if (currentPage == 0)
+            switch (currentPage)
+            {
+            case 0:
                 DrawPage0(boxX1, textY);
-            else if (currentPage == 1)
+                break;
+            case 1:
                 DrawPage1(boxX1, textY);
+                break;
+            case 2:
+                DrawPage2(boxX1, textY);
+                break;
+            default: ;
+            }
         }
 
         void DrawPage0(int boxX1, int textY) const
+        {
+            renderService.DrawString(boxX1 + INDENT_LEVEL_1, textY,
+                                     L"アクション: 【カードを引く】【魔法を使用する】【攻撃する】", COLOR_TEXT_NORMAL);
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING,
+                                     L"攻撃を行う前に、カードを引いたり、魔法を使ったりすることができます。", COLOR_TEXT_GREEN);
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 2,
+                                     L"攻撃した後、ターンが終了します。", COLOR_TEXT_RED);
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 3,
+                                     L"ターンが終了すると、敵のウェートの変更値はリセットされます。", COLOR_TEXT_RED);
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 4,
+                                     L"ターンが終了すると、手札は捨て札に捨てられます。", COLOR_TEXT_RED);
+        }
+
+        void DrawPage1(int boxX1, int textY) const
+        {
+            renderService.DrawString(boxX1 + INDENT_LEVEL_1, textY,
+                                     L"カードの説明", COLOR_TEXT_NORMAL);
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING,
+                                     L"魔法カード：MPが回復します。", COLOR_TEXT_BLUE);
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 2,
+                                     L"じゃんけんカード：敵の該当する攻撃のウェイトが上昇します。", COLOR_TEXT_GREEN);
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 4,
+                                     L"手札は4枚までです。", COLOR_TEXT_GREEN);
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 5,
+                                     L"山札がなくなった場合、自動的に捨て札をシャッフルして、", COLOR_TEXT_RED);
+            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 6,
+                                     L"それをドロー山札として再構成する。", COLOR_TEXT_RED);
+        }
+
+        void DrawPage2(int boxX1, int textY) const
         {
             renderService.DrawString(boxX1 + INDENT_LEVEL_1, textY,
                                      L"プレイヤーの魔法スキル：", COLOR_TEXT_NORMAL);
@@ -185,26 +226,6 @@ namespace mc {
                                      L"⚔：その手で勝った時に相手に与えるダメージ量。", COLOR_TEXT_RED);
         }
 
-        void DrawPage1(int boxX1, int textY) const
-        {
-            renderService.DrawString(boxX1 + INDENT_LEVEL_1, textY,
-                                     L"仕組み: カードを引くと即座に効果が発動します", COLOR_TEXT_NORMAL);
-            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING,
-                                     L"魔法カード：MPが回復します。", COLOR_TEXT_BLUE);
-            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 2,
-                                     L"じゃんけんカード：敵の該当する攻撃のウェイトが上昇します。", COLOR_TEXT_RED);
-            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + LINE_SPACING * 3,
-                                     L"手札は4枚までです。", COLOR_TEXT_GREEN);
-
-            renderService.DrawString(boxX1 + INDENT_LEVEL_1, textY + SECTION_SPACING,
-                                     L"アクション: 【カードを引く】【魔法を使用する】【攻撃する】", COLOR_TEXT_NORMAL);
-            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + SECTION_SPACING + LINE_SPACING,
-                                     L"魔法を使用するとMPが必要。効果は何か試してみてください。", COLOR_TEXT_GREEN);
-            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + SECTION_SPACING + LINE_SPACING * 2,
-                                     L"攻撃した後、ターンが終了します。", COLOR_TEXT_RED);
-            renderService.DrawString(boxX1 + INDENT_LEVEL_2, textY + SECTION_SPACING + LINE_SPACING * 3,
-                                     L"ターンが終了すると、敵のウェイトと手札はリセットされます。", COLOR_TEXT_RED);
-        }
 
         void DrawNavigationHints() const
         {
@@ -232,7 +253,7 @@ namespace mc {
         void NextPage()
         {
             currentPage++;
-            if (currentPage < 0 || currentPage > 1)
+            if (currentPage < 0 || currentPage >= PAGE_COUNT)
                 currentPage = 0;
         }
 

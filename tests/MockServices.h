@@ -75,6 +75,7 @@ public:
     MOCK_METHOD(void, DrawFilledTriangle, (int, int, int, int, int, int, uint32_t), (override));
     MOCK_METHOD(void, SetCursorPointer, (), (override));
     MOCK_METHOD(void, SetCursorArrow, (), (override));
+    MOCK_METHOD(void, DrawButton, (int, int, int, int, const wchar_t*, uint32_t, uint32_t), (override));
 };
 
 class MockBattleService : public IBattleService {

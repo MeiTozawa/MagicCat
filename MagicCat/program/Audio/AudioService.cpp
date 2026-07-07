@@ -50,8 +50,8 @@ namespace mc {
         }
     }
 
-    static constexpr int   BGM_VOLUME_MAX   = 255;
-    static constexpr float BGM_FADE_TIME    = 1.5f; ///< フェードイン/アウトの秒数
+    static constexpr int BGM_VOLUME_MAX = 255 * 0.8;
+    static constexpr float BGM_FADE_TIME = 1.5f; ///< フェードイン/アウトの秒数
 
     class AudioService : public IAudioService
     {
@@ -144,7 +144,7 @@ namespace mc {
                 StartBgmFadeOut();
             }));
         }
-        
+
         void OnHealthChanged(const HealthChangedEvent& e) const
         {
             auto tags = e.Victim->GetTags();
@@ -173,7 +173,7 @@ namespace mc {
 
         void SetBgmTarget(float target)
         {
-            bgmTarget    = target;
+            bgmTarget = target;
             bgmFadeSpeed = BGM_VOLUME_MAX / BGM_FADE_TIME;
         }
 
@@ -198,10 +198,10 @@ namespace mc {
         IBattleService& characterService;
         std::vector<EventHandle> eventHandles;
 
-        int   bgmHandle    = -1;
-        float bgmVolume    = 0.f;   ///< 現在の実音量（0–255）
-        float bgmTarget    = 0.f;   ///< 目標音量
-        float bgmFadeSpeed = 0.f;   ///< 1秒あたりの変化量
+        int bgmHandle = -1;
+        float bgmVolume = 0.f; ///< 現在の実音量（0–255）
+        float bgmTarget = 0.f; ///< 目標音量
+        float bgmFadeSpeed = 0.f; ///< 1秒あたりの変化量
     };
 
     std::unique_ptr<IAudioService> CreateAudioService(IAssetService& assetService, IBattleService& characterService)

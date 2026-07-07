@@ -106,6 +106,15 @@ namespace mc {
             DrawBoxAA(x2 - thickness, y1, x2, y2, color, true);
         }
 
+        void DrawButton(int x1, int y1, int x2, int y2, const wchar_t* text,
+                        uint32_t bgClr, uint32_t fgClr) override
+        {
+            DrawBoxAA(static_cast<float>(x1), static_cast<float>(y1),
+                      static_cast<float>(x2), static_cast<float>(y2), bgClr, true);
+            DrawHollowBox(x1, y1, x2, y2, 2, fgClr);
+            DrawCenterString((x1 + x2) / 2, (y1 + y2) / 2, text, fgClr);
+        }
+
         int GetWindowWidth() const override
         {
             return static_cast<int>(dxe::GetWindowWidthF());

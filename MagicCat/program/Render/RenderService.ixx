@@ -138,6 +138,17 @@ namespace mc {
         /// @param color 描画色
         virtual void DrawHollowBox(int x1, int y1, int x2, int y2, int thickness, uint32_t color) = 0;
         
+        /// @brief ボタンを描画する（枠線と中央揃えテキスト付き）
+        /// @param x1 左上X座標
+        /// @param y1 左上Y座標
+        /// @param x2 右下X座標
+        /// @param y2 右下Y座標
+        /// @param text ボタンのテキスト
+        /// @param bgClr 背景色 (デフォルト: 0x2A2A3A)
+        /// @param fgClr 文字と枠線の色 (デフォルト: 0xFFFFFF)
+        virtual void DrawButton(int x1, int y1, int x2, int y2, const wchar_t* text,
+                                uint32_t bgClr = 0x2A2A3A, uint32_t fgClr = 0xFFFFFF) = 0;
+        
         /// @brief ウィンドウの横幅を取得する
         /// @return 画面幅（ピクセル）
         virtual int GetWindowWidth() const = 0;

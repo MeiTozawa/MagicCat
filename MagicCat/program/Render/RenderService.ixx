@@ -1,6 +1,7 @@
 module;
 
 #include <cstdint>
+#include <RenderUtils.h>
 
 export module RenderService;
 
@@ -183,6 +184,77 @@ namespace mc {
 
         /// @brief マウスカーソルをデフォルトの矢印に戻す（Win32: IDC_ARROW）
         virtual void SetCursorArrow() = 0;
+
+        // -------------------------------------------------------------------------
+        // Point / Rect を用いた直感的なオーバーロード API
+        // -------------------------------------------------------------------------
+
+        /// @brief 指定した座標（Point）に文字列を描画する
+        void DrawString(Point<int> p, const wchar_t* text, uint32_t color)
+        {
+            DrawString(p.x, p.y, text, color);
+        }
+
+        /// @brief 矩形（Rect）を描画する（float）
+        void DrawBoxAA(Rect<float> r, uint32_t color, bool fillFlag)
+        {
+            DrawBoxAA(r.x1, r.y1, r.x2, r.y2, color, fillFlag);
+        }
+
+        /// @brief 矩形（Rect）を描画する（int）
+        void DrawBoxAA(Rect<int> r, uint32_t color, bool fillFlag)
+        {
+            DrawBoxAA(static_cast<float>(r.x1), static_cast<float>(r.y1),
+                      static_cast<float>(r.x2), static_cast<float>(r.y2), color, fillFlag);
+        }
+
+        /// @brief 中空の矩形（枠線）を太さを指定して描画する
+        void DrawHollowBox(Rect<int> r, int thickness, uint32_t color)
+        {
+            DrawHollowBox(r.x1, r.y1, r.x2, r.y2, thickness, color);
+        }
+
+        /// @brief 角丸矩形の枠線を描画する
+        void DrawRoundRectFrame(Rect<int> r, int cornerRadius, int thickness, uint32_t color)
+        {
+            DrawRoundRectFrame(r.x1, r.y1, r.x2, r.y2, cornerRadius, thickness, color);
+        }
+
+        /// @brief 文字列を中央揃えで描画する（Point）
+        void DrawCenterString(Point<int> p, const wchar_t* text, uint32_t color)
+        {
+            DrawCenterString(p.x, p.y, text, color);
+        }
+
+        /// @brief 文字列を左揃えで描画する（Point）
+        void DrawLeftString(Point<int> p, const wchar_t* text, uint32_t color)
+        {
+            DrawLeftString(p.x, p.y, text, color);
+        }
+
+        /// @brief 文字列を右揃えで描画する（Point）
+        void DrawRightString(Point<int> p, const wchar_t* text, uint32_t color)
+        {
+            DrawRightString(p.x, p.y, text, color);
+        }
+
+        /// @brief ボタンを描画する（Rect）
+        void DrawButton(Rect<int> r, const wchar_t* text, uint32_t bgClr = 0x2A2A3A, uint32_t fgClr = 0xFFFFFF)
+        {
+            DrawButton(r.x1, r.y1, r.x2, r.y2, text, bgClr, fgClr);
+        }
+
+        /// @brief 画像ハンドルを指定してグラフィックを描画する（Point）
+        void DrawGraph(Point<int> p, int handle, bool transFlag)
+        {
+            DrawGraph(p.x, p.y, handle, transFlag);
+        }
+
+        /// @brief 画像ハンドルを指定してグラフィックを回転・拡大縮小描画する（Point）
+        void DrawRotaGraphF(Point<float> p, double extRate, double angle, int graphHandle, bool transFlag)
+        {
+            DrawRotaGraphF(p.x, p.y, extRate, angle, graphHandle, transFlag);
+        }
     };
 
     export std::unique_ptr<IRenderService> CreateRenderService();

@@ -169,11 +169,11 @@ namespace mc {
 
         void DrawButtons() const
         {
-            renderService.DrawButton(BUTTON0_X, BUTTON_Y1, BUTTON0_X + BUTTON_WIDTH, BUTTON_Y2, L"戻る");
-            renderService.DrawButton(BUTTON1_X, BUTTON_Y1, BUTTON1_X + BUTTON_WIDTH, BUTTON_Y2, L"音量設定");
-            renderService.DrawButton(BUTTON2_X, BUTTON_Y1, BUTTON2_X + BUTTON_WIDTH, BUTTON_Y2, L"セーブ");
-            renderService.DrawButton(BUTTON3_X, BUTTON_Y1, BUTTON3_X + BUTTON_WIDTH, BUTTON_Y2, L"ロード");
-            renderService.DrawButton(BUTTON4_X, BUTTON_Y1, BUTTON4_X + BUTTON_WIDTH, BUTTON_Y2, L"終了");
+            renderService.DrawButton({ BUTTON0_X, BUTTON0_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 }, L"戻る");
+            renderService.DrawButton({ BUTTON1_X, BUTTON1_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 }, L"音量設定");
+            renderService.DrawButton({ BUTTON2_X, BUTTON2_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 }, L"セーブ");
+            renderService.DrawButton({ BUTTON3_X, BUTTON3_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 }, L"ロード");
+            renderService.DrawButton({ BUTTON4_X, BUTTON4_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 }, L"終了");
         }
 
         void DrawContent() const

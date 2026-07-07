@@ -54,9 +54,14 @@ namespace mc {
 
     template <typename T>
     requires std::integral<T> || std::floating_point<T>
+    struct Rect;
+
+    template <typename T>
+    requires std::integral<T> || std::floating_point<T>
     struct Point
     {
         T x, y;
+        bool In(const Rect<T>& r) const;
     };
     
     template <typename T>
@@ -64,12 +69,14 @@ namespace mc {
     struct Rect
     {
         T x1, x2, y1, y2;
-        
-        bool In(Point<T> p)
-        {
-            return p.x >= x1 && p.x <= x2 && p.y >= y1 && p.y <= y2;
-        }
     };
+
+    template <typename T>
+    requires std::integral<T> || std::floating_point<T>
+    inline bool Point<T>::In(const Rect<T>& r) const
+    {
+        return x >= r.x1 && x <= r.x2 && y >= r.y1 && y <= r.y2;
+    }
 
 
 }

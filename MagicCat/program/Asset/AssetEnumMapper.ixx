@@ -2,7 +2,7 @@ module;
 
 #include <cassert>
 
-export module ViewEnumMapper;
+export module AssetEnumMapper;
 
 import AssetService;
 import CardService;

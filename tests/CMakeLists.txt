@@ -28,7 +28,7 @@ add_executable(MagicCatTests
     test_BattleServiceCodeQualityProperties.cpp
     test_BattleServiceParseSpriteProperty.cpp
     test_AudioService.cpp
-    test_ViewEnumMapper.cpp
+    test_AssetEnumMapper.cpp
     test_AssetService.cpp
     test_CombatScene.cpp
     test_MouseInput.cpp

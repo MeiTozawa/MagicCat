@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 #include <memory>
 #include <vector>
@@ -16,7 +16,7 @@ import RenderService;
 import AssetService;
 import EventBus;
 import EffectorFactory;
-import ViewEnumMapper;
+import AssetEnumMapper;
 
 namespace mc {
     namespace {

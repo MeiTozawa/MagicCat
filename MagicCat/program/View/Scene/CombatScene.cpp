@@ -18,7 +18,7 @@ import EffectorFactory;
 import CombatController;
 import HealthComponent;
 import Character;
-import ViewEnumMapper;
+import AssetEnumMapper;
 import RenderService;
 
 namespace mc {

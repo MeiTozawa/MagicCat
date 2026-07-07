@@ -8,7 +8,7 @@
 #include <rapidcheck.h>
 #include <rapidcheck/gtest.h>
 
-import ViewEnumMapper;
+import AssetEnumMapper;
 import CardService;
 import Character;
 import AssetService;

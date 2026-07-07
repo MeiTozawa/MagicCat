@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 #include <memory>
 #include <vector>
@@ -14,7 +14,7 @@ import BattleService;
 import RenderService;
 import EventBus;
 import EffectorFactory;
-import ViewEnumMapper;
+import AssetEnumMapper;
 import HealthComponent;
 import Character;
 import Enemy;

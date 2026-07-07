@@ -39,15 +39,7 @@ namespace mc {
         {
             if (hand.size() >= HAND_SIZE_MAX)
                 return Card{ECardType::Null, 0};
-
-            if (drawPile.empty())
-            {
-                if (discardPile.empty()) return Card{ECardType::Null, 0};
-                drawPile.insert(drawPile.end(), discardPile.begin(), discardPile.end());
-                discardPile.clear();
-                Random::Shuffle(drawPile);
-                EventBus::Publish(ShuffleEvent());
-            }
+            
             assert(drawPile.size() > 0 && "山札が空です");
             auto c = drawPile.back();
             drawPile.pop_back();
@@ -55,6 +47,11 @@ namespace mc {
 
             EventBus::Publish(DeckUpdatedEvent{drawPile.size(), discardPile.size()});
             EventBus::Publish(HandUpdatedEvent{hand});
+
+            if (drawPile.size() == 0)
+            {
+                Shuffle();
+            }
             return c;
         }
 
@@ -65,11 +62,19 @@ namespace mc {
             EventBus::Publish(HandUpdatedEvent{hand});
         }
 
-        std::vector<Card> GetHandCards() override    { return hand; }
-        std::vector<Card> GetDrawCards() override    { return drawPile; }
+        std::vector<Card> GetHandCards() override { return hand; }
+        std::vector<Card> GetDrawCards() override { return drawPile; }
         std::vector<Card> GetDiscardCards() override { return discardPile; }
 
     private:
+        void Shuffle()
+        {
+            drawPile.insert(drawPile.end(), discardPile.begin(), discardPile.end());
+            discardPile.clear();
+            Random::Shuffle(drawPile);
+            EventBus::Publish(ShuffleEvent());
+        }
+
         static ECardType ToCardType(int type)
         {
             switch (type)

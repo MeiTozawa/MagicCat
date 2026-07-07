@@ -78,15 +78,13 @@ namespace mc {
         /// @brief 設定データとスプライトを指定してプレイヤーを構築する
         /// @param config プレイヤー設定データ
         /// @param spriteVal プレイヤースプライト
-        Player(const PlayerConfig& config, ESprite spriteVal)
+        Player(const PlayerConfig& config, ESprite spriteVal) : maxMp(config.maxMp)
         {
             name = L"Player";
             sprite = spriteVal;
             rockDamage = config.rockDamage;
             scissorsDamage = config.scissorsDamage;
             paperDamage = config.paperDamage;
-            maxMp = config.maxMp;
-            mp = 0;
 #ifdef _DEBUG
             maxMp = 100;
             mp = 10;

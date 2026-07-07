@@ -93,18 +93,5 @@ namespace mc {
         std::vector<Card> cards;
     };
 
-    export constexpr Card CARD_ROCK_2 = {ECardType::Rock, 2};
-    export constexpr Card CARD_ROCK_3 = {ECardType::Rock, 3};
-    export constexpr Card CARD_ROCK_4 = {ECardType::Rock, 4};
-    export constexpr Card CARD_SCISSORS_2 = {ECardType::Scissors, 2};
-    export constexpr Card CARD_SCISSORS_3 = {ECardType::Scissors, 3};
-    export constexpr Card CARD_SCISSORS_4 = {ECardType::Scissors, 4};
-    export constexpr Card CARD_PAPER_2 = {ECardType::Paper, 2};
-    export constexpr Card CARD_PAPER_3 = {ECardType::Paper, 3};
-    export constexpr Card CARD_PAPER_4 = {ECardType::Paper, 4};
-    export constexpr Card CARD_MAGIC_2 = {ECardType::Magic, 2};
-    export constexpr Card CARD_MAGIC_3 = {ECardType::Magic, 3};
-    export constexpr Card CARD_MAGIC_4 = {ECardType::Magic, 4};
-
     export std::unique_ptr<ICardService> CreateCardService(IConfigService& configService);
 } // namespace mc

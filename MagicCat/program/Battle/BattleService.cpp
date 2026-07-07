@@ -108,7 +108,7 @@ namespace mc {
 
             if (isEnemy)
             {
-                if (currentIndex < 2)
+                if (currentIndex < static_cast<int>(sequence.size()) - 1)
                 {
                     int prevIndex = currentIndex;
                     currentIndex++;

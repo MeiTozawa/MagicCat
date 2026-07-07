@@ -263,5 +263,36 @@ TEST_F(BattleServiceTest, StartStage_WithSmallPool_StillGeneratesThreeEnemies)
     EXPECT_EQ(bs->GetSequence().size(), 3u);
 }
 
+TEST_F(BattleServiceTest, StartStage_WithBattleCountTwo_ClearsCorrectly)
+{
+    struct ConfigTwoBattles : public StubConfigService {
+        GameConfig gameConfig_{ 2 };
+        const GameConfig& GetGameConfig() const override { return gameConfig_; }
+    };
+    ConfigTwoBattles configTwo;
+    auto cs = CreateCardService(configTwo);
+    NiceMock<MockAssetService> mockAsset;
+    auto bs = CreateBattleService(configTwo, *cs, mockAsset);
+
+    bs->StartStage();
+    ASSERT_EQ(bs->GetSequence().size(), 2u);
+
+    TaggedCharacter enemy(ETag::Enemy);
+    EventBus::Publish(DeathEvent(&enemy));
+    EXPECT_EQ(bs->GetCurrentEnemyIndex(), 1);
+
+    bool received = false;
+    auto handle = EventBus::Subscribe<StageClearEvent>(
+        [&](const StageClearEvent&) { received = true; });
+
+    EventBus::Publish(DeathEvent(&enemy));
+
+    EXPECT_TRUE(received);
+    EXPECT_EQ(bs->GetCurrentEnemyIndex(), 0);
+    EXPECT_TRUE(bs->GetSequence().empty());
+
+    EventBus::Unsubscribe(handle);
+}
+
 } // namespace
 } // namespace mc

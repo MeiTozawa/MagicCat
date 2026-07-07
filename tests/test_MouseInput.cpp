@@ -725,8 +725,6 @@ RC_GTEST_PROP(MouseInput, Property1_InfoScene_NegOneNegOne_Guard, ())
 
     ON_CALL(mockInput, IsPressed(_)).WillByDefault(Return(false));
     ON_CALL(mockInput, OnMouseClick(_)).WillByDefault(Return(Point<int>{-1, -1}));
-    ON_CALL(mockRender, GetWindowWidth()).WillByDefault(Return(1280));
-    ON_CALL(mockRender, GetWindowHeight()).WillByDefault(Return(720));
 
     EXPECT_CALL(mockBattle, StartStage()).Times(0);
     EXPECT_CALL(mockScene, PushScene(_)).Times(0);
@@ -745,8 +743,6 @@ RC_GTEST_PROP(MouseInput, Property1_InfoScene_NegOneNegOne_Guard_MultiFrame, ())
 
     ON_CALL(mockInput, IsPressed(_)).WillByDefault(Return(false));
     ON_CALL(mockInput, OnMouseClick(_)).WillByDefault(Return(Point<int>{-1, -1}));
-    ON_CALL(mockRender, GetWindowWidth()).WillByDefault(Return(1280));
-    ON_CALL(mockRender, GetWindowHeight()).WillByDefault(Return(720));
 
     EXPECT_CALL(mockBattle, StartStage()).Times(0);
     EXPECT_CALL(mockScene, PushScene(_)).Times(0);
@@ -817,8 +813,6 @@ namespace {
 
 static void SetupInfoSceneRenderMock(NiceMock<MockRenderService>& mockRender)
 {
-    ON_CALL(mockRender, GetWindowWidth()).WillByDefault(Return(1280));
-    ON_CALL(mockRender, GetWindowHeight()).WillByDefault(Return(720));
     ON_CALL(mockRender, GetFontSize()).WillByDefault(Return(24));
     ON_CALL(mockRender, GetDrawStringWidth(_)).WillByDefault(Return(0));
 }
@@ -894,8 +888,6 @@ RC_GTEST_PROP(MouseInput, Property7_MenuScene_PushContext_CalledOncePerStart, ()
     NiceMock<MockSceneServiceP3> mockScene;
     NiceMock<MockAssetService>   mockAsset;
     NiceMock<MockRenderService>  mockRender;
-    ON_CALL(mockRender, GetWindowWidth()).WillByDefault(Return(1280));
-    ON_CALL(mockRender, GetWindowHeight()).WillByDefault(Return(720));
 
     int pushContextCount = 0;
     ON_CALL(mockInput, PushContext(InputContext::Menu))
@@ -914,8 +906,6 @@ TEST(MouseInput, Property7_MenuScene_PushContext_NotCalledInUpdate)
     NiceMock<MockSceneServiceP3> mockScene;
     NiceMock<MockAssetService>   mockAsset;
     NiceMock<MockRenderService>  mockRender;
-    ON_CALL(mockRender, GetWindowWidth()).WillByDefault(Return(1280));
-    ON_CALL(mockRender, GetWindowHeight()).WillByDefault(Return(720));
     ON_CALL(mockInput, IsPressed(_)).WillByDefault(Return(false));
     ON_CALL(mockInput, OnMouseClick(_)).WillByDefault(Return(Point<int>{-1, -1}));
     ON_CALL(mockAsset, GetImageHandle(_)).WillByDefault(Return(0));

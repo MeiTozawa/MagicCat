@@ -64,7 +64,7 @@ namespace mc {
     requires std::integral<T> || std::floating_point<T>
     struct Rect
     {
-        T x1, x2, y1, y2;
+        T x1, y1, x2, y2;
     };
 
     template <typename T>

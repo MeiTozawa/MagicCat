@@ -36,8 +36,6 @@ TEST(CutsceneSceneTest, Start_LoadsEnemiesAndInitializesFocusDisplayer) {
     NiceMock<MockRenderService>        mockRenderSvc;
     NiceMock<MockBattleService>        mockBattleSvc;
     
-    ON_CALL(mockRenderSvc, GetWindowWidth()).WillByDefault(Return(1280));
-    ON_CALL(mockRenderSvc, GetWindowHeight()).WillByDefault(Return(720));
     
     std::vector<EnemyConfig> sequence = {
         EnemyConfig{10, 1, 1, 1, 1, L"EnemyA", "Bunny"},
@@ -59,8 +57,6 @@ TEST(CutsceneSceneTest, Update_TriggersCutsceneFinishedEvent_AfterDuration) {
     NiceMock<MockRenderService>        mockRenderSvc;
     NiceMock<MockBattleService>        mockBattleSvc;
     
-    ON_CALL(mockRenderSvc, GetWindowWidth()).WillByDefault(Return(1280));
-    ON_CALL(mockRenderSvc, GetWindowHeight()).WillByDefault(Return(720));
     ON_CALL(mockAssetSvc, GetSpriteInfo(_)).WillByDefault(Return(SpriteInfo{{32, 32}, 4}));
     
     std::vector<EnemyConfig> sequence = { {10, 1, 1, 1, 1, L"EnemyA", "Bunny"} };

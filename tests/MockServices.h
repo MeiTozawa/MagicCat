@@ -65,8 +65,6 @@ public:
     MOCK_METHOD(void, DrawLeftString, (int, int, const wchar_t*, uint32_t), (override));
     MOCK_METHOD(void, DrawRightString, (int, int, const wchar_t*, uint32_t), (override));
     MOCK_METHOD(void, DrawHollowBox, (int, int, int, int, int, uint32_t), (override));
-    MOCK_METHOD(int, GetWindowWidth, (), (const, override));
-    MOCK_METHOD(int, GetWindowHeight, (), (const, override));
     MOCK_METHOD(void, SetFontTypeNormal, (), (override));
     MOCK_METHOD(void, ChangeFont, (const wchar_t*), (override));
     MOCK_METHOD(void, SetFontSize, (int), (override));

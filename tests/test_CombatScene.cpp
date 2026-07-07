@@ -68,8 +68,6 @@ protected:
 
         ON_CALL(mockAsset, GetSpriteInfo(_)).WillByDefault(Return(SpriteInfo{{32, 32}, 4}));
 
-        ON_CALL(mockRender, GetWindowWidth()).WillByDefault(Return(1280));
-        ON_CALL(mockRender, GetWindowHeight()).WillByDefault(Return(720));
         ON_CALL(mockRender, GetFontSize()).WillByDefault(Return(24));
         ON_CALL(mockRender, GetDrawStringWidth(_)).WillByDefault(Return(0));
 

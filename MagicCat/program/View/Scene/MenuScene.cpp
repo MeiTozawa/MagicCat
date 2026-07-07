@@ -69,6 +69,12 @@ namespace mc {
         constexpr int BUTTON3_X = BUTTON0_X + 3 * BUTTON_WIDTH + 3 * BUTTON_OFFSET_X;
 
         constexpr int BUTTON4_X = BUTTON0_X + 4 * BUTTON_WIDTH + 4 * BUTTON_OFFSET_X;
+
+        constexpr Rect<int> BTN0_RECT = { BUTTON0_X, BUTTON0_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 };
+        constexpr Rect<int> BTN1_RECT = { BUTTON1_X, BUTTON1_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 };
+        constexpr Rect<int> BTN2_RECT = { BUTTON2_X, BUTTON2_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 };
+        constexpr Rect<int> BTN3_RECT = { BUTTON3_X, BUTTON3_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 };
+        constexpr Rect<int> BTN4_RECT = { BUTTON4_X, BUTTON4_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 };
     }
 
     class MenuScene : public IScene
@@ -122,6 +128,34 @@ namespace mc {
             auto menuClick = inputService.OnMouseClick(InputAction::MouseClick);
             if (menuClick.x == -1 || menuClick.y == -1) return;
 
+            if (menuClick.In(BTN0_RECT))
+            {
+                inputService.PopContext();
+                sceneService.PopScene();
+                return;
+            }
+            if (menuClick.In(BTN1_RECT))
+            {
+                // 音量設定
+                return;
+            }
+            if (menuClick.In(BTN2_RECT))
+            {
+                // セーブ
+                return;
+            }
+            if (menuClick.In(BTN3_RECT))
+            {
+                // ロード
+                return;
+            }
+            if (menuClick.In(BTN4_RECT))
+            {
+                inputService.PopContext();
+                sceneService.PopScene();
+                return;
+            }
+
             if (menuClick.x >= BACK_BUTTON_X1 && menuClick.x < BACK_BUTTON_X2 &&
                 menuClick.y >= BACK_BUTTON_Y1 && menuClick.y < BACK_BUTTON_Y2)
             {
@@ -139,16 +173,14 @@ namespace mc {
             {
                 currentPage--;
             }
-
-            // TODO: 4つのボタンのクリック判定
         }
 
         void DrawOverlay() const
         {
             renderService.SetDrawBlendMode(BlendMode::Alpha, OVERLAY_ALPHA);
             renderService.DrawBoxAA(0.f, 0.f,
-                                    static_cast<float>(renderService.GetWindowWidth()),
-                                    static_cast<float>(renderService.GetWindowHeight()),
+                                    static_cast<float>(WINDOW_WIDTH),
+                                    static_cast<float>(WINDOW_HEIGHT),
                                     COLOR_BLACK, true);
             renderService.SetDrawBlendMode(BlendMode::NoBlend, 0);
         }
@@ -157,8 +189,8 @@ namespace mc {
         {
             constexpr int boxX1 = BOX_MARGIN_X;
             constexpr int boxY1 = BOX_MARGIN_Y_UP;
-            const int boxX2 = renderService.GetWindowWidth() - BOX_MARGIN_X;
-            const int boxY2 = renderService.GetWindowHeight() - BOX_MARGIN_Y_DOWN;
+            constexpr int boxX2 = WINDOW_WIDTH - BOX_MARGIN_X;
+            constexpr int boxY2 = WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN;
 
             renderService.DrawBoxAA(static_cast<float>(boxX1), static_cast<float>(boxY1),
                                     static_cast<float>(boxX2), static_cast<float>(boxY2), COLOR_BOX_BG, true);
@@ -169,11 +201,11 @@ namespace mc {
 
         void DrawButtons() const
         {
-            renderService.DrawButton({ BUTTON0_X, BUTTON0_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 }, L"戻る");
-            renderService.DrawButton({ BUTTON1_X, BUTTON1_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 }, L"音量設定");
-            renderService.DrawButton({ BUTTON2_X, BUTTON2_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 }, L"セーブ");
-            renderService.DrawButton({ BUTTON3_X, BUTTON3_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 }, L"ロード");
-            renderService.DrawButton({ BUTTON4_X, BUTTON4_X + BUTTON_WIDTH, BUTTON_Y1, BUTTON_Y2 }, L"終了");
+            renderService.DrawButton(BTN0_RECT, L"戻る");
+            renderService.DrawButton(BTN1_RECT, L"音量設定");
+            renderService.DrawButton(BTN2_RECT, L"セーブ");
+            renderService.DrawButton(BTN3_RECT, L"ロード");
+            renderService.DrawButton(BTN4_RECT, L"終了");
         }
 
         void DrawContent() const
@@ -230,14 +262,14 @@ namespace mc {
 
         void DrawNavigationHints() const
         {
-            const int boxX2 = renderService.GetWindowWidth() - BOX_MARGIN_X;
-            const int boxY2 = renderService.GetWindowHeight() - BOX_MARGIN_Y_DOWN;
+            constexpr int boxX2 = WINDOW_WIDTH- BOX_MARGIN_X;
+            constexpr int boxY2 = WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN;
 
             int kbrHandle = assetService.GetImageHandle(EImage::KB_ESCAPE);
             renderService.DrawRotaGraphF(boxX2 - ICON_OFFSET_X, boxY2 - ICON_OFFSET_Y, 0.5, 0.0, kbrHandle, true);
             renderService.DrawString(boxX2 - ICON_TEXT_OFFSET_X, boxY2 - ICON_TEXT_OFFSET_Y,
                                      L"押して戻る", COLOR_TEXT_NORMAL);
-            renderService.DrawCenterString(renderService.GetWindowWidth() / 2, boxY2 - ICON_TEXT_OFFSET_Y,
+            renderService.DrawCenterString(WINDOW_WIDTH/ 2, boxY2 - ICON_TEXT_OFFSET_Y,
                                            L"(◀/▶ でページ切替)", COLOR_TEXT_NORMAL);
         }
 

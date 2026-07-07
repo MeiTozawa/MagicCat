@@ -1,5 +1,6 @@
 module;
 
+#include <app_build_setting.h>
 #include <unordered_map>
 #include <memory>
 #include <optional>
@@ -20,7 +21,7 @@ namespace mc {
     class ScreenFadeDisplayer : public Displayer
     {
     public:
-        explicit ScreenFadeDisplayer(IRenderService& rs) : rs(rs) {}
+        explicit ScreenFadeDisplayer(IRenderService& rs) : renderService(rs) {}
 
         void Draw(float deltaTime) const override
         {
@@ -31,12 +32,10 @@ namespace mc {
     private:
         void OnDraw(float) const override
         {
-            const float w = static_cast<float>(rs.GetWindowWidth());
-            const float h = static_cast<float>(rs.GetWindowHeight());
-            rs.DrawBoxAA(0.f, 0.f, w, h, COLOR_BG, true);
+            renderService.DrawBoxAA(0.f, 0.f, WINDOW_WIDTH, WINDOW_HEIGHT, COLOR_BG, true);
         }
 
-        IRenderService& rs;
+        IRenderService& renderService;
     };
 
     class SceneService : public ISceneService

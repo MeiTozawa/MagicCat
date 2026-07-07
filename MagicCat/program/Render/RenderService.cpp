@@ -115,16 +115,6 @@ namespace mc {
             DrawCenterString((x1 + x2) / 2, (y1 + y2) / 2, text, fgClr);
         }
 
-        int GetWindowWidth() const override
-        {
-            return static_cast<int>(dxe::GetWindowWidthF());
-        }
-
-        int GetWindowHeight() const override
-        {
-            return static_cast<int>(dxe::GetWindowHeightF());
-        }
-
         void SetFontTypeNormal() override
         {
             ::ChangeFontType(DX_FONTTYPE_NORMAL);

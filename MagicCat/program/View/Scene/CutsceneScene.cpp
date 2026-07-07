@@ -3,6 +3,7 @@ module;
 #include <memory>
 #include <vector>
 #include <algorithm>
+#include <app_build_setting.h>
 #include <RenderUtils.h>
 
 module SceneService;
@@ -47,9 +48,6 @@ namespace mc {
 
         void Start() override
         {
-            const float screenW = static_cast<float>(renderService.GetWindowWidth());
-            const float screenH = static_cast<float>(renderService.GetWindowHeight());
-
             timer = 0.f;
             finished = false;
 
@@ -67,15 +65,15 @@ namespace mc {
                 sv.sprite = assetService.ParseSprite(sequence[i].spriteName);
                 sv.spriteHandle = assetService.GetSpriteHandle(sv.sprite);
                 sv.info = assetService.GetSpriteInfo(sv.sprite);
-                sv.center = SlotCenter(screenW, screenH, i, slotCount);
+                sv.center = SlotCenter(WINDOW_WIDTH, WINDOW_HEIGHT, i, slotCount);
                 slots.push_back(sv);
             }
 
             const int srcIdx = std::max(0, currentIdx - 1);
             borderDisplayer = CreateCutsceneFocusDisplayer(
                 renderService,
-                SlotCenter(screenW, screenH, srcIdx, slotCount),
-                SlotCenter(screenW, screenH, currentIdx, slotCount),
+                SlotCenter(WINDOW_WIDTH, WINDOW_HEIGHT, srcIdx, slotCount),
+                SlotCenter(WINDOW_WIDTH, WINDOW_HEIGHT, currentIdx, slotCount),
                 BORDER_HALF_WIDTH, BORDER_HALF_HEIGHT,
                 BORDER_CORNER_RADIUS, BORDER_THICKNESS);
         }

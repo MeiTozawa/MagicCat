@@ -1,5 +1,6 @@
 module;
 
+#include <app_build_setting.h>
 #include <memory>
 #include <RenderUtils.h>
 
@@ -63,13 +64,10 @@ namespace {
                 sceneService.PushScene(ESceneState::Menu);
                 return;
             }
-
-            const int w = renderService.GetWindowWidth();
-            const int h = renderService.GetWindowHeight();
             auto click = inputService.OnMouseClick(InputAction::MouseClick);
             if (click.x != -1 && click.y != -1)
             {
-                if (click.x >= 0 && click.x < w && click.y >= 0 && click.y < h)
+                if (click.x >= 0 && click.x < WINDOW_WIDTH && click.y >= 0 && click.y < WINDOW_HEIGHT)
                     battleService.StartStage();
             }
         }
@@ -79,8 +77,8 @@ namespace {
             if (!info.empty())
             {
                 renderService.SetFontSize(240);
-                renderService.DrawCenterString(renderService.GetWindowWidth() / 2,
-                                               renderService.GetWindowHeight() * 4 / 10,
+                renderService.DrawCenterString(WINDOW_WIDTH / 2,
+                                               WINDOW_HEIGHT * 4 / 10,
                                                info.c_str(), infoColor);
                 renderService.SetFontSize(48);
             }
@@ -89,28 +87,28 @@ namespace {
                 DrawTitleScreen();
             }
 
-            renderService.DrawLeftString(20, 40,
+            renderService.DrawLeftString(10, WINDOW_HEIGHT - 42,
                                          std::format(L" 勝利回数: {} ", winCount).c_str(), COLOR_WHITE);
-            renderService.DrawRightString(renderService.GetWindowWidth(), 40,
+            renderService.DrawRightString(WINDOW_WIDTH - 10, WINDOW_HEIGHT - 42,
                                           std::format(L" 失敗回数: {} ", failCount).c_str(), COLOR_WHITE);
-            renderService.DrawCenterString(renderService.GetWindowWidth() / 2,
-                                           renderService.GetWindowHeight() * 8 / 10,
-                                           L"Enterキーを押してゲームをスタートにゃ！", COLOR_WHITE);
+            renderService.DrawCenterString(WINDOW_WIDTH / 2,
+                                           WINDOW_HEIGHT * 8 / 10,
+                                           L"SPACEキーを押してゲームをスタートにゃ！", COLOR_WHITE);
         }
         void DrawTitleScreen() const
         {
             renderService.SetFontSize(160);
-            renderService.DrawCenterString(renderService.GetWindowWidth() / 2,
-                                           renderService.GetWindowHeight() * 2 / 10,
+            renderService.DrawCenterString(WINDOW_WIDTH / 2,
+                                           WINDOW_HEIGHT * 2 / 10,
                                            L"MagicCat", infoColor);
             renderService.SetFontSize(48);
-            renderService.DrawCenterString(renderService.GetWindowWidth() / 2,
-                                           renderService.GetWindowHeight() * 4 / 10,
+            renderService.DrawCenterString(WINDOW_WIDTH / 2,
+                                           WINDOW_HEIGHT * 4 / 10,
                                            L"吾輩はマジックキャットである！\n"
                                            "これはじゃんけんの対決にゃん！\n"
                                            "吾輩は魔法のカードを使って敵の精神状態を操り、\n"
                                            "相手の出し手を左右できるにゃん。\n"
-                                           "ESCキーを押してルールを読んでご覧。\n"
+                                           "\nメニューにはルールの説明があるにゃん\n"
                                            "スタート後もいつでも読めるにゃん。"
                                            , COLOR_WHITE);
         }

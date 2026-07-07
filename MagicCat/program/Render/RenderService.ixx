@@ -149,14 +149,6 @@ namespace mc {
         /// @param fgClr 文字と枠線の色 (デフォルト: 0xFFFFFF)
         virtual void DrawButton(int x1, int y1, int x2, int y2, const wchar_t* text,
                                 uint32_t bgClr = 0x2A2A3A, uint32_t fgClr = 0xFFFFFF) = 0;
-        
-        /// @brief ウィンドウの横幅を取得する
-        /// @return 画面幅（ピクセル）
-        virtual int GetWindowWidth() const = 0;
-
-        /// @brief ウィンドウの縦幅を取得する
-        /// @return 画面高（ピクセル）
-        virtual int GetWindowHeight() const = 0;
 
         /// @brief フォントタイプを通常モードに設定する（DX_FONTTYPE_NORMAL）
         virtual void SetFontTypeNormal() = 0;

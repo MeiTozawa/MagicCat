@@ -1,5 +1,6 @@
 module;
 
+#include <app_build_setting.h>
 #include <memory>
 #include <array>
 #include <RenderUtils.h>
@@ -48,17 +49,11 @@ namespace mc {
         void OnDraw(float) const override
         {
             const InputDevice activeDevice = inputService.GetActiveDevice();
-            const int menuIconX = renderService.GetWindowWidth() - MENU_ICON_X_OFFSET;
-
-            int menuIcon = assetService.GetImageHandle(EImage::BUTTON_MENU);
-            renderService.DrawRotaGraphF(menuIconX, MENU_ICON_Y, 0.5, 0.0, menuIcon, true);
 
             if (activeDevice == InputDevice::Gamepad)
                 DrawGamepadHints();
             else if (activeDevice == InputDevice::Keyboard)
                 DrawKeyboardHints();
-            else if (activeDevice == InputDevice::Mouse)
-                DrawMouseHints(menuIconX);
         }
 
         void DrawGamepadHints() const

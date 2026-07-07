@@ -11,6 +11,7 @@ import DisplayerBase;
 import AssetService;
 import RenderService;
 import InputService;
+import OSService;
 import EventBus;
 
 
@@ -42,8 +43,9 @@ namespace mc {
     {
     public:
         ControlDisplayer(IAssetService& asset, IRenderService& render,
-                         IInputService& input, uint32_t c = 0xFFFF00)
-            : assetService(asset), renderService(render), inputService(input), color(c) {}
+                         IInputService& input, IOSService& os, uint32_t c = 0xFFFF00)
+            : assetService(asset), renderService(render), inputService(input),
+              osService(os), color(c) {}
 
     private:
         void OnDraw(float) const override
@@ -63,7 +65,7 @@ namespace mc {
 
         void DrawGamepadHints() const
         {
-            renderService.SetCursorArrow();
+            osService.SetCursorArrow();
             renderService.DrawRotaGraphF(ICON_DRAW_X, Y, 0.5, 0.0,
                              assetService.GetImageHandle(EImage::XBOX_X), true);
             renderService.DrawString(ICON_DRAW_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"カードを引く", color);
@@ -78,7 +80,7 @@ namespace mc {
 
         void DrawKeyboardHints() const
         {
-            renderService.SetCursorArrow();
+            osService.SetCursorArrow();
 
             renderService.DrawRotaGraphF(ICON_DRAW_X, Y, 0.5, 0.0,
                                          assetService.GetImageHandle(EImage::KB_Q), true);
@@ -119,9 +121,9 @@ namespace mc {
             }
 
             if (hitAny)
-                renderService.SetCursorPointer();
+                osService.SetCursorPointer();
             else
-                renderService.SetCursorArrow();
+                osService.SetCursorArrow();
 
             if (selectedHint != nullptr && selectedHint[0] != L'\0')
             {
@@ -172,13 +174,14 @@ namespace mc {
         IAssetService& assetService;
         IRenderService& renderService;
         IInputService& inputService;
+        IOSService& osService;
         uint32_t color;
     };
 
     export std::unique_ptr<Displayer> CreateControlDisplayer(
         IAssetService& assetService, IRenderService& renderService,
-        IInputService& inputService, uint32_t color = 0xFFFF00)
+        IInputService& inputService, IOSService& osService, uint32_t color = 0xFFFF00)
     {
-        return std::make_unique<ControlDisplayer>(assetService, renderService, inputService, color);
+        return std::make_unique<ControlDisplayer>(assetService, renderService, inputService, osService, color);
     }
 } // namespace mc

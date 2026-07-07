@@ -14,6 +14,7 @@ import ConfigService;
 import AudioService;
 import RenderService;
 import BattleService;
+import OSService;
 using namespace mc;
 
 // サービスのライフタイムを管理するグローバル変数
@@ -25,9 +26,12 @@ std::unique_ptr<IInputService> inputService;
 std::unique_ptr<IAudioService> audioService;
 std::unique_ptr<ISceneService> sceneService;
 std::unique_ptr<IBattleService> battleService;
+std::unique_ptr<IOSService> osService;
 
 void InitGameServices()
 {
+    osService = CreateWindowService();
+    
     configService = CreateConfigService("resource/json/card_config.json", "resource/json/enemy_config.json",
                                         "resource/json/game_config.json");
     assetService = CreateAssetService();
@@ -42,7 +46,7 @@ void InitGameServices()
                                 CreateInfoScene(*inputService, *sceneService, *renderService, *battleService));
     sceneService->RegisterScene(ESceneState::Combat,
                                 CreateCombatScene(*sceneService, *assetService, *cardService, *inputService,
-                                                  *renderService, *battleService));
+                                                  *renderService, *battleService, *osService));
     sceneService->RegisterScene(ESceneState::Menu,
                                 CreateMenuScene(*inputService, *sceneService, *assetService, *renderService));
     sceneService->RegisterScene(ESceneState::Cutscene,

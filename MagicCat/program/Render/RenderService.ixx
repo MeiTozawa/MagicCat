@@ -173,12 +173,6 @@ namespace mc {
         /// @param b 青成分（0〜255）
         virtual void SetBackgroundColor(int r, int g, int b) = 0;
 
-        /// @brief マウスカーソルをクリック可能を示す手のポインタに変更する（Win32: IDC_HAND）
-        virtual void SetCursorPointer() = 0;
-
-        /// @brief マウスカーソルをデフォルトの矢印に戻す（Win32: IDC_ARROW）
-        virtual void SetCursorArrow() = 0;
-
         // -------------------------------------------------------------------------
         // Point / Rect を用いた直感的なオーバーロード API
         // -------------------------------------------------------------------------

@@ -11,6 +11,7 @@ import InputService;
 import AssetService;
 import RenderService;
 import BattleService;
+import OSService;
 
 namespace mc {
     export enum class ESceneState
@@ -104,7 +105,8 @@ namespace mc {
                                                    IRenderService& renderService, IBattleService& battleService);
     export std::unique_ptr<IScene> CreateCombatScene(ISceneService& sceneService, IAssetService& assetService,
                                                      ICardService& cardService, IInputService& inputService,
-                                                     IRenderService& renderService, IBattleService& battleService);
+                                                     IRenderService& renderService, IBattleService& battleService,
+                                                     IOSService& osService);
     export std::unique_ptr<IScene> CreateCutsceneScene(ISceneService& sceneService,
                                                        IAssetService& assetService, IRenderService& renderService,
                                                        IBattleService& battleService);

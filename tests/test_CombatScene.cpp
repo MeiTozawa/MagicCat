@@ -50,6 +50,7 @@ protected:
     NiceMock<MockBattleService>  mockBattle;
     NiceMock<MockCardService>    mockCard;
     NiceMock<MockSceneService>   mockScene;
+    NiceMock<MockOSService>      mockOsService;
 
     Player player;
     Enemy  enemy;
@@ -72,7 +73,7 @@ protected:
         ON_CALL(mockRender, GetDrawStringWidth(_)).WillByDefault(Return(0));
 
         combatScene = CreateCombatScene(
-            mockScene, mockAsset, mockCard, mockInput, mockRender, mockBattle);
+            mockScene, mockAsset, mockCard, mockInput, mockRender, mockBattle, mockOsService);
     }
 
     void TearDown() override {
@@ -85,7 +86,7 @@ protected:
 TEST_F(CombatSceneTest, StartIsIdempotentForCombatEvent) {
     rc::check("CombatScene::Start() N times leaves exactly one CombatEvent subscription", [this]() {
         combatScene = CreateCombatScene(
-            mockScene, mockAsset, mockCard, mockInput, mockRender, mockBattle);
+            mockScene, mockAsset, mockCard, mockInput, mockRender, mockBattle, mockOsService);
 
         int n = *rc::gen::inRange(1, 11);
 
@@ -115,7 +116,7 @@ TEST_F(CombatSceneTest, StartIsIdempotentForCombatEvent) {
 TEST_F(CombatSceneTest, StartIsIdempotentForHealthChangedEvent) {
     rc::check("CombatScene::Start() N times leaves exactly one HealthChangedEvent subscription", [this]() {
         combatScene = CreateCombatScene(
-            mockScene, mockAsset, mockCard, mockInput, mockRender, mockBattle);
+            mockScene, mockAsset, mockCard, mockInput, mockRender, mockBattle, mockOsService);
 
         int n = *rc::gen::inRange(1, 11);
 
@@ -141,7 +142,7 @@ TEST_F(CombatSceneTest, StartIsIdempotentForHealthChangedEvent) {
 TEST_F(CombatSceneTest, StartIsIdempotentForStageClearEvent) {
     rc::check("CombatScene::Start() N times leaves exactly one StageClearEvent subscription", [this]() {
         combatScene = CreateCombatScene(
-            mockScene, mockAsset, mockCard, mockInput, mockRender, mockBattle);
+            mockScene, mockAsset, mockCard, mockInput, mockRender, mockBattle, mockOsService);
 
         int n = *rc::gen::inRange(1, 11);
 
@@ -165,3 +166,4 @@ TEST_F(CombatSceneTest, StartIsIdempotentForStageClearEvent) {
 
 } // namespace
 } // namespace mc
+

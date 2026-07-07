@@ -9,6 +9,7 @@ import RenderService;
 import ConfigService;
 import BattleService;
 import CardService;
+import OSService;
 
 namespace mc {
 
@@ -71,9 +72,13 @@ public:
     MOCK_METHOD(void, SetFontThickness, (int), (override));
     MOCK_METHOD(void, SetBackgroundColor, (int, int, int), (override));
     MOCK_METHOD(void, DrawFilledTriangle, (int, int, int, int, int, int, uint32_t), (override));
+    MOCK_METHOD(void, DrawButton, (int, int, int, int, const wchar_t*, bool, uint32_t, uint32_t), (override));
+};
+
+class MockOSService : public IOSService {
+public:
     MOCK_METHOD(void, SetCursorPointer, (), (override));
     MOCK_METHOD(void, SetCursorArrow, (), (override));
-    MOCK_METHOD(void, DrawButton, (int, int, int, int, const wchar_t*, bool, uint32_t, uint32_t), (override));
 };
 
 class MockBattleService : public IBattleService {

@@ -21,7 +21,7 @@ namespace mc {
     {
     public:
         CombatController(IInputService& input, IBattleService& character, ISceneService& scene,
-                         ICardService& card, IRenderService& render)
+                         ICardService& card, IOSService& os)
             : inputService(input), characterService(character), sceneService(scene), cardService(card)
         {
             for (int i = 0; i < 4; ++i)
@@ -33,7 +33,7 @@ namespace mc {
                     ACTION_MENU_Y + i * ACTION_MENU_STEP_Y + ACTION_MENU_H
                 };
             }
-            actionMenu = std::make_unique<ButtonGroup>(actionMenuRects, input, render,
+            actionMenu = std::make_unique<ButtonGroup>(actionMenuRects, input, os,
                                                        ButtonGroupLayout::Vertical, ACTION_MAGIC);
         }
 
@@ -243,9 +243,9 @@ namespace mc {
                                                               IBattleService& characterService,
                                                               ISceneService& sceneService,
                                                               ICardService& cardService,
-                                                              IRenderService& renderService)
+                                                              IOSService& osService)
     {
         return std::make_unique<CombatController>(inputService, characterService, sceneService,
-                                                  cardService, renderService);
+                                                  cardService, osService);
     }
 }

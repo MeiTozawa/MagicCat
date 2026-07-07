@@ -146,16 +146,6 @@ namespace mc {
         {
             ::SetBackgroundColor(r, g, b);
         }
-
-        void SetCursorPointer() override
-        {
-            SetCursor(::LoadCursor(nullptr, IDC_HAND));
-        }
-
-        void SetCursorArrow() override
-        {
-            SetCursor(::LoadCursor(nullptr, IDC_ARROW));
-        }
     };
 
     std::unique_ptr<IRenderService> CreateRenderService()

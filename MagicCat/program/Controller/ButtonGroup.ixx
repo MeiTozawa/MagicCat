@@ -7,6 +7,7 @@ module;
 export module ButtonGroup;
 import InputService;
 import RenderService;
+import OSService;
 
 namespace mc {
 
@@ -34,12 +35,12 @@ namespace mc {
         /// @param initialFocus  初期フォーカスインデックス（デフォルト: 0）
         ButtonGroup(std::span<const Rect<int>> rects,
                     IInputService& input,
-                    IRenderService& render,
+                    IOSService& os,
                     ButtonGroupLayout layout = ButtonGroupLayout::Vertical,
                     int initialFocus = 0)
             : rects(rects.begin(), rects.end())
             , inputService(input)
-            , renderService(render)
+            , osService(os)
             , layout(layout)
             , focusedIndex(initialFocus)
         {}
@@ -114,11 +115,11 @@ namespace mc {
             {
                 if (inputService.IsMouseOver(r))
                 {
-                    renderService.SetCursorPointer();
+                    osService.SetCursorPointer();
                     return;
                 }
             }
-            renderService.SetCursorArrow();
+            osService.SetCursorArrow();
         }
 
         void HandleNavigationInput()
@@ -145,7 +146,7 @@ namespace mc {
 
         std::vector<Rect<int>> rects;
         IInputService& inputService;
-        IRenderService& renderService;
+        IOSService& osService;
         ButtonGroupLayout layout;
         int focusedIndex;
     };

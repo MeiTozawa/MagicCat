@@ -20,6 +20,7 @@ import HealthComponent;
 import Character;
 import AssetEnumMapper;
 import RenderService;
+import OSService;
 
 namespace mc {
     constexpr int PLAYER_START_X = 800;
@@ -53,9 +54,11 @@ namespace mc {
     {
     public:
         CombatScene(ISceneService& scene, IAssetService& asset, ICardService& card,
-                    IInputService& input, IRenderService& render, IBattleService& battle)
+                    IInputService& input, IRenderService& render, IBattleService& battle,
+                    IOSService& os)
             : sceneService(scene), assetService(asset), cardService(card),
-              inputService(input), renderService(render), battleService(battle) {}
+              inputService(input), renderService(render), battleService(battle),
+              osService(os) {}
 
         void Start() override
         {
@@ -104,7 +107,7 @@ namespace mc {
         {
             displayers.push_back(CreateCardDisplayer(cardService, assetService, renderService));
             displayers.push_back(CreateCharacterDisplayer(battleService, renderService));
-            displayers.push_back(CreateControlDisplayer(assetService, renderService, inputService));
+            displayers.push_back(CreateControlDisplayer(assetService, renderService, inputService, osService));
 
             auto playerAnim = CreateSpriteDisplayer(&assetService, &renderService,
                                                     battleService.GetPlayer().GetSprite(), EXTRA_RATE);
@@ -134,7 +137,7 @@ namespace mc {
         void SetupController()
         {
             combatController = CreateCombatController(inputService, battleService, sceneService,
-                                                      cardService, renderService);
+                                                      cardService, osService);
             combatController->Reset();
         }
 
@@ -234,6 +237,7 @@ namespace mc {
         IInputService& inputService;
         IRenderService& renderService;
         IBattleService& battleService;
+        IOSService& osService;
 
         Displayers displayers;
         std::unique_ptr<ICombatController> combatController;
@@ -251,9 +255,9 @@ namespace mc {
     std::unique_ptr<IScene> CreateCombatScene(ISceneService& sceneService,
                                               IAssetService& assetService, ICardService& cardService,
                                               IInputService& inputService, IRenderService& renderService,
-                                              IBattleService& battleService)
+                                              IBattleService& battleService, IOSService& osService)
     {
         return std::make_unique<CombatScene>(sceneService, assetService, cardService, inputService,
-                                             renderService, battleService);
+                                             renderService, battleService, osService);
     }
 } // namespace mc

@@ -58,5 +58,18 @@ namespace mc {
     {
         T x, y;
     };
+    
+    template <typename T>
+    requires std::integral<T> || std::floating_point<T>
+    struct Rect
+    {
+        T x1, x2, y1, y2;
+        
+        bool In(Point<T> p)
+        {
+            return p.x >= x1 && p.x <= x2 && p.y >= y1 && p.y <= y2;
+        }
+    };
+
 
 }

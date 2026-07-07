@@ -1,6 +1,7 @@
 module;
 
 #include <algorithm>
+#include <app_build_setting.h>
 #include <memory>
 #include <RenderUtils.h>
 
@@ -14,8 +15,9 @@ namespace mc {
     namespace {
         constexpr int OVERLAY_ALPHA = 200;
 
-        constexpr int BOX_MARGIN_X = 200;
-        constexpr int BOX_MARGIN_Y = 150;
+        constexpr int BOX_MARGIN_X = 100;
+        constexpr int BOX_MARGIN_Y_UP = 75;
+        constexpr int BOX_MARGIN_Y_DOWN = 250;
 
         constexpr int TEXT_START_OFFSET_X = 50;
         constexpr int TEXT_START_OFFSET_Y = 50;
@@ -35,26 +37,44 @@ namespace mc {
 
         constexpr uint32_t COLOR_BOX_BG = 0x1E1E28;
 
-        constexpr int BACK_BTN_X1 = 732;
-        constexpr int BACK_BTN_Y1 = 462;
-        constexpr int BACK_BTN_X2 = 788;
-        constexpr int BACK_BTN_Y2 = 518;
+        constexpr int BACK_BUTTON_X1 = 732;
+        constexpr int BACK_BUTTON_Y1 = 462;
+        constexpr int BACK_BUTTON_X2 = 788;
+        constexpr int BACK_BUTTON_Y2 = 518;
 
-        constexpr int NEXT_BTN_X1 = 1000;
-        constexpr int NEXT_BTN_X2 = 1080;
-        constexpr int NEXT_BTN_Y1 = 150;
-        constexpr int NEXT_BTN_Y2 = 570;
+        constexpr int NEXT_BUTTON_X1 = 1000;
+        constexpr int NEXT_BUTTON_X2 = 1080;
+        constexpr int NEXT_BUTTON_Y1 = 150;
+        constexpr int NEXT_BUTTON_Y2 = 570;
 
-        constexpr int PREV_BTN_X1 = 200;
-        constexpr int PREV_BTN_X2 = 280;
-        constexpr int PREV_BTN_Y1 = 150;
-        constexpr int PREV_BTN_Y2 = 570;
+        constexpr int PREV_BUTTON_X1 = 200;
+        constexpr int PREV_BUTTON_X2 = 280;
+        constexpr int PREV_BUTTON_Y1 = 150;
+        constexpr int PREV_BUTTON_Y2 = 570;
+
+        constexpr int BUTTON_HEIGHT = 100;
+        constexpr int BUTTON_WIDTH = 300;
+        constexpr int BUTTON_OFFSET_X = 50;
+        constexpr int BUTTON_COUNT = 5;
+
+        constexpr int BUTTON_Y1 = 850;
+        constexpr int BUTTON_Y2 = BUTTON_Y1 + BUTTON_HEIGHT;
+        constexpr int BUTTON0_X = (WINDOW_WIDTH - BUTTON_WIDTH * BUTTON_COUNT - BUTTON_OFFSET_X * (BUTTON_COUNT - 1)) /
+            2;
+
+        constexpr int BUTTON1_X = BUTTON0_X + 1 * BUTTON_WIDTH + 1 * BUTTON_OFFSET_X;
+
+        constexpr int BUTTON2_X = BUTTON0_X + 2 * BUTTON_WIDTH + 2 * BUTTON_OFFSET_X;
+
+        constexpr int BUTTON3_X = BUTTON0_X + 3 * BUTTON_WIDTH + 3 * BUTTON_OFFSET_X;
+
+        constexpr int BUTTON4_X = BUTTON0_X + 4 * BUTTON_WIDTH + 4 * BUTTON_OFFSET_X;
     }
 
-    class RulesScene : public IScene
+    class MenuScene : public IScene
     {
     public:
-        RulesScene(IInputService& input, ISceneService& scene, IAssetService& asset, IRenderService& render)
+        MenuScene(IInputService& input, ISceneService& scene, IAssetService& asset, IRenderService& render)
             : inputService(input), sceneService(scene), assetService(asset), renderService(render) {}
 
         void Start() override
@@ -71,6 +91,7 @@ namespace mc {
             DrawOverlay();
             DrawBox();
             DrawContent();
+            DrawButtons();
             DrawNavigationHints();
         }
 
@@ -80,7 +101,7 @@ namespace mc {
             if (HandleOtherInput()) return;
             HandleMouseInput();
         }
-        
+
         /// @brief Handle Keyboard Input and Gamepad Input
         bool HandleOtherInput()
         {
@@ -101,23 +122,25 @@ namespace mc {
             auto menuClick = inputService.OnMouseClick(InputAction::MouseClick);
             if (menuClick.x == -1 || menuClick.y == -1) return;
 
-            if (menuClick.x >= BACK_BTN_X1 && menuClick.x < BACK_BTN_X2 &&
-                menuClick.y >= BACK_BTN_Y1 && menuClick.y < BACK_BTN_Y2)
+            if (menuClick.x >= BACK_BUTTON_X1 && menuClick.x < BACK_BUTTON_X2 &&
+                menuClick.y >= BACK_BUTTON_Y1 && menuClick.y < BACK_BUTTON_Y2)
             {
                 inputService.PopContext();
                 sceneService.PopScene();
                 return;
             }
-            if (menuClick.x >= NEXT_BTN_X1 && menuClick.x < NEXT_BTN_X2 &&
-                menuClick.y >= NEXT_BTN_Y1 && menuClick.y < NEXT_BTN_Y2)
+            if (menuClick.x >= NEXT_BUTTON_X1 && menuClick.x < NEXT_BUTTON_X2 &&
+                menuClick.y >= NEXT_BUTTON_Y1 && menuClick.y < NEXT_BUTTON_Y2)
             {
                 currentPage++;
             }
-            else if (menuClick.x >= PREV_BTN_X1 && menuClick.x < PREV_BTN_X2 &&
-                     menuClick.y >= PREV_BTN_Y1 && menuClick.y < PREV_BTN_Y2)
+            else if (menuClick.x >= PREV_BUTTON_X1 && menuClick.x < PREV_BUTTON_X2 &&
+                menuClick.y >= PREV_BUTTON_Y1 && menuClick.y < PREV_BUTTON_Y2)
             {
                 currentPage--;
             }
+
+            // TODO: 4つのボタンのクリック判定
         }
 
         void DrawOverlay() const
@@ -133,21 +156,30 @@ namespace mc {
         void DrawBox() const
         {
             constexpr int boxX1 = BOX_MARGIN_X;
-            constexpr int boxY1 = BOX_MARGIN_Y;
+            constexpr int boxY1 = BOX_MARGIN_Y_UP;
             const int boxX2 = renderService.GetWindowWidth() - BOX_MARGIN_X;
-            const int boxY2 = renderService.GetWindowHeight() - BOX_MARGIN_Y;
+            const int boxY2 = renderService.GetWindowHeight() - BOX_MARGIN_Y_DOWN;
 
             renderService.DrawBoxAA(static_cast<float>(boxX1), static_cast<float>(boxY1),
                                     static_cast<float>(boxX2), static_cast<float>(boxY2), COLOR_BOX_BG, true);
             renderService.DrawHollowBox(boxX1, boxY1, boxX2, boxY2, 3, COLOR_WHITE);
             renderService.DrawString(boxX1 + TEXT_START_OFFSET_X, boxY1 + TEXT_START_OFFSET_Y,
-                                     L"【ルール説明】", COLOR_WHITE);
+                                     L"【メニュー】", COLOR_WHITE);
+        }
+
+        void DrawButtons() const
+        {
+            renderService.DrawButton(BUTTON0_X, BUTTON_Y1, BUTTON0_X + BUTTON_WIDTH, BUTTON_Y2, L"戻る");
+            renderService.DrawButton(BUTTON1_X, BUTTON_Y1, BUTTON1_X + BUTTON_WIDTH, BUTTON_Y2, L"音量設定");
+            renderService.DrawButton(BUTTON2_X, BUTTON_Y1, BUTTON2_X + BUTTON_WIDTH, BUTTON_Y2, L"セーブ");
+            renderService.DrawButton(BUTTON3_X, BUTTON_Y1, BUTTON3_X + BUTTON_WIDTH, BUTTON_Y2, L"ロード");
+            renderService.DrawButton(BUTTON4_X, BUTTON_Y1, BUTTON4_X + BUTTON_WIDTH, BUTTON_Y2, L"終了");
         }
 
         void DrawContent() const
         {
             constexpr int boxX1 = BOX_MARGIN_X;
-            constexpr int boxY1 = BOX_MARGIN_Y;
+            constexpr int boxY1 = BOX_MARGIN_Y_UP;
             int textY = boxY1 + CONTENT_START_OFFSET_Y;
 
             if (currentPage == 0)
@@ -199,7 +231,7 @@ namespace mc {
         void DrawNavigationHints() const
         {
             const int boxX2 = renderService.GetWindowWidth() - BOX_MARGIN_X;
-            const int boxY2 = renderService.GetWindowHeight() - BOX_MARGIN_Y;
+            const int boxY2 = renderService.GetWindowHeight() - BOX_MARGIN_Y_DOWN;
 
             int kbrHandle = assetService.GetImageHandle(EImage::KB_ESCAPE);
             renderService.DrawRotaGraphF(boxX2 - ICON_OFFSET_X, boxY2 - ICON_OFFSET_Y, 0.5, 0.0, kbrHandle, true);
@@ -217,9 +249,9 @@ namespace mc {
         int currentPage = 0;
     };
 
-    std::unique_ptr<IScene> CreateRulesScene(IInputService& inputService, ISceneService& sceneService,
-                                             IAssetService& assetService, IRenderService& renderService)
+    std::unique_ptr<IScene> CreateMenuScene(IInputService& inputService, ISceneService& sceneService,
+                                            IAssetService& assetService, IRenderService& renderService)
     {
-        return std::make_unique<RulesScene>(inputService, sceneService, assetService, renderService);
+        return std::make_unique<MenuScene>(inputService, sceneService, assetService, renderService);
     }
 }

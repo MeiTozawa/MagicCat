@@ -759,12 +759,12 @@ RC_GTEST_PROP(MouseInput, Property1_InfoScene_NegOneNegOne_Guard_MultiFrame, ())
 } // namespace
 } // namespace mc
 
-// Property 6: RulesScene currentPage always stays in [0, 1] after any Next/Prev sequence
+// Property 6: MenuScene currentPage always stays in [0, 1] after any Next/Prev sequence
 
 namespace mc {
 namespace {
 
-RC_GTEST_PROP(MouseInput, Property6_RulesScene_PageClamp_ArbitrarySequence, ())
+RC_GTEST_PROP(MouseInput, Property6_MenuScene_PageClamp_ArbitrarySequence, ())
 {
     // moves: -1=Prev, 0=no-op, 1=Next
     auto moves = *rc::gen::container<std::vector<int>>(
@@ -779,7 +779,7 @@ RC_GTEST_PROP(MouseInput, Property6_RulesScene_PageClamp_ArbitrarySequence, ())
     }
 }
 
-TEST(MouseInput, Property6_RulesScene_PageClamp_Adversarial_1000Prev)
+TEST(MouseInput, Property6_MenuScene_PageClamp_Adversarial_1000Prev)
 {
     int page = 0;
     for (int i = 0; i < 1000; ++i)
@@ -792,7 +792,7 @@ TEST(MouseInput, Property6_RulesScene_PageClamp_Adversarial_1000Prev)
     EXPECT_EQ(page, 0);
 }
 
-TEST(MouseInput, Property6_RulesScene_PageClamp_Adversarial_1000Next)
+TEST(MouseInput, Property6_MenuScene_PageClamp_Adversarial_1000Next)
 {
     int page = 1;
     for (int i = 0; i < 1000; ++i)
@@ -810,7 +810,7 @@ TEST(MouseInput, Property6_RulesScene_PageClamp_Adversarial_1000Next)
 
 // InfoScene mouse routing unit tests
 // Actual InfoScene behavior: any click with x∈[0,w) y∈[0,h) calls StartStage();
-// (-1,-1) does nothing; ToggleMenu key opens Rules screen.
+// (-1,-1) does nothing; ToggleMenu key opens Menu screen.
 
 namespace mc {
 namespace {
@@ -859,7 +859,7 @@ TEST(InfoScene, InfoScene_NothingCalledOnNegativeOneClick)
     CreateInfoScene(mockInput, mockScene, mockRender, mockBattle)->Update(0.0f);
 }
 
-TEST(InfoScene, InfoScene_ToggleMenu_Opens_Rules)
+TEST(InfoScene, InfoScene_ToggleMenu_Opens_Menu)
 {
     NiceMock<MockRenderService>  mockRender;
     NiceMock<MockInputService>   mockInput;
@@ -871,7 +871,7 @@ TEST(InfoScene, InfoScene_ToggleMenu_Opens_Rules)
     ON_CALL(mockInput, IsPressed(InputAction::ToggleMenu)).WillByDefault(Return(true));
     ON_CALL(mockInput, OnMouseClick(_)).WillByDefault(Return(Point<int>{-1, -1}));
 
-    EXPECT_CALL(mockScene, PushScene(ESceneState::Rules)).Times(1);
+    EXPECT_CALL(mockScene, PushScene(ESceneState::Menu)).Times(1);
     EXPECT_CALL(mockBattle, StartStage()).Times(0);
 
     CreateInfoScene(mockInput, mockScene, mockRender, mockBattle)->Update(0.0f);
@@ -880,13 +880,13 @@ TEST(InfoScene, InfoScene_ToggleMenu_Opens_Rules)
 } // namespace
 } // namespace mc
 
-// Property 7: RulesScene::Start() calls PushContext(Menu) exactly once per invocation,
+// Property 7: MenuScene::Start() calls PushContext(Menu) exactly once per invocation,
 // and never calls it from Update().
 
 namespace mc {
 namespace {
 
-RC_GTEST_PROP(MouseInput, Property7_RulesScene_PushContext_CalledOncePerStart, ())
+RC_GTEST_PROP(MouseInput, Property7_MenuScene_PushContext_CalledOncePerStart, ())
 {
     int n = *rc::gen::inRange(1, 11);
 
@@ -901,14 +901,14 @@ RC_GTEST_PROP(MouseInput, Property7_RulesScene_PushContext_CalledOncePerStart, (
     ON_CALL(mockInput, PushContext(InputContext::Menu))
         .WillByDefault([&](InputContext) { ++pushContextCount; });
 
-    auto scene = CreateRulesScene(mockInput, mockScene, mockAsset, mockRender);
+    auto scene = CreateMenuScene(mockInput, mockScene, mockAsset, mockRender);
     for (int i = 0; i < n; ++i)
         scene->Start();
 
     RC_ASSERT(pushContextCount == n);
 }
 
-TEST(MouseInput, Property7_RulesScene_PushContext_NotCalledInUpdate)
+TEST(MouseInput, Property7_MenuScene_PushContext_NotCalledInUpdate)
 {
     NiceMock<MockInputService>   mockInput;
     NiceMock<MockSceneServiceP3> mockScene;
@@ -924,7 +924,7 @@ TEST(MouseInput, Property7_RulesScene_PushContext_NotCalledInUpdate)
     ON_CALL(mockInput, PushContext(InputContext::Menu))
         .WillByDefault([&](InputContext) { ++pushContextCount; });
 
-    auto scene = CreateRulesScene(mockInput, mockScene, mockAsset, mockRender);
+    auto scene = CreateMenuScene(mockInput, mockScene, mockAsset, mockRender);
     scene->Start();
 
     for (int i = 0; i < 10; ++i)

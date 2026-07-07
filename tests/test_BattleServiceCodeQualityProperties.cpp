@@ -159,7 +159,7 @@ RC_GTEST_PROP(BattleServiceProperties, SetCurrentScene_UnregisteredState_IsNoOp,
 
     const auto unregisteredStates = std::array{
         ESceneState::Combat,
-        ESceneState::Rules,
+        ESceneState::Menu,
         ESceneState::Cutscene
     };
     const int idx = *rc::gen::inRange(0, static_cast<int>(unregisteredStates.size()));

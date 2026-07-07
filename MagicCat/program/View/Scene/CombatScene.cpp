@@ -201,7 +201,7 @@ namespace mc {
             if (click.x >= menuIconX - MENU_ICON_HALF_W && click.x < menuIconX + MENU_ICON_HALF_W &&
                 click.y >= MENU_ICON_Y - MENU_ICON_HALF_H && click.y < MENU_ICON_Y + MENU_ICON_HALF_H)
             {
-                sceneService.PushScene(ESceneState::Rules);
+                sceneService.PushScene(ESceneState::Menu);
                 displayers.Update(deltaTime);
                 displayers.Draw(deltaTime);
                 return true;

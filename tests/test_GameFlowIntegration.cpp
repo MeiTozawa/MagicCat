@@ -27,7 +27,7 @@ namespace {
             sceneService = CreateSceneService();
             
             sceneService->RegisterScene(ESceneState::Combat, std::make_unique<DummyScene>());
-            sceneService->RegisterScene(ESceneState::Rules, std::make_unique<DummyScene>());
+            sceneService->RegisterScene(ESceneState::Menu, std::make_unique<DummyScene>());
             
             sceneService->PushScene(ESceneState::Combat);
         }
@@ -35,11 +35,11 @@ namespace {
         void TearDown() override {}
     };
 
-    TEST_F(GameFlowIntegrationTest, SceneTransition_CombatToRulesAndBack) {
+    TEST_F(GameFlowIntegrationTest, SceneTransition_CombatToMenuAndBack) {
         EXPECT_EQ(sceneService->GetCurrentScene(), ESceneState::Combat);
 
-        sceneService->PushScene(ESceneState::Rules);
-        EXPECT_EQ(sceneService->GetCurrentScene(), ESceneState::Rules);
+        sceneService->PushScene(ESceneState::Menu);
+        EXPECT_EQ(sceneService->GetCurrentScene(), ESceneState::Menu);
 
         sceneService->PopScene();
         EXPECT_EQ(sceneService->GetCurrentScene(), ESceneState::Combat);

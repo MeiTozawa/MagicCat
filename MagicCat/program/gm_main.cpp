@@ -28,7 +28,8 @@ std::unique_ptr<IBattleService> battleService;
 
 void InitGameServices()
 {
-    configService = CreateConfigService("resource/json/card_config.json", "resource/json/enemy_config.json", "resource/json/game_config.json");
+    configService = CreateConfigService("resource/json/card_config.json", "resource/json/enemy_config.json",
+                                        "resource/json/game_config.json");
     assetService = CreateAssetService();
     inputService = CreateInputService();
 
@@ -42,8 +43,8 @@ void InitGameServices()
     sceneService->RegisterScene(ESceneState::Combat,
                                 CreateCombatScene(*sceneService, *assetService, *cardService, *inputService,
                                                   *renderService, *battleService));
-    sceneService->RegisterScene(ESceneState::Rules,
-                                CreateRulesScene(*inputService, *sceneService, *assetService, *renderService));
+    sceneService->RegisterScene(ESceneState::Menu,
+                                CreateMenuScene(*inputService, *sceneService, *assetService, *renderService));
     sceneService->RegisterScene(ESceneState::Cutscene,
                                 CreateCutsceneScene(*sceneService, *assetService, *renderService,
                                                     *battleService));
@@ -67,8 +68,8 @@ void GameStart()
     renderService->SetFontThickness(1);
     renderService->SetBackgroundColor(
         (COLOR_BG >> 16) & 0xFF,
-        (COLOR_BG >> 8)  & 0xFF,
-        (COLOR_BG)       & 0xFF);
+        (COLOR_BG >> 8) & 0xFF,
+        (COLOR_BG) & 0xFF);
 }
 
 void GameMain(float deltaTime)

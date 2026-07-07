@@ -84,7 +84,7 @@ namespace mc {
 
             renderService.DrawRotaGraphF(ICON_RULES_X, Y, 0.5, 0.0,
                                          assetService.GetImageHandle(EImage::KB_ESCAPE), true);
-            renderService.DrawString(ICON_RULES_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"ルールを見る", color);
+            renderService.DrawString(ICON_RULES_X + TEXT_OFFSET_X, Y + TEXT_OFFSET_Y, L"メニューを開く", color);
 
             renderService.DrawRotaGraphF(ICON_NAV_X, Y, 0.5, 0.0,
                                          assetService.GetImageHandle(EImage::KB_UP), true);

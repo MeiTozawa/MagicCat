@@ -68,7 +68,7 @@ namespace mc {
             }
             if (inputService.IsPressed(InputAction::ToggleMenu))
             {
-                sceneService.PushScene(ESceneState::Rules);
+                sceneService.PushScene(ESceneState::Menu);
                 return;
             }
         }

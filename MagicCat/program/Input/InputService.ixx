@@ -73,6 +73,15 @@ namespace mc {
         /// @brief マウスカーソルの現在座標を取得する
         /// @return カーソルの画面上の座標（x, y）
         virtual Point<int> GetMousePosition() const = 0;
+        
+        /// @brief マウスカーソルが指定した矩形領域内にあるかを判定する
+        /// @param rect 判定する矩形（両端を含む閉区間: x1<=x<=x2, y1<=y<=y2）
+        /// @return 領域内にある場合はtrue、そうでない場合はfalse
+        bool IsMouseOver(const Rect<int>& rect) const
+        {
+            const auto pos = GetMousePosition();
+            return pos.In(rect);
+        }
     };
 
     export std::unique_ptr<IInputService> CreateInputService();

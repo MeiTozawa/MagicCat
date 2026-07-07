@@ -145,10 +145,12 @@ namespace mc {
         /// @param x2 右下X座標
         /// @param y2 右下Y座標
         /// @param text ボタンのテキスト
-        /// @param bgClr 背景色 (デフォルト: 0x2A2A3A)
-        /// @param fgClr 文字と枠線の色 (デフォルト: 0xFFFFFF)
+        /// @param isFocus フォーカス中の場合は内側にもう一重枠を描画する（デフォルト: false）
+        /// @param bgColor 背景色 (デフォルト: COLOR_BG)
+        /// @param fgColor 文字と枠線の色 (デフォルト: COLOR_WHITE)
         virtual void DrawButton(int x1, int y1, int x2, int y2, const wchar_t* text,
-                                uint32_t bgClr = 0x2A2A3A, uint32_t fgClr = 0xFFFFFF) = 0;
+                                bool isFocus = false,
+                                uint32_t bgColor = COLOR_BG, uint32_t fgColor = COLOR_WHITE) = 0;
 
         /// @brief フォントタイプを通常モードに設定する（DX_FONTTYPE_NORMAL）
         virtual void SetFontTypeNormal() = 0;
@@ -231,9 +233,10 @@ namespace mc {
         }
 
         /// @brief ボタンを描画する（Rect）
-        void DrawButton(Rect<int> r, const wchar_t* text, uint32_t bgClr = 0x2A2A3A, uint32_t fgClr = 0xFFFFFF)
+        void DrawButton(Rect<int> r, const wchar_t* text, bool isFocus = false,
+                        uint32_t bgClr = 0x2A2A3A, uint32_t fgClr = 0xFFFFFF)
         {
-            DrawButton(r.x1, r.y1, r.x2, r.y2, text, bgClr, fgClr);
+            DrawButton(r.x1, r.y1, r.x2, r.y2, text, isFocus, bgClr, fgClr);
         }
 
         /// @brief 画像ハンドルを指定してグラフィックを描画する（Point）

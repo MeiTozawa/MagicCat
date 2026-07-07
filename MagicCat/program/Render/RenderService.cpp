@@ -107,12 +107,19 @@ namespace mc {
         }
 
         void DrawButton(int x1, int y1, int x2, int y2, const wchar_t* text,
-                        uint32_t bgClr, uint32_t fgClr) override
+                        bool isFocus, uint32_t bgColor, uint32_t fgColor) override
         {
+            constexpr int THICKNESS = 2;
             DrawBoxAA(static_cast<float>(x1), static_cast<float>(y1),
-                      static_cast<float>(x2), static_cast<float>(y2), bgClr, true);
-            DrawHollowBox(x1, y1, x2, y2, 2, fgClr);
-            DrawCenterString((x1 + x2) / 2, (y1 + y2) / 2, text, fgClr);
+                      static_cast<float>(x2), static_cast<float>(y2), bgColor, true);
+            DrawHollowBox(x1, y1, x2, y2, THICKNESS, fgColor);
+            if (isFocus)
+            {
+                DrawHollowBox(x1 + 2 * THICKNESS, y1 + 2 * THICKNESS,
+                              x2 - 2 * THICKNESS, y2 - 2 * THICKNESS,
+                              THICKNESS, fgColor);
+            }
+            DrawCenterString((x1 + x2) / 2, (y1 + y2) / 2, text, fgColor);
         }
 
         void SetFontTypeNormal() override

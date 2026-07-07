@@ -67,11 +67,11 @@ TEST_F(ControlDisplayerMouseHints, Gamepad_SetsCursorArrow) {
 }
 
 // ---------------------------------------------------------------------------
-// Gamepad: DrawString が呼ばれない
+// Gamepad: DrawString が2回呼ばれる（カードを引く・選択する）
 // ---------------------------------------------------------------------------
-TEST_F(ControlDisplayerMouseHints, Gamepad_DoesNotDrawString) {
+TEST_F(ControlDisplayerMouseHints, Gamepad_DrawsLabels) {
     ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Gamepad));
-    EXPECT_CALL(renderService, DrawString(_, _, _, _)).Times(0);
+    EXPECT_CALL(renderService, DrawString(_, _, _, _)).Times(2);
     displayer->Draw(0.0f);
 }
 
@@ -125,7 +125,7 @@ TEST_F(ControlDisplayerMouseHints, Keyboard_DoesNotRequestGamepadIcons) {
 // ---------------------------------------------------------------------------
 // Mouse モード: GetMousePosition 呼び出し確認
 // ---------------------------------------------------------------------------
-TEST_F(ControlDisplayerMouseHints, DISABLED_MouseMode_CallsGetMousePositionAtLeastOnce) {
+TEST_F(ControlDisplayerMouseHints, MouseMode_CallsGetMousePositionAtLeastOnce) {
     ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
     EXPECT_CALL(inputService, GetMousePosition()).Times(AtLeast(1));
     displayer->Draw(0.0f);
@@ -134,7 +134,7 @@ TEST_F(ControlDisplayerMouseHints, DISABLED_MouseMode_CallsGetMousePositionAtLea
 // ---------------------------------------------------------------------------
 // Mouse モード: どの hitbox にも当たらない場合 SetCursorArrow が呼ばれる
 // ---------------------------------------------------------------------------
-TEST_F(ControlDisplayerMouseHints, DISABLED_MouseMode_NoHit_SetsCursorArrow) {
+TEST_F(ControlDisplayerMouseHints, MouseMode_NoHit_SetsCursorArrow) {
     ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
     ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{0, 0}));
     EXPECT_CALL(renderService, SetCursorArrow()).Times(1);
@@ -159,7 +159,7 @@ TEST_F(ControlDisplayerMouseHints, MouseMode_NoHit_DoesNotDrawHint) {
 // Mouse モード: DrawPile hitbox 内にマウスがある場合 SetCursorPointer が呼ばれる
 // DRAW_PILE_X1=50, DRAW_PILE_Y1=400, DRAW_PILE_X2=250, DRAW_PILE_Y2=700
 // ---------------------------------------------------------------------------
-TEST_F(ControlDisplayerMouseHints, DISABLED_MouseMode_HitDrawPile_SetsCursorPointer) {
+TEST_F(ControlDisplayerMouseHints, MouseMode_HitDrawPile_SetsCursorPointer) {
     ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
     ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{150, 550}));
     EXPECT_CALL(renderService, SetCursorPointer()).Times(1);
@@ -170,7 +170,7 @@ TEST_F(ControlDisplayerMouseHints, DISABLED_MouseMode_HitDrawPile_SetsCursorPoin
 // ---------------------------------------------------------------------------
 // Mouse モード: DrawPile hitbox 内にマウスがある場合 MOUSE_LEFT アイコンと DrawString が呼ばれる
 // ---------------------------------------------------------------------------
-TEST_F(ControlDisplayerMouseHints, DISABLED_MouseMode_HitDrawPile_DrawsHintIconAndText) {
+TEST_F(ControlDisplayerMouseHints, MouseMode_HitDrawPile_DrawsHintIconAndText) {
     ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
     ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{150, 550}));
     // MOUSE_LEFT が 1 回。他の GetImageHandle (BUTTON_MENU 等) は問わない
@@ -184,7 +184,7 @@ TEST_F(ControlDisplayerMouseHints, DISABLED_MouseMode_HitDrawPile_DrawsHintIconA
 // Mouse モード: ActionMenu row0 (魔法を使う) hitbox 内にマウス → SetCursorPointer
 // ACTION_MENU_X=400, ACTION_MENU_Y=200, ACTION_MENU_W=300, ACTION_MENU_H=100
 // ---------------------------------------------------------------------------
-TEST_F(ControlDisplayerMouseHints, DISABLED_MouseMode_HitActionMenuRow0_SetsCursorPointer) {
+TEST_F(ControlDisplayerMouseHints, MouseMode_HitActionMenuRow0_SetsCursorPointer) {
     ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
     ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{500, 250}));
     EXPECT_CALL(renderService, SetCursorPointer()).Times(1);
@@ -195,14 +195,14 @@ TEST_F(ControlDisplayerMouseHints, DISABLED_MouseMode_HitActionMenuRow0_SetsCurs
 // Mouse モード: hitbox の境界上（左端 x1 は含む、右端 x2 は含まない）
 // DrawPile: x1=50(含む), x2=250(含まない)
 // ---------------------------------------------------------------------------
-TEST_F(ControlDisplayerMouseHints, DISABLED_MouseMode_HitboxLeftEdge_Included) {
+TEST_F(ControlDisplayerMouseHints, MouseMode_HitboxLeftEdge_Included) {
     ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
     ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{50, 550}));
     EXPECT_CALL(renderService, SetCursorPointer()).Times(1);
     displayer->Draw(0.0f);
 }
 
-TEST_F(ControlDisplayerMouseHints, DISABLED_MouseMode_HitboxRightEdge_Excluded) {
+TEST_F(ControlDisplayerMouseHints, MouseMode_HitboxRightEdge_Excluded) {
     ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
     ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{250, 550}));
     EXPECT_CALL(renderService, SetCursorPointer()).Times(0);
@@ -212,31 +212,32 @@ TEST_F(ControlDisplayerMouseHints, DISABLED_MouseMode_HitboxRightEdge_Excluded) 
 
 // ---------------------------------------------------------------------------
 // Mouse モード: メニューボタン hitbox はウィンドウ幅依存
-// GetWindowWidth=1280 → menuIconX=1220
-// hitbox: x=[1220-28,1220+40)=[1192,1260), y=[60-28,60+40)=[32,100)
+// MENU_ICON_X = WINDOW_WIDTH - 60 = 1920 - 60 = 1860
+// hitbox: x=[1860-28,1860+40)=[1832,1900), y=[60-28,60+40)=[32,100)
 // ---------------------------------------------------------------------------
-TEST_F(ControlDisplayerMouseHints, DISABLED_MouseMode_HitMenuButton_SetsCursorPointer) {
+TEST_F(ControlDisplayerMouseHints, MouseMode_HitMenuButton_SetsCursorPointer) {
     ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
-    // 1280 - 60 = 1220 → hitbox x: [1192, 1260), y: [32, 100)
-    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{1210, 60}));
+    // 1920 - 60 = 1860 → hitbox x: [1832, 1900), y: [32, 100)
+    ON_CALL(inputService, GetMousePosition()).WillByDefault(Return(Point<int>{1860, 60}));
     EXPECT_CALL(renderService, SetCursorPointer()).Times(1);
     displayer->Draw(0.0f);
 }
 
 // ---------------------------------------------------------------------------
-// 共通: BUTTON_MENU アイコンはデバイスに関わらず毎フレーム 1 回描画される
-// (Gamepad では DrawGamepadHints でも BUTTON_MENU を描画するため 2 回)
-// → Keyboard / Mouse では共通部分の 1 回のみ
+// Mouse モード: BUTTON_MENU アイコンが毎フレーム 1 回描画される
 // ---------------------------------------------------------------------------
-TEST_F(ControlDisplayerMouseHints, DISABLED_AllModes_MenuIconAlwaysDrawn_Keyboard) {
-    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Keyboard));
+TEST_F(ControlDisplayerMouseHints, AllModes_MenuIconAlwaysDrawn_Mouse) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
     EXPECT_CALL(assetService, GetImageHandle(_)).Times(::testing::AnyNumber());
     EXPECT_CALL(assetService, GetImageHandle(EImage::BUTTON_MENU)).Times(1);
     displayer->Draw(0.0f);
 }
 
-TEST_F(ControlDisplayerMouseHints, DISABLED_AllModes_MenuIconAlwaysDrawn_Mouse) {
-    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Mouse));
+// ---------------------------------------------------------------------------
+// Keyboard モード: BUTTON_MENU アイコンが毎フレーム 1 回描画される（将来実装用・現在 DISABLED）
+// ---------------------------------------------------------------------------
+TEST_F(ControlDisplayerMouseHints, DISABLED_AllModes_MenuIconAlwaysDrawn_Keyboard) {
+    ON_CALL(inputService, GetActiveDevice()).WillByDefault(Return(InputDevice::Keyboard));
     EXPECT_CALL(assetService, GetImageHandle(_)).Times(::testing::AnyNumber());
     EXPECT_CALL(assetService, GetImageHandle(EImage::BUTTON_MENU)).Times(1);
     displayer->Draw(0.0f);
@@ -311,7 +312,7 @@ RC_GTEST_PROP(ControlDisplayerMouseHintsProps, Property5_GamepadPurity, ()) {
     EXPECT_CALL(assetSvc, GetImageHandle(mc::EImage::BUTTON_MENU)).Times(1);
 
     EXPECT_CALL(renderSvc, DrawHollowBox(_, _, _, _, _, _)).Times(0);
-    EXPECT_CALL(renderSvc, DrawString(_, _, _, _)).Times(0);
+    EXPECT_CALL(renderSvc, DrawString(_, _, _, _)).Times(2);  // カードを引く・選択する
 
     auto disp = mc::CreateControlDisplayer(assetSvc, renderSvc, inputSvc);
     disp->Draw(0.0f);

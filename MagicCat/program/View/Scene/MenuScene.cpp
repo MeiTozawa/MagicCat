@@ -13,8 +13,6 @@ import AssetService;
 
 namespace mc {
     namespace {
-        constexpr int OVERLAY_ALPHA = 200;
-
         constexpr int BOX_MARGIN_X = 100;
         constexpr int BOX_MARGIN_Y_UP = 75;
         constexpr int BOX_MARGIN_Y_DOWN = 250;

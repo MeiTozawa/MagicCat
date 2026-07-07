@@ -1,8 +1,17 @@
 #pragma once
 #include <cstdint>
 #include <concepts>
+#include <app_build_setting.h>
 
 namespace mc {
+    
+    template <typename T>
+    requires std::integral<T> || std::floating_point<T>
+    struct Rect;
+
+    template <typename T>
+    requires std::integral<T> || std::floating_point<T>
+    struct Point;
 
     static constexpr uint32_t COLOR_BG = 0x071F38;
 
@@ -43,14 +52,10 @@ namespace mc {
     static constexpr int DRAW_PILE_X2 = DRAW_PILE_X1 + CARD_WIDTH;  ///< 山札領域 右端 X  
     static constexpr int DRAW_PILE_Y2 = DRAW_PILE_Y1 + CARD_HEIGHT;  ///< 山札領域 下端 Y  
     
-    static constexpr int MENU_ICON_X_OFFSET = 60;   ///< 右端からのオフセット
-    static constexpr int MENU_ICON_Y        = 60;   ///< ボタン中心 Y
-    static constexpr int MENU_ICON_HALF_W   = 40;   ///< 判定半幅 X
-    static constexpr int MENU_ICON_HALF_H   = 28;   ///< 判定半幅 Y
-
-    template <typename T>
-    requires std::integral<T> || std::floating_point<T>
-    struct Rect;
+    static constexpr int MENU_ICON_X = WINDOW_WIDTH - 60;   ///< 右端からのオフセット
+    static constexpr int MENU_ICON_Y = 60;   ///< ボタン中心 Y
+    static constexpr int MENU_ICON_HALF_W = 40;   ///< 判定半幅 X
+    static constexpr int MENU_ICON_HALF_H = 28;   ///< 判定半幅 Y
 
     template <typename T>
     requires std::integral<T> || std::floating_point<T>
@@ -73,6 +78,9 @@ namespace mc {
     {
         return x >= r.x1 && x <= r.x2 && y >= r.y1 && y <= r.y2;
     }
-
-
+    
+    constexpr Rect<int> MENU_ICON_RECT = {
+        MENU_ICON_X - MENU_ICON_HALF_W, MENU_ICON_Y - MENU_ICON_HALF_H,
+        MENU_ICON_X + MENU_ICON_HALF_W, MENU_ICON_Y + MENU_ICON_HALF_H
+    };
 }

@@ -1,6 +1,5 @@
 module;
 
-#include <app_build_setting.h>
 #include <memory>
 #include <optional>
 #include <RenderUtils.h>
@@ -197,10 +196,8 @@ namespace mc {
         {
             auto click = inputService.OnMouseClick(InputAction::MouseClick);
             if (click.x == -1 || click.y == -1) return false;
-
-            constexpr int menuIconX = WINDOW_WIDTH - MENU_ICON_X_OFFSET;
-            if (click.x >= menuIconX - MENU_ICON_HALF_W && click.x < menuIconX + MENU_ICON_HALF_W &&
-                click.y >= MENU_ICON_Y - MENU_ICON_HALF_H && click.y < MENU_ICON_Y + MENU_ICON_HALF_H)
+            
+            if (click.In(MENU_ICON_RECT))
             {
                 sceneService.PushScene(ESceneState::Menu);
                 displayers.Update(deltaTime);

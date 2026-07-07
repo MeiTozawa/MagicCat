@@ -11,12 +11,43 @@ import CardService;
 import SceneService;
 import BattleService;
 import Player;
+import Enemy;
 namespace mc {
     float StepTowards(float current, float target, float step)
     {
         if (current < target) return std::min(current + step, target);
         if (current > target) return std::max(current - step, target);
         return target;
+    }
+
+    static ESound GetAttackSound(ESprite sprite)
+    {
+        switch (sprite)
+        {
+        case ESprite::MeowingCat:
+            return ESound::CatAttack;
+        case ESprite::Wolf:
+        case ESprite::TimberWolf:
+        case ESprite::SnowFox:
+        case ESprite::Bunny:
+        case ESprite::StinkySkunk:
+            return ESound::WolfAttack;
+        case ESprite::DaintyPig:
+        case ESprite::MadBoar:
+        case ESprite::SlowTurtle:
+        case ESprite::SpikeyPorcupine:
+        case ESprite::CoralCrab:
+            return ESound::PigAttack;
+        case ESprite::PasturingSheep:
+        case ESprite::CluckingChicken:
+        case ESprite::TinyChick:
+        case ESprite::HonkingGoose:
+        case ESprite::CroakingToad:
+        case ESprite::LeapingFrog:
+            return ESound::SheepAttack;
+        default:
+            return ESound::CatAttack;
+        }
     }
 
     static constexpr int   BGM_VOLUME_MAX   = 255;
@@ -101,10 +132,12 @@ namespace mc {
             eventHandles.push_back(EventBus::Subscribe<EnemyDefeatedEvent>([this](const EnemyDefeatedEvent&)
             {
                 StartBgmFadeOut();
+                PlaySoundMem(assetService.GetSoundHandle(ESound::WinTheBattle), DX_PLAYTYPE_BACK);
             }));
             eventHandles.push_back(EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&)
             {
                 StartBgmFadeOut();
+                PlaySoundMem(assetService.GetSoundHandle(ESound::WinTheGame), DX_PLAYTYPE_BACK);
             }));
             eventHandles.push_back(EventBus::Subscribe<StageFailEvent>([this](const StageFailEvent&)
             {
@@ -117,7 +150,8 @@ namespace mc {
             auto tags = e.Victim->GetTags();
             if (std::ranges::find(tags, ETag::Player) != tags.end())
             {
-                PlaySoundMem(assetService.GetSoundHandle(ESound::PlayerHurt), DX_PLAYTYPE_BACK);
+                ESound soundId = GetAttackSound(characterService.GetEnemy().GetSprite());
+                PlaySoundMem(assetService.GetSoundHandle(soundId), DX_PLAYTYPE_BACK);
                 const auto& player = characterService.GetPlayer();
                 const auto& healthComp = player.GetHealthComponent();
                 if (e.CurrentHealth > 0 && e.CurrentHealth <= healthComp.GetMaxHealth() * 0.3f)
@@ -125,7 +159,8 @@ namespace mc {
             }
             else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
             {
-                PlaySoundMem(assetService.GetSoundHandle(ESound::EnemyHurt), DX_PLAYTYPE_BACK);
+                ESound soundId = GetAttackSound(characterService.GetPlayer().GetSprite());
+                PlaySoundMem(assetService.GetSoundHandle(soundId), DX_PLAYTYPE_BACK);
             }
         }
 
@@ -134,8 +169,6 @@ namespace mc {
             auto tags = e.Victim->GetTags();
             if (std::ranges::find(tags, ETag::Player) != tags.end())
                 PlaySoundMem(assetService.GetSoundHandle(ESound::Fail), DX_PLAYTYPE_BACK);
-            else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
-                PlaySoundMem(assetService.GetSoundHandle(ESound::Win), DX_PLAYTYPE_BACK);
         }
 
         void SetBgmTarget(float target)

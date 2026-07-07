@@ -57,19 +57,23 @@ constexpr const wchar_t* FILE_PATH_PNG_STONE = L"resource/Images/RPS/stone.png";
 constexpr const wchar_t* FILE_PATH_JSON_CARD_CONFIG = L"resource/Json/card_config.json"; 
 constexpr const wchar_t* FILE_PATH_JSON_ENEMY_CONFIG = L"resource/Json/enemy_config.json"; 
 constexpr const wchar_t* FILE_PATH_JSON_EXAMPLE = L"resource/Json/example.json"; 
+constexpr const wchar_t* FILE_PATH_JSON_GAME_CONFIG = L"resource/Json/game_config.json"; 
 
 constexpr const wchar_t* FILE_PATH_MP3_BEEP = L"resource/Sounds/Beep.mp3"; 
 constexpr const wchar_t* FILE_PATH_MP3_BGM = L"resource/Sounds/BGM.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_CATATTACK = L"resource/Sounds/CatAttack.mp3"; 
 constexpr const wchar_t* FILE_PATH_MP3_CONFIRM = L"resource/Sounds/Confirm.mp3"; 
 constexpr const wchar_t* FILE_PATH_MP3_DRAWCARD = L"resource/Sounds/DrawCard.mp3"; 
-constexpr const wchar_t* FILE_PATH_MP3_ENEMYHURT = L"resource/Sounds/EnemyHurt.mp3"; 
 constexpr const wchar_t* FILE_PATH_MP3_FAIL = L"resource/Sounds/Fail.mp3"; 
 constexpr const wchar_t* FILE_PATH_MP3_MAGIC = L"resource/Sounds/Magic.mp3"; 
-constexpr const wchar_t* FILE_PATH_MP3_PLAYERHURT = L"resource/Sounds/PlayerHurt.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_PIGATTACK = L"resource/Sounds/PigAttack.mp3"; 
 constexpr const wchar_t* FILE_PATH_MP3_SELECT = L"resource/Sounds/Select.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_SHEEPATTACK = L"resource/Sounds/SheepAttack.mp3"; 
 constexpr const wchar_t* FILE_PATH_MP3_SHUFFLE = L"resource/Sounds/Shuffle.mp3"; 
 constexpr const wchar_t* FILE_PATH_MP3_WARNING = L"resource/Sounds/Warning.mp3"; 
-constexpr const wchar_t* FILE_PATH_MP3_WIN = L"resource/Sounds/Win.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_WINTHEBATTLE = L"resource/Sounds/WinTheBattle.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_WINTHEGAME = L"resource/Sounds/WinTheGame.mp3"; 
+constexpr const wchar_t* FILE_PATH_MP3_WOLFATTACK = L"resource/Sounds/WolfAttack.mp3"; 
 
 
 
@@ -131,20 +135,24 @@ const std::vector<const wchar_t*> FILE_PATH_TBL_JSON = {
     FILE_PATH_JSON_CARD_CONFIG,
     FILE_PATH_JSON_ENEMY_CONFIG,
     FILE_PATH_JSON_EXAMPLE,
+    FILE_PATH_JSON_GAME_CONFIG,
 };
 const std::vector<const wchar_t*> FILE_PATH_TBL_SOUNDS = {
     FILE_PATH_MP3_BEEP,
     FILE_PATH_MP3_BGM,
+    FILE_PATH_MP3_CATATTACK,
     FILE_PATH_MP3_CONFIRM,
     FILE_PATH_MP3_DRAWCARD,
-    FILE_PATH_MP3_ENEMYHURT,
     FILE_PATH_MP3_FAIL,
     FILE_PATH_MP3_MAGIC,
-    FILE_PATH_MP3_PLAYERHURT,
+    FILE_PATH_MP3_PIGATTACK,
     FILE_PATH_MP3_SELECT,
+    FILE_PATH_MP3_SHEEPATTACK,
     FILE_PATH_MP3_SHUFFLE,
     FILE_PATH_MP3_WARNING,
-    FILE_PATH_MP3_WIN,
+    FILE_PATH_MP3_WINTHEBATTLE,
+    FILE_PATH_MP3_WINTHEGAME,
+    FILE_PATH_MP3_WOLFATTACK,
 };
 
 
@@ -196,18 +204,22 @@ const std::unordered_map<std::wstring, const wchar_t*> FILE_PATH_DICTIONARY = {
     { std::wstring( L"card_config.json" ), FILE_PATH_JSON_CARD_CONFIG },
     { std::wstring( L"enemy_config.json" ), FILE_PATH_JSON_ENEMY_CONFIG },
     { std::wstring( L"example.json" ), FILE_PATH_JSON_EXAMPLE },
+    { std::wstring( L"game_config.json" ), FILE_PATH_JSON_GAME_CONFIG },
     { std::wstring( L"Beep.mp3" ), FILE_PATH_MP3_BEEP },
     { std::wstring( L"BGM.mp3" ), FILE_PATH_MP3_BGM },
+    { std::wstring( L"CatAttack.mp3" ), FILE_PATH_MP3_CATATTACK },
     { std::wstring( L"Confirm.mp3" ), FILE_PATH_MP3_CONFIRM },
     { std::wstring( L"DrawCard.mp3" ), FILE_PATH_MP3_DRAWCARD },
-    { std::wstring( L"EnemyHurt.mp3" ), FILE_PATH_MP3_ENEMYHURT },
     { std::wstring( L"Fail.mp3" ), FILE_PATH_MP3_FAIL },
     { std::wstring( L"Magic.mp3" ), FILE_PATH_MP3_MAGIC },
-    { std::wstring( L"PlayerHurt.mp3" ), FILE_PATH_MP3_PLAYERHURT },
+    { std::wstring( L"PigAttack.mp3" ), FILE_PATH_MP3_PIGATTACK },
     { std::wstring( L"Select.mp3" ), FILE_PATH_MP3_SELECT },
+    { std::wstring( L"SheepAttack.mp3" ), FILE_PATH_MP3_SHEEPATTACK },
     { std::wstring( L"Shuffle.mp3" ), FILE_PATH_MP3_SHUFFLE },
     { std::wstring( L"Warning.mp3" ), FILE_PATH_MP3_WARNING },
-    { std::wstring( L"Win.mp3" ), FILE_PATH_MP3_WIN },
+    { std::wstring( L"WinTheBattle.mp3" ), FILE_PATH_MP3_WINTHEBATTLE },
+    { std::wstring( L"WinTheGame.mp3" ), FILE_PATH_MP3_WINTHEGAME },
+    { std::wstring( L"WolfAttack.mp3" ), FILE_PATH_MP3_WOLFATTACK },
 };
 
 
@@ -263,19 +275,23 @@ constexpr const wchar_t* FILE_NAME_PNG_STONE = L"stone.png";
 constexpr const wchar_t* FILE_NAME_JSON_CARD_CONFIG = L"card_config.json"; 
 constexpr const wchar_t* FILE_NAME_JSON_ENEMY_CONFIG = L"enemy_config.json"; 
 constexpr const wchar_t* FILE_NAME_JSON_EXAMPLE = L"example.json"; 
+constexpr const wchar_t* FILE_NAME_JSON_GAME_CONFIG = L"game_config.json"; 
 
 constexpr const wchar_t* FILE_NAME_MP3_BEEP = L"Beep.mp3"; 
 constexpr const wchar_t* FILE_NAME_MP3_BGM = L"BGM.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_CATATTACK = L"CatAttack.mp3"; 
 constexpr const wchar_t* FILE_NAME_MP3_CONFIRM = L"Confirm.mp3"; 
 constexpr const wchar_t* FILE_NAME_MP3_DRAWCARD = L"DrawCard.mp3"; 
-constexpr const wchar_t* FILE_NAME_MP3_ENEMYHURT = L"EnemyHurt.mp3"; 
 constexpr const wchar_t* FILE_NAME_MP3_FAIL = L"Fail.mp3"; 
 constexpr const wchar_t* FILE_NAME_MP3_MAGIC = L"Magic.mp3"; 
-constexpr const wchar_t* FILE_NAME_MP3_PLAYERHURT = L"PlayerHurt.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_PIGATTACK = L"PigAttack.mp3"; 
 constexpr const wchar_t* FILE_NAME_MP3_SELECT = L"Select.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_SHEEPATTACK = L"SheepAttack.mp3"; 
 constexpr const wchar_t* FILE_NAME_MP3_SHUFFLE = L"Shuffle.mp3"; 
 constexpr const wchar_t* FILE_NAME_MP3_WARNING = L"Warning.mp3"; 
-constexpr const wchar_t* FILE_NAME_MP3_WIN = L"Win.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_WINTHEBATTLE = L"WinTheBattle.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_WINTHEGAME = L"WinTheGame.mp3"; 
+constexpr const wchar_t* FILE_NAME_MP3_WOLFATTACK = L"WolfAttack.mp3"; 
 
 
 
@@ -337,20 +353,24 @@ const std::vector<const wchar_t*> FILE_NAME_TBL_JSON = {
     FILE_NAME_JSON_CARD_CONFIG,
     FILE_NAME_JSON_ENEMY_CONFIG,
     FILE_NAME_JSON_EXAMPLE,
+    FILE_NAME_JSON_GAME_CONFIG,
 };
 const std::vector<const wchar_t*> FILE_NAME_TBL_SOUNDS = {
     FILE_NAME_MP3_BEEP,
     FILE_NAME_MP3_BGM,
+    FILE_NAME_MP3_CATATTACK,
     FILE_NAME_MP3_CONFIRM,
     FILE_NAME_MP3_DRAWCARD,
-    FILE_NAME_MP3_ENEMYHURT,
     FILE_NAME_MP3_FAIL,
     FILE_NAME_MP3_MAGIC,
-    FILE_NAME_MP3_PLAYERHURT,
+    FILE_NAME_MP3_PIGATTACK,
     FILE_NAME_MP3_SELECT,
+    FILE_NAME_MP3_SHEEPATTACK,
     FILE_NAME_MP3_SHUFFLE,
     FILE_NAME_MP3_WARNING,
-    FILE_NAME_MP3_WIN,
+    FILE_NAME_MP3_WINTHEBATTLE,
+    FILE_NAME_MP3_WINTHEGAME,
+    FILE_NAME_MP3_WOLFATTACK,
 };
 
 

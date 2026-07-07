@@ -198,16 +198,19 @@ namespace mc {
                 SoundData sounds[] = {
                     {ESound::Confirm, FILE_PATH_MP3_CONFIRM},
                     {ESound::DrawCard, FILE_PATH_MP3_DRAWCARD},
-                    {ESound::EnemyHurt, FILE_PATH_MP3_ENEMYHURT},
                     {ESound::Fail, FILE_PATH_MP3_FAIL},
-                    {ESound::PlayerHurt, FILE_PATH_MP3_PLAYERHURT},
                     {ESound::Select, FILE_PATH_MP3_SELECT},
                     {ESound::Shuffle, FILE_PATH_MP3_SHUFFLE},
                     {ESound::Warning, FILE_PATH_MP3_WARNING},
-                    {ESound::Win, FILE_PATH_MP3_WIN},
                     {ESound::Beep, FILE_PATH_MP3_BEEP},
                     {ESound::Magic, FILE_PATH_MP3_MAGIC},
-                    {ESound::BGM, FILE_PATH_MP3_BGM}
+                    {ESound::BGM, FILE_PATH_MP3_BGM},
+                    {ESound::CatAttack, FILE_PATH_MP3_CATATTACK},
+                    {ESound::SheepAttack, FILE_PATH_MP3_SHEEPATTACK},
+                    {ESound::WolfAttack, FILE_PATH_MP3_WOLFATTACK},
+                    {ESound::PigAttack, FILE_PATH_MP3_PIGATTACK},
+                    {ESound::WinTheBattle, FILE_PATH_MP3_WINTHEBATTLE},
+                    {ESound::WinTheGame, FILE_PATH_MP3_WINTHEGAME}
                 };
 
                 for (const auto& snd : sounds)

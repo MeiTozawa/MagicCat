@@ -32,11 +32,10 @@ namespace mc {
     export enum class ESound
     {
         Null = -1,
-        Confirm = 0, DrawCard, EnemyHurt,
-        Fail, PlayerHurt, Select,
-        Shuffle, Warning, Win,
-        Beep, Magic,
-        BGM
+        Confirm = 0, DrawCard, Select, Shuffle, Warning,
+        CatAttack, SheepAttack, WolfAttack, PigAttack,
+        Fail, WinTheBattle, WinTheGame,
+        Beep, Magic, BGM
     };
 
     export enum class ESprite

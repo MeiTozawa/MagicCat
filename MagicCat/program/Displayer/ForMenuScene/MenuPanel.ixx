@@ -62,4 +62,43 @@ export std::unique_ptr<MenuPanel> CreateVolumePanel(int boxX1, int textY,
                                                      IAudioService& audio,
                                                      IOSService& os);
 
+/// @brief セーブ／ロードパネルの動作モード
+export enum class SlotPanelMode { Save, Load };
+
+/// @brief セーブパネルを生成して返す（`SlotPanelMode::Save` で構築）。
+/// @param boxX1   メニューボックスの左端 X 座標
+/// @param textY   コンテンツ描画開始 Y 座標
+/// @param input   入力サービス
+/// @param render  描画サービス
+/// @param battle  セーブ操作サービス
+/// @param config  スロットメタデータ取得サービス
+/// @param scene   シーン遷移サービス（ロード時のみ使用）
+/// @param os      カーソル変更サービス
+/// @return 生成した `SaveAndLoadPanel` の所有権
+export std::unique_ptr<MenuPanel> CreateSavePanel(int boxX1, int textY,
+                                                   IInputService& input,
+                                                   IRenderService& render,
+                                                   IBattleService& battle,
+                                                   IConfigService& config,
+                                                   ISceneService& scene,
+                                                   IOSService& os);
+
+/// @brief ロードパネルを生成して返す（`SlotPanelMode::Load` で構築）。
+/// @param boxX1   メニューボックスの左端 X 座標
+/// @param textY   コンテンツ描画開始 Y 座標
+/// @param input   入力サービス
+/// @param render  描画サービス
+/// @param battle  ロード操作サービス
+/// @param config  スロットメタデータ取得サービス
+/// @param scene   シーン遷移サービス
+/// @param os      カーソル変更サービス
+/// @return 生成した `SaveAndLoadPanel` の所有権
+export std::unique_ptr<MenuPanel> CreateLoadPanel(int boxX1, int textY,
+                                                   IInputService& input,
+                                                   IRenderService& render,
+                                                   IBattleService& battle,
+                                                   IConfigService& config,
+                                                   ISceneService& scene,
+                                                   IOSService& os);
+
 } // namespace mc

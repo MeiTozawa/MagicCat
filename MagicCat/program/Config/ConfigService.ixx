@@ -3,6 +3,7 @@ module;
 #include <string>
 #include <vector>
 #include <memory>
+#include <optional>
 
 export module ConfigService;
 
@@ -49,6 +50,59 @@ namespace mc {
         int battleCount;
     };
 
+    /// @brief セーブスロットの総数（スロット番号は [0, SAVE_SLOT_COUNT) の範囲）
+    export constexpr int SAVE_SLOT_COUNT = 4;
+
+    /// @brief カードのシリアライズ用データ（種類とパワー値を int で保持）
+    export struct CardData
+    {
+        int type  = 0;
+        int power = 0;
+    };
+
+    /// @brief セーブ・ロード時にバトル状態全体を転送するデータ構造体
+    export struct GameState
+    {
+        // Player
+        int playerHp                   = 0;
+        int playerMaxHp                = 0;
+        int playerMp                   = 0;
+        int playerSprite               = -1;
+        int playerHealUses             = 0;
+        bool playerHasUsedClairvoyance = false;
+
+        // Enemy
+        int enemyHp             = 0;
+        int enemyMaxHp          = 0;
+        int enemySprite         = -1;
+        int enemyRockOffset     = 0;
+        int enemyScissorsOffset = 0;
+        int enemyPaperOffset    = 0;
+
+        // Battle progress
+        int currentIndex = 0;
+        std::vector<int> sequence;  // ESprite int values
+
+        // Cards
+        std::vector<CardData> hand;
+        std::vector<CardData> drawPile;
+        std::vector<CardData> discardPile;
+    };
+
+    /// @brief セーブスロットの概要情報をメニュー表示用に保持する構造体（フル状態のロードなし）
+    export struct SaveMetadata
+    {
+        bool exists        = false;
+        int  playerHp      = 0;
+        int  playerMaxHp   = 0;
+        int  playerSprite  = -1;  // ESprite の int キャスト値
+        int  enemyHp       = 0;
+        int  enemyMaxHp    = 0;
+        int  enemySprite   = -1;  // ESprite の int キャスト値
+        int  currentBattle = 0;   // 1-based display index (currentIndex + 1)
+        int  totalBattles  = 0;
+    };
+
     /// @brief 各種設定データ（カード、敵、プレイヤー、ゲーム設定）のロードおよび管理を担当するインターフェース
     export class IConfigService
     {
@@ -84,6 +138,22 @@ namespace mc {
         /// @param sfxVolume 保存する SFX 音量レベル
         /// @return 成功時 true、I/O エラー時 false（例外なし）
         virtual bool SaveSoundSettings(int masterVolume, int bgmVolume, int sfxVolume) = 0;
+
+        /// @brief ゲーム状態を resource/saveX.json に JSON 形式で書き込む
+        /// @param slot スロット番号 [0, SAVE_SLOT_COUNT - 1]（0 はオートセーブ）
+        /// @param state 書き込む GameState データ
+        /// @return 成功時 true、I/O エラー時 false（例外なし）
+        virtual bool SaveGame(int slot, const GameState& state) = 0;
+
+        /// @brief resource/saveX.json を読み込み GameState を返す
+        /// @param slot スロット番号 [0, SAVE_SLOT_COUNT - 1]
+        /// @return 解析済み GameState。ファイルが存在しないか不正な場合は std::nullopt（例外なし）
+        virtual std::optional<GameState> LoadGame(int slot) = 0;
+
+        /// @brief セーブスロットの概要情報をフル状態のロードなしで取得する
+        /// @param slot スロット番号 [0, SAVE_SLOT_COUNT - 1]
+        /// @return SaveMetadata。ファイルが存在しないか不正な場合は exists=false
+        virtual SaveMetadata GetSaveMetadata(int slot) = 0;
     };
 
     export std::unique_ptr<IConfigService> CreateConfigService(const std::string& cardConfigPath,

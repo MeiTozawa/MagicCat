@@ -133,7 +133,7 @@ namespace mc {
             }
         }
 
-        void ResolveAttack(int actionIndex) const
+        void ResolveAttack(int actionIndex)
         {
             auto playerAttackIntentOpt = GetAttackTypeFromIndex(actionIndex);
             if (!playerAttackIntentOpt) return;
@@ -162,6 +162,8 @@ namespace mc {
                 CombatEvent(playerAttackIntent, enemyAttackIntent, playerDamage, enemyDamage,
                             playerWinRate, rockOffset, scissorsOffset, paperOffset)
             );
+
+            characterService.SaveState(0);
         }
 
         void ProcessDrawCard(Card c) const

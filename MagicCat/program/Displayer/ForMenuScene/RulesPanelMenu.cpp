@@ -1,5 +1,6 @@
 module;
 
+#include <cassert>
 #include <memory>
 #include <RenderUtils.h>
 
@@ -7,9 +8,9 @@ module Displayer;
 
 import InputService;
 import RenderService;
+import AssetService;
 
 namespace mc {
-
 namespace {
     constexpr int BOX_MARGIN_X      = 100;
     constexpr int BOX_MARGIN_Y_UP   = 75;
@@ -23,14 +24,17 @@ namespace {
     constexpr int INDENT_LEVEL_2  = 80;
     constexpr int SECTION_SPACING = 280;
     constexpr int PAGE_COUNT      = 3;
-} // anonymous namespace
+    constexpr int NEXT_PAGE_ICON_X = 780;
+    constexpr int NEXT_PAGE_Y = WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN - 50;
+}
 
 class RulesPanel : public MenuPanel {
 public:
-    RulesPanel(int boxX1, int textY, IInputService& input, IRenderService& render)
+    RulesPanel(int boxX1, int textY, IInputService& input, IRenderService& render, IAssetService& asset)
         : MenuPanel(boxX1, textY)
         , inputService(input)
         , renderService(render)
+        , assetService(asset)
     {}
 
     bool IsActive()   const override { return false; }
@@ -59,11 +63,30 @@ private:
         case 2: DrawPage2(); break;
         default: break;
         }
+        DrawNavigationHints();
     }
 
     void NextPage()
     {
         currentPage = (currentPage + 1) % PAGE_COUNT;
+    }
+
+    void DrawNavigationHints() const
+    {
+        int icon;
+        switch (inputService.GetActiveDevice())
+        {
+        case InputDevice::Keyboard: icon = assetService.GetImageHandle(EImage::KB_SPACE);
+            break;
+        case InputDevice::Mouse: icon = assetService.GetImageHandle(EImage::MOUSE_LEFT);
+            break;
+        case InputDevice::Gamepad: icon = assetService.GetImageHandle(EImage::XBOX_A);
+            break;
+        default: assert(false && "未知のデバイス");
+            icon = assetService.GetImageHandle(EImage::MOUSE_LEFT);
+        }
+        renderService.DrawRotaGraphF(NEXT_PAGE_ICON_X, NEXT_PAGE_Y, 0.5, 0.0, icon, true);
+        renderService.DrawCenterString(WINDOW_WIDTH / 2, NEXT_PAGE_Y, L"でページ切替", COLOR_TEXT_NORMAL);
     }
 
     void DrawPage0() const
@@ -116,14 +139,16 @@ private:
 
     IInputService&  inputService;
     IRenderService& renderService;
+    IAssetService&  assetService;
     int currentPage = 0;
 };
 
 std::unique_ptr<MenuPanel> CreateRulesPanel(int boxX1, int textY,
                                              IInputService& input,
-                                             IRenderService& render)
+                                             IRenderService& render,
+                                             IAssetService& asset)
 {
-    return std::make_unique<RulesPanel>(boxX1, textY, input, render);
+    return std::make_unique<RulesPanel>(boxX1, textY, input, render, asset);
 }
 
 }

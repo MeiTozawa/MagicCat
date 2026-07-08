@@ -7,6 +7,7 @@ export module Displayer:Menu;
 import DisplayerBase;
 import InputService;
 import RenderService;
+import AssetService;
 import AudioService;
 import BattleService;
 import ConfigService;
@@ -42,10 +43,12 @@ public:
 /// @param textY   コンテンツ描画開始 Y 座標
 /// @param input   入力サービス
 /// @param render  描画サービス
+/// @param asset   アセットサービス
 /// @return 生成した `RulesPanel` の所有権
 export std::unique_ptr<MenuPanel> CreateRulesPanel(int boxX1, int textY,
                                                     IInputService& input,
-                                                    IRenderService& render);
+                                                    IRenderService& render,
+                                                    IAssetService& asset);
 
 /// @brief `VolumePanel` を生成して返す。
 /// @param boxX1   メニューボックスの左端 X 座標

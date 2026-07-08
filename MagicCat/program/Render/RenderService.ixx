@@ -173,6 +173,9 @@ namespace mc {
         /// @param b 青成分（0〜255）
         virtual void SetBackgroundColor(int r, int g, int b) = 0;
 
+        /// @brief アプリケーションを終了する（dxe::ExitApplication() に委譲）
+        virtual void ExitApplication() = 0;
+
         // -------------------------------------------------------------------------
         // Point / Rect を用いた直感的なオーバーロード API
         // -------------------------------------------------------------------------

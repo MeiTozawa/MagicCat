@@ -146,6 +146,11 @@ namespace mc {
         {
             ::SetBackgroundColor(r, g, b);
         }
+
+        void ExitApplication() override
+        {
+            dxe::ExitApplication();
+        }
     };
 
     std::unique_ptr<IRenderService> CreateRenderService()

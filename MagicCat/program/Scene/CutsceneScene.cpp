@@ -24,11 +24,6 @@ namespace mc {
     static constexpr int BORDER_CORNER_RADIUS = 16;
     static constexpr int BORDER_THICKNESS = 4;
 
-    static Point<float> SlotCenter(float screenW, float screenH, int slotIndex, int slotCount)
-    {
-        return {screenW * (slotIndex + 1) * (1.f / (1 + slotCount)), screenH * SLOT_Y_FRACTION};
-    }
-
     struct EnemySlotView
     {
         int slotIndex;
@@ -55,6 +50,12 @@ namespace mc {
             int rawIndex = battleService.GetCurrentEnemyIndex();
 
             const int slotCount = static_cast<int>(sequence.size());
+            SlotCenter = std::vector<Point<float>>({
+                {WINDOW_WIDTH * (0 + 1) * (1.f / (1 + slotCount)), 1.f * WINDOW_HEIGHT * SLOT_Y_FRACTION},
+                {WINDOW_WIDTH * (1 + 1) * (1.f / (1 + slotCount)), 1.f * WINDOW_HEIGHT * SLOT_Y_FRACTION},
+                {WINDOW_WIDTH * (2 + 1) * (1.f / (1 + slotCount)), 1.f * WINDOW_HEIGHT * SLOT_Y_FRACTION}
+            });
+
             const int currentIdx = std::clamp(rawIndex, 0, slotCount - 1);
 
             slots.clear();
@@ -65,15 +66,15 @@ namespace mc {
                 sv.sprite = assetService.ParseSprite(sequence[i].spriteName);
                 sv.spriteHandle = assetService.GetSpriteHandle(sv.sprite);
                 sv.info = assetService.GetSpriteInfo(sv.sprite);
-                sv.center = SlotCenter(WINDOW_WIDTH, WINDOW_HEIGHT, i, slotCount);
+                sv.center = SlotCenter[i];
                 slots.push_back(sv);
             }
 
             const int srcIdx = std::max(0, currentIdx - 1);
             borderDisplayer = CreateCutsceneFocusDisplayer(
                 renderService,
-                SlotCenter(WINDOW_WIDTH, WINDOW_HEIGHT, srcIdx, slotCount),
-                SlotCenter(WINDOW_WIDTH, WINDOW_HEIGHT, currentIdx, slotCount),
+                SlotCenter[srcIdx],
+                SlotCenter[currentIdx],
                 BORDER_HALF_WIDTH, BORDER_HALF_HEIGHT,
                 BORDER_CORNER_RADIUS, BORDER_THICKNESS);
         }
@@ -127,6 +128,7 @@ namespace mc {
 
         float timer = 0.f;
         bool finished = false;
+        std::vector<Point<float>> SlotCenter;
     };
 
     std::unique_ptr<IScene> CreateCutsceneScene(

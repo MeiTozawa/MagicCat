@@ -64,31 +64,35 @@ namespace mc {
 
         /// @brief キャラクターのスプライト列挙値を取得する
         /// @return スプライトID
-        ESprite GetSprite() const { return sprite; }
+        virtual ESprite GetSprite() const final { return sprite; }
+
+        /// @brief スプライトを整数値で設定する（ロード時の状態復元用）
+        /// @param value 設定するスプライトIDの整数値
+        virtual void SetSprite(int value) final { sprite = static_cast<ESprite>(value); }
 
         /// @brief キャラクターの名前を取得する
         /// @return ワイド文字列の名前
-        std::wstring GetName() const { return name; }
+        virtual std::wstring GetName() const final { return name; }
 
         /// @brief 攻撃力の一時的な増加・減少（オフセット）を設定する
         /// @param offset 設定するオフセット値
-        void SetDamageOffset(int offset) { damageOffset = offset; }
+        virtual void SetDamageOffset(int offset) final { damageOffset = offset; }
 
         /// @brief 現在の攻撃力オフセット値を取得する
         /// @return 攻撃力オフセット値
-        int GetDamageOffset() const { return damageOffset; }
+        virtual int GetDamageOffset() const final { return damageOffset; }
 
         /// @brief 攻撃力オフセット値をリセット（0）にする
-        void ResetDamageOffset() { damageOffset = 0; }
+        virtual void ResetDamageOffset() final { damageOffset = 0; }
 
         /// @brief キャラクターに付与されているタグリストを取得する
         /// @return タグのベクターへの参照
-        const std::vector<ETag>& GetTags() const { return tags; }
+        virtual const std::vector<ETag>& GetTags() const final { return tags; }
 
         /// @brief 特定の攻撃タイプに対する強化無しの基礎ダメージを取得する
         /// @param t 攻撃タイプ
         /// @return 基礎ダメージ値
-        int GetBaseDamage(EAttackType t) const
+        virtual int GetBaseDamage(EAttackType t) const final
         {
             switch (t)
             {
@@ -104,7 +108,7 @@ namespace mc {
         /// @brief 特定の攻撃タイプに対する現在の（オフセット込みの）ダメージを取得する
         /// @param t 攻撃タイプ
         /// @return ダメージ値
-        int GetDamage(EAttackType t) const
+        virtual int GetDamage(EAttackType t) const final
         {
             switch (t)
             {

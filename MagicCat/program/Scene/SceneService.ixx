@@ -10,6 +10,8 @@ import EventBus;
 import InputService;
 import AssetService;
 import RenderService;
+import AudioService;
+import ConfigService;
 import BattleService;
 import OSService;
 
@@ -103,7 +105,8 @@ namespace mc {
                                                              IOSService* osService = nullptr);
     export std::unique_ptr<IScene> CreateMenuScene(IInputService& inputService, ISceneService& sceneService,
                                                     IAssetService& assetService, IRenderService& renderService,
-                                                    IOSService& osService);
+                                                    IAudioService& audioService, IConfigService& configService,
+                                                    IBattleService& battleService, IOSService& osService);
     export std::unique_ptr<IScene> CreateInfoScene(IInputService& inputService, ISceneService& sceneService,
                                                    IRenderService& renderService, IBattleService& battleService);
     export std::unique_ptr<IScene> CreateCombatScene(ISceneService& sceneService, IAssetService& assetService,

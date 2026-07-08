@@ -54,11 +54,9 @@ public:
           }}
     {}
 
-    bool IsActive() const override { return active; }
-
     void Activate() override
     {
-        active    = true;
+        MenuPanel::Activate();
         activeRow = -1;
         primaryGroup.SetFocusedIndex(0);
     }
@@ -67,7 +65,7 @@ public:
     {
         if (activeRow >= 0)
             inputService.PopContext();
-        active    = false;
+        MenuPanel::Deactivate();
         activeRow = -1;
     }
 
@@ -195,7 +193,6 @@ private:
     ButtonGroup primaryGroup;
     std::array<ButtonGroup, VOLUME_ROW_COUNT> secondaryGroup;
 
-    bool active    = false;
     int  activeRow = -1;
 };
 

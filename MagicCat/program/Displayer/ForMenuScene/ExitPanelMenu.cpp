@@ -5,23 +5,36 @@ module;
 
 module Displayer;
 
+import InputService;
 import RenderService;
 
 namespace mc {
 
 class ExitPanel : public MenuPanel {
 public:
-    ExitPanel(int boxX1, int textY, IRenderService& render)
+    ExitPanel(int boxX1, int textY, IInputService& input, IRenderService& render)
         : MenuPanel(boxX1, textY)
+        , inputService(input)
         , renderService(render)
     {}
 
-    bool IsActive() const override { return false; }
-    void Activate()       override {}
-    void Deactivate()     override {}
+
 
 private:
-    void OnUpdate(float /*deltaTime*/) override {}
+    void OnUpdate(float /*deltaTime*/) override
+    {
+        if (inputService.IsPressed(InputAction::Confirm))
+        {
+            renderService.ExitApplication();
+            return;
+        }
+
+        if (inputService.IsPressed(InputAction::Left))
+        {
+            Deactivate();
+            return;
+        }
+    }
 
     void OnDraw(float /*deltaTime*/) const override
     {
@@ -31,13 +44,15 @@ private:
                                  L"保存されていない内容は失われます！", COLOR_TEXT_RED);
     }
 
+    IInputService& inputService;
     IRenderService& renderService;
 };
 
 std::unique_ptr<MenuPanel> CreateExitPanel(int boxX1, int textY,
+                                            IInputService& input,
                                             IRenderService& render)
 {
-    return std::make_unique<ExitPanel>(boxX1, textY, render);
+    return std::make_unique<ExitPanel>(boxX1, textY, input, render);
 }
 
 } // namespace mc

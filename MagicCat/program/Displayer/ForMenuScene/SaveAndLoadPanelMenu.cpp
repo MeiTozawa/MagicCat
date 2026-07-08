@@ -44,11 +44,9 @@ public:
         , slotGroup(BuildSlotRects(textY), input, os, ButtonGroupLayout::Vertical)
     {}
 
-    bool IsActive() const override { return active; }
-
     void Activate() override
     {
-        active = true;
+        MenuPanel::Activate();
         slotGroup.SetFocusedIndex(0);
         if (mode == SlotPanelMode::Load)
             RefreshSlotMeta();
@@ -56,7 +54,7 @@ public:
 
     void Deactivate() override
     {
-        active = false;
+        MenuPanel::Deactivate();
     }
 
 private:
@@ -139,7 +137,6 @@ private:
     ISceneService&  sceneService;
 
     ButtonGroup slotGroup;
-    bool active = false;
     std::array<SaveMetadata, SAVE_SLOT_COUNT> slotMeta{};
 };
 

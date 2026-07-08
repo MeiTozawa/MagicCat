@@ -1,7 +1,6 @@
 module;
 
 #include <memory>
-#include <RenderUtils.h>
 
 export module Displayer:Menu;
 
@@ -100,5 +99,13 @@ export std::unique_ptr<MenuPanel> CreateLoadPanel(int boxX1, int textY,
                                                    IConfigService& config,
                                                    ISceneService& scene,
                                                    IOSService& os);
+
+/// @brief `ExitPanel` を生成して返す。
+/// @param boxX1   メニューボックスの左端 X 座標
+/// @param textY   コンテンツ描画開始 Y 座標
+/// @param render  描画サービス
+/// @return 生成した `ExitPanel` の所有権
+export std::unique_ptr<MenuPanel> CreateExitPanel(int boxX1, int textY,
+                                                   IRenderService& render);
 
 } // namespace mc

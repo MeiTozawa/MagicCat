@@ -1,7 +1,6 @@
 #pragma once
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include "json11.hpp"
 
 import AssetService;
 import AudioService;
@@ -20,8 +19,8 @@ public:
     MOCK_METHOD(const std::vector<EnemyConfig>&, GetEnemyConfigs, (), (const, override));
     MOCK_METHOD(const PlayerConfig&, GetPlayerConfig, (), (const, override));
     MOCK_METHOD(const GameConfig&, GetGameConfig, (), (const, override));
-    MOCK_METHOD(json11::Json, LoadSoundSettings, (), (override));
-    MOCK_METHOD(bool, SaveSoundSettings, (const json11::Json& data), (override));
+    MOCK_METHOD(bool, LoadSoundSettings, (int& masterVolume, int& bgmVolume, int& sfxVolume), (override));
+    MOCK_METHOD(bool, SaveSoundSettings, (int masterVolume, int bgmVolume, int sfxVolume), (override));
 };
 
 class MockAssetService : public IAssetService {
@@ -36,7 +35,13 @@ public:
 
 class MockAudioService : public IAudioService {
 public:
-    // IAudioService currently has no pure virtual methods except destructor
+    MOCK_METHOD(void, Update, (float), (override));
+    MOCK_METHOD(int, GetMasterVolume, (), (const, override));
+    MOCK_METHOD(void, SetMasterVolume, (int), (override));
+    MOCK_METHOD(int, GetBgmVolume, (), (const, override));
+    MOCK_METHOD(void, SetBgmVolume, (int), (override));
+    MOCK_METHOD(int, GetSfxVolume, (), (const, override));
+    MOCK_METHOD(void, SetSfxVolume, (int), (override));
 };
 
 class MockInputService : public IInputService {

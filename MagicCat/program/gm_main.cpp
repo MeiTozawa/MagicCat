@@ -40,7 +40,7 @@ void InitGameServices()
     cardService = CreateCardService(*configService);
     sceneService = CreateSceneService(renderService.get(), inputService.get(), assetService.get(), osService.get());
     battleService = CreateBattleService(*configService, *cardService, *assetService);
-    audioService = CreateAudioService(*assetService, *battleService);
+    audioService = CreateAudioService(*configService, *assetService, *battleService);
 
     sceneService->RegisterScene(ESceneState::Info,
                                 CreateInfoScene(*inputService, *sceneService, *renderService, *battleService));

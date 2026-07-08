@@ -45,8 +45,8 @@ public:
     const std::vector<EnemyConfig>& GetEnemyConfigs() const override { return enemies_; }
     const PlayerConfig& GetPlayerConfig() const override { return playerConfig_; }
     const GameConfig& GetGameConfig() const override { return gameConfig_; }
-    json11::Json LoadSoundSettings() override { return json11::Json(); }
-    bool SaveSoundSettings(const json11::Json&) override { return true; }
+    bool LoadSoundSettings(int&, int&, int&) override { return false; }
+    bool SaveSoundSettings(int, int, int) override { return true; }
 };
 
 // For any spriteName string, BattleService::LoadEnemy must call
@@ -119,8 +119,8 @@ RC_GTEST_PROP(BattleServiceParseSpriteProperty,
         const std::vector<EnemyConfig>& GetEnemyConfigs() const override { return enemies_; }
         const PlayerConfig& GetPlayerConfig() const override { return playerConfig_; }
         const GameConfig& GetGameConfig() const override { return gameConfig_; }
-        json11::Json LoadSoundSettings() override { return json11::Json(); }
-        bool SaveSoundSettings(const json11::Json&) override { return true; }
+        bool LoadSoundSettings(int&, int&, int&) override { return false; }
+        bool SaveSoundSettings(int, int, int) override { return true; }
     };
 
     MultiEnemyConfigService configService(pool);

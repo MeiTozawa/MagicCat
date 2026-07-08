@@ -24,37 +24,37 @@ namespace mc {
         const PlayerConfig& GetPlayerConfig() const override { return playerConfig; }
         const GameConfig& GetGameConfig() const override { return gameConfig; }
 
-        json11::Json LoadSoundSettings() override
+        bool LoadSoundSettings(int& masterVolume, int& bgmVolume, int& sfxVolume) override
         {
             std::ifstream ifs("resource/sound_settings.json");
             if (!ifs.is_open())
-            {
-                return json11::Json();  // NUL
-            }
+                return false;
+
             std::stringstream ss;
             ss << ifs.rdbuf();
             std::string err;
             auto json = json11::Json::parse(ss.str(), err);
             if (!err.empty())
-            {
-                return json11::Json();  // NUL
-            }
-            return json;
+                return false;
+
+            masterVolume = json["masterVolume"].int_value();
+            bgmVolume    = json["bgmVolume"].int_value();
+            sfxVolume    = json["sfxVolume"].int_value();
+            return true;
         }
 
-        bool SaveSoundSettings(const json11::Json& data) override
+        bool SaveSoundSettings(int masterVolume, int bgmVolume, int sfxVolume) override
         {
+            json11::Json data = json11::Json::object{
+                { "masterVolume", masterVolume },
+                { "bgmVolume",    bgmVolume    },
+                { "sfxVolume",    sfxVolume    }
+            };
             std::ofstream ofs("resource/sound_settings.json");
             if (!ofs.is_open())
-            {
                 return false;
-            }
             ofs << data.dump();
-            if (ofs.fail())
-            {
-                return false;
-            }
-            return true;
+            return !ofs.fail();
         }
 
     private:

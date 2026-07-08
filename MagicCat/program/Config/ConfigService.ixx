@@ -3,7 +3,6 @@ module;
 #include <string>
 #include <vector>
 #include <memory>
-#include "json11.hpp"
 
 export module ConfigService;
 
@@ -73,13 +72,18 @@ namespace mc {
         virtual const GameConfig& GetGameConfig() const = 0;
 
         /// @brief サウンド設定を resource/sound_settings.json からロードする
-        /// @return パース済みの json11::Json オブジェクト。ファイルが存在しないか不正な場合は json11::Json::NUL を返す（例外なし）
-        virtual json11::Json LoadSoundSettings() = 0;
+        /// @param masterVolume ロードされたマスター音量レベルの出力先
+        /// @param bgmVolume ロードされた BGM 音量レベルの出力先
+        /// @param sfxVolume ロードされた SFX 音量レベルの出力先
+        /// @return 成功時 true、ファイルが存在しないか不正な場合は false（例外なし）
+        virtual bool LoadSoundSettings(int& masterVolume, int& bgmVolume, int& sfxVolume) = 0;
 
         /// @brief サウンド設定を resource/sound_settings.json に保存する
-        /// @param data 保存する json11::Json オブジェクト
+        /// @param masterVolume 保存するマスター音量レベル
+        /// @param bgmVolume 保存する BGM 音量レベル
+        /// @param sfxVolume 保存する SFX 音量レベル
         /// @return 成功時 true、I/O エラー時 false（例外なし）
-        virtual bool SaveSoundSettings(const json11::Json& data) = 0;
+        virtual bool SaveSoundSettings(int masterVolume, int bgmVolume, int sfxVolume) = 0;
     };
 
     export std::unique_ptr<IConfigService> CreateConfigService(const std::string& cardConfigPath,

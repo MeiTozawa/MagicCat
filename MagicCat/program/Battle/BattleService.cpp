@@ -6,6 +6,7 @@ module;
 #include <algorithm>
 #include <ranges>
 #include <string>
+#include <optional>
 #include <RandomUtils.h>
 
 module BattleService;
@@ -97,6 +98,87 @@ namespace mc {
         Player& GetPlayer() override { return *currentPlayer; }
         int GetTotalEnemyCount() const override { return static_cast<int>(sequence.size()); }
 
+        bool SaveState(int slot) override
+        {
+            assert(slot >= 0 && slot < SAVE_SLOT_COUNT);
+
+            GameState state;
+            state.currentIndex              = currentIndex;
+            state.playerHp                  = currentPlayer->GetHealthComponent().GetHealth();
+            state.playerMaxHp               = currentPlayer->GetHealthComponent().GetMaxHealth();
+            state.playerMp                  = currentPlayer->GetMp();
+            state.playerSprite              = static_cast<int>(currentPlayer->GetSprite());
+            state.playerHealUses            = currentPlayer->GetHealUses();
+            state.playerHasUsedClairvoyance = currentPlayer->GetHasUsedClairvoyance();
+
+            state.enemyHp             = currentEnemy->GetHealthComponent().GetHealth();
+            state.enemyMaxHp          = currentEnemy->GetHealthComponent().GetMaxHealth();
+            state.enemySprite         = static_cast<int>(currentEnemy->GetSprite());
+            state.enemyRockOffset     = currentEnemy->GetRockOffset();
+            state.enemyScissorsOffset = currentEnemy->GetScissorsOffset();
+            state.enemyPaperOffset    = currentEnemy->GetPaperOffset();
+
+            state.sequence.reserve(sequence.size());
+            for (const auto& cfg : sequence)
+                state.sequence.push_back(static_cast<int>(assetService.ParseSprite(cfg.spriteName)));
+
+            state.hand        = cardService.GetHand();
+            state.drawPile    = cardService.GetDrawPile();
+            state.discardPile = cardService.GetDiscardPile();
+
+            return configService.SaveGame(slot, state);
+        }
+
+        bool LoadState(int slot) override
+        {
+            assert(slot >= 0 && slot < SAVE_SLOT_COUNT);
+
+            auto stateOpt = configService.LoadGame(slot);
+            if (!stateOpt.has_value())
+                return false;
+
+            const GameState& state = *stateOpt;
+
+            // Rebuild sequence from sprite ints
+            std::vector<EnemyConfig> newSequence;
+            for (int spriteInt : state.sequence)
+            {
+                auto cfg = FindEnemyConfigBySprite(static_cast<ESprite>(spriteInt));
+                if (!cfg.has_value())
+                    return false;
+                newSequence.push_back(*cfg);
+            }
+            sequence     = std::move(newSequence);
+            currentIndex = state.currentIndex;
+
+            // Restore player
+            int maxHp = state.playerMaxHp;
+            int hp    = std::max(0, std::min(state.playerHp, maxHp));
+            currentPlayer->GetHealthComponent().SetMaxHealth(maxHp);
+            currentPlayer->GetHealthComponent().SetHealth(hp);
+            currentPlayer->SetMp(state.playerMp);
+            currentPlayer->SetSprite(state.playerSprite);
+            currentPlayer->SetHealUses(state.playerHealUses);
+            currentPlayer->SetHasUsedClairvoyance(state.playerHasUsedClairvoyance);
+
+            // Reinitialize enemy then override saved state
+            LoadEnemy(sequence[currentIndex]);
+            int enemyMaxHp = state.enemyMaxHp;
+            int enemyHp    = std::max(0, std::min(state.enemyHp, enemyMaxHp));
+            currentEnemy->GetHealthComponent().SetMaxHealth(enemyMaxHp);
+            currentEnemy->GetHealthComponent().SetHealth(enemyHp);
+            currentEnemy->SetRockOffset(state.enemyRockOffset);
+            currentEnemy->SetScissorsOffset(state.enemyScissorsOffset);
+            currentEnemy->SetPaperOffset(state.enemyPaperOffset);
+
+            // Restore card piles
+            cardService.SetHand(state.hand);
+            cardService.SetDrawPile(state.drawPile);
+            cardService.SetDiscardPile(state.discardPile);
+
+            return true;
+        }
+
     private:
         void OnDeathEvent(const DeathEvent& e)
         {
@@ -129,6 +211,19 @@ namespace mc {
                 sequence.clear();
                 currentIndex = 0;
             }
+        }
+
+        /// @brief スプライト enum 値から EnemyConfig を検索する（LoadState 用ヘルパー）
+        /// @param target 対象スプライト
+        /// @return 一致する EnemyConfig。見つからない場合は std::nullopt
+        std::optional<EnemyConfig> FindEnemyConfigBySprite(ESprite target) const
+        {
+            for (const auto& cfg : configService.GetEnemyConfigs())
+            {
+                if (assetService.ParseSprite(cfg.spriteName) == target)
+                    return cfg;
+            }
+            return std::nullopt;
         }
 
         IConfigService& configService;

@@ -63,6 +63,16 @@ namespace mc {
         /// @brief 現在のステージにおける敵の総数を取得する。
         /// @return 敵の総数
         virtual int GetTotalEnemyCount() const = 0;
+
+        /// @brief 現在のバトル状態を指定スロットに保存する
+        /// @param slot セーブスロット番号 [0, SAVE_SLOT_COUNT)
+        /// @return 成功時 true、I/O エラー時 false
+        virtual bool SaveState(int slot) = 0;
+
+        /// @brief 指定スロットからバトル状態を復元する
+        /// @param slot セーブスロット番号 [0, SAVE_SLOT_COUNT)
+        /// @return 成功時 true、ファイルが存在しないか不正な場合は false
+        virtual bool LoadState(int slot) = 0;
     };
 
     export std::unique_ptr<IBattleService> CreateBattleService(

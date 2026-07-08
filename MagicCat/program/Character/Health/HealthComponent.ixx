@@ -72,6 +72,22 @@ namespace mc {
             isDead = false;
         }
 
+        /// @brief HP を直接設定する（ロード時の状態復元用）。[0, maxHealth] にクランプされる（イベント発行なし）。
+        /// @param value 設定するHP値
+        void SetHealth(int value) override
+        {
+            hp = value < 0 ? 0 : (value > maxHp ? maxHp : value);
+            isDead = (hp <= 0);
+        }
+
+        /// @brief 最大HP を直接設定する（ロード時の状態復元用）（イベント発行なし）。
+        /// @param value 設定する最大HP値
+        void SetMaxHealth(int value) override
+        {
+            maxHp = value < 0 ? 0 : value;
+            if (hp > maxHp) hp = maxHp;
+        }
+
         /// @brief 死亡状態かどうかを取得する
         /// @return 死亡している場合はtrue、生存している場合はfalse
         bool IsDead() const override { return isDead; }

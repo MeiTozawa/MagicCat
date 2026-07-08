@@ -7,6 +7,7 @@ export module Enemy;
 
 import Character;
 import HealthComponent;
+import IDamageable;
 import EventBus;
 import AssetService;
 import Player;
@@ -153,9 +154,13 @@ namespace mc {
         /// @return 基本ウェイト値
         int GetBaseWeight() const { return baseWeight; }
 
-        /// @brief 敵のライフ（HealthComponent）への参照を取得する
-        /// @return HealthComponentへの参照
+        /// @brief 敵のライフ（HealthComponent）への参照を取得する（読み取り用）
+        /// @return HealthComponentへの const 参照
         const HealthComponent& GetHealthComponent() const { return *healthComp; }
+
+        /// @brief 敵のライフ（HealthComponent）への参照を取得する（状態復元用）
+        /// @return IDamageable への参照
+        IDamageable& GetHealthComponent() { return *healthComp; }
 
         /// @brief 敵がダメージを受ける処理
         /// @param amount ダメージ量
@@ -172,6 +177,30 @@ namespace mc {
         /// @brief 敵の攻撃意図の露出状態を設定する
         /// @param exposed 設定する露出状態
         void SetExposed(bool exposed) { isExposed = exposed; }
+
+        /// @brief グー（石）の出現ウェイトオフセットを取得する（シリアライズ用）
+        /// @return rockWeightOffset の現在値
+        virtual int GetRockOffset() const final { return rockWeightOffset; }
+
+        /// @brief チョキ（鋏）の出現ウェイトオフセットを取得する（シリアライズ用）
+        /// @return scissorsWeightOffset の現在値
+        virtual int GetScissorsOffset() const final { return scissorsWeightOffset; }
+
+        /// @brief パー（紙）の出現ウェイトオフセットを取得する（シリアライズ用）
+        /// @return paperWeightOffset の現在値
+        virtual int GetPaperOffset() const final { return paperWeightOffset; }
+
+        /// @brief グー（石）の出現ウェイトオフセットを設定する（デシリアライズ用）
+        /// @param value 設定するオフセット値
+        virtual void SetRockOffset(int value) final { rockWeightOffset = value; }
+
+        /// @brief チョキ（鋏）の出現ウェイトオフセットを設定する（デシリアライズ用）
+        /// @param value 設定するオフセット値
+        virtual void SetScissorsOffset(int value) final { scissorsWeightOffset = value; }
+
+        /// @brief パー（紙）の出現ウェイトオフセットを設定する（デシリアライズ用）
+        /// @param value 設定するオフセット値
+        virtual void SetPaperOffset(int value) final { paperWeightOffset = value; }
 
     private:
         std::unique_ptr<HealthComponent> healthComp;

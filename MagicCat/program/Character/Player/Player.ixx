@@ -7,6 +7,7 @@ export module Player;
 
 import Character;
 import HealthComponent;
+import IDamageable;
 import EventBus;
 import AssetService;
 import ConfigService;
@@ -120,6 +121,26 @@ namespace mc {
         /// @return 最大MP
         int GetMaxMp() const { return maxMp; }
 
+        /// @brief 回復魔法の使用回数を取得する（シリアライズ用）
+        /// @return 回復魔法の現在の使用回数
+        int GetHealUses() const { return healUses; }
+
+        /// @brief 透視魔法が使用済みかどうかを取得する（シリアライズ用）
+        /// @return 透視魔法が使用済みの場合はtrue
+        bool GetHasUsedClairvoyance() const { return hasUsedClairvoyance; }
+
+        /// @brief MPを直接設定する（ロード時の状態復元用）
+        /// @param value 設定するMP値
+        void SetMp(int value) { mp = value; if (mp > maxMp) mp = maxMp; if (mp < 0) mp = 0; }
+
+        /// @brief 回復魔法の使用回数を直接設定する（ロード時の状態復元用）
+        /// @param value 設定する使用回数
+        void SetHealUses(int value) { healUses = value; }
+
+        /// @brief 透視魔法の使用済みフラグを設定する（ロード時の状態復元用）
+        /// @param value 設定するフラグ値
+        void SetHasUsedClairvoyance(bool value) { hasUsedClairvoyance = value; }
+
         /// @brief 指定した魔法が使用可能か（MPや回数の制限をクリアしているか）判定する
         /// @param e 魔法の種類
         /// @return 使用可能ならtrue、そうでなければfalse
@@ -153,9 +174,13 @@ namespace mc {
             }
         }
 
-        /// @brief プレイヤーのライフ（HealthComponent）への参照を取得する
-        /// @return HealthComponentへの参照
+        /// @brief プレイヤーのライフ（HealthComponent）への参照を取得する（読み取り用）
+        /// @return HealthComponentへの const 参照
         const HealthComponent& GetHealthComponent() const { return *healthComp; }
+
+        /// @brief プレイヤーのライフ（HealthComponent）への参照を取得する（状態復元用）
+        /// @return IDamageable への参照
+        IDamageable& GetHealthComponent() { return *healthComp; }
 
         /// @brief プレイヤーがダメージを受ける処理
         /// @param amount ダメージ量

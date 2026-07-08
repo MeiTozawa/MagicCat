@@ -28,6 +28,14 @@ namespace mc {
         /// @return 最大HP値
         virtual int GetMaxHealth() const = 0;
 
+        /// @brief HP を直接設定する（ロード時の状態復元用）。[0, maxHealth] にクランプされる（イベント発行なし）。
+        /// @param value 設定するHP値
+        virtual void SetHealth(int value) = 0;
+
+        /// @brief 最大HP を直接設定する（ロード時の状態復元用）（イベント発行なし）。
+        /// @param value 設定する最大HP値
+        virtual void SetMaxHealth(int value) = 0;
+
         /// @brief 所有者となるキャラクターを取得する
         /// @return キャラクターポインタ
         virtual const Character* GetOwner() const = 0;

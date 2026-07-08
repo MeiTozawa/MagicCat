@@ -10,3 +10,4 @@ export import :Character;
 export import :Dialog;
 export import :Sprite;
 export import :CutsceneFocus;
+export import :Menu;

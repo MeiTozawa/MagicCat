@@ -13,7 +13,7 @@ namespace mc {
 
     export enum class InputContext
     {
-        InGame, Menu, Cutscene
+        InGame, Menu, Cutscene, VolumeControl
     };
 
     /// @brief 最後に入力を受け付けたデバイスの種別

@@ -21,6 +21,9 @@ public:
     MOCK_METHOD(const GameConfig&, GetGameConfig, (), (const, override));
     MOCK_METHOD(bool, LoadSoundSettings, (int& masterVolume, int& bgmVolume, int& sfxVolume), (override));
     MOCK_METHOD(bool, SaveSoundSettings, (int masterVolume, int bgmVolume, int sfxVolume), (override));
+    MOCK_METHOD(bool, SaveGame, (int slot, const GameState& state), (override));
+    MOCK_METHOD(std::optional<GameState>, LoadGame, (int slot), (override));
+    MOCK_METHOD(SaveMetadata, GetSaveMetadata, (int slot), (override));
 };
 
 class MockAssetService : public IAssetService {
@@ -81,6 +84,8 @@ public:
     MOCK_METHOD(void, SetBackgroundColor, (int, int, int), (override));
     MOCK_METHOD(void, DrawFilledTriangle, (int, int, int, int, int, int, uint32_t), (override));
     MOCK_METHOD(void, DrawButton, (int, int, int, int, const wchar_t*, bool, uint32_t, uint32_t), (override));
+    MOCK_METHOD(void, DrawOption, (Rect<int>, const wchar_t*, bool, uint32_t), (override));
+    MOCK_METHOD(void, ExitApplication, (), (override));
 };
 
 class MockOSService : public IOSService {
@@ -98,6 +103,8 @@ public:
     MOCK_METHOD(Enemy&, GetEnemy, (), (override));
     MOCK_METHOD(Player&, GetPlayer, (), (override));
     MOCK_METHOD(int, GetTotalEnemyCount, (), (const, override));
+    MOCK_METHOD(bool, SaveState, (int), (override));
+    MOCK_METHOD(bool, LoadState, (int), (override));
 };
 
 class MockCardService : public ICardService {
@@ -108,6 +115,12 @@ public:
     MOCK_METHOD(std::vector<Card>, GetHandCards, (), (override));
     MOCK_METHOD(std::vector<Card>, GetDrawCards, (), (override));
     MOCK_METHOD(std::vector<Card>, GetDiscardCards, (), (override));
+    MOCK_METHOD(std::vector<CardData>, GetHand, (), (const, override));
+    MOCK_METHOD(std::vector<CardData>, GetDrawPile, (), (const, override));
+    MOCK_METHOD(std::vector<CardData>, GetDiscardPile, (), (const, override));
+    MOCK_METHOD(void, SetHand, (const std::vector<CardData>&), (override));
+    MOCK_METHOD(void, SetDrawPile, (const std::vector<CardData>&), (override));
+    MOCK_METHOD(void, SetDiscardPile, (const std::vector<CardData>&), (override));
 };
 
 } // namespace mc

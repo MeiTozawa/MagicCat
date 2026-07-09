@@ -102,6 +102,9 @@ namespace mc {
         {
             assert(slot >= 0 && slot < SAVE_SLOT_COUNT);
 
+            if (!currentPlayer || !currentEnemy)
+                return false;
+
             GameState state;
             state.currentIndex              = currentIndex;
             state.playerHp                  = currentPlayer->GetHealthComponent().GetHealth();
@@ -154,6 +157,11 @@ namespace mc {
             // Restore player
             int maxHp = state.playerMaxHp;
             int hp    = std::max(0, std::min(state.playerHp, maxHp));
+            if (!currentPlayer)
+            {
+                const auto& playerConfig = configService.GetPlayerConfig();
+                currentPlayer = std::make_unique<Player>(playerConfig, static_cast<ESprite>(state.playerSprite));
+            }
             currentPlayer->GetHealthComponent().SetMaxHealth(maxHp);
             currentPlayer->GetHealthComponent().SetHealth(hp);
             currentPlayer->SetMp(state.playerMp);

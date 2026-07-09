@@ -18,14 +18,41 @@ namespace mc {
     class SaveAndLoadPanel : public MenuPanel
     {
     private:
-        static constexpr int LINE_SPACING = 60;
-        static constexpr int INDENT_LEVEL_1 = 50;
-        static constexpr int INDENT_LEVEL_2 = 80;
-        static constexpr int INFO_OFFSET = 200;
+        // ---- VolumePanel 第一级按钮组の同等レイアウト ----
+        static constexpr int RECT_WIDTH  = WINDOW_WIDTH - MENU_BOX_MARGIN_X * 2 - 100;
+        static constexpr int RECT_HEIGHT = 100;
+
+        static constexpr int START_X = MENU_BOX_MARGIN_X + 50;
+        static constexpr int START_Y = MENU_TEXT_Y;
+
+        static constexpr int OFFSET_Y = RECT_HEIGHT + 80;
+
+        static constexpr int TEXT_CENTER_X = RECT_WIDTH / 2;
+        static constexpr int TEXT_CENTER_Y = RECT_HEIGHT / 2;
+
+        static constexpr int SLOT_LABEL_X  = 60;        ///< 行ラベル（スロット名）の X オフセット（Rect 内）
+        static constexpr int INFO_X        = 260;        ///< セーブ情報テキストの X オフセット（Rect 内）
+        static constexpr int RECT_EXPAND   = 20;         ///< VolumePanel と同じ外枠拡張量
 
         static constexpr const wchar_t* SLOT_LABELS[SAVE_SLOT_COUNT] = {
             L"オート", L"スロット 1", L"スロット 2", L"スロット 3"
         };
+
+        // constexpr でスロット矩形を全計算（VolumePanel と同パターン）
+        static constexpr auto SLOT_RECTS = []()
+        {
+            std::array<Rect<int>, SAVE_SLOT_COUNT> rects{};
+            for (int i = 0; i < SAVE_SLOT_COUNT; ++i)
+            {
+                rects[i] = {
+                    START_X,
+                    START_Y + OFFSET_Y * i,
+                    START_X + RECT_WIDTH,
+                    START_Y + OFFSET_Y * i + RECT_HEIGHT
+                };
+            }
+            return rects;
+        }();
 
     public:
         SaveAndLoadPanel(SlotPanelMode mode,
@@ -39,7 +66,7 @@ namespace mc {
               , battleService(battle)
               , configService(config)
               , sceneService(scene)
-              , slotGroup(BuildSlotRects(), input, os, ButtonGroupLayout::Vertical)
+              , slotGroup(SLOT_RECTS, input, os, ButtonGroupLayout::Vertical)
         {
             slotGroup.SetFocusedIndex(0);
             if (mode == SlotPanelMode::Load)
@@ -57,9 +84,7 @@ namespace mc {
                 if (mode == SlotPanelMode::Save)
                 {
                     if (battleService.SaveState(slot))
-                    {
                         RefreshSlotMeta();
-                    }
                 }
                 else // Load
                 {
@@ -71,30 +96,42 @@ namespace mc {
 
         void OnDraw(float /*deltaTime*/) const override
         {
-            const wchar_t* label = (mode == SlotPanelMode::Save) ? L"セーブ" : L"ロード";
-            renderService.DrawString(x + INDENT_LEVEL_1, y, label, COLOR_TEXT_NORMAL);
-
             for (int i = 0; i < SAVE_SLOT_COUNT; ++i)
             {
-                const int rowY = y + LINE_SPACING * (i + 1);
-                const bool focused = (slotGroup.GetFocusedIndex() == i);
-                const uint32_t col = focused ? COLOR_TEXT_GREEN : COLOR_TEXT_NORMAL;
+                const bool isFocused = (slotGroup.GetFocusedIndex() == i);
+                const auto& rect     = SLOT_RECTS[i];
+
+                // VolumePanel 第一级と同様：DrawButton で外枠＋背景を描画
+                renderService.DrawButton(rect.Expand(RECT_EXPAND), L"",
+                                         isFocused, COLOR_BG, COLOR_WHITE);
+
+                // スロット名（左側）
+                const uint32_t fgColor = isFocused ? COLOR_YELLOW : COLOR_WHITE;
+                renderService.DrawCenterString(
+                    rect.x1 + TEXT_CENTER_X / 4,
+                    rect.y1 + TEXT_CENTER_Y,
+                    SLOT_LABELS[i], fgColor);
+
+                // セーブ情報（右側）
                 const auto& meta = slotMeta[i];
-
-                renderService.DrawString(x + INDENT_LEVEL_2, rowY, SLOT_LABELS[i], col);
-
                 if (meta.exists)
                 {
                     wchar_t buf[128];
-                    swprintf_s(buf, L"第%d場戦闘 / 共%d場  プレイヤーHP:%d/%d  敵HP:%d/%d",
+                    swprintf_s(buf, L"第%d場戦闘 / 共%d場  HP:%d/%d  敵HP:%d/%d",
                                meta.currentBattle, meta.totalBattles,
                                meta.playerHp, meta.playerMaxHp,
                                meta.enemyHp, meta.enemyMaxHp);
-                    renderService.DrawString(x + INDENT_LEVEL_2 + INFO_OFFSET, rowY, buf, col);
+                    renderService.DrawCenterString(
+                        rect.x1 + INFO_X + (RECT_WIDTH - INFO_X) / 2,
+                        rect.y1 + TEXT_CENTER_Y,
+                        buf, fgColor);
                 }
                 else
                 {
-                    renderService.DrawString(x + INDENT_LEVEL_2 + INFO_OFFSET, rowY, L"（空）", col);
+                    renderService.DrawCenterString(
+                        rect.x1 + INFO_X + (RECT_WIDTH - INFO_X) / 2,
+                        rect.y1 + TEXT_CENTER_Y,
+                        L"（空）", COLOR_GRAY);
                 }
             }
         }
@@ -103,20 +140,6 @@ namespace mc {
         {
             for (int i = 0; i < SAVE_SLOT_COUNT; ++i)
                 slotMeta[i] = configService.GetSaveMetadata(i);
-        }
-
-        static std::array<Rect<int>, SAVE_SLOT_COUNT> BuildSlotRects()
-        {
-            std::array<Rect<int>, SAVE_SLOT_COUNT> rects{};
-            for (int i = 0; i < SAVE_SLOT_COUNT; ++i)
-            {
-                const int y1 = MENU_TEXT_Y + LINE_SPACING * (i + 1);
-                rects[i] = {
-                    MENU_BOX_MARGIN_X + INDENT_LEVEL_2, y1,
-                    WINDOW_WIDTH - MENU_BOX_MARGIN_X, y1 + LINE_SPACING
-                };
-            }
-            return rects;
         }
 
         SlotPanelMode mode;

@@ -47,6 +47,9 @@ public:
     const GameConfig& GetGameConfig() const override { return gameConfig_; }
     bool LoadSoundSettings(int&, int&, int&) override { return false; }
     bool SaveSoundSettings(int, int, int) override { return true; }
+    bool SaveGame(int, const GameState&) override { return true; }
+    std::optional<GameState> LoadGame(int) override { return std::nullopt; }
+    SaveMetadata GetSaveMetadata(int) override { return SaveMetadata{}; }
 };
 
 // For any spriteName string, BattleService::LoadEnemy must call
@@ -121,6 +124,9 @@ RC_GTEST_PROP(BattleServiceParseSpriteProperty,
         const GameConfig& GetGameConfig() const override { return gameConfig_; }
         bool LoadSoundSettings(int&, int&, int&) override { return false; }
         bool SaveSoundSettings(int, int, int) override { return true; }
+        bool SaveGame(int, const GameState&) override { return true; }
+        std::optional<GameState> LoadGame(int) override { return std::nullopt; }
+        SaveMetadata GetSaveMetadata(int) override { return SaveMetadata{}; }
     };
 
     MultiEnemyConfigService configService(pool);

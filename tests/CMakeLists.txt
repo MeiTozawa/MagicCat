@@ -37,6 +37,12 @@ add_executable(MagicCatTests
     test_CutsceneFocusDisplayer.cpp
     test_CutsceneScene.cpp
     test_RandomUtils.cpp
+    test_rules_panel.cpp
+    test_volume_panel.cpp
+    test_load_panel.cpp
+    test_SaveLoad.cpp
+    test_exit_panel.cpp
+    test_menu_scene.cpp
 )
 
 target_compile_features(MagicCatTests PRIVATE cxx_std_23)

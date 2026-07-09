@@ -58,12 +58,10 @@ namespace mc {
         static constexpr float BGM_FADE_TIME = 1.5f;
 
         /// @brief 音量レベル（0–4）を DxLib の音量値（0–255）にマッピングする
-        static constexpr int VOLUME_LEVEL_MAP[VOLUME_LEVEL_COUNT] = {
-            static_cast<int>(BGM_VOLUME_MAX * 0.4),
-            static_cast<int>(BGM_VOLUME_MAX * 0.55),
-            static_cast<int>(BGM_VOLUME_MAX * 0.7),
-            static_cast<int>(BGM_VOLUME_MAX * 0.85),
-            static_cast<int>(BGM_VOLUME_MAX * 1.0)
+        /// 仕様: level v → {0, 51, 102, 153, 204, 255}[v]
+        /// 配列サイズ 6 は仕様の完全な表をそのまま持つため（有効インデックスは 0–4）
+        static constexpr int VOLUME_LEVEL_MAP[6] = {
+            0, 51, 102, 153, 204, 255
         };
 
     public:
@@ -72,10 +70,10 @@ namespace mc {
         {
             if (!configService.LoadSoundSettings(masterLevel, bgmLevel, sfxLevel))
             {
-                masterLevel = 3;
-                bgmLevel = 3;
-                sfxLevel = 3;
-                configService.SaveSoundSettings(masterLevel, bgmLevel, sfxLevel);
+                masterLevel = 4;
+                bgmLevel = 4;
+                sfxLevel = 4;
+                configService.SaveSoundSettings(4, 4, 4);
             }
             masterLevel = std::clamp(masterLevel, 0, 4);
             bgmLevel = std::clamp(bgmLevel, 0, 4);
@@ -160,12 +158,28 @@ namespace mc {
 
         void ApplyVolumeToDxLib()
         {
+            // BGM チャンネルに適用
             if (bgmHandle != -1)
             {
                 const int vol = CalcBgmDxVolume();
                 bgmTarget = static_cast<float>(vol);
                 bgmVolume = static_cast<float>(vol);
                 ChangeVolumeSoundMem(vol, bgmHandle);
+            }
+
+            // SFX チャンネル（全サウンド）に適用
+            const int sfxVol = CalcSfxDxVolume();
+            constexpr ESound sfxSounds[] = {
+                ESound::Confirm, ESound::DrawCard, ESound::Select, ESound::Shuffle,
+                ESound::Warning, ESound::CatAttack, ESound::SheepAttack, ESound::WolfAttack,
+                ESound::PigAttack, ESound::Fail, ESound::WinTheBattle, ESound::WinTheGame,
+                ESound::Beep, ESound::Magic
+            };
+            for (const ESound sound : sfxSounds)
+            {
+                const int handle = assetService.GetSoundHandle(sound);
+                if (handle != -1)
+                    ChangeVolumeSoundMem(sfxVol, handle);
             }
         }
 

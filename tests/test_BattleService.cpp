@@ -49,6 +49,9 @@ public:
     const GameConfig& GetGameConfig() const override { return gameConfig_; }
     bool LoadSoundSettings(int&, int&, int&) override { return false; }
     bool SaveSoundSettings(int, int, int) override { return true; }
+    bool SaveGame(int, const GameState&) override { return true; }
+    std::optional<GameState> LoadGame(int) override { return std::nullopt; }
+    SaveMetadata GetSaveMetadata(int) override { return SaveMetadata{}; }
 };
 
 // Minimal Character subclass that carries a specific tag — used to fire DeathEvents.

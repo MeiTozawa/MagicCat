@@ -49,7 +49,7 @@ RC_GTEST_PROP(RulesPanelProperties, Property1_PageWrapAround, ())
     ON_CALL(mockInput, OnMouseClick(_)).WillByDefault(Return(Point<int>{-1, -1}));
     ON_CALL(mockInput, GetMousePosition()).WillByDefault(Return(Point<int>{0, 0}));
 
-    auto panel = CreateRulesPanel(100, 215, mockInput, mockRender, mockAsset);
+    auto panel = CreateRulesPanel(mockInput, mockRender, mockAsset);
 
     // Advance to startPage
     AdvancePages(*panel, mockInput, startPage);
@@ -84,45 +84,6 @@ RC_GTEST_PROP(RulesPanelProperties, Property1_PageWrapAround, ())
 // Example-based unit tests
 // -----------------------------------------------------------------------
 
-TEST(RulesPanelTest, IsActiveAlwaysFalse)
-{
-    NiceMock<MockInputService>  mockInput;
-    NiceMock<MockRenderService> mockRender;
-    NiceMock<MockAssetService>  mockAsset;
-
-    ON_CALL(mockInput, IsPressed(_)).WillByDefault(Return(false));
-    ON_CALL(mockInput, OnMouseClick(_)).WillByDefault(Return(Point<int>{-1, -1}));
-    ON_CALL(mockInput, GetMousePosition()).WillByDefault(Return(Point<int>{0, 0}));
-
-    auto panel = CreateRulesPanel(100, 215, mockInput, mockRender, mockAsset);
-    EXPECT_FALSE(panel->IsActive());
-
-    panel->Activate();
-    EXPECT_FALSE(panel->IsActive());
-
-    ON_CALL(mockInput, IsPressed(InputAction::Confirm)).WillByDefault(Return(true));
-    panel->Update(0.0f);
-    EXPECT_FALSE(panel->IsActive());
-}
-
-TEST(RulesPanelTest, ActivateDeactivateAreNoOps)
-{
-    NiceMock<MockInputService>  mockInput;
-    NiceMock<MockRenderService> mockRender;
-    NiceMock<MockAssetService>  mockAsset;
-
-    ON_CALL(mockInput, IsPressed(_)).WillByDefault(Return(false));
-    ON_CALL(mockInput, OnMouseClick(_)).WillByDefault(Return(Point<int>{-1, -1}));
-    ON_CALL(mockInput, GetMousePosition()).WillByDefault(Return(Point<int>{0, 0}));
-
-    auto panel = CreateRulesPanel(100, 215, mockInput, mockRender, mockAsset);
-
-    panel->Activate();
-    EXPECT_FALSE(panel->IsActive());
-    panel->Deactivate();
-    EXPECT_FALSE(panel->IsActive());
-}
-
 TEST(RulesPanelTest, PageWrapsAt3To0)
 {
     NiceMock<MockInputService>  mockInput;
@@ -133,7 +94,7 @@ TEST(RulesPanelTest, PageWrapsAt3To0)
     ON_CALL(mockInput, OnMouseClick(_)).WillByDefault(Return(Point<int>{-1, -1}));
     ON_CALL(mockInput, GetMousePosition()).WillByDefault(Return(Point<int>{0, 0}));
 
-    auto panel = CreateRulesPanel(100, 215, mockInput, mockRender, mockAsset);
+    auto panel = CreateRulesPanel(mockInput, mockRender, mockAsset);
 
     // Press Confirm 3 times — wraps back to page 0
     ON_CALL(mockInput, IsPressed(InputAction::Confirm)).WillByDefault(Return(true));

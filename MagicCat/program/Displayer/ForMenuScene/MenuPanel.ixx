@@ -19,22 +19,18 @@ namespace mc {
 
 export class MenuPanel : public Displayer {
 public:
-    MenuPanel(int boxX1, int textY) : active(false) { SetPosition(boxX1, textY); }
+    MenuPanel(int boxX1, int textY) { SetPosition(boxX1, textY); }
     virtual ~MenuPanel() = default;
 
-    /// @brief パネルが行フォーカス層（アクティブ状態）にあるかを返す。
-    /// @return アクティブなら `true`
-    virtual bool IsActive() const { return active; }
+    /// @brief 更新処理を行う。呼び出し元に戻りたい（パネルを閉じたい）場合は false を返す。
+    virtual bool UpdatePanel(float deltaTime)
+    {
+        Update(deltaTime);
+        return true;
+    }
 
-    /// @brief トップボタンバーから本パネルに遷移する際に `MenuScene` が呼び出す。
-    ///        内部フォーカスを先頭にリセットする。
-    virtual void Activate() { active = true; }
-
-    /// @brief ユーザーがパネルを離れる際に呼び出す。非アクティブ状態に移行する。
-    virtual void Deactivate() { active = false; }
-
-protected:
-    bool active;
+    /// @brief 詳細な調整状態（値微調整など）にあるかを返す。
+    virtual bool IsPanelFocus() const { return false; }
 };
 
 /// @brief `RulesPanel` を生成して返す。

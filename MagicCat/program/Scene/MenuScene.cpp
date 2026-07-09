@@ -40,6 +40,12 @@ namespace mc {
     };
 
 
+    enum class MenuNavMode
+    {
+        OptionFocus,
+        PanelFocus
+    };
+
     class MenuScene : public IScene
     {
     public:
@@ -47,57 +53,91 @@ namespace mc {
                   IRenderService& render, IAudioService& audio, IConfigService& config,
                   IBattleService& battle, IOSService& os)
             : inputService(input), sceneService(scene), assetService(asset),
-              renderService(render),
+              renderService(render), audioService(audio), configService(config),
+              battleService(battle), osService(os),
               buttons(BTN_RECTS, input, os, ButtonGroupLayout::Horizontal)
         {
-            constexpr int boxX1 = BOX_MARGIN_X;
-            constexpr int textY = BOX_MARGIN_Y_UP + CONTENT_START_OFFSET_Y;
-            panels[0] = CreateRulesPanel(boxX1, textY, input, render, asset);
-            panels[1] = CreateVolumePanel(boxX1, textY, input, render, audio, os);
-            panels[2] = CreateSavePanel(boxX1, textY, input, render, battle, config, scene, os);
-            panels[3] = CreateLoadPanel(boxX1, textY, input, render, battle, config, scene, os);
-            panels[4] = CreateExitPanel(boxX1, textY, input, render);
         }
 
-        void Start() override { inputService.PushContext(InputContext::Menu); }
+        void Start() override
+        {
+            inputService.PushContext(InputContext::Menu);
+            navMode = MenuNavMode::OptionFocus;
+            activePanel = 0;
+            currentPanel = CreatePanel(0);
+        }
 
         void Update(float deltaTime) override
         {
             if (inputService.IsPressed(InputAction::ToggleMenu))
             {
-                if (navMode == 1 && panels[activePanel]->IsActive())
-                    panels[activePanel]->Deactivate();
+                currentPanel.reset();
                 inputService.PopContext();
                 sceneService.PopScene();
                 return;
             }
 
-            buttons.Update();
-            panels[activePanel]->Update(deltaTime);
-            panels[activePanel]->Draw(deltaTime);
+            if (currentPanel && currentPanel->IsPanelFocus())
+            {
+                navMode = MenuNavMode::PanelFocus;
+            }
+            else
+            {
+                navMode = MenuNavMode::OptionFocus;
+            }
 
-            if (navMode == 0)
+            if (navMode == MenuNavMode::OptionFocus && activePanel == 0)
+            {
+                buttons.Update();
+            }
+
+            if (currentPanel)
+            {
+                if (!currentPanel->UpdatePanel(deltaTime))
+                {
+                    activePanel = 0;
+                    currentPanel = CreatePanel(0);
+                    navMode = MenuNavMode::OptionFocus;
+                }
+                if (currentPanel)
+                {
+                    currentPanel->Draw(deltaTime);
+                }
+            }
+
+            if (navMode == MenuNavMode::OptionFocus && activePanel == 0)
             {
                 if (auto idx = buttons.ConsumeConfirm())
                 {
                     if (*idx != 0)
                     {
                         activePanel = *idx;
-                        panels[activePanel]->Activate();
-                        navMode = 1;
+                        currentPanel = CreatePanel(activePanel);
                     }
                     // idx == 0: RulesPanel handles paging internally
                 }
             }
-
-            if (navMode == 1 && !panels[activePanel]->IsActive())
-                navMode = 0;
 
             DrawBox();
             DrawButtons();
         }
 
     private:
+        std::unique_ptr<MenuPanel> CreatePanel(int index)
+        {
+            constexpr int boxX1 = BOX_MARGIN_X;
+            constexpr int textY = BOX_MARGIN_Y_UP + CONTENT_START_OFFSET_Y;
+            switch (index)
+            {
+            case 0: return CreateRulesPanel(boxX1, textY, inputService, renderService, assetService);
+            case 1: return CreateVolumePanel(boxX1, textY, inputService, renderService, audioService, osService);
+            case 2: return CreateSavePanel(boxX1, textY, inputService, renderService, battleService, configService, sceneService, osService);
+            case 3: return CreateLoadPanel(boxX1, textY, inputService, renderService, battleService, configService, sceneService, osService);
+            case 4: return CreateExitPanel(boxX1, textY, inputService, renderService);
+            default: return nullptr;
+            }
+        }
+
         void DrawBox() const
         {
             constexpr int x1 = BOX_MARGIN_X, y1 = BOX_MARGIN_Y_UP;
@@ -118,10 +158,14 @@ namespace mc {
         ISceneService& sceneService;
         IAssetService& assetService;
         IRenderService& renderService;
+        IAudioService& audioService;
+        IConfigService& configService;
+        IBattleService& battleService;
+        IOSService& osService;
         ButtonGroup buttons;
-        std::array<std::unique_ptr<MenuPanel>, BUTTON_COUNT> panels;
+        std::unique_ptr<MenuPanel> currentPanel;
         int activePanel = 0;
-        int navMode = 0;
+        MenuNavMode navMode = MenuNavMode::OptionFocus;
     };
 
     std::unique_ptr<IScene> CreateMenuScene(IInputService& inputService, ISceneService& sceneService,

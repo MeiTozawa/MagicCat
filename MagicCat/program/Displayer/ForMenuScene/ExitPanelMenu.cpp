@@ -17,8 +17,15 @@ public:
         , inputService(input)
         , renderService(render)
     {}
-
-
+    bool UpdatePanel(float deltaTime) override
+    {
+        Update(deltaTime);
+        if (inputService.IsPressed(InputAction::Left))
+        {
+            return false;
+        }
+        return true;
+    }
 
 private:
     void OnUpdate(float /*deltaTime*/) override
@@ -26,12 +33,6 @@ private:
         if (inputService.IsPressed(InputAction::Confirm))
         {
             renderService.ExitApplication();
-            return;
-        }
-
-        if (inputService.IsPressed(InputAction::Left))
-        {
-            Deactivate();
             return;
         }
     }

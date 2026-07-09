@@ -11,144 +11,141 @@ import RenderService;
 import AssetService;
 
 namespace mc {
-namespace {
-    constexpr int BOX_MARGIN_X      = 100;
-    constexpr int BOX_MARGIN_Y_UP   = 75;
+    constexpr int BOX_MARGIN_X = 100;
+    constexpr int BOX_MARGIN_Y_UP = 75;
     constexpr int BOX_MARGIN_Y_DOWN = 250;
     constexpr Rect<int> BOX_RECT = {
         BOX_MARGIN_X, BOX_MARGIN_Y_UP,
         WINDOW_WIDTH - BOX_MARGIN_X, WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN
     };
-    constexpr int LINE_SPACING    = 60;
-    constexpr int INDENT_LEVEL_1  = 50;
-    constexpr int INDENT_LEVEL_2  = 80;
+    constexpr int LINE_SPACING = 60;
+    constexpr int INDENT_LEVEL_1 = 50;
+    constexpr int INDENT_LEVEL_2 = 80;
     constexpr int SECTION_SPACING = 280;
-    constexpr int PAGE_COUNT      = 3;
+    constexpr int PAGE_COUNT = 3;
     constexpr int NEXT_PAGE_ICON_X = 780;
     constexpr int NEXT_PAGE_Y = WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN - 50;
-}
 
-class RulesPanel : public MenuPanel {
-public:
-    RulesPanel(int boxX1, int textY, IInputService& input, IRenderService& render, IAssetService& asset)
-        : MenuPanel(boxX1, textY)
-        , inputService(input)
-        , renderService(render)
-        , assetService(asset)
-    {}
 
-    bool IsActive()   const override { return false; }
-    void Activate()         override {}
-    void Deactivate()       override {}
-
-private:
-    void OnUpdate(float /*deltaTime*/) override
+    class RulesPanel : public MenuPanel
     {
-        if (inputService.IsPressed(InputAction::Confirm))
+    public:
+        RulesPanel(int boxX1, int textY, IInputService& input, IRenderService& render, IAssetService& asset)
+            : MenuPanel(boxX1, textY)
+              , inputService(input)
+              , renderService(render)
+              , assetService(asset) {}
+
+    private:
+        void OnUpdate(float /*deltaTime*/) override
         {
-            NextPage();
-            return;
+            if (inputService.IsPressed(InputAction::Confirm))
+            {
+                NextPage();
+                return;
+            }
+            auto click = inputService.OnMouseClick(InputAction::MouseClick);
+            if (click.In(BOX_RECT))
+                NextPage();
         }
-        auto click = inputService.OnMouseClick(InputAction::MouseClick);
-        if (click.In(BOX_RECT))
-            NextPage();
-    }
 
-    void OnDraw(float /*deltaTime*/) const override
-    {
-        switch (currentPage)
+        void OnDraw(float /*deltaTime*/) const override
         {
-        case 0: DrawPage0(); break;
-        case 1: DrawPage1(); break;
-        case 2: DrawPage2(); break;
-        default: break;
+            switch (currentPage)
+            {
+            case 0: DrawPage0();
+                break;
+            case 1: DrawPage1();
+                break;
+            case 2: DrawPage2();
+                break;
+            default: break;
+            }
+            DrawNavigationHints();
         }
-        DrawNavigationHints();
-    }
 
-    void NextPage()
-    {
-        currentPage = (currentPage + 1) % PAGE_COUNT;
-    }
-
-    void DrawNavigationHints() const
-    {
-        int icon;
-        switch (inputService.GetActiveDevice())
+        void NextPage()
         {
-        case InputDevice::Keyboard: icon = assetService.GetImageHandle(EImage::KB_SPACE);
-            break;
-        case InputDevice::Mouse: icon = assetService.GetImageHandle(EImage::MOUSE_LEFT);
-            break;
-        case InputDevice::Gamepad: icon = assetService.GetImageHandle(EImage::XBOX_A);
-            break;
-        default: assert(false && "未知のデバイス");
-            icon = assetService.GetImageHandle(EImage::MOUSE_LEFT);
+            currentPage = (currentPage + 1) % PAGE_COUNT;
         }
-        renderService.DrawRotaGraphF(NEXT_PAGE_ICON_X, NEXT_PAGE_Y, 0.5, 0.0, icon, true);
-        renderService.DrawCenterString(WINDOW_WIDTH / 2, NEXT_PAGE_Y, L"でページ切替", COLOR_TEXT_NORMAL);
-    }
 
-    void DrawPage0() const
+        void DrawNavigationHints() const
+        {
+            int icon;
+            switch (inputService.GetActiveDevice())
+            {
+            case InputDevice::Keyboard: icon = assetService.GetImageHandle(EImage::KB_SPACE);
+                break;
+            case InputDevice::Mouse: icon = assetService.GetImageHandle(EImage::MOUSE_LEFT);
+                break;
+            case InputDevice::Gamepad: icon = assetService.GetImageHandle(EImage::XBOX_A);
+                break;
+            default: assert(false && "未知のデバイス");
+                icon = assetService.GetImageHandle(EImage::MOUSE_LEFT);
+            }
+            renderService.DrawRotaGraphF(NEXT_PAGE_ICON_X, NEXT_PAGE_Y, 0.5, 0.0, icon, true);
+            renderService.DrawCenterString(WINDOW_WIDTH / 2, NEXT_PAGE_Y, L"でページ切替", COLOR_TEXT_NORMAL);
+        }
+
+        void DrawPage0() const
+        {
+            renderService.DrawString(x + INDENT_LEVEL_1, y,
+                                     L"アクション: 【カードを引く】【魔法を使用する】【攻撃する】", COLOR_TEXT_NORMAL);
+            renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING,
+                                     L"攻撃を行う前に、カードを引いたり、魔法を使ったりすることができます。", COLOR_TEXT_GREEN);
+            renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 2,
+                                     L"攻撃した後、ターンが終了します。", COLOR_TEXT_RED);
+            renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 3,
+                                     L"ターンが終了すると、敵のウェートの変更値はリセットされます。", COLOR_TEXT_RED);
+            renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 4,
+                                     L"ターンが終了すると、手札は捨て札に捨てられます。", COLOR_TEXT_RED);
+        }
+
+        void DrawPage1() const
+        {
+            renderService.DrawString(x + INDENT_LEVEL_1, y,
+                                     L"カードの説明", COLOR_TEXT_NORMAL);
+            renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING,
+                                     L"魔法カード：MPが回復します。", COLOR_TEXT_BLUE);
+            renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 2,
+                                     L"じゃんけんカード：敵の該当する攻撃のウェイトが上昇します。", COLOR_TEXT_GREEN);
+            renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 4,
+                                     L"手札は4枚までです。", COLOR_TEXT_GREEN);
+            renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 5,
+                                     L"山札がなくなった場合、自動的に捨て札をシャッフルして、", COLOR_TEXT_RED);
+            renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 6,
+                                     L"それをドロー山札として再構成する。", COLOR_TEXT_RED);
+        }
+
+        void DrawPage2() const
+        {
+            renderService.DrawString(x + INDENT_LEVEL_1, y,
+                                     L"プレイヤーの魔法スキル：", COLOR_TEXT_NORMAL);
+            renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING,
+                                     L"【透視】1ゲームに1回のみ。敵の出す手を完全に可視化する。", COLOR_TEXT_BLUE);
+            renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 2,
+                                     L"【⚔UP】制限なし。そのターンの間、自分の攻撃力が+2される。", COLOR_TEXT_BLUE);
+            renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 3,
+                                     L"【回復】1ゲームに3回まで。自分のHPを2回復する。", COLOR_TEXT_BLUE);
+            renderService.DrawString(x + INDENT_LEVEL_1, y + SECTION_SPACING,
+                                     L"表示される記号の意味：", COLOR_TEXT_NORMAL);
+            renderService.DrawString(x + INDENT_LEVEL_2, y + SECTION_SPACING + LINE_SPACING,
+                                     L"⚖：敵がその手を出す確率の高さ。大きいほど出しやすい。", COLOR_TEXT_RED);
+            renderService.DrawString(x + INDENT_LEVEL_2, y + SECTION_SPACING + LINE_SPACING * 2,
+                                     L"⚔：その手で勝った時に相手に与えるダメージ量。", COLOR_TEXT_RED);
+        }
+
+        IInputService& inputService;
+        IRenderService& renderService;
+        IAssetService& assetService;
+        int currentPage = 0;
+    };
+
+    std::unique_ptr<MenuPanel> CreateRulesPanel(int boxX1, int textY,
+                                                IInputService& input,
+                                                IRenderService& render,
+                                                IAssetService& asset)
     {
-        renderService.DrawString(x + INDENT_LEVEL_1, y,
-            L"アクション: 【カードを引く】【魔法を使用する】【攻撃する】", COLOR_TEXT_NORMAL);
-        renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING,
-            L"攻撃を行う前に、カードを引いたり、魔法を使ったりすることができます。", COLOR_TEXT_GREEN);
-        renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 2,
-            L"攻撃した後、ターンが終了します。", COLOR_TEXT_RED);
-        renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 3,
-            L"ターンが終了すると、敵のウェートの変更値はリセットされます。", COLOR_TEXT_RED);
-        renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 4,
-            L"ターンが終了すると、手札は捨て札に捨てられます。", COLOR_TEXT_RED);
+        return std::make_unique<RulesPanel>(boxX1, textY, input, render, asset);
     }
-
-    void DrawPage1() const
-    {
-        renderService.DrawString(x + INDENT_LEVEL_1, y,
-            L"カードの説明", COLOR_TEXT_NORMAL);
-        renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING,
-            L"魔法カード：MPが回復します。", COLOR_TEXT_BLUE);
-        renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 2,
-            L"じゃんけんカード：敵の該当する攻撃のウェイトが上昇します。", COLOR_TEXT_GREEN);
-        renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 4,
-            L"手札は4枚までです。", COLOR_TEXT_GREEN);
-        renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 5,
-            L"山札がなくなった場合、自動的に捨て札をシャッフルして、", COLOR_TEXT_RED);
-        renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 6,
-            L"それをドロー山札として再構成する。", COLOR_TEXT_RED);
-    }
-
-    void DrawPage2() const
-    {
-        renderService.DrawString(x + INDENT_LEVEL_1, y,
-            L"プレイヤーの魔法スキル：", COLOR_TEXT_NORMAL);
-        renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING,
-            L"【透視】1ゲームに1回のみ。敵の出す手を完全に可視化する。", COLOR_TEXT_BLUE);
-        renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 2,
-            L"【⚔UP】制限なし。そのターンの間、自分の攻撃力が+2される。", COLOR_TEXT_BLUE);
-        renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 3,
-            L"【回復】1ゲームに3回まで。自分のHPを2回復する。", COLOR_TEXT_BLUE);
-        renderService.DrawString(x + INDENT_LEVEL_1, y + SECTION_SPACING,
-            L"表示される記号の意味：", COLOR_TEXT_NORMAL);
-        renderService.DrawString(x + INDENT_LEVEL_2, y + SECTION_SPACING + LINE_SPACING,
-            L"⚖：敵がその手を出す確率の高さ。大きいほど出しやすい。", COLOR_TEXT_RED);
-        renderService.DrawString(x + INDENT_LEVEL_2, y + SECTION_SPACING + LINE_SPACING * 2,
-            L"⚔：その手で勝った時に相手に与えるダメージ量。", COLOR_TEXT_RED);
-    }
-
-    IInputService&  inputService;
-    IRenderService& renderService;
-    IAssetService&  assetService;
-    int currentPage = 0;
-};
-
-std::unique_ptr<MenuPanel> CreateRulesPanel(int boxX1, int textY,
-                                             IInputService& input,
-                                             IRenderService& render,
-                                             IAssetService& asset)
-{
-    return std::make_unique<RulesPanel>(boxX1, textY, input, render, asset);
-}
-
 }

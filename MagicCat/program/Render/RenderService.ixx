@@ -9,8 +9,8 @@ namespace mc {
     /// @brief SetDrawBlendMode に渡すブレンドモード（DxLib の DX_BLENDMODE_* に対応）
     export enum class BlendMode
     {
-        NoBlend,  ///< ブレンドなし（DX_BLENDMODE_NOBLEND）
-        Alpha,    ///< アルファブレンド（DX_BLENDMODE_ALPHA）
+        NoBlend, ///< ブレンドなし（DX_BLENDMODE_NOBLEND）
+        Alpha, ///< アルファブレンド（DX_BLENDMODE_ALPHA）
     };
 
     /// @brief 各種描画処理（矩形、文字列、スプライト、ブレンドモードなど）を提供するレンダリングサービスインターフェース
@@ -138,7 +138,7 @@ namespace mc {
         /// @param thickness 線の太さ
         /// @param color 描画色
         virtual void DrawHollowBox(int x1, int y1, int x2, int y2, int thickness, uint32_t color) = 0;
-        
+
         /// @brief ボタンを描画する（枠線と中央揃えテキスト付き）
         /// @param x1 左上X座標
         /// @param y1 左上Y座標
@@ -235,6 +235,14 @@ namespace mc {
         {
             DrawButton(r.x1, r.y1, r.x2, r.y2, text, isFocus, bgColor, fgColor);
         }
+
+        /// @brief オプションを描画する（枠線と中央揃えテキスト付き）
+        /// @param r アリア
+        /// @param text オプションのテキスト
+        /// @param isFocus フォーカス中の場合は内側にもう一重枠を描画する（デフォルト: false）
+        /// @param color 文字と枠線の色 (デフォルト: COLOR_WHITE, isFocusのときのデフォルト: COLOR_YELLOW)
+        virtual void DrawOption(Rect<int> r, const wchar_t* text,
+                                bool isFocus = false, uint32_t color = -1) = 0;
 
         /// @brief 画像ハンドルを指定してグラフィックを描画する（Point）
         void DrawGraph(Point<int> p, int handle, bool transFlag)

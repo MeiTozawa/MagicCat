@@ -2,6 +2,7 @@ module;
 
 #include <cstdint>
 #include <dxe.h>
+#include <RenderUtils.h>
 
 module RenderService;
 namespace mc {
@@ -120,6 +121,20 @@ namespace mc {
                               THICKNESS, fgColor);
             }
             DrawCenterString((x1 + x2) / 2, (y1 + y2) / 2, text, fgColor);
+        }
+
+        void DrawOption(Rect<int> r, const wchar_t* text, bool isFocus, uint32_t color) override
+        {
+            if (color == -1)
+            {
+                color = isFocus ? COLOR_YELLOW : COLOR_WHITE;
+            }
+            if (isFocus)
+            {
+                constexpr int THICKNESS = 2;
+                ::DrawLine(r.x1, r.y2, r.x2, r.y2, color, THICKNESS);
+            }
+            DrawCenterString((r.x1 + r.x2) / 2, (r.y1 + r.y2) / 2, text, color);
         }
 
         void SetFontTypeNormal() override

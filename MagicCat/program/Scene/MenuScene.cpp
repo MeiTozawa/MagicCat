@@ -115,7 +115,7 @@ namespace mc {
         void DrawButtons() const
         {
             for (int i = 0; i < BUTTON_COUNT; ++i)
-                renderService.DrawButton(BTN_RECTS[i], BTN_LABELS[i], buttons.GetFocusedIndex() == i);
+                renderService.DrawOption(BTN_RECTS[i], BTN_LABELS[i], buttons.GetFocusedIndex() == i);
         }
 
         IInputService& inputService;

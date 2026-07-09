@@ -19,21 +19,20 @@ import EffectorFactory;
 import AssetEnumMapper;
 
 namespace mc {
-    namespace {
-        constexpr int CARD_START_X = 400;
-        constexpr int CARD_START_Y = 750;
-        constexpr int DISCARD_PILE_X = 50;
-        constexpr int DISCARD_PILE_Y = 750;
-        constexpr int OFFSET_X = 250;
-
-        constexpr int THICKNESS = 5;
-        constexpr int RADIUS = 30;
-
-        constexpr float IMAGE_SCALE = 0.3f;
-    }
-
     class CardDisplayer : public Displayers
     {
+    private:
+        static constexpr int CARD_START_X = 400;
+        static constexpr int CARD_START_Y = 750;
+        static constexpr int DISCARD_PILE_X = 50;
+        static constexpr int DISCARD_PILE_Y = 750;
+        static constexpr int OFFSET_X = 250;
+
+        static constexpr int THICKNESS = 5;
+        static constexpr int RADIUS = 30;
+
+        static constexpr float IMAGE_SCALE = 0.3f;
+
     public:
         CardDisplayer(ICardService& card, IAssetService& asset, IRenderService& render)
             : cardService(card), assetService(asset), renderService(render)

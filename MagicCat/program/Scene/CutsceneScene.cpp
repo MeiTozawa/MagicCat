@@ -15,15 +15,6 @@ import EventBus;
 import Displayer;
 
 namespace mc {
-    static constexpr float CUTSCENE_DURATION = 1.0f;
-    static constexpr float SPRITE_EXT_RATE = 8.f;
-
-    static constexpr float SLOT_Y_FRACTION = 0.45f;
-    static constexpr float BORDER_HALF_WIDTH = 96.f;
-    static constexpr float BORDER_HALF_HEIGHT = 96.f;
-    static constexpr int BORDER_CORNER_RADIUS = 16;
-    static constexpr int BORDER_THICKNESS = 4;
-
     struct EnemySlotView
     {
         int slotIndex;
@@ -35,6 +26,16 @@ namespace mc {
 
     class CutsceneScene : public IScene
     {
+    private:
+        static constexpr float CUTSCENE_DURATION = 1.0f;
+        static constexpr float SPRITE_EXT_RATE = 8.f;
+
+        static constexpr float SLOT_Y_FRACTION = 0.45f;
+        static constexpr float BORDER_HALF_WIDTH = 96.f;
+        static constexpr float BORDER_HALF_HEIGHT = 96.f;
+        static constexpr int BORDER_CORNER_RADIUS = 16;
+        static constexpr int BORDER_THICKNESS = 4;
+
     public:
         CutsceneScene(ISceneService& sceneService, IAssetService& assetService,
                       IRenderService& renderService, IBattleService& battleService)

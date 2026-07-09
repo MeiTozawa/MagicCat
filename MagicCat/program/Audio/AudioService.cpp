@@ -51,21 +51,21 @@ namespace mc {
         }
     }
 
-    static constexpr int BGM_VOLUME_MAX = 255;
-    static constexpr float BGM_FADE_TIME = 1.5f;
-
-    /// @brief 音量レベル（0–4）を DxLib の音量値（0–255）にマッピングする
-    static constexpr int VOLUME_LEVEL_MAP[5] = {
-        static_cast<int>(BGM_VOLUME_MAX * 0.4),
-        static_cast<int>(BGM_VOLUME_MAX * 0.55),
-        static_cast<int>(BGM_VOLUME_MAX * 0.7),
-        static_cast<int>(BGM_VOLUME_MAX * 0.85),
-        static_cast<int>(BGM_VOLUME_MAX * 1.0)
-    };
-
-
     class AudioService : public IAudioService
     {
+    private:
+        static constexpr int BGM_VOLUME_MAX = 255;
+        static constexpr float BGM_FADE_TIME = 1.5f;
+
+        /// @brief 音量レベル（0–4）を DxLib の音量値（0–255）にマッピングする
+        static constexpr int VOLUME_LEVEL_MAP[5] = {
+            static_cast<int>(BGM_VOLUME_MAX * 0.4),
+            static_cast<int>(BGM_VOLUME_MAX * 0.55),
+            static_cast<int>(BGM_VOLUME_MAX * 0.7),
+            static_cast<int>(BGM_VOLUME_MAX * 0.85),
+            static_cast<int>(BGM_VOLUME_MAX * 1.0)
+        };
+
     public:
         AudioService(IConfigService& config, IAssetService& asset, IBattleService& character)
             : configService(config), assetService(asset), characterService(character)

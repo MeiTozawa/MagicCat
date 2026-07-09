@@ -10,15 +10,14 @@ module;
 
 module AssetService;
 
-namespace {
-    // ESprite の整数値がこの閾値未満のスプライトは 32×32 のスプライトシートを使用する。
-    // この閾値以上のスプライトは 16×16 のスプライトシートを使用する。
-    constexpr int LARGE_SPRITE_ENUM_THRESHOLD = 100;
-}
-
 namespace mc {
     class AssetService : public IAssetService
     {
+    private:
+        // ESprite の整数値がこの閾値未満のスプライトは 32×32 のスプライトシートを使用する。
+        // この閾値以上のスプライトは 16×16 のスプライトシートを使用する。
+        static constexpr int LARGE_SPRITE_ENUM_THRESHOLD = 100;
+
     public:
         AssetService()
         {

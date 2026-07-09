@@ -13,29 +13,30 @@ import OSService;
 import ButtonGroup;
 
 namespace mc {
-    constexpr int BOX_MARGIN_X = 100;
-    constexpr int LINE_SPACING = 60;
-    constexpr int INDENT_LEVEL_1 = 50;
-    constexpr int INDENT_LEVEL_2 = 80;
-
-    constexpr int VOLUME_ROW_COUNT = 3;
-    constexpr int LEVEL_MAX = 4;
-    constexpr int SQUARE_SIZE = 30;
-    constexpr int SQUARE_GAP = 8;
-    constexpr int INDICATOR_OFFSET = 200;
-
-    constexpr int ARROW_BTN_WIDTH = 40;
-    constexpr int ARROW_BTN_GAP = 8;
-
-    constexpr int ARROW_START_OFFSET =
-        INDENT_LEVEL_2 + INDICATOR_OFFSET + LEVEL_MAX * (SQUARE_SIZE + SQUARE_GAP) + ARROW_BTN_GAP;
-
-    constexpr const wchar_t* VOLUME_LABELS[VOLUME_ROW_COUNT] = {
-        L"Master", L"BGM", L"SFX"
-    };
-
     class VolumePanel : public MenuPanel
     {
+    private:
+        static constexpr int BOX_MARGIN_X = 100;
+        static constexpr int LINE_SPACING = 60;
+        static constexpr int INDENT_LEVEL_1 = 50;
+        static constexpr int INDENT_LEVEL_2 = 80;
+
+        static constexpr int VOLUME_ROW_COUNT = 3;
+        static constexpr int LEVEL_MAX = 4;
+        static constexpr int SQUARE_SIZE = 30;
+        static constexpr int SQUARE_GAP = 8;
+        static constexpr int INDICATOR_OFFSET = 200;
+
+        static constexpr int ARROW_BTN_WIDTH = 40;
+        static constexpr int ARROW_BTN_GAP = 8;
+
+        static constexpr int ARROW_START_OFFSET =
+            INDENT_LEVEL_2 + INDICATOR_OFFSET + LEVEL_MAX * (SQUARE_SIZE + SQUARE_GAP) + ARROW_BTN_GAP;
+
+        static constexpr const wchar_t* VOLUME_LABELS[VOLUME_ROW_COUNT] = {
+            L"Master", L"BGM", L"SFX"
+        };
+
     public:
         VolumePanel(int boxX1, int textY,
                     IInputService& input, IRenderService& render,

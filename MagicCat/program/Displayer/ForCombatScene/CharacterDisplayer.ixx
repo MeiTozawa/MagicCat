@@ -22,37 +22,36 @@ import Player;
 import SceneService;
 
 namespace mc {
-    namespace {
-        constexpr int PLAYER_DAMAGE_START_X = ACTION_MENU_X;
-        constexpr int PLAYER_DAMAGE_START_Y = ACTION_MENU_Y;
-
-        constexpr int PLAYER_HP_X = 60;
-        constexpr int PLAYER_HP_Y = 200;
-        constexpr int ENEMY_NAME_X = 1150;
-        constexpr int ENEMY_NAME_Y = 230;
-        constexpr int ENEMY_HP_X = 1500;
-        constexpr int ENEMY_HP_Y = 230;
-        constexpr int PLAYER_MP_X = 60;
-        constexpr int PLAYER_MP_Y = 300;
-
-        constexpr int ENEMY_WEIGHT_START_X = 1150;
-        constexpr int ENEMY_WEIGHT_START_Y = 300;
-        constexpr int ENEMY_DAMAGE_START_X = 1500;
-        constexpr int ENEMY_DAMAGE_START_Y = 300;
-
-        constexpr int TEXT_OFFSET_X = 30;
-        constexpr int TEXT_OFFSET_Y = 28;
-
-        constexpr int OFFSET_Y = ACTION_MENU_STEP_Y;
-
-        constexpr int RECT_X = ACTION_MENU_W;
-        constexpr int RECT_Y = ACTION_MENU_H;
-
-        constexpr int THICKNESS = 2;
-    }
-
     class CharacterDisplayer : public Displayers
     {
+    private:
+        static constexpr int PLAYER_DAMAGE_START_X = ACTION_MENU_X;
+        static constexpr int PLAYER_DAMAGE_START_Y = ACTION_MENU_Y;
+
+        static constexpr int PLAYER_HP_X = 60;
+        static constexpr int PLAYER_HP_Y = 200;
+        static constexpr int ENEMY_NAME_X = 1150;
+        static constexpr int ENEMY_NAME_Y = 230;
+        static constexpr int ENEMY_HP_X = 1500;
+        static constexpr int ENEMY_HP_Y = 230;
+        static constexpr int PLAYER_MP_X = 60;
+        static constexpr int PLAYER_MP_Y = 300;
+
+        static constexpr int ENEMY_WEIGHT_START_X = 1150;
+        static constexpr int ENEMY_WEIGHT_START_Y = 300;
+        static constexpr int ENEMY_DAMAGE_START_X = 1500;
+        static constexpr int ENEMY_DAMAGE_START_Y = 300;
+
+        static constexpr int TEXT_OFFSET_X = 30;
+        static constexpr int TEXT_OFFSET_Y = 28;
+
+        static constexpr int OFFSET_Y = ACTION_MENU_STEP_Y;
+
+        static constexpr int RECT_X = ACTION_MENU_W;
+        static constexpr int RECT_Y = ACTION_MENU_H;
+
+        static constexpr int THICKNESS = 2;
+
     public:
         CharacterDisplayer(IBattleService& character, IRenderService& render)
             : characterService(character), renderService(render)

@@ -11,24 +11,24 @@ import RenderService;
 import AssetService;
 
 namespace mc {
-    constexpr int BOX_MARGIN_X = 100;
-    constexpr int BOX_MARGIN_Y_UP = 75;
-    constexpr int BOX_MARGIN_Y_DOWN = 250;
-    constexpr Rect<int> BOX_RECT = {
-        BOX_MARGIN_X, BOX_MARGIN_Y_UP,
-        WINDOW_WIDTH - BOX_MARGIN_X, WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN
-    };
-    constexpr int LINE_SPACING = 60;
-    constexpr int INDENT_LEVEL_1 = 50;
-    constexpr int INDENT_LEVEL_2 = 80;
-    constexpr int SECTION_SPACING = 280;
-    constexpr int PAGE_COUNT = 3;
-    constexpr int NEXT_PAGE_ICON_X = 780;
-    constexpr int NEXT_PAGE_Y = WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN - 50;
-
-
     class RulesPanel : public MenuPanel
     {
+    private:
+        static constexpr int BOX_MARGIN_X = 100;
+        static constexpr int BOX_MARGIN_Y_UP = 75;
+        static constexpr int BOX_MARGIN_Y_DOWN = 250;
+        static constexpr Rect<int> BOX_RECT = {
+            BOX_MARGIN_X, BOX_MARGIN_Y_UP,
+            WINDOW_WIDTH - BOX_MARGIN_X, WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN
+        };
+        static constexpr int LINE_SPACING = 60;
+        static constexpr int INDENT_LEVEL_1 = 50;
+        static constexpr int INDENT_LEVEL_2 = 80;
+        static constexpr int SECTION_SPACING = 280;
+        static constexpr int PAGE_COUNT = 3;
+        static constexpr int NEXT_PAGE_ICON_X = 780;
+        static constexpr int NEXT_PAGE_Y = WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN - 50;
+
     public:
         RulesPanel(int boxX1, int textY, IInputService& input, IRenderService& render, IAssetService& asset)
             : MenuPanel(boxX1, textY)

@@ -11,10 +11,6 @@ import RenderService;
 import EventBus;
 
 namespace mc {
-
-namespace {
-}
-
     class InfoScene : public IScene
     {
     public:

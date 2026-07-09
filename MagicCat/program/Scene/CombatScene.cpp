@@ -23,35 +23,36 @@ import RenderService;
 import OSService;
 
 namespace mc {
-    constexpr int PLAYER_START_X = 800;
-    constexpr int PLAYER_START_Y = 450;
-    constexpr int ENEMY_START_X = 1000;
-    constexpr int ENEMY_START_Y = 450;
-    constexpr float EXTRA_RATE = 8.f;
-
-    constexpr float PLAYER_ATTACK_X = 820.f;
-    constexpr float PLAYER_ATTACK_Y = 400.f;
-    constexpr float ENEMY_ATTACK_X = 1020.f;
-    constexpr float ENEMY_ATTACK_Y = 400.f;
-    constexpr float ATTACK_IMAGE_SCALE = 0.2f;
-
-    constexpr int ATTACK_FADE_IN_TIME = 150;
-    constexpr int ATTACK_HOLD_TIME = 800;
-    constexpr int ATTACK_FADE_OUT_TIME = 250;
-
-    constexpr int PLAYER_DIALOG_X = PLAYER_START_X + 50;
-    constexpr int PLAYER_DIALOG_Y = PLAYER_START_Y + 100;
-    constexpr int DIALOG_FADE_IN_TIME = 150;
-    constexpr int DIALOG_HOLD_TIME = 1000;
-    constexpr int DIALOG_FADE_OUT_TIME = 250;
-    /// @brief 敵のいずれかの手の weight offset が他の手との差分がこの値以上の場合、
-    /// プレイヤーは「正解の手」を判断できるとみなす。
-    constexpr int KUSSOU_WEIGHT_DIFF_THRESHOLD = 7;
-
-    constexpr uint32_t DIALOG_COLOR_DAMN = COLOR_RED;
-
     class CombatScene : public IScene
     {
+    private:
+        static constexpr int PLAYER_START_X = 800;
+        static constexpr int PLAYER_START_Y = 450;
+        static constexpr int ENEMY_START_X = 1000;
+        static constexpr int ENEMY_START_Y = 450;
+        static constexpr float EXTRA_RATE = 8.f;
+
+        static constexpr float PLAYER_ATTACK_X = 820.f;
+        static constexpr float PLAYER_ATTACK_Y = 400.f;
+        static constexpr float ENEMY_ATTACK_X = 1020.f;
+        static constexpr float ENEMY_ATTACK_Y = 400.f;
+        static constexpr float ATTACK_IMAGE_SCALE = 0.2f;
+
+        static constexpr int ATTACK_FADE_IN_TIME = 150;
+        static constexpr int ATTACK_HOLD_TIME = 800;
+        static constexpr int ATTACK_FADE_OUT_TIME = 250;
+
+        static constexpr int PLAYER_DIALOG_X = PLAYER_START_X + 50;
+        static constexpr int PLAYER_DIALOG_Y = PLAYER_START_Y + 100;
+        static constexpr int DIALOG_FADE_IN_TIME = 150;
+        static constexpr int DIALOG_HOLD_TIME = 1000;
+        static constexpr int DIALOG_FADE_OUT_TIME = 250;
+        /// @brief 敵のいずれかの手の weight offset が他の手との差分がこの値以上の場合、
+        /// プレイヤーは「正解の手」を判断できるとみなす。
+        static constexpr int KUSSOU_WEIGHT_DIFF_THRESHOLD = 7;
+
+        static constexpr uint32_t DIALOG_COLOR_DAMN = COLOR_RED;
+
     public:
         CombatScene(ISceneService& scene, IAssetService& asset, ICardService& card,
                     IInputService& input, IRenderService& render, IBattleService& battle,

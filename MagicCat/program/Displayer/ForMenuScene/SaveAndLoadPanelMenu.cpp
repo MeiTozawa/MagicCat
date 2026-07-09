@@ -15,18 +15,19 @@ import OSService;
 import ButtonGroup;
 
 namespace mc {
-    constexpr int BOX_MARGIN_X = 100;
-    constexpr int LINE_SPACING = 60;
-    constexpr int INDENT_LEVEL_1 = 50;
-    constexpr int INDENT_LEVEL_2 = 80;
-    constexpr int INFO_OFFSET = 200;
-
-    constexpr const wchar_t* SLOT_LABELS[SAVE_SLOT_COUNT] = {
-        L"オート", L"スロット 1", L"スロット 2", L"スロット 3"
-    };
-
     class SaveAndLoadPanel : public MenuPanel
     {
+    private:
+        static constexpr int BOX_MARGIN_X = 100;
+        static constexpr int LINE_SPACING = 60;
+        static constexpr int INDENT_LEVEL_1 = 50;
+        static constexpr int INDENT_LEVEL_2 = 80;
+        static constexpr int INFO_OFFSET = 200;
+
+        static constexpr const wchar_t* SLOT_LABELS[SAVE_SLOT_COUNT] = {
+            L"オート", L"スロット 1", L"スロット 2", L"スロット 3"
+        };
+
     public:
         SaveAndLoadPanel(int boxX1, int textY, SlotPanelMode mode,
                          IInputService& input, IRenderService& render,

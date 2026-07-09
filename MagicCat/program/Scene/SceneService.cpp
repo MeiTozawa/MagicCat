@@ -16,8 +16,6 @@ import DisplayerBase;
 import AssetService;
 
 namespace mc {
-    static constexpr int SCENE_FADE_DURATION_MS = 500;
-
     /// @brief シーン遷移フェード専用 Displayer。
     /// Effector が存在する間だけ全画面色塊を描画する。
     class ScreenFadeDisplayer : public Displayer
@@ -42,6 +40,9 @@ namespace mc {
 
     class SceneService : public ISceneService
     {
+    private:
+        static constexpr int SCENE_FADE_DURATION_MS = 500;
+
     public:
         explicit SceneService(IRenderService* rs, IInputService* is = nullptr,
                               IAssetService* as = nullptr, IOSService* os = nullptr)

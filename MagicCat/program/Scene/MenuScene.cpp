@@ -15,31 +15,6 @@ import OSService;
 import ButtonGroup;
 
 namespace mc {
-    constexpr int BOX_MARGIN_X = 100, BOX_MARGIN_Y_UP = 75, BOX_MARGIN_Y_DOWN = 250;
-    constexpr int TEXT_START_OFFSET_X = 50, TEXT_START_OFFSET_Y = 50;
-    constexpr int CONTENT_START_OFFSET_Y = 140;
-    constexpr uint32_t COLOR_BOX_BG = 0x1E1E28;
-    constexpr int BUTTON_HEIGHT = 100, BUTTON_WIDTH = 300, BUTTON_OFFSET_X = 50, BUTTON_COUNT = 5;
-    constexpr int BUTTON_Y1 = 880, BUTTON_Y2 = BUTTON_Y1 + BUTTON_HEIGHT;
-    constexpr int BUTTON0_X = (WINDOW_WIDTH - BUTTON_WIDTH * BUTTON_COUNT - BUTTON_OFFSET_X * (BUTTON_COUNT - 1)) /
-        2;
-
-    constexpr auto BTN_RECTS = []()
-    {
-        std::array<Rect<int>, BUTTON_COUNT> r{};
-        for (int i = 0; i < BUTTON_COUNT; ++i)
-        {
-            const int x = BUTTON0_X + i * (BUTTON_WIDTH + BUTTON_OFFSET_X);
-            r[i] = {x, BUTTON_Y1, x + BUTTON_WIDTH, BUTTON_Y2};
-        }
-        return r;
-    }();
-
-    constexpr const wchar_t* BTN_LABELS[BUTTON_COUNT] = {
-        L"ルール", L"音量設定", L"セーブ", L"ロード", L"終了"
-    };
-
-
     enum class MenuNavMode
     {
         OptionFocus,
@@ -48,6 +23,31 @@ namespace mc {
 
     class MenuScene : public IScene
     {
+    private:
+        static constexpr int BOX_MARGIN_X = 100, BOX_MARGIN_Y_UP = 75, BOX_MARGIN_Y_DOWN = 250;
+        static constexpr int TEXT_START_OFFSET_X = 50, TEXT_START_OFFSET_Y = 50;
+        static constexpr int CONTENT_START_OFFSET_Y = 140;
+        static constexpr uint32_t COLOR_BOX_BG = 0x1E1E28;
+        static constexpr int BUTTON_HEIGHT = 100, BUTTON_WIDTH = 300, BUTTON_OFFSET_X = 50, BUTTON_COUNT = 5;
+        static constexpr int BUTTON_Y1 = 880, BUTTON_Y2 = BUTTON_Y1 + BUTTON_HEIGHT;
+        static constexpr int BUTTON0_X = (WINDOW_WIDTH - BUTTON_WIDTH * BUTTON_COUNT - BUTTON_OFFSET_X * (BUTTON_COUNT - 1)) /
+            2;
+
+        static constexpr auto BTN_RECTS = []()
+        {
+            std::array<Rect<int>, BUTTON_COUNT> r{};
+            for (int i = 0; i < BUTTON_COUNT; ++i)
+            {
+                const int x = BUTTON0_X + i * (BUTTON_WIDTH + BUTTON_OFFSET_X);
+                r[i] = {x, BUTTON_Y1, x + BUTTON_WIDTH, BUTTON_Y2};
+            }
+            return r;
+        }();
+
+        static constexpr const wchar_t* BTN_LABELS[BUTTON_COUNT] = {
+            L"ルール", L"音量設定", L"セーブ", L"ロード", L"終了"
+        };
+
     public:
         MenuScene(IInputService& input, ISceneService& scene, IAssetService& asset,
                   IRenderService& render, IAudioService& audio, IConfigService& config,

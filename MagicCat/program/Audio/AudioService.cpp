@@ -58,7 +58,7 @@ namespace mc {
         static constexpr float BGM_FADE_TIME = 1.5f;
 
         /// @brief 音量レベル（0–4）を DxLib の音量値（0–255）にマッピングする
-        static constexpr int VOLUME_LEVEL_MAP[5] = {
+        static constexpr int VOLUME_LEVEL_MAP[VOLUME_LEVEL_COUNT] = {
             static_cast<int>(BGM_VOLUME_MAX * 0.4),
             static_cast<int>(BGM_VOLUME_MAX * 0.55),
             static_cast<int>(BGM_VOLUME_MAX * 0.7),

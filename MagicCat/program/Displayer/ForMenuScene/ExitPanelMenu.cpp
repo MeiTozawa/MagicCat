@@ -12,20 +12,11 @@ namespace mc {
 
 class ExitPanel : public MenuPanel {
 public:
-    ExitPanel(int boxX1, int textY, IInputService& input, IRenderService& render)
-        : MenuPanel(boxX1, textY)
+    ExitPanel(IInputService& input, IRenderService& render)
+        : MenuPanel()
         , inputService(input)
         , renderService(render)
     {}
-    bool UpdatePanel(float deltaTime) override
-    {
-        Update(deltaTime);
-        if (inputService.IsPressed(InputAction::Left))
-        {
-            return false;
-        }
-        return true;
-    }
 
 private:
     void OnUpdate(float /*deltaTime*/) override
@@ -49,11 +40,10 @@ private:
     IRenderService& renderService;
 };
 
-std::unique_ptr<MenuPanel> CreateExitPanel(int boxX1, int textY,
-                                            IInputService& input,
+std::unique_ptr<MenuPanel> CreateExitPanel(IInputService& input,
                                             IRenderService& render)
 {
-    return std::make_unique<ExitPanel>(boxX1, textY, input, render);
+    return std::make_unique<ExitPanel>(input, render);
 }
 
 } // namespace mc

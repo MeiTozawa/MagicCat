@@ -20,6 +20,7 @@ namespace mc {
     static constexpr uint32_t COLOR_RED = 0xFF0000;
     static constexpr uint32_t COLOR_GREEN = 0x00FF00;
     static constexpr uint32_t COLOR_BLUE = 0x0000FF;
+    static constexpr uint32_t COLOR_YELLOW = 0xFFFF00;
     static constexpr uint32_t COLOR_GRAY = 0x808080;
 
     static constexpr uint32_t COLOR_TEXT_NORMAL = 0xC8C8C8;
@@ -33,6 +34,15 @@ namespace mc {
     static constexpr uint32_t COLOR_CARD_SCISSORS = 0xB0C4DE;
     static constexpr uint32_t COLOR_CARD_MAGIC = 0x9370DB;
     
+    // MenuScene 
+    static constexpr int MENU_BOX_MARGIN_X = 100;
+    static constexpr int MENU_BOX_MARGIN_Y_UP = 75;
+    static constexpr int MENU_BOX_MARGIN_Y_DOWN = 250;
+    static constexpr int MENU_CONTENT_START_OFFSET_Y = 50;
+    static constexpr uint32_t MENU_COLOR_BOX_BG = 0x1E1E28;
+    static constexpr int MENU_BOX_X1 = MENU_BOX_MARGIN_X;
+    static constexpr int MENU_TEXT_Y = MENU_BOX_MARGIN_Y_UP + MENU_CONTENT_START_OFFSET_Y;
+
     static constexpr int FONT_SIZE = 48;  
     
     static constexpr int CARD_HEIGHT = 300;
@@ -62,7 +72,8 @@ namespace mc {
     struct Point
     {
         T x, y;
-        bool In(const Rect<T>& r) const;
+        
+        constexpr bool In(const Rect<T>& r) const;
     };
     
     template <typename T>
@@ -70,14 +81,26 @@ namespace mc {
     struct Rect
     {
         T x1, y1, x2, y2;
+        
+        constexpr Rect<T> operator+(const Point<T>& p) const
+        {
+            return Rect<T>{x1 + p.x, y1 + p.y, x2 + p.x, y2 + p.y};
+        }
+        
+        constexpr Rect<T> Expand(T t) const
+        {
+            return Rect<T>{x1 - t, y1 - t, x2 + t, y2 + t};
+        }
     };
 
     template <typename T>
     requires std::integral<T> || std::floating_point<T>
-    inline bool Point<T>::In(const Rect<T>& r) const
+    constexpr bool Point<T>::In(const Rect<T>& r) const
     {
         return x >= r.x1 && x <= r.x2 && y >= r.y1 && y <= r.y2;
     }
+
+
     
     constexpr Rect<int> DRAW_PILE_RECT = {
         DRAW_PILE_X1, DRAW_PILE_Y1,

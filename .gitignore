@@ -16,6 +16,7 @@
 *.userprefs
 Log.txt
 build_tests.bat
+build.bat
 
 # Build results
 [Dd]ebug/

@@ -198,9 +198,9 @@ namespace mc {
         {
             auto tags = event.Victim->GetTags();
             if (std::ranges::find(tags, ETag::Player) != tags.end())
-                playerAnimDisp->AddEffector(CreateHitFlashEffector(renderService, 0xFF0000));
+                playerAnimDisp->AddEffector(CreateHitFlashEffector(renderService, COLOR_RED));
             else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
-                enemyAnimDisp->AddEffector(CreateHitFlashEffector(renderService, 0xFF0000));
+                enemyAnimDisp->AddEffector(CreateHitFlashEffector(renderService, COLOR_RED));
         }
 
         bool IsDominantHand(int i, const int offsets[3]) const

@@ -18,7 +18,6 @@ namespace mc {
     class SaveAndLoadPanel : public MenuPanel
     {
     private:
-        static constexpr int BOX_MARGIN_X = 100;
         static constexpr int LINE_SPACING = 60;
         static constexpr int INDENT_LEVEL_1 = 50;
         static constexpr int INDENT_LEVEL_2 = 80;
@@ -29,32 +28,22 @@ namespace mc {
         };
 
     public:
-        SaveAndLoadPanel(int boxX1, int textY, SlotPanelMode mode,
+        SaveAndLoadPanel(SlotPanelMode mode,
                          IInputService& input, IRenderService& render,
                          IBattleService& battle, IConfigService& config,
                          ISceneService& scene, IOSService& os)
-            : MenuPanel(boxX1, textY)
+            : MenuPanel()
               , mode(mode)
               , inputService(input)
               , renderService(render)
               , battleService(battle)
               , configService(config)
               , sceneService(scene)
-              , slotGroup(BuildSlotRects(textY), input, os, ButtonGroupLayout::Vertical)
+              , slotGroup(BuildSlotRects(), input, os, ButtonGroupLayout::Vertical)
         {
             slotGroup.SetFocusedIndex(0);
             if (mode == SlotPanelMode::Load)
                 RefreshSlotMeta();
-        }
-
-        bool UpdatePanel(float deltaTime) override
-        {
-            Update(deltaTime);
-            if (shouldClose || inputService.IsPressed(InputAction::Left))
-            {
-                return false;
-            }
-            return true;
         }
 
     private:
@@ -70,7 +59,6 @@ namespace mc {
                     if (battleService.SaveState(slot))
                     {
                         RefreshSlotMeta();
-                        shouldClose = true;
                     }
                 }
                 else // Load
@@ -117,15 +105,15 @@ namespace mc {
                 slotMeta[i] = configService.GetSaveMetadata(i);
         }
 
-        static std::array<Rect<int>, SAVE_SLOT_COUNT> BuildSlotRects(int textY)
+        static std::array<Rect<int>, SAVE_SLOT_COUNT> BuildSlotRects()
         {
             std::array<Rect<int>, SAVE_SLOT_COUNT> rects{};
             for (int i = 0; i < SAVE_SLOT_COUNT; ++i)
             {
-                const int y1 = textY + LINE_SPACING * (i + 1);
+                const int y1 = MENU_TEXT_Y + LINE_SPACING * (i + 1);
                 rects[i] = {
-                    BOX_MARGIN_X + INDENT_LEVEL_2, y1,
-                    WINDOW_WIDTH - BOX_MARGIN_X, y1 + LINE_SPACING
+                    MENU_BOX_MARGIN_X + INDENT_LEVEL_2, y1,
+                    WINDOW_WIDTH - MENU_BOX_MARGIN_X, y1 + LINE_SPACING
                 };
             }
             return rects;
@@ -139,31 +127,28 @@ namespace mc {
         ISceneService& sceneService;
 
         ButtonGroup slotGroup;
-        bool shouldClose = false;
         std::array<SaveMetadata, SAVE_SLOT_COUNT> slotMeta{};
     };
 
-    std::unique_ptr<MenuPanel> CreateSavePanel(int boxX1, int textY,
-                                               IInputService& input,
+    std::unique_ptr<MenuPanel> CreateSavePanel(IInputService& input,
                                                IRenderService& render,
                                                IBattleService& battle,
                                                IConfigService& config,
                                                ISceneService& scene,
                                                IOSService& os)
     {
-        return std::make_unique<SaveAndLoadPanel>(boxX1, textY, SlotPanelMode::Save,
+        return std::make_unique<SaveAndLoadPanel>(SlotPanelMode::Save,
                                                   input, render, battle, config, scene, os);
     }
 
-    std::unique_ptr<MenuPanel> CreateLoadPanel(int boxX1, int textY,
-                                               IInputService& input,
+    std::unique_ptr<MenuPanel> CreateLoadPanel(IInputService& input,
                                                IRenderService& render,
                                                IBattleService& battle,
                                                IConfigService& config,
                                                ISceneService& scene,
                                                IOSService& os)
     {
-        return std::make_unique<SaveAndLoadPanel>(boxX1, textY, SlotPanelMode::Load,
+        return std::make_unique<SaveAndLoadPanel>(SlotPanelMode::Load,
                                                   input, render, battle, config, scene, os);
     }
 } // namespace mc

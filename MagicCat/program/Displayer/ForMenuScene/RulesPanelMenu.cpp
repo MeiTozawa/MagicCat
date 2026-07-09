@@ -14,12 +14,9 @@ namespace mc {
     class RulesPanel : public MenuPanel
     {
     private:
-        static constexpr int BOX_MARGIN_X = 100;
-        static constexpr int BOX_MARGIN_Y_UP = 75;
-        static constexpr int BOX_MARGIN_Y_DOWN = 250;
         static constexpr Rect<int> BOX_RECT = {
-            BOX_MARGIN_X, BOX_MARGIN_Y_UP,
-            WINDOW_WIDTH - BOX_MARGIN_X, WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN
+            MENU_BOX_MARGIN_X, MENU_BOX_MARGIN_Y_UP,
+            WINDOW_WIDTH - MENU_BOX_MARGIN_X, WINDOW_HEIGHT - MENU_BOX_MARGIN_Y_DOWN
         };
         static constexpr int LINE_SPACING = 60;
         static constexpr int INDENT_LEVEL_1 = 50;
@@ -27,11 +24,11 @@ namespace mc {
         static constexpr int SECTION_SPACING = 280;
         static constexpr int PAGE_COUNT = 3;
         static constexpr int NEXT_PAGE_ICON_X = 780;
-        static constexpr int NEXT_PAGE_Y = WINDOW_HEIGHT - BOX_MARGIN_Y_DOWN - 50;
+        static constexpr int NEXT_PAGE_Y = WINDOW_HEIGHT - MENU_BOX_MARGIN_Y_DOWN - 50;
 
     public:
-        RulesPanel(int boxX1, int textY, IInputService& input, IRenderService& render, IAssetService& asset)
-            : MenuPanel(boxX1, textY)
+        RulesPanel(IInputService& input, IRenderService& render, IAssetService& asset)
+            : MenuPanel()
               , inputService(input)
               , renderService(render)
               , assetService(asset) {}
@@ -141,11 +138,10 @@ namespace mc {
         int currentPage = 0;
     };
 
-    std::unique_ptr<MenuPanel> CreateRulesPanel(int boxX1, int textY,
-                                                IInputService& input,
+    std::unique_ptr<MenuPanel> CreateRulesPanel(IInputService& input,
                                                 IRenderService& render,
                                                 IAssetService& asset)
     {
-        return std::make_unique<RulesPanel>(boxX1, textY, input, render, asset);
+        return std::make_unique<RulesPanel>(input, render, asset);
     }
 }

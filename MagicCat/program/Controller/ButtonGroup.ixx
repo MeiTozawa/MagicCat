@@ -10,12 +10,11 @@ import RenderService;
 import OSService;
 
 namespace mc {
-
     /// @brief ナビゲーション方向 — 縦並び（Up/Down）か横並び（Left/Right）かを指定する
     export enum class ButtonGroupLayout
     {
-        Vertical,    ///< 上下キー（Up/Down）でフォーカス移動
-        Horizontal,  ///< 左右キー（Left/Right）でフォーカス移動
+        Vertical, ///< 上下キー（Up/Down）でフォーカス移動
+        Horizontal, ///< 左右キー（Left/Right）でフォーカス移動
     };
 
     /// @brief キーボード・マウス・ゲームパッド入力を統合し、ボタン群のフォーカス管理を行うクラス。
@@ -25,7 +24,7 @@ namespace mc {
     ///   2. 毎フレーム Update() を呼ぶ（マウスホバー検出・カーソル変更が行われる）。
     ///   3. GetFocusedIndex() で現在のフォーカスを取得して描画に利用する。
     ///   4. ConsumeClick() で「このフレームにクリック/確定された行インデックス」を取得する。
-    export class ButtonGroup 
+    export class ButtonGroup
     {
     public:
         /// @param rects         ボタンの矩形リスト（インデックス順）
@@ -39,11 +38,10 @@ namespace mc {
                     ButtonGroupLayout layout = ButtonGroupLayout::Vertical,
                     int initialFocus = 0)
             : rects(rects.begin(), rects.end())
-            , inputService(input)
-            , osService(os)
-            , layout(layout)
-            , focusedIndex(initialFocus)
-        {}
+              , inputService(input)
+              , osService(os)
+              , layout(layout)
+              , focusedIndex(initialFocus) {}
 
         /// @brief 毎フレーム呼び出す。
         ///        マウスホバーによるフォーカス更新、カーソル形状の切り替えを行う。
@@ -60,6 +58,10 @@ namespace mc {
 
         /// @brief フォーカスを明示的に設定する（外部からリセット時など）
         void SetFocusedIndex(int index) { focusedIndex = Clamp(index); }
+
+        /// @brief フォーカスのオフセットを返す
+        /// @return -1: prev  0: not changed  1: next
+        int GetFocusChangeDelta() const { return changeDelta; }
 
         /// @brief このフレームに確定（クリックまたは Confirm キー）されたボタンのインデックスを返す。
         ///        何も確定されていない場合は std::nullopt。
@@ -130,11 +132,12 @@ namespace mc {
             const InputAction next = (layout == ButtonGroupLayout::Vertical)
                                          ? InputAction::Down
                                          : InputAction::Right;
-
+            changeDelta = 0;
             if (inputService.IsPressed(prev))
-                focusedIndex = Clamp(focusedIndex - 1);
+                changeDelta--;
             else if (inputService.IsPressed(next))
-                focusedIndex = Clamp(focusedIndex + 1);
+                changeDelta++;
+            focusedIndex = Clamp(focusedIndex + changeDelta);
         }
 
         int Clamp(int index) const
@@ -148,7 +151,6 @@ namespace mc {
         IInputService& inputService;
         IOSService& osService;
         ButtonGroupLayout layout;
-        int focusedIndex;
+        int focusedIndex, changeDelta = 0;
     };
-
 } // namespace mc

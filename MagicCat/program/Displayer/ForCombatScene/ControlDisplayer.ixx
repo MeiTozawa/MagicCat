@@ -176,7 +176,7 @@ namespace mc {
 
     export std::unique_ptr<Displayer> CreateControlDisplayer(
         IAssetService& assetService, IRenderService& renderService,
-        IInputService& inputService, IOSService& osService, uint32_t color = 0xFFFF00)
+        IInputService& inputService, IOSService& osService, uint32_t color = COLOR_WHITE)
     {
         return std::make_unique<ControlDisplayer>(assetService, renderService, inputService, osService, color);
     }

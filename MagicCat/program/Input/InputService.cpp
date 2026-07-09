@@ -223,6 +223,7 @@ namespace mc {
                 dxe::Input::eButton::PAD_START,
                 dxe::Input::eButton::PAD_B
             };
+            m[InputAction::MouseClick] = {dxe::Input::eButton::MOUSE_LEFT};
         }
 
         const std::vector<dxe::Input::eButton>* CheckInput(InputAction action) const

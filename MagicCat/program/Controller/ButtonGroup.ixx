@@ -8,6 +8,7 @@ export module ButtonGroup;
 import InputService;
 import RenderService;
 import OSService;
+import EventBus;
 
 namespace mc {
     /// @brief ナビゲーション方向 — 縦並び（Up/Down）か横並び（Left/Right）かを指定する
@@ -16,6 +17,9 @@ namespace mc {
         Vertical, ///< 上下キー（Up/Down）でフォーカス移動
         Horizontal, ///< 左右キー（Left/Right）でフォーカス移動
     };
+
+    /// @brief メニュー等のボタンフォーカスが変更された際に発行されるイベント
+    export struct MenuFocusChangedEvent : IEvent {};
 
     /// @brief キーボード・マウス・ゲームパッド入力を統合し、ボタン群のフォーカス管理を行うクラス。
     ///
@@ -105,7 +109,11 @@ namespace mc {
             {
                 if (inputService.IsMouseOver(rects[i]))
                 {
-                    focusedIndex = i;
+                    if (focusedIndex != i)
+                    {
+                        focusedIndex = i;
+                        EventBus::Publish(MenuFocusChangedEvent{});
+                    }
                     return;
                 }
             }
@@ -137,7 +145,16 @@ namespace mc {
                 changeDelta--;
             else if (inputService.IsPressed(next))
                 changeDelta++;
-            focusedIndex = Clamp(focusedIndex + changeDelta);
+
+            if (changeDelta != 0)
+            {
+                const int newIndex = Clamp(focusedIndex + changeDelta);
+                if (newIndex != focusedIndex)
+                {
+                    focusedIndex = newIndex;
+                    EventBus::Publish(MenuFocusChangedEvent{});
+                }
+            }
         }
 
         int Clamp(int index) const

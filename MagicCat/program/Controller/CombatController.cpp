@@ -53,7 +53,7 @@ namespace mc {
             if (newIndex != lastPublishedIndex)
             {
                 lastPublishedIndex = newIndex;
-                EventBus::Publish(ActionSelectionEvent(newIndex, isMagicMenuOpen));
+                EventBus::Publish(ActionSelectionEvent(newIndex, isMagicMenuOpen, true));
             }
 
             HandleKeyboardInput();
@@ -96,7 +96,7 @@ namespace mc {
                     isMagicMenuOpen = false;
                     actionMenu->SetFocusedIndex(ACTION_MAGIC);
                     lastPublishedIndex = ACTION_MAGIC;
-                    EventBus::Publish(ActionSelectionEvent(ACTION_MAGIC, isMagicMenuOpen));
+                    EventBus::Publish(ActionSelectionEvent(ACTION_MAGIC, isMagicMenuOpen, true));
                 }
                 return;
             }
@@ -205,7 +205,7 @@ namespace mc {
                             isMagicMenuOpen = false;
                             actionMenu->SetFocusedIndex(ACTION_MAGIC);
                             lastPublishedIndex = ACTION_MAGIC;
-                            EventBus::Publish(ActionSelectionEvent(ACTION_MAGIC, isMagicMenuOpen));
+                            EventBus::Publish(ActionSelectionEvent(ACTION_MAGIC, isMagicMenuOpen, true));
                         }
                         return;
                     }
@@ -222,7 +222,7 @@ namespace mc {
                         if (lastPublishedIndex != i)
                         {
                             lastPublishedIndex = i;
-                            EventBus::Publish(ActionSelectionEvent(i, isMagicMenuOpen));
+                            EventBus::Publish(ActionSelectionEvent(i, isMagicMenuOpen, true));
                         }
                     }
                     return;

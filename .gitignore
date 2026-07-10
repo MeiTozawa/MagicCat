@@ -73,6 +73,9 @@ imgui.ini
 CMakeUserPresets.json
 build_tests.bat
 MagicCat/resource/save0.json
+MagicCat/resource/save1.json
+MagicCat/resource/save2.json
+MagicCat/resource/save3.json
 MagicCat/resource/sound_settings.json
 
 #AI agent files

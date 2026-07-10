@@ -13,6 +13,7 @@ import BattleService;
 import ConfigService;
 import Player;
 import Enemy;
+import ButtonGroup;
 namespace mc {
     float StepTowards(float current, float target, float step)
     {
@@ -191,6 +192,10 @@ namespace mc {
             {
                 if (!e.silent)
                     PlaySfx(assetService.GetSoundHandle(ESound::Select));
+            }));
+            eventHandles.push_back(EventBus::Subscribe<MenuFocusChangedEvent>([this](const MenuFocusChangedEvent&)
+            {
+                PlaySfx(assetService.GetSoundHandle(ESound::Select));
             }));
             eventHandles.push_back(EventBus::Subscribe<CombatEvent>([this](const CombatEvent&)
             {

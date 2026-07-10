@@ -98,7 +98,7 @@ namespace mc {
             case EMenuPanel::Load: return CreateLoadPanel(
                     inputService, renderService, battleService, configService, sceneService, osService);
             case EMenuPanel::Exit: return CreateExitPanel(
-                    inputService, renderService);
+                    inputService, renderService, assetService);
             default: return nullptr;
             }
         }

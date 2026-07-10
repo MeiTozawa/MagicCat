@@ -91,7 +91,9 @@ namespace mc {
     /// @brief `ExitPanel` を生成して返す。
     /// @param input   入力サービス
     /// @param render  描画サービス
+    /// @param asset   アセットサービス
     /// @return 生成した `ExitPanel` の所有権
     export std::unique_ptr<MenuPanel> CreateExitPanel(IInputService& input,
-                                                      IRenderService& render);
+                                                      IRenderService& render,
+                                                      IAssetService& asset);
 } // namespace mc

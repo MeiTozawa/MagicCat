@@ -18,7 +18,6 @@ namespace mc {
     class SaveAndLoadPanel : public MenuPanel
     {
     private:
-        // ---- VolumePanel 第一级按钮组の同等レイアウト ----
         static constexpr int RECT_WIDTH  = WINDOW_WIDTH - MENU_BOX_MARGIN_X * 2 - 100;
         static constexpr int RECT_HEIGHT = 100;
 
@@ -30,9 +29,8 @@ namespace mc {
         static constexpr int TEXT_CENTER_X = RECT_WIDTH / 2;
         static constexpr int TEXT_CENTER_Y = RECT_HEIGHT / 2;
 
-        static constexpr int SLOT_LABEL_X  = 60;        ///< 行ラベル（スロット名）の X オフセット（Rect 内）
-        static constexpr int INFO_X        = 260;        ///< セーブ情報テキストの X オフセット（Rect 内）
-        static constexpr int RECT_EXPAND   = 20;         ///< VolumePanel と同じ外枠拡張量
+        static constexpr int INFO_X        = 260; 
+        static constexpr int RECT_EXPAND   = 20;  
 
         static constexpr const wchar_t* SLOT_LABELS[SAVE_SLOT_COUNT] = {
             L"オート", L"スロット 1", L"スロット 2", L"スロット 3"
@@ -69,8 +67,7 @@ namespace mc {
               , slotGroup(SLOT_RECTS, input, os, ButtonGroupLayout::Vertical)
         {
             slotGroup.SetFocusedIndex(0);
-            if (mode == SlotPanelMode::Load)
-                RefreshSlotMeta();
+            RefreshSlotMeta();
         }
 
     private:
@@ -101,30 +98,26 @@ namespace mc {
                 const bool isFocused = (slotGroup.GetFocusedIndex() == i);
                 const auto& rect     = SLOT_RECTS[i];
 
-                // VolumePanel 第一级と同様：DrawButton で外枠＋背景を描画
                 renderService.DrawButton(rect.Expand(RECT_EXPAND), L"",
                                          isFocused, COLOR_BG, COLOR_WHITE);
 
-                // スロット名（左側）
                 const uint32_t fgColor = isFocused ? COLOR_YELLOW : COLOR_WHITE;
                 renderService.DrawCenterString(
                     rect.x1 + TEXT_CENTER_X / 4,
                     rect.y1 + TEXT_CENTER_Y,
                     SLOT_LABELS[i], fgColor);
 
-                // セーブ情報（右側）
                 const auto& meta = slotMeta[i];
                 if (meta.exists)
                 {
-                    wchar_t buf[128];
-                    swprintf_s(buf, L"第%d場戦闘 / 共%d場  HP:%d/%d  敵HP:%d/%d",
+                    auto s = std::format(L"第{}/{}場  HP:{}/{}  敵HP:{}/{}",
                                meta.currentBattle, meta.totalBattles,
                                meta.playerHp, meta.playerMaxHp,
                                meta.enemyHp, meta.enemyMaxHp);
                     renderService.DrawCenterString(
                         rect.x1 + INFO_X + (RECT_WIDTH - INFO_X) / 2,
                         rect.y1 + TEXT_CENTER_Y,
-                        buf, fgColor);
+                        s.c_str(), fgColor);
                 }
                 else
                 {

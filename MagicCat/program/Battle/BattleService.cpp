@@ -98,12 +98,15 @@ namespace mc {
         Player& GetPlayer() override { return *currentPlayer; }
         int GetTotalEnemyCount() const override { return static_cast<int>(sequence.size()); }
 
-        bool SaveState(int slot) override
+        void SaveState(int slot) override
         {
             assert(slot >= 0 && slot < SAVE_SLOT_COUNT);
 
             if (!currentPlayer || !currentEnemy)
-                return false;
+            {
+                EventBus::Publish(SaveStateEvent(false, slot));
+                return;
+            }
 
             GameState state;
             state.currentIndex              = currentIndex;
@@ -129,7 +132,8 @@ namespace mc {
             state.drawPile    = cardService.GetDrawPile();
             state.discardPile = cardService.GetDiscardPile();
 
-            return configService.SaveGame(slot, state);
+            const bool success = configService.SaveGame(slot, state);
+            EventBus::Publish(SaveStateEvent(success, slot));
         }
 
         bool LoadState(int slot) override

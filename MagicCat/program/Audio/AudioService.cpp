@@ -197,6 +197,16 @@ namespace mc {
             {
                 PlaySfx(assetService.GetSoundHandle(ESound::Select));
             }));
+            eventHandles.push_back(EventBus::Subscribe<SaveStateEvent>([this](const SaveStateEvent& e)
+            {
+                if (e.slot != 0)
+                {
+                    if (e.success)
+                        PlaySfx(assetService.GetSoundHandle(ESound::Confirm));
+                    else
+                        PlaySfx(assetService.GetSoundHandle(ESound::Beep));
+                }
+            }));
             eventHandles.push_back(EventBus::Subscribe<CombatEvent>([this](const CombatEvent&)
             {
                 PlaySfx(assetService.GetSoundHandle(ESound::Confirm));
@@ -307,8 +317,8 @@ namespace mc {
         /// @brief 音量レベル（0–4）を DxLib の音量値（0–255）にマッピングする
         /// 仕様: level v → {0, 51, 102, 153, 204, 255}[v]
         /// 配列サイズ 6 は仕様の完全な表をそのまま持つため（有効インデックスは 0–4）
-        static constexpr int VOLUME_LEVEL_MAP[6] = {
-            0, 51, 102, 153, 204, 255
+        static constexpr int VOLUME_LEVEL_MAP[5] = {
+            0xAF, 0xBF, 0xCF, 0xDF, 0xFF
         };
     };
 

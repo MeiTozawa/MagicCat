@@ -29,6 +29,14 @@ namespace mc {
     /// @brief ステージ開始時（敵 Sequence の準備完了後）に発行されるイベント
     export struct StageStartedEvent : IEvent {};
 
+    /// @brief セーブステートが実行された際に発行されるイベント
+    export struct SaveStateEvent : IEvent
+    {
+        bool success;
+        int slot;
+        explicit SaveStateEvent(bool success, int slot) : success(success), slot(slot) {}
+    };
+
     /// @brief ステージの進行状態（Sequence、Current_Enemy_Index、ステージ結果）と
     /// キャラクター（プレイヤーおよび敵）の管理を行うサービス
     export class IBattleService
@@ -66,8 +74,7 @@ namespace mc {
 
         /// @brief 現在のバトル状態を指定スロットに保存する
         /// @param slot セーブスロット番号 [0, SAVE_SLOT_COUNT)
-        /// @return 成功時 true、I/O エラー時 false
-        virtual bool SaveState(int slot) = 0;
+        virtual void SaveState(int slot) = 0;
 
         /// @brief 指定スロットからバトル状態を復元する
         /// @param slot セーブスロット番号 [0, SAVE_SLOT_COUNT)

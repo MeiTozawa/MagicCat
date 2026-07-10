@@ -13,6 +13,7 @@ import ConfigService;
 import SceneService;
 import OSService;
 import ButtonGroup;
+import EventBus;
 
 namespace mc {
     class SaveAndLoadPanel : public MenuPanel
@@ -33,6 +34,17 @@ namespace mc {
         {
             slotGroup.SetFocusedIndex(0);
             RefreshSlotMeta();
+
+            saveStateEventHandle = EventBus::Subscribe<SaveStateEvent>([this](const SaveStateEvent& e)
+            {
+                if (e.success)
+                    RefreshSlotMeta();
+            });
+        }
+
+        ~SaveAndLoadPanel() override
+        {
+            EventBus::Unsubscribe(saveStateEventHandle);
         }
 
     private:
@@ -45,8 +57,7 @@ namespace mc {
                 const int slot = *confirmed;
                 if (mode == SlotPanelMode::Save)
                 {
-                    if (battleService.SaveState(slot))
-                        RefreshSlotMeta();
+                    battleService.SaveState(slot);
                 }
                 else // Load
                 {
@@ -109,6 +120,7 @@ namespace mc {
 
         ButtonGroup slotGroup;
         std::array<SaveMetadata, SAVE_SLOT_COUNT> slotMeta{};
+        EventHandle saveStateEventHandle;
 
     private:
         static constexpr int RECT_WIDTH  = WINDOW_WIDTH - MENU_BOX_MARGIN_X * 2 - 100;

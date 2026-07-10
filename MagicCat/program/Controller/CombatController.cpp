@@ -22,7 +22,7 @@ namespace mc {
     public:
         CombatController(IInputService& input, IBattleService& character, ISceneService& scene,
                          ICardService& card, IOSService& os)
-            : inputService(input), characterService(character), sceneService(scene), cardService(card)
+            : inputService(input), battleService(character), sceneService(scene), cardService(card)
         {
             for (int i = 0; i < 4; ++i)
             {
@@ -109,14 +109,14 @@ namespace mc {
             {
             case 1:
                 {
-                    bool success = characterService.GetPlayer().UseMagic(EMagic::Clairvoyance);
-                    if (success) characterService.GetEnemy().SetExposed(true);
+                    bool success = battleService.GetPlayer().UseMagic(EMagic::Clairvoyance);
+                    if (success) battleService.GetEnemy().SetExposed(true);
                     return success;
                 }
             case 2:
-                return characterService.GetPlayer().UseMagic(EMagic::PowerBoost);
+                return battleService.GetPlayer().UseMagic(EMagic::PowerBoost);
             case 3:
-                return characterService.GetPlayer().UseMagic(EMagic::Heal);
+                return battleService.GetPlayer().UseMagic(EMagic::Heal);
             default:
                 return false;
             }
@@ -139,43 +139,43 @@ namespace mc {
             if (!playerAttackIntentOpt) return;
             EAttackType playerAttackIntent = *playerAttackIntentOpt;
 
-            EAttackType enemyAttackIntent = characterService.GetEnemy().GetAttackIntent();
-            float playerWinRate = characterService.GetEnemy().GetLoseRateAgainst(playerAttackIntent);
+            EAttackType enemyAttackIntent = battleService.GetEnemy().GetAttackIntent();
+            float playerWinRate = battleService.GetEnemy().GetLoseRateAgainst(playerAttackIntent);
 
-            int rockOffset     = characterService.GetEnemy().GetWeightOffset(EAttackType::Rock);
-            int scissorsOffset = characterService.GetEnemy().GetWeightOffset(EAttackType::Scissors);
-            int paperOffset    = characterService.GetEnemy().GetWeightOffset(EAttackType::Paper);
+            int rockOffset     = battleService.GetEnemy().GetWeightOffset(EAttackType::Rock);
+            int scissorsOffset = battleService.GetEnemy().GetWeightOffset(EAttackType::Scissors);
+            int paperOffset    = battleService.GetEnemy().GetWeightOffset(EAttackType::Paper);
 
-            int playerDamage = characterService.GetPlayer().GetDamage(playerAttackIntent);
-            int enemyDamage  = characterService.GetEnemy().GetDamage(enemyAttackIntent);
+            int playerDamage = battleService.GetPlayer().GetDamage(playerAttackIntent);
+            int enemyDamage  = battleService.GetEnemy().GetDamage(enemyAttackIntent);
 
             if (LosesTo(playerAttackIntent, enemyAttackIntent))
-                characterService.GetPlayer().TakeDamage(enemyDamage);
+                battleService.GetPlayer().TakeDamage(enemyDamage);
             if (LosesTo(enemyAttackIntent, playerAttackIntent))
-                characterService.GetEnemy().TakeDamage(playerDamage);
+                battleService.GetEnemy().TakeDamage(playerDamage);
 
-            characterService.GetEnemy().ResetWeights();
+            battleService.GetEnemy().ResetWeights();
             cardService.DiscardHand();
-            characterService.GetPlayer().ResetDamageOffset();
+            battleService.GetPlayer().ResetDamageOffset();
 
             EventBus::Publish(
                 CombatEvent(playerAttackIntent, enemyAttackIntent, playerDamage, enemyDamage,
                             playerWinRate, rockOffset, scissorsOffset, paperOffset)
             );
 
-            characterService.SaveState(0);
+            battleService.SaveState(0);
         }
 
         void ProcessDrawCard(Card c) const
         {
             if (c.CardType == ECardType::Magic)
             {
-                characterService.GetPlayer().ChangeMp(c.Power);
+                battleService.GetPlayer().ChangeMp(c.Power);
             }
             else if (c.CardType == ECardType::Rock || c.CardType == ECardType::Scissors ||
                      c.CardType == ECardType::Paper)
             {
-                characterService.GetEnemy().AddWeight(ToAttackType(c.CardType), c.Power);
+                battleService.GetEnemy().AddWeight(ToAttackType(c.CardType), c.Power);
             }
         }
 
@@ -231,7 +231,7 @@ namespace mc {
         }
 
         IInputService& inputService;
-        IBattleService& characterService;
+        IBattleService& battleService;
         ISceneService& sceneService;
         ICardService& cardService;
 
@@ -242,12 +242,12 @@ namespace mc {
     };
 
     std::unique_ptr<ICombatController> CreateCombatController(IInputService& inputService,
-                                                              IBattleService& characterService,
+                                                              IBattleService& battleService,
                                                               ISceneService& sceneService,
                                                               ICardService& cardService,
                                                               IOSService& osService)
     {
-        return std::make_unique<CombatController>(inputService, characterService, sceneService,
+        return std::make_unique<CombatController>(inputService, battleService, sceneService,
                                                   cardService, osService);
     }
 }

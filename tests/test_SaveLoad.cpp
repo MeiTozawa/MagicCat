@@ -459,7 +459,7 @@ TEST_F(PlayerRoundTripTest, Player_AllFieldsSurviveSaveLoadRoundTrip)
     const bool expectedHasUsedClairvoyance = player.GetHasUsedClairvoyance();
 
     // ── Act: save then load ───────────────────────────────────────────────
-    ASSERT_TRUE(battleService->SaveState(kSlot)) << "SaveState must succeed";
+    battleService->SaveState(kSlot);
     ASSERT_TRUE(battleService->LoadState(kSlot)) << "LoadState must succeed";
 
     // ── Assert: player fields restored exactly ────────────────────────────
@@ -675,7 +675,7 @@ TEST_F(EnemyRoundTripTest, Enemy_AllFieldsSurviveSaveLoadRoundTrip)
     const int expectedSprite         = static_cast<int>(enemy.GetSprite());
 
     // ── Act: save then load ───────────────────────────────────────────────
-    ASSERT_TRUE(battleService->SaveState(kSlot)) << "SaveState must succeed";
+    battleService->SaveState(kSlot);
     ASSERT_TRUE(battleService->LoadState(kSlot)) << "LoadState must succeed";
 
     // ── Assert: all enemy fields restored exactly ─────────────────────────
@@ -806,7 +806,7 @@ TEST_F(CardServiceRoundTripTest, CardService_AllPilesRestoredAfterSaveLoadRoundT
     const std::vector<CardData> preSaveDiscardPile = cardService->GetDiscardPile();
 
     // ── Act: save then load ───────────────────────────────────────────────
-    ASSERT_TRUE(battleService->SaveState(kSlot)) << "SaveState must succeed";
+    battleService->SaveState(kSlot);
     ASSERT_TRUE(battleService->LoadState(kSlot)) << "LoadState must succeed";
 
     // ── Assert: hand restored ─────────────────────────────────────────────
@@ -865,7 +865,7 @@ TEST_F(CardServiceRoundTripTest, CardService_TotalCardCountPreservedAfterRoundTr
         cardService->GetDiscardPile().size();
 
     // ── Act ───────────────────────────────────────────────────────────────
-    ASSERT_TRUE(battleService->SaveState(kSlot)) << "SaveState must succeed";
+    battleService->SaveState(kSlot);
     ASSERT_TRUE(battleService->LoadState(kSlot)) << "LoadState must succeed";
 
     // ── Assert: total unchanged ───────────────────────────────────────────
@@ -1000,7 +1000,7 @@ TEST_F(BattleServiceMockConfigTest, BattleService_FullStateRoundTrip)
         });
 
     // ── Act ───────────────────────────────────────────────────────────────
-    ASSERT_TRUE(battleService->SaveState(0))  << "SaveState must return true";
+    battleService->SaveState(0);
     ASSERT_TRUE(battleService->LoadState(0))  << "LoadState must return true";
 
     // ── Assert ────────────────────────────────────────────────────────────

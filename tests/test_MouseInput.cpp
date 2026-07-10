@@ -186,6 +186,7 @@ public:
 // Case A: first click on row i (i != 0) selects it and publishes ActionSelectionEvent
 RC_GTEST_PROP(MouseInput, Property3_SelectionBeforeConfirm_CaseA_SelectsAndPublishes, ())
 {
+    EventBus::Clear();
     // Skip i==0: controller starts with selectedActionIndex==0, so clicking row 0 immediately
     // enters the confirm path rather than the selection path.
     const int i  = *rc::gen::inRange(1, 4);
@@ -215,7 +216,7 @@ RC_GTEST_PROP(MouseInput, Property3_SelectionBeforeConfirm_CaseA_SelectsAndPubli
     int actionSelCount = 0;
     int actionSelIndex = -1;
     auto hSel = EventBus::Subscribe<ActionSelectionEvent>([&](const ActionSelectionEvent& e) {
-        if (!e.silent) { ++actionSelCount; actionSelIndex = e.selectedIndex; }
+        ++actionSelCount; actionSelIndex = e.selectedIndex;
     });
     int combatEventCount = 0;
     auto hCombat = EventBus::Subscribe<CombatEvent>([&](const CombatEvent&) { ++combatEventCount; });
@@ -233,6 +234,7 @@ RC_GTEST_PROP(MouseInput, Property3_SelectionBeforeConfirm_CaseA_SelectsAndPubli
 // Case B: second click on the already-selected row enters confirm, no ActionSelectionEvent
 RC_GTEST_PROP(MouseInput, Property3_SelectionBeforeConfirm_CaseB_ConfirmDoesNotSelectAgain, ())
 {
+    EventBus::Clear();
     const int i  = *rc::gen::inRange(1, 4);
     const int cx = *rc::gen::inRange(400, 700);
     const int cy = *rc::gen::inRange(200 + i * 120, 300 + i * 120);
@@ -260,7 +262,7 @@ RC_GTEST_PROP(MouseInput, Property3_SelectionBeforeConfirm_CaseB_ConfirmDoesNotS
 
     int actionSelCount = 0;
     auto hSel = EventBus::Subscribe<ActionSelectionEvent>([&](const ActionSelectionEvent& e) {
-        if (!e.silent) ++actionSelCount;
+        ++actionSelCount;
     });
 
     controller->Update(0.0f);
@@ -281,6 +283,7 @@ namespace {
 
 RC_GTEST_PROP(MouseInput, Property4_DrawCard_MousePath_CallsDrawCardOnce, ())
 {
+    EventBus::Clear();
     const ECardType cardType = *rc::gen::elementOf(std::vector<ECardType>{
         ECardType::Magic, ECardType::Rock, ECardType::Scissors, ECardType::Paper
     });
@@ -341,6 +344,7 @@ RC_GTEST_PROP(MouseInput, Property4_DrawCard_MousePath_CallsDrawCardOnce, ())
 
 RC_GTEST_PROP(MouseInput, Property4_DrawCard_KeyboardPath_CallsDrawCardOnce, ())
 {
+    EventBus::Clear();
     const ECardType cardType = *rc::gen::elementOf(std::vector<ECardType>{
         ECardType::Magic, ECardType::Rock, ECardType::Scissors, ECardType::Paper
     });
@@ -398,6 +402,7 @@ RC_GTEST_PROP(MouseInput, Property4_DrawCard_KeyboardPath_CallsDrawCardOnce, ())
 // Cross-check: both paths produce identical player/enemy state and DrawCardEvent count
 RC_GTEST_PROP(MouseInput, Property4_DrawCard_BothPaths_ProduceSameEffect, ())
 {
+    EventBus::Clear();
     const ECardType cardType = *rc::gen::elementOf(std::vector<ECardType>{
         ECardType::Magic, ECardType::Rock, ECardType::Scissors, ECardType::Paper
     });
@@ -484,6 +489,7 @@ namespace {
 // Part A: closed menu  Eclick on row j just selects, does not call UseMagic
 RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_ClosedMenu_NoUseMagic, ())
 {
+    EventBus::Clear();
     const int j  = *rc::gen::inRange(1, 4);
     const int cx = *rc::gen::inRange(400, 700);
     const int cy = *rc::gen::inRange(200 + j * 120, 300 + j * 120);
@@ -512,7 +518,7 @@ RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_ClosedMenu_NoUseMagic, ())
     int actionSelCount = 0;
     int actionSelIndex = -1;
     auto hSel = EventBus::Subscribe<ActionSelectionEvent>([&](const ActionSelectionEvent& e) {
-        if (!e.silent) { ++actionSelCount; actionSelIndex = e.selectedIndex; }
+        ++actionSelCount; actionSelIndex = e.selectedIndex;
     });
 
     controller->Update(0.0f);
@@ -528,6 +534,7 @@ RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_ClosedMenu_NoUseMagic, ())
 // Part B: open menu  Ecorrect EMagic dispatched, state reset on success
 RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_OpenMenu_CorrectMapping, ())
 {
+    EventBus::Clear();
     const int j  = *rc::gen::inRange(1, 4);
     const int cx = *rc::gen::inRange(400, 700);
     const int cy = *rc::gen::inRange(200 + j * 120, 300 + j * 120);
@@ -574,7 +581,7 @@ RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_OpenMenu_CorrectMapping, (
     bool menuClosedViaEvent = false;
     int  selIndexViaEvent   = -1;
     auto hSel = EventBus::Subscribe<ActionSelectionEvent>([&](const ActionSelectionEvent& e) {
-        if (!e.silent) { ++actionSelCount; menuClosedViaEvent = !e.isMagicMenuOpen; selIndexViaEvent = e.selectedIndex; }
+        ++actionSelCount; menuClosedViaEvent = !e.isMagicMenuOpen; selIndexViaEvent = e.selectedIndex;
     });
 
     const int mpBefore = player.GetMp();
@@ -597,6 +604,7 @@ RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_OpenMenu_CorrectMapping, (
 // Supplementary: after successful UseMagic, isMagicMenuOpen==false and selectedActionIndex==0
 RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_AfterSuccess_StateReset, ())
 {
+    EventBus::Clear();
     const int j  = *rc::gen::inRange(1, 4);
     const int cx = *rc::gen::inRange(400, 700);
     const int cy = *rc::gen::inRange(200 + j * 120, 300 + j * 120);
@@ -631,7 +639,7 @@ RC_GTEST_PROP(MouseInput, Property5_MagicSubMenuGuard_AfterSuccess_StateReset, (
     bool menuOpenInEvent = true;
     int  selIndexInEvent = -1;
     auto hSel = EventBus::Subscribe<ActionSelectionEvent>([&](const ActionSelectionEvent& e) {
-        if (!e.silent) { gotSuccessEvent = true; menuOpenInEvent = e.isMagicMenuOpen; selIndexInEvent = e.selectedIndex; }
+        gotSuccessEvent = true; menuOpenInEvent = e.isMagicMenuOpen; selIndexInEvent = e.selectedIndex;
     });
 
     controller->Update(0.0f);
@@ -658,6 +666,7 @@ namespace {
 
 RC_GTEST_PROP(MouseInput, Property1_CombatController_NegOneNegOne_Guard, ())
 {
+    EventBus::Clear();
     const float dt = *rc::gen::arbitrary<float>();
 
     Player player;
@@ -683,7 +692,7 @@ RC_GTEST_PROP(MouseInput, Property1_CombatController_NegOneNegOne_Guard, ())
     int combatEventCount    = 0;
 
     auto hDraw   = EventBus::Subscribe<DrawCardEvent>([&](const DrawCardEvent&) { ++drawCardEventCount; });
-    auto hSel    = EventBus::Subscribe<ActionSelectionEvent>([&](const ActionSelectionEvent& e) { if (!e.silent) ++actionSelEventCount; });
+    auto hSel    = EventBus::Subscribe<ActionSelectionEvent>([&](const ActionSelectionEvent& e) { ++actionSelEventCount; });
     auto hCombat = EventBus::Subscribe<CombatEvent>([&](const CombatEvent&) { ++combatEventCount; });
 
     controller->Update(dt);

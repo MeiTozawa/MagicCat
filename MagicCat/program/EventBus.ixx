@@ -73,18 +73,10 @@ namespace mc {
 
             auto newVecPtr = std::make_shared<std::vector<CallbackWrapper>>(*oldVecPtr);
 
-            auto it =
-                std::ranges::remove_if(
-                    *newVecPtr,
-                    [handle](const CallbackWrapper& w)
-                    {
-                        return w.Handle == handle;
-                    }).begin();
-
-            if (it != newVecPtr->end())
+            std::erase_if(*newVecPtr, [handle](const CallbackWrapper& w)
             {
-                newVecPtr->erase(it, newVecPtr->end());
-            }
+                return w.Handle == handle;
+            });
 
             listenersMap[typeId] = newVecPtr;
             map.erase(itMap);
@@ -113,6 +105,13 @@ namespace mc {
                     wrapper.Callback(event);
                 }
             }
+        }
+
+        static void Clear()
+        {
+            std::unique_lock lock(GetMutex());
+            GetListeners().clear();
+            GetHandleToTypeMap().clear();
         }
 
     private:

@@ -10,6 +10,8 @@ import ConfigService;
 import BattleService;
 import CardService;
 import OSService;
+import Enemy;
+import Player;
 
 namespace mc {
 
@@ -103,7 +105,7 @@ public:
     MOCK_METHOD(Enemy&, GetEnemy, (), (override));
     MOCK_METHOD(Player&, GetPlayer, (), (override));
     MOCK_METHOD(int, GetTotalEnemyCount, (), (const, override));
-    MOCK_METHOD(bool, SaveState, (int), (override));
+    MOCK_METHOD(void, SaveState, (int), (override));
     MOCK_METHOD(bool, LoadState, (int), (override));
 };
 

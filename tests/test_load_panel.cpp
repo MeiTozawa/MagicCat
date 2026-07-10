@@ -183,11 +183,16 @@ TEST(LoadPanelTest, Construction_CallsGetSaveMetadata_ForAllSlots)
     auto panel = f.makeLoad();
 }
 
-TEST(LoadPanelTest, SavePanel_Construction_DoesNotCallGetSaveMetadata)
+TEST(LoadPanelTest, SavePanel_Construction_CallsGetSaveMetadata)
 {
     LoadPanelFixture f;
 
-    EXPECT_CALL(f.mockConfig, GetSaveMetadata(_)).Times(0);
+    for (int i = 0; i < SAVE_SLOT_COUNT; ++i)
+    {
+        EXPECT_CALL(f.mockConfig, GetSaveMetadata(i))
+            .Times(1)
+            .WillOnce(Return(SaveMetadata{}));
+    }
 
     auto panel = f.makeSave();
 }

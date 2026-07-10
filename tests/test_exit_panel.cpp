@@ -29,8 +29,9 @@ TEST(ExitPanelTest, IsPanelFocusAlwaysFalse)
 {
     NiceMock<MockInputService>  mockInput;
     NiceMock<MockRenderService> mockRender;
+    NiceMock<MockAssetService>  mockAsset;
 
-    auto panel = CreateExitPanel(mockInput, mockRender);
+    auto panel = CreateExitPanel(mockInput, mockRender, mockAsset);
 
     EXPECT_FALSE(panel->IsPanelFocus());
 
@@ -50,13 +51,14 @@ TEST(ExitPanelTest, OnUpdateCallsExitApplicationWhenConfirmPressed)
 {
     NiceMock<MockInputService>  mockInput;
     StrictMock<MockRenderService> mockRender;
+    NiceMock<MockAssetService>  mockAsset;
 
     ON_CALL(mockInput, IsPressed(InputAction::Confirm)).WillByDefault(Return(true));
 
     // ExitApplication must be called exactly once
     EXPECT_CALL(mockRender, ExitApplication()).Times(1);
 
-    auto panel = CreateExitPanel(mockInput, mockRender);
+    auto panel = CreateExitPanel(mockInput, mockRender, mockAsset);
     panel->Update(0.0f);
 }
 
@@ -69,13 +71,14 @@ TEST(ExitPanelTest, OnUpdateDoesNotCallExitApplicationWhenConfirmNotPressed)
 {
     NiceMock<MockInputService>  mockInput;
     StrictMock<MockRenderService> mockRender;
+    NiceMock<MockAssetService>  mockAsset;
 
     ON_CALL(mockInput, IsPressed(_)).WillByDefault(Return(false));
 
     // ExitApplication must never be called
     EXPECT_CALL(mockRender, ExitApplication()).Times(0);
 
-    auto panel = CreateExitPanel(mockInput, mockRender);
+    auto panel = CreateExitPanel(mockInput, mockRender, mockAsset);
     panel->Update(0.0f);
 }
 
@@ -87,6 +90,7 @@ TEST(ExitPanelTest, OnDrawRendersBothJapaneseTextLines)
 {
     NiceMock<MockInputService>  mockInput;
     NiceMock<MockRenderService> mockRender;
+    NiceMock<MockAssetService>  mockAsset;
 
     bool sawFirstLine  = false;
     bool sawSecondLine = false;
@@ -103,7 +107,7 @@ TEST(ExitPanelTest, OnDrawRendersBothJapaneseTextLines)
             sawSecondLine = true;
         });
 
-    auto panel = CreateExitPanel(mockInput, mockRender);
+    auto panel = CreateExitPanel(mockInput, mockRender, mockAsset);
 
     // Disable input so Update does not trigger ExitApplication during Draw
     ON_CALL(mockInput, IsPressed(_)).WillByDefault(Return(false));
@@ -122,6 +126,7 @@ TEST(ExitPanelTest, OnDrawRendersSecondLineWithRedColor)
 {
     NiceMock<MockInputService>  mockInput;
     NiceMock<MockRenderService> mockRender;
+    NiceMock<MockAssetService>  mockAsset;
 
     uint32_t capturedColor = 0;
 
@@ -131,7 +136,7 @@ TEST(ExitPanelTest, OnDrawRendersSecondLineWithRedColor)
             capturedColor = color;
         });
 
-    auto panel = CreateExitPanel(mockInput, mockRender);
+    auto panel = CreateExitPanel(mockInput, mockRender, mockAsset);
 
     ON_CALL(mockInput, IsPressed(_)).WillByDefault(Return(false));
 

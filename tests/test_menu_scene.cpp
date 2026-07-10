@@ -60,7 +60,6 @@ public:
 
         // Load/Save metadata defaults
         ON_CALL(mockConfig, GetSaveMetadata(_)).WillByDefault(Return(SaveMetadata{}));
-        ON_CALL(mockBattle, SaveState(_)).WillByDefault(Return(false));
         ON_CALL(mockBattle, LoadState(_)).WillByDefault(Return(false));
     }
 
@@ -256,7 +255,7 @@ TEST(MenuSceneTest, ButtonIndex2_CreatesSavePanel)
 {
     MenuSceneFixture f;
 
-    EXPECT_CALL(f.mockBattle, SaveState(0)).Times(1).WillOnce(Return(false));
+    EXPECT_CALL(f.mockBattle, SaveState(1)).Times(1);
 
     auto scene = f.makeAndStart();
 
@@ -264,7 +263,12 @@ TEST(MenuSceneTest, ButtonIndex2_CreatesSavePanel)
     PressRight(f.mockInput, *scene);   // → index 2 (SavePanel)
 
     scene->Update(0.0f);  // SavePanel update (no-op)
-    PressConfirm(f.mockInput, *scene);  // Confirm on slot 0 → SaveState(0)
+    
+    ON_CALL(f.mockInput, IsPressed(InputAction::Down)).WillByDefault(Return(true));
+    scene->Update(0.0f);
+    ON_CALL(f.mockInput, IsPressed(InputAction::Down)).WillByDefault(Return(false));
+
+    PressConfirm(f.mockInput, *scene);  // Confirm on slot 1 → SaveState(1)
 }
 
 // -----------------------------------------------------------------------
@@ -276,15 +280,15 @@ TEST(MenuSceneTest, ButtonIndex3_CreatesLoadPanel_RefreshesMetaOnConstruct)
 {
     MenuSceneFixture f;
 
-    // LoadPanel constructor calls GetSaveMetadata for all SAVE_SLOT_COUNT slots
+    // Called once when transitioning through SavePanel, and once when constructing LoadPanel
     for (int i = 0; i < SAVE_SLOT_COUNT; ++i)
-        EXPECT_CALL(f.mockConfig, GetSaveMetadata(i)).Times(1).WillOnce(Return(SaveMetadata{}));
+        EXPECT_CALL(f.mockConfig, GetSaveMetadata(i)).Times(2).WillRepeatedly(Return(SaveMetadata{}));
 
     auto scene = f.makeAndStart();
 
     PressRight(f.mockInput, *scene);   // → index 1
-    PressRight(f.mockInput, *scene);   // → index 2
-    PressRight(f.mockInput, *scene);   // → index 3 (LoadPanel)
+    PressRight(f.mockInput, *scene);   // → index 2 (SavePanel constructed)
+    PressRight(f.mockInput, *scene);   // → index 3 (LoadPanel constructed)
 }
 
 // -----------------------------------------------------------------------

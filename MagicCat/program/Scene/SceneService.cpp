@@ -97,7 +97,11 @@ namespace mc {
             if (sceneStack.size() > 1)
             {
                 if (sceneStack.back() == ESceneState::Menu)
+                {
                     menuJustClosed = true;
+                    if (inputService)
+                        inputService->ClearAndSetContext(InputContext::InGame);
+                }
                 sceneStack.pop_back();
             }
         }
@@ -130,6 +134,8 @@ namespace mc {
             sceneStack.clear();
             sceneStack.push_back(state);
             scenes[state]->Start();
+            if (inputService)
+                inputService->ClearAndSetContext(InputContext::InGame);
             StartFadeIn();
         }
 

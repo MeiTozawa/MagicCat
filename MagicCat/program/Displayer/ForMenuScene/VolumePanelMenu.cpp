@@ -15,62 +15,6 @@ import ButtonGroup;
 namespace mc {
     class VolumePanel : public MenuPanel
     {
-    private:
-        static constexpr int START_X = WINDOW_WIDTH / 10;
-        static constexpr int START_Y = WINDOW_HEIGHT / 7;
-
-        static constexpr int RECT_WIDTH = 220;
-        static constexpr int RECT_HEIGHT = 100;
-
-        static constexpr int TEXT_CENTER_X = RECT_WIDTH / 2;
-        static constexpr int TEXT_CENTER_Y = RECT_HEIGHT / 2;
-
-        static constexpr int OFFSET_X = RECT_WIDTH + 50;
-        static constexpr int OFFSET_Y = WINDOW_HEIGHT / 5;
-
-
-        static constexpr Rect SECONDARY_RECT = {
-            START_X, START_Y, START_X + RECT_WIDTH, START_Y + RECT_HEIGHT
-        };
-
-        static constexpr Rect PRIMARY_RECT = Rect<int>{
-            START_X, START_Y,
-            START_X + OFFSET_X * VOLUME_LEVEL_COUNT + RECT_WIDTH, START_Y + RECT_HEIGHT
-        };
-
-        static constexpr std::array<const wchar_t*, VOLUME_ROW_COUNT> VOLUME_LABELS = {
-            L"Master", L"BGM", L"SFX"
-        };
-
-        static constexpr std::array<const wchar_t*, VOLUME_LEVEL_COUNT> TEXTS = {
-            L"小さすぎ", L"小さい", L"普通", L"大きい", L"大きすぎ",
-        };
-        
-        static constexpr int PRIMARY_RECT_EXPAND = 20;
-
-        static constexpr auto PRIMARY_RECTS = []()
-        {
-            std::array<Rect<int>, VOLUME_ROW_COUNT> rects{};
-            for (int i = 0; i < VOLUME_ROW_COUNT; ++i)
-            {
-                rects[i] = PRIMARY_RECT + Point{0, i * OFFSET_Y};
-            }
-            return rects;
-        }();
-
-        static constexpr auto SECONDARY_RECTS = []()
-        {
-            std::array<std::array<Rect<int>, VOLUME_LEVEL_COUNT>, VOLUME_ROW_COUNT> rects{};
-            for (int i = 0; i < VOLUME_ROW_COUNT; ++i)
-            {
-                for (int j = 0; j < VOLUME_LEVEL_COUNT; ++j)
-                {
-                    rects[i][j] = SECONDARY_RECT + Point{(j + 1) * OFFSET_X, i * OFFSET_Y};
-                }
-            }
-            return rects;
-        }();
-
     public:
         VolumePanel(IInputService& input, IRenderService& render,
                     IAudioService& audio, IOSService& os)
@@ -227,6 +171,62 @@ namespace mc {
 
         std::optional<int> activeIndex = std::nullopt;
         bool justEnteredTweak = false;
+
+    private:
+        static constexpr int START_X = WINDOW_WIDTH / 10;
+        static constexpr int START_Y = WINDOW_HEIGHT / 7;
+
+        static constexpr int RECT_WIDTH = 220;
+        static constexpr int RECT_HEIGHT = 100;
+
+        static constexpr int TEXT_CENTER_X = RECT_WIDTH / 2;
+        static constexpr int TEXT_CENTER_Y = RECT_HEIGHT / 2;
+
+        static constexpr int OFFSET_X = RECT_WIDTH + 50;
+        static constexpr int OFFSET_Y = WINDOW_HEIGHT / 5;
+
+
+        static constexpr Rect SECONDARY_RECT = {
+            START_X, START_Y, START_X + RECT_WIDTH, START_Y + RECT_HEIGHT
+        };
+
+        static constexpr Rect PRIMARY_RECT = Rect<int>{
+            START_X, START_Y,
+            START_X + OFFSET_X * VOLUME_LEVEL_COUNT + RECT_WIDTH, START_Y + RECT_HEIGHT
+        };
+
+        static constexpr std::array<const wchar_t*, VOLUME_ROW_COUNT> VOLUME_LABELS = {
+            L"Master", L"BGM", L"SFX"
+        };
+
+        static constexpr std::array<const wchar_t*, VOLUME_LEVEL_COUNT> TEXTS = {
+            L"小さすぎ", L"小さい", L"普通", L"大きい", L"大きすぎ",
+        };
+        
+        static constexpr int PRIMARY_RECT_EXPAND = 20;
+
+        static constexpr auto PRIMARY_RECTS = []()
+        {
+            std::array<Rect<int>, VOLUME_ROW_COUNT> rects{};
+            for (int i = 0; i < VOLUME_ROW_COUNT; ++i)
+            {
+                rects[i] = PRIMARY_RECT + Point{0, i * OFFSET_Y};
+            }
+            return rects;
+        }();
+
+        static constexpr auto SECONDARY_RECTS = []()
+        {
+            std::array<std::array<Rect<int>, VOLUME_LEVEL_COUNT>, VOLUME_ROW_COUNT> rects{};
+            for (int i = 0; i < VOLUME_ROW_COUNT; ++i)
+            {
+                for (int j = 0; j < VOLUME_LEVEL_COUNT; ++j)
+                {
+                    rects[i][j] = SECONDARY_RECT + Point{(j + 1) * OFFSET_X, i * OFFSET_Y};
+                }
+            }
+            return rects;
+        }();
     };
 
     std::unique_ptr<MenuPanel> CreateVolumePanel(IInputService& input,

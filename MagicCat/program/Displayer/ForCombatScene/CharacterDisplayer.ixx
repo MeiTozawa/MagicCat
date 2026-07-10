@@ -24,34 +24,6 @@ import SceneService;
 namespace mc {
     class CharacterDisplayer : public Displayers
     {
-    private:
-        static constexpr int PLAYER_DAMAGE_START_X = ACTION_MENU_X;
-        static constexpr int PLAYER_DAMAGE_START_Y = ACTION_MENU_Y;
-
-        static constexpr int PLAYER_HP_X = 60;
-        static constexpr int PLAYER_HP_Y = 200;
-        static constexpr int ENEMY_NAME_X = 1150;
-        static constexpr int ENEMY_NAME_Y = 230;
-        static constexpr int ENEMY_HP_X = 1500;
-        static constexpr int ENEMY_HP_Y = 230;
-        static constexpr int PLAYER_MP_X = 60;
-        static constexpr int PLAYER_MP_Y = 300;
-
-        static constexpr int ENEMY_WEIGHT_START_X = 1150;
-        static constexpr int ENEMY_WEIGHT_START_Y = 300;
-        static constexpr int ENEMY_DAMAGE_START_X = 1500;
-        static constexpr int ENEMY_DAMAGE_START_Y = 300;
-
-        static constexpr int TEXT_OFFSET_X = 30;
-        static constexpr int TEXT_OFFSET_Y = 28;
-
-        static constexpr int OFFSET_Y = ACTION_MENU_STEP_Y;
-
-        static constexpr int RECT_X = ACTION_MENU_W;
-        static constexpr int RECT_Y = ACTION_MENU_H;
-
-        static constexpr int THICKNESS = 2;
-
     public:
         CharacterDisplayer(IBattleService& character, IRenderService& render)
             : characterService(character), renderService(render)
@@ -254,6 +226,34 @@ namespace mc {
         EventHandle addWeightEvent;
         // ウェイト表示 Displayer（インデックス: 0=Rock, 1=Scissors, 2=Paper）
         std::array<Displayer*, 3> weightDisplayers = {};
+
+    private:
+        static constexpr int PLAYER_DAMAGE_START_X = ACTION_MENU_X;
+        static constexpr int PLAYER_DAMAGE_START_Y = ACTION_MENU_Y;
+
+        static constexpr int PLAYER_HP_X = 60;
+        static constexpr int PLAYER_HP_Y = 200;
+        static constexpr int ENEMY_NAME_X = 1150;
+        static constexpr int ENEMY_NAME_Y = 230;
+        static constexpr int ENEMY_HP_X = 1500;
+        static constexpr int ENEMY_HP_Y = 230;
+        static constexpr int PLAYER_MP_X = 60;
+        static constexpr int PLAYER_MP_Y = 300;
+
+        static constexpr int ENEMY_WEIGHT_START_X = 1150;
+        static constexpr int ENEMY_WEIGHT_START_Y = 300;
+        static constexpr int ENEMY_DAMAGE_START_X = 1500;
+        static constexpr int ENEMY_DAMAGE_START_Y = 300;
+
+        static constexpr int TEXT_OFFSET_X = 30;
+        static constexpr int TEXT_OFFSET_Y = 28;
+
+        static constexpr int OFFSET_Y = ACTION_MENU_STEP_Y;
+
+        static constexpr int RECT_X = ACTION_MENU_W;
+        static constexpr int RECT_Y = ACTION_MENU_H;
+
+        static constexpr int THICKNESS = 2;
     };
 
     export std::unique_ptr<Displayer> CreateCharacterDisplayer(IBattleService& characterService,

@@ -53,17 +53,6 @@ namespace mc {
 
     class AudioService : public IAudioService
     {
-    private:
-        static constexpr int BGM_VOLUME_MAX = 255;
-        static constexpr float BGM_FADE_TIME = 1.5f;
-
-        /// @brief 音量レベル（0–4）を DxLib の音量値（0–255）にマッピングする
-        /// 仕様: level v → {0, 51, 102, 153, 204, 255}[v]
-        /// 配列サイズ 6 は仕様の完全な表をそのまま持つため（有効インデックスは 0–4）
-        static constexpr int VOLUME_LEVEL_MAP[6] = {
-            0, 51, 102, 153, 204, 255
-        };
-
     public:
         AudioService(IConfigService& config, IAssetService& asset, IBattleService& character)
             : configService(config), assetService(asset), characterService(character)
@@ -305,6 +294,17 @@ namespace mc {
         float bgmVolume = 0.f; ///< 現在の実音量（0–255）
         float bgmTarget = 0.f; ///< 目標音量
         float bgmFadeSpeed = 0.f; ///< 1秒あたりの変化量
+
+    private:
+        static constexpr int BGM_VOLUME_MAX = 255;
+        static constexpr float BGM_FADE_TIME = 1.5f;
+
+        /// @brief 音量レベル（0–4）を DxLib の音量値（0–255）にマッピングする
+        /// 仕様: level v → {0, 51, 102, 153, 204, 255}[v]
+        /// 配列サイズ 6 は仕様の完全な表をそのまま持つため（有効インデックスは 0–4）
+        static constexpr int VOLUME_LEVEL_MAP[6] = {
+            0, 51, 102, 153, 204, 255
+        };
     };
 
     std::unique_ptr<IAudioService> CreateAudioService(IConfigService& configService,

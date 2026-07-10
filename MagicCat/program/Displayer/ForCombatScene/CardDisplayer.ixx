@@ -21,18 +21,6 @@ import AssetEnumMapper;
 namespace mc {
     class CardDisplayer : public Displayers
     {
-    private:
-        static constexpr int CARD_START_X = 400;
-        static constexpr int CARD_START_Y = 750;
-        static constexpr int DISCARD_PILE_X = 50;
-        static constexpr int DISCARD_PILE_Y = 750;
-        static constexpr int OFFSET_X = 250;
-
-        static constexpr int THICKNESS = 5;
-        static constexpr int RADIUS = 30;
-
-        static constexpr float IMAGE_SCALE = 0.3f;
-
     public:
         CardDisplayer(ICardService& card, IAssetService& asset, IRenderService& render)
             : cardService(card), assetService(asset), renderService(render)
@@ -140,6 +128,18 @@ namespace mc {
         IRenderService& renderService;
         EventHandle handUpdateHandle;
         std::vector<Card> cachedHand;
+
+    private:
+        static constexpr int CARD_START_X = 400;
+        static constexpr int CARD_START_Y = 750;
+        static constexpr int DISCARD_PILE_X = 50;
+        static constexpr int DISCARD_PILE_Y = 750;
+        static constexpr int OFFSET_X = 250;
+
+        static constexpr int THICKNESS = 5;
+        static constexpr int RADIUS = 30;
+
+        static constexpr float IMAGE_SCALE = 0.3f;
     };
 
     export std::unique_ptr<Displayer> CreateCardDisplayer(ICardService& cardService, IAssetService& assetService,

@@ -17,27 +17,6 @@ import ButtonGroup;
 namespace mc {
     class MenuScene : public IScene
     {
-    private:
-        static constexpr int BUTTON_HEIGHT = 100, BUTTON_WIDTH = 300, BUTTON_OFFSET_X = 50, BUTTON_COUNT = 5;
-        static constexpr int BUTTON_Y1 = 880, BUTTON_Y2 = BUTTON_Y1 + BUTTON_HEIGHT;
-        static constexpr int BUTTON0_X = (WINDOW_WIDTH - BUTTON_WIDTH * BUTTON_COUNT - BUTTON_OFFSET_X
-            * (BUTTON_COUNT - 1)) / 2;
-
-        static constexpr auto BTN_RECTS = []()
-        {
-            std::array<Rect<int>, BUTTON_COUNT> r{};
-            for (int i = 0; i < BUTTON_COUNT; ++i)
-            {
-                const int x = BUTTON0_X + i * (BUTTON_WIDTH + BUTTON_OFFSET_X);
-                r[i] = {x, BUTTON_Y1, x + BUTTON_WIDTH, BUTTON_Y2};
-            }
-            return r;
-        }();
-
-        static constexpr const wchar_t* BTN_LABELS[BUTTON_COUNT] = {
-            L"ルール", L"音量設定", L"セーブ", L"ロード", L"終了"
-        };
-
     public:
         MenuScene(IInputService& input, ISceneService& scene, IAssetService& asset,
                   IRenderService& render, IAudioService& audio, IConfigService& config,
@@ -129,6 +108,27 @@ namespace mc {
         ButtonGroup buttons;
         std::unique_ptr<MenuPanel> currentPanel;
         EMenuPanel currentPanelType = EMenuPanel::Rules;
+
+    private:
+        static constexpr int BUTTON_HEIGHT = 100, BUTTON_WIDTH = 300, BUTTON_OFFSET_X = 50, BUTTON_COUNT = 5;
+        static constexpr int BUTTON_Y1 = 880, BUTTON_Y2 = BUTTON_Y1 + BUTTON_HEIGHT;
+        static constexpr int BUTTON0_X = (WINDOW_WIDTH - BUTTON_WIDTH * BUTTON_COUNT - BUTTON_OFFSET_X
+            * (BUTTON_COUNT - 1)) / 2;
+
+        static constexpr auto BTN_RECTS = []()
+        {
+            std::array<Rect<int>, BUTTON_COUNT> r{};
+            for (int i = 0; i < BUTTON_COUNT; ++i)
+            {
+                const int x = BUTTON0_X + i * (BUTTON_WIDTH + BUTTON_OFFSET_X);
+                r[i] = {x, BUTTON_Y1, x + BUTTON_WIDTH, BUTTON_Y2};
+            }
+            return r;
+        }();
+
+        static constexpr const wchar_t* BTN_LABELS[BUTTON_COUNT] = {
+            L"ルール", L"音量設定", L"セーブ", L"ロード", L"終了"
+        };
     };
 
     std::unique_ptr<IScene> CreateMenuScene(IInputService& inputService, ISceneService& sceneService,

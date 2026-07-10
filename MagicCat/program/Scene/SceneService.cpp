@@ -40,9 +40,6 @@ namespace mc {
 
     class SceneService : public ISceneService
     {
-    private:
-        static constexpr int SCENE_FADE_DURATION_MS = 500;
-
     public:
         explicit SceneService(IRenderService* rs, IInputService* is = nullptr,
                               IAssetService* as = nullptr, IOSService* os = nullptr)
@@ -294,6 +291,9 @@ namespace mc {
         EventHandle stageStartedHandle;
         EventHandle enemyDefeatedHandle;
         EventHandle cutsceneFinishedHandle;
+
+    private:
+        static constexpr int SCENE_FADE_DURATION_MS = 500;
     };
 
     std::unique_ptr<ISceneService> CreateSceneService(IRenderService* renderService, IInputService* inputService,

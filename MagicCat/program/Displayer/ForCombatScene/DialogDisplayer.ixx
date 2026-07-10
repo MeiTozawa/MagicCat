@@ -12,14 +12,6 @@ namespace mc {
     /// @brief キャラクターの発言（吹き出しダイアログ）を画面上に描画するディスプレイヤー
     export class DialogDisplayer : public Displayer
     {
-    private:
-        static constexpr int DIALOG_PADDING_X = 24;
-        static constexpr int DIALOG_PADDING_Y = 12;
-        static constexpr int DIALOG_BORDER = 3;
-        static constexpr int DIALOG_RADIUS = 14;
-        static constexpr int DIALOG_TAIL_WIDTH = 22;
-        static constexpr int DIALOG_TAIL_HEIGHT = 16;
-
     public:
         /// @brief 描画先の基準位置を指定してDialogDisplayerを構築する
         /// @param renderService レンダリング服务への参照
@@ -68,6 +60,14 @@ namespace mc {
         int topY;
         std::wstring text;
         uint32_t color = COLOR_WHITE;
+
+    private:
+        static constexpr int DIALOG_PADDING_X = 24;
+        static constexpr int DIALOG_PADDING_Y = 12;
+        static constexpr int DIALOG_BORDER = 3;
+        static constexpr int DIALOG_RADIUS = 14;
+        static constexpr int DIALOG_TAIL_WIDTH = 22;
+        static constexpr int DIALOG_TAIL_HEIGHT = 16;
     };
 
     export std::unique_ptr<DialogDisplayer> CreateDialogDisplayer(

@@ -17,41 +17,6 @@ import ButtonGroup;
 namespace mc {
     class SaveAndLoadPanel : public MenuPanel
     {
-    private:
-        static constexpr int RECT_WIDTH  = WINDOW_WIDTH - MENU_BOX_MARGIN_X * 2 - 100;
-        static constexpr int RECT_HEIGHT = 100;
-
-        static constexpr int START_X = MENU_BOX_MARGIN_X + 50;
-        static constexpr int START_Y = MENU_TEXT_Y;
-
-        static constexpr int OFFSET_Y = RECT_HEIGHT + 80;
-
-        static constexpr int TEXT_CENTER_X = RECT_WIDTH / 2;
-        static constexpr int TEXT_CENTER_Y = RECT_HEIGHT / 2;
-
-        static constexpr int INFO_X        = 260; 
-        static constexpr int RECT_EXPAND   = 20;  
-
-        static constexpr const wchar_t* SLOT_LABELS[SAVE_SLOT_COUNT] = {
-            L"オート", L"スロット 1", L"スロット 2", L"スロット 3"
-        };
-
-        // constexpr でスロット矩形を全計算（VolumePanel と同パターン）
-        static constexpr auto SLOT_RECTS = []()
-        {
-            std::array<Rect<int>, SAVE_SLOT_COUNT> rects{};
-            for (int i = 0; i < SAVE_SLOT_COUNT; ++i)
-            {
-                rects[i] = {
-                    START_X,
-                    START_Y + OFFSET_Y * i,
-                    START_X + RECT_WIDTH,
-                    START_Y + OFFSET_Y * i + RECT_HEIGHT
-                };
-            }
-            return rects;
-        }();
-
     public:
         SaveAndLoadPanel(SlotPanelMode mode,
                          IInputService& input, IRenderService& render,
@@ -144,6 +109,41 @@ namespace mc {
 
         ButtonGroup slotGroup;
         std::array<SaveMetadata, SAVE_SLOT_COUNT> slotMeta{};
+
+    private:
+        static constexpr int RECT_WIDTH  = WINDOW_WIDTH - MENU_BOX_MARGIN_X * 2 - 100;
+        static constexpr int RECT_HEIGHT = 100;
+
+        static constexpr int START_X = MENU_BOX_MARGIN_X + 50;
+        static constexpr int START_Y = MENU_TEXT_Y;
+
+        static constexpr int OFFSET_Y = RECT_HEIGHT + 80;
+
+        static constexpr int TEXT_CENTER_X = RECT_WIDTH / 2;
+        static constexpr int TEXT_CENTER_Y = RECT_HEIGHT / 2;
+
+        static constexpr int INFO_X        = 260; 
+        static constexpr int RECT_EXPAND   = 20;  
+
+        static constexpr const wchar_t* SLOT_LABELS[SAVE_SLOT_COUNT] = {
+            L"オート", L"スロット 1", L"スロット 2", L"スロット 3"
+        };
+
+        // constexpr でスロット矩形を全計算（VolumePanel と同パターン）
+        static constexpr auto SLOT_RECTS = []()
+        {
+            std::array<Rect<int>, SAVE_SLOT_COUNT> rects{};
+            for (int i = 0; i < SAVE_SLOT_COUNT; ++i)
+            {
+                rects[i] = {
+                    START_X,
+                    START_Y + OFFSET_Y * i,
+                    START_X + RECT_WIDTH,
+                    START_Y + OFFSET_Y * i + RECT_HEIGHT
+                };
+            }
+            return rects;
+        }();
     };
 
     std::unique_ptr<MenuPanel> CreateSavePanel(IInputService& input,

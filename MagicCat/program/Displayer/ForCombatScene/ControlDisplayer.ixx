@@ -24,22 +24,6 @@ namespace mc {
 
     class ControlDisplayer : public Displayer
     {
-    private:
-        static constexpr int ICON_DRAW_X = 100;
-        static constexpr int ICON_NAV_X = 500;
-        static constexpr int ICON_NAV2_X = 560;
-        static constexpr int ICON_CONF_X = 620;
-        static constexpr int ICON_RULES_X = 920;
-        static constexpr int Y = 100;
-
-        static constexpr int TEXT_OFFSET_X = 40;
-        static constexpr int TEXT_OFFSET_Y = -25;
-
-        static constexpr int HINT_X = 20 + ICON_SIZE_X / 4;
-        static constexpr int HINT_Y = 20 + ICON_SIZE_Y / 4;
-        static constexpr int HINT_TEXT_X = 20 + ICON_SIZE_X / 2 + 10;
-        static constexpr int HINT_TEXT_Y = HINT_Y - FONT_SIZE / 2;
-
     public:
         ControlDisplayer(IAssetService& asset, IRenderService& render,
                          IInputService& input, IOSService& os, uint32_t c = 0xFFFF00)
@@ -172,6 +156,22 @@ namespace mc {
         IInputService& inputService;
         IOSService& osService;
         uint32_t color;
+
+    private:
+        static constexpr int ICON_DRAW_X = 100;
+        static constexpr int ICON_NAV_X = 500;
+        static constexpr int ICON_NAV2_X = 560;
+        static constexpr int ICON_CONF_X = 620;
+        static constexpr int ICON_RULES_X = 920;
+        static constexpr int Y = 100;
+
+        static constexpr int TEXT_OFFSET_X = 40;
+        static constexpr int TEXT_OFFSET_Y = -25;
+
+        static constexpr int HINT_X = 20 + ICON_SIZE_X / 4;
+        static constexpr int HINT_Y = 20 + ICON_SIZE_Y / 4;
+        static constexpr int HINT_TEXT_X = 20 + ICON_SIZE_X / 2 + 10;
+        static constexpr int HINT_TEXT_Y = HINT_Y - FONT_SIZE / 2;
     };
 
     export std::unique_ptr<Displayer> CreateControlDisplayer(

@@ -16,8 +16,6 @@ namespace mc {
     export class CutsceneFocusDisplayer : public Displayer
     {
     public:
-        static constexpr float DEFAULT_DURATION = 0.5f;
-
         /// @brief アニメーション情報と枠の形状を指定してCutsceneFocusDisplayerを構築する
         /// @param renderService レンダリングサービスへの参照
         /// @param source 移動開始の中心座標(x, y)
@@ -76,6 +74,9 @@ namespace mc {
         Point<float> m_destination;
         float m_duration;
         float m_elapsed = 0.f;
+
+    public:
+        static constexpr float DEFAULT_DURATION = 0.5f;
     };
 
     export std::unique_ptr<CutsceneFocusDisplayer> CreateCutsceneFocusDisplayer(

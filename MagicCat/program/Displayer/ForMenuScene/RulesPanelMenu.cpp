@@ -13,16 +13,6 @@ import AssetService;
 namespace mc {
     class RulesPanel : public MenuPanel
     {
-    private:
-        static constexpr int LINE_SPACING = 60;
-        static constexpr int INDENT_LEVEL_1 = 50;
-        static constexpr int INDENT_LEVEL_2 = 80;
-        static constexpr int SECTION_SPACING = 280;
-        static constexpr int PAGE_COUNT = 3;
-        static constexpr int PAGE_COUNT_OFFSET_X = 150;
-        static constexpr int NEXT_PAGE_ICON_X = 780;
-        static constexpr int FOOTER_TEXT_Y = WINDOW_HEIGHT - MENU_BOX_MARGIN_Y_DOWN - 50;
-
     public:
         RulesPanel(IInputService& input, IRenderService& render, IAssetService& asset)
             : MenuPanel()
@@ -136,6 +126,16 @@ namespace mc {
         IRenderService& renderService;
         IAssetService& assetService;
         int currentPage = 0;
+
+    private:
+        static constexpr int LINE_SPACING = 60;
+        static constexpr int INDENT_LEVEL_1 = 50;
+        static constexpr int INDENT_LEVEL_2 = 80;
+        static constexpr int SECTION_SPACING = 280;
+        static constexpr int PAGE_COUNT = 3;
+        static constexpr int PAGE_COUNT_OFFSET_X = 150;
+        static constexpr int NEXT_PAGE_ICON_X = 780;
+        static constexpr int FOOTER_TEXT_Y = WINDOW_HEIGHT - MENU_BOX_MARGIN_Y_DOWN - 50;
     };
 
     std::unique_ptr<MenuPanel> CreateRulesPanel(IInputService& input,

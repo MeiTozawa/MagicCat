@@ -102,7 +102,7 @@ namespace mc {
         {
             assert(slot >= 0 && slot < SAVE_SLOT_COUNT);
 
-            if (!currentPlayer || !currentEnemy)
+            if (!currentPlayer || !currentEnemy || sequence.empty() || currentPlayer->GetHealthComponent().IsDead())
             {
                 EventBus::Publish(SaveStateEvent(false, slot));
                 return;
@@ -145,6 +145,8 @@ namespace mc {
                 return false;
 
             const GameState& state = *stateOpt;
+            if (state.sequence.empty())
+                return false;
 
             // Rebuild sequence from sprite ints
             std::vector<EnemyConfig> newSequence;

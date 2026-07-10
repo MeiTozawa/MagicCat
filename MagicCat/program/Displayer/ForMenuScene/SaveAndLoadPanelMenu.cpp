@@ -57,7 +57,10 @@ namespace mc {
                 const int slot = *confirmed;
                 if (mode == SlotPanelMode::Save)
                 {
-                    battleService.SaveState(slot);
+                    if (slot != 0)
+                        battleService.SaveState(slot);
+                    else // 自動保存の上書きを禁止する
+                        EventBus::Publish(SaveStateEvent{false, 0});
                 }
                 else // Load
                 {
@@ -72,12 +75,14 @@ namespace mc {
             for (int i = 0; i < SAVE_SLOT_COUNT; ++i)
             {
                 const bool isFocused = (slotGroup.GetFocusedIndex() == i);
-                const auto& rect     = SLOT_RECTS[i];
+                const auto& rect = SLOT_RECTS[i];
 
                 renderService.DrawButton(rect.Expand(RECT_EXPAND), L"",
                                          isFocused, COLOR_BG, COLOR_WHITE);
 
-                const uint32_t fgColor = isFocused ? COLOR_YELLOW : COLOR_WHITE;
+                uint32_t fgColor = isFocused ? COLOR_YELLOW : COLOR_WHITE;
+                if (i == 0 && mode == SlotPanelMode::Save) // 自動保存の上書きを禁止する
+                    fgColor = COLOR_GRAY;
                 renderService.DrawCenterString(
                     rect.x1 + TEXT_CENTER_X / 4,
                     rect.y1 + TEXT_CENTER_Y,
@@ -87,9 +92,9 @@ namespace mc {
                 if (meta.exists)
                 {
                     auto s = std::format(L"第{}/{}場  HP:{}/{}  敵HP:{}/{}",
-                               meta.currentBattle, meta.totalBattles,
-                               meta.playerHp, meta.playerMaxHp,
-                               meta.enemyHp, meta.enemyMaxHp);
+                                         meta.currentBattle, meta.totalBattles,
+                                         meta.playerHp, meta.playerMaxHp,
+                                         meta.enemyHp, meta.enemyMaxHp);
                     renderService.DrawCenterString(
                         rect.x1 + INFO_X + (RECT_WIDTH - INFO_X) / 2,
                         rect.y1 + TEXT_CENTER_Y,
@@ -123,7 +128,7 @@ namespace mc {
         EventHandle saveStateEventHandle;
 
     private:
-        static constexpr int RECT_WIDTH  = WINDOW_WIDTH - MENU_BOX_MARGIN_X * 2 - 100;
+        static constexpr int RECT_WIDTH = WINDOW_WIDTH - MENU_BOX_MARGIN_X * 2 - 100;
         static constexpr int RECT_HEIGHT = 100;
 
         static constexpr int START_X = MENU_BOX_MARGIN_X + 50;
@@ -134,8 +139,8 @@ namespace mc {
         static constexpr int TEXT_CENTER_X = RECT_WIDTH / 2;
         static constexpr int TEXT_CENTER_Y = RECT_HEIGHT / 2;
 
-        static constexpr int INFO_X        = 260; 
-        static constexpr int RECT_EXPAND   = 20;  
+        static constexpr int INFO_X = 260;
+        static constexpr int RECT_EXPAND = 20;
 
         static constexpr const wchar_t* SLOT_LABELS[SAVE_SLOT_COUNT] = {
             L"オート", L"スロット 1", L"スロット 2", L"スロット 3"

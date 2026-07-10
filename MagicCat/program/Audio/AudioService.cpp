@@ -199,12 +199,14 @@ namespace mc {
             }));
             eventHandles.push_back(EventBus::Subscribe<SaveStateEvent>([this](const SaveStateEvent& e)
             {
-                if (e.slot != 0)
+                if (e.success)
                 {
-                    if (e.success)
+                    if (e.slot != 0)
                         PlaySfx(assetService.GetSoundHandle(ESound::Confirm));
-                    else
-                        PlaySfx(assetService.GetSoundHandle(ESound::Beep));
+                }
+                else
+                {
+                    PlaySfx(assetService.GetSoundHandle(ESound::Beep));
                 }
             }));
             eventHandles.push_back(EventBus::Subscribe<CombatEvent>([this](const CombatEvent&)

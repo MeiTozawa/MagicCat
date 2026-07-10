@@ -109,11 +109,11 @@ namespace mc {
             renderService.DrawString(x + INDENT_LEVEL_1, y,
                                      L"プレイヤーの魔法スキル：", COLOR_TEXT_NORMAL);
             renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING,
-                                     L"【透視】1ゲームに1回のみ。敵の出す手を完全に可視化する。", COLOR_TEXT_BLUE);
+                                     L"【透視】1バトルに1回のみ。敵の出す手を完全に可視化する。", COLOR_TEXT_BLUE);
             renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 2,
                                      L"【⚔UP】制限なし。そのターンの間、自分の攻撃力が+2される。", COLOR_TEXT_BLUE);
             renderService.DrawString(x + INDENT_LEVEL_2, y + LINE_SPACING * 3,
-                                     L"【回復】1ゲームに3回まで。自分のHPを2回復する。", COLOR_TEXT_BLUE);
+                                     L"【回復】1バトルに3回まで。自分のHPを2回復する。", COLOR_TEXT_BLUE);
             renderService.DrawString(x + INDENT_LEVEL_1, y + SECTION_SPACING,
                                      L"表示される記号の意味：", COLOR_TEXT_NORMAL);
             renderService.DrawString(x + INDENT_LEVEL_2, y + SECTION_SPACING + LINE_SPACING,

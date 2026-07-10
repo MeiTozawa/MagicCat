@@ -2,7 +2,6 @@ module;
 
 #include <RandomUtils.h>
 #include <cassert>
-#include <stdexcept>
 
 module CardService;
 
@@ -39,7 +38,7 @@ namespace mc {
         {
             if (hand.size() >= HAND_SIZE_MAX)
                 return Card{ECardType::Null, 0};
-            
+
             if (drawPile.empty() && !discardPile.empty())
                 Shuffle();
 
@@ -52,9 +51,7 @@ namespace mc {
             EventBus::Publish(HandUpdatedEvent{hand});
 
             if (drawPile.size() == 0)
-            {
                 Shuffle();
-            }
             return c;
         }
 
@@ -68,8 +65,6 @@ namespace mc {
         std::vector<Card> GetHandCards() override { return hand; }
         std::vector<Card> GetDrawCards() override { return drawPile; }
         std::vector<Card> GetDiscardCards() override { return discardPile; }
-
-        // ── CardData serialization accessors ────────────────────────────────
 
         std::vector<CardData> GetHand() const override
         {
@@ -111,6 +106,7 @@ namespace mc {
             discardPile.clear();
             Random::Shuffle(drawPile);
             EventBus::Publish(ShuffleEvent());
+            EventBus::Publish(DeckUpdatedEvent{drawPile.size(), discardPile.size()});
         }
 
         static ECardType ToCardType(int type)
@@ -148,7 +144,7 @@ namespace mc {
         void AssertCardCount() const
         {
             assert(hand.size() + drawPile.size() + discardPile.size() <= deck.size()
-                   && "カード枚数がデッキサイズを超えています");
+                && "カード枚数がデッキサイズを超えています");
         }
 
         std::vector<Card> deck = std::vector<Card>();

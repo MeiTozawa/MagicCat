@@ -37,6 +37,14 @@ namespace mc {
         explicit SaveStateEvent(bool success, int slot) : success(success), slot(slot) {}
     };
 
+    /// @brief ロードステートが実行された際に発行されるイベント
+    export struct LoadStateEvent : IEvent
+    {
+        bool success;
+        int slot;
+        explicit LoadStateEvent(bool success, int slot) : success(success), slot(slot) {}
+    };
+
     /// @brief ステージの進行状態（Sequence、Current_Enemy_Index、ステージ結果）と
     /// キャラクター（プレイヤーおよび敵）の管理を行うサービス
     export class IBattleService

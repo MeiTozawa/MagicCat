@@ -142,11 +142,17 @@ namespace mc {
 
             auto stateOpt = configService.LoadGame(slot);
             if (!stateOpt.has_value())
+            {
+                EventBus::Publish(LoadStateEvent(false, slot));
                 return false;
+            }
 
             const GameState& state = *stateOpt;
             if (state.sequence.empty())
+            {
+                EventBus::Publish(LoadStateEvent(false, slot));
                 return false;
+            }
 
             // Rebuild sequence from sprite ints
             std::vector<EnemyConfig> newSequence;
@@ -154,7 +160,10 @@ namespace mc {
             {
                 auto cfg = FindEnemyConfigBySprite(static_cast<ESprite>(spriteInt));
                 if (!cfg.has_value())
+                {
+                    EventBus::Publish(LoadStateEvent(false, slot));
                     return false;
+                }
                 newSequence.push_back(*cfg);
             }
             sequence     = std::move(newSequence);
@@ -190,6 +199,7 @@ namespace mc {
             cardService.SetDrawPile(state.drawPile);
             cardService.SetDiscardPile(state.discardPile);
 
+            EventBus::Publish(LoadStateEvent(true, slot));
             return true;
         }
 

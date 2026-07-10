@@ -247,6 +247,13 @@ namespace mc {
             {
                 StartBgmFadeOut();
             }));
+            eventHandles.push_back(EventBus::Subscribe<LoadStateEvent>([this](const LoadStateEvent& e)
+            {
+                if (e.success)
+                    StartBgmFadeIn();
+                else
+                    PlaySfx(assetService.GetSoundHandle(ESound::Beep));
+            }));
         }
 
         void OnHealthChanged(const HealthChangedEvent& e) const
@@ -312,7 +319,6 @@ namespace mc {
         float bgmTarget = 0.f; ///< 目標音量
         float bgmFadeSpeed = 0.f; ///< 1秒あたりの変化量
 
-    private:
         static constexpr int BGM_VOLUME_MAX = 255;
         static constexpr float BGM_FADE_TIME = 1.5f;
 

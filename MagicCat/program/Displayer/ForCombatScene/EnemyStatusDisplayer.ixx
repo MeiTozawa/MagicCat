@@ -7,7 +7,7 @@ module;
 #include <format>
 #include <RenderUtils.h>
 
-export module Displayer:Character;
+export module Displayer:EnemyStatus;
 import DisplayerBase;
 
 import BattleService;
@@ -18,27 +18,18 @@ import AssetEnumMapper;
 import HealthComponent;
 import Character;
 import Enemy;
-import Player;
 import SceneService;
 
 namespace mc {
-    class CharacterDisplayer : public Displayers
+    class EnemyStatusDisplayer : public Displayers
     {
     public:
-        CharacterDisplayer(IBattleService& character, IRenderService& render)
+        EnemyStatusDisplayer(IBattleService& character, IRenderService& render)
             : characterService(character), renderService(render)
         {
             InitEnemyWeightDisplayers();
-
-            push_back(CreateLambdaDisplayer([this](float) { PrintPlayerInfo(); }));
             push_back(CreateLambdaDisplayer([this](float) { PrintEnemyInfoWithoutWeight(); }));
-            push_back(CreateLambdaDisplayer([this](float) { PrintPlayerActions(currentFocus); }));
 
-            actionSelectionEvent = EventBus::Subscribe<ActionSelectionEvent>([this](const ActionSelectionEvent& e)
-            {
-                currentFocus = e.selectedIndex;
-                isMagicMenuOpen = e.isMagicMenuOpen;
-            });
             addWeightEvent = EventBus::Subscribe<AddWeightEvent>([this](const AddWeightEvent& e)
             {
                 const int idx = static_cast<int>(e.AttackType);
@@ -47,100 +38,12 @@ namespace mc {
             });
         }
 
-        ~CharacterDisplayer() override
+        ~EnemyStatusDisplayer() override
         {
-            EventBus::Unsubscribe(actionSelectionEvent);
             EventBus::Unsubscribe(addWeightEvent);
         }
 
     private:
-        void PrintPlayerInfo() const
-        {
-            const Player& player = characterService.GetPlayer();
-            const auto playerHealthComp = player.GetHealthComponent();
-
-            auto message = std::format(L"HP: {}/{}", playerHealthComp.GetHealth(), playerHealthComp.GetMaxHealth());
-            renderService.DrawString(PLAYER_HP_X, PLAYER_HP_Y, message.c_str(), COLOR_WHITE);
-            message = std::format(L"MP: {}/{}", player.GetMp(), player.GetMaxMp());
-            renderService.DrawString(PLAYER_MP_X, PLAYER_MP_Y, message.c_str(), COLOR_WHITE);
-        }
-
-        void PrintPlayerActions(int focus) const
-        {
-            const Player& player = characterService.GetPlayer();
-            for (int i = 0; i < 4; ++i)
-            {
-                float x1 = PLAYER_DAMAGE_START_X;
-                float y1 = PLAYER_DAMAGE_START_Y + i * OFFSET_Y;
-                float x2 = PLAYER_DAMAGE_START_X + RECT_X;
-                float y2 = PLAYER_DAMAGE_START_Y + RECT_Y + i * OFFSET_Y;
-
-                renderService.DrawHollowBox(x1, y1, x2, y2, THICKNESS, COLOR_WHITE);
-
-                if (i == focus)
-                {
-                    // 選択中の枠は内側にもう一重追加して太く見せる
-                    renderService.DrawHollowBox(x1 + 2 * THICKNESS, y1 + 2 * THICKNESS,
-                                                x2 - 2 * THICKNESS, y2 - 2 * THICKNESS,
-                                                THICKNESS, COLOR_WHITE);
-                }
-            }
-            if (isMagicMenuOpen)
-                PrintMagicMenu(player);
-            else
-                PrintAttackMenu(player);
-        }
-
-        void PrintMagicMenu(const Player& player) const
-        {
-            renderService.DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
-                       PLAYER_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                       L"  戻る", COLOR_WHITE);
-
-            uint32_t c1 = player.IsMagicUsable(EMagic::Clairvoyance) ? COLOR_WHITE : COLOR_GRAY;
-            renderService.DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
-                       PLAYER_DAMAGE_START_Y + 1 * OFFSET_Y + TEXT_OFFSET_Y,
-                       L"透視 (10MP)", c1);
-
-            uint32_t c2 = player.IsMagicUsable(EMagic::PowerBoost) ? COLOR_WHITE : COLOR_GRAY;
-            renderService.DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
-                       PLAYER_DAMAGE_START_Y + 2 * OFFSET_Y + TEXT_OFFSET_Y,
-                       L"⚔UP (7MP)", c2);
-
-            uint32_t c3 = player.IsMagicUsable(EMagic::Heal) ? COLOR_WHITE : COLOR_GRAY;
-            renderService.DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
-                       PLAYER_DAMAGE_START_Y + 3 * OFFSET_Y + TEXT_OFFSET_Y,
-                       L"回復 (5MP)", c3);
-        }
-
-        void PrintAttackMenu(const Player& player) const
-        {
-            renderService.DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
-                       PLAYER_DAMAGE_START_Y + 0 * OFFSET_Y + TEXT_OFFSET_Y,
-                       L"  魔法", COLOR_WHITE);
-
-            constexpr std::pair<EAttackType, const wchar_t*> attackTypes[] = {
-                {EAttackType::Rock, L"✊"},
-                {EAttackType::Scissors, L"✌"},
-                {EAttackType::Paper, L"✋"}
-            };
-
-            for (int i = 0; i < 3; ++i)
-            {
-                auto color = COLOR_WHITE;
-                std::wstring message = std::format(L"{}⚔：{}", attackTypes[i].second,
-                                                   player.GetBaseDamage(attackTypes[i].first));
-                if (int offset = player.GetDamageOffset(); offset != 0)
-                {
-                    color = COLOR_RED;
-                    message += std::format(L"+{}", offset);
-                }
-                renderService.DrawString(PLAYER_DAMAGE_START_X + TEXT_OFFSET_X,
-                           PLAYER_DAMAGE_START_Y + (i + 1) * OFFSET_Y + TEXT_OFFSET_Y,
-                           message.c_str(), color);
-            }
-        }
-
         void InitEnemyWeightDisplayers()
         {
             constexpr EAttackType types[3] = {EAttackType::Rock, EAttackType::Scissors, EAttackType::Paper};
@@ -220,25 +123,15 @@ namespace mc {
 
         IBattleService& characterService;
         IRenderService& renderService;
-        int currentFocus = 0;
-        bool isMagicMenuOpen = false;
-        EventHandle actionSelectionEvent;
         EventHandle addWeightEvent;
         // ウェイト表示 Displayer（インデックス: 0=Rock, 1=Scissors, 2=Paper）
         std::array<Displayer*, 3> weightDisplayers = {};
 
     private:
-        static constexpr int PLAYER_DAMAGE_START_X = ACTION_MENU_X;
-        static constexpr int PLAYER_DAMAGE_START_Y = ACTION_MENU_Y;
-
-        static constexpr int PLAYER_HP_X = 60;
-        static constexpr int PLAYER_HP_Y = 200;
         static constexpr int ENEMY_NAME_X = 1150;
         static constexpr int ENEMY_NAME_Y = 230;
         static constexpr int ENEMY_HP_X = 1500;
         static constexpr int ENEMY_HP_Y = 230;
-        static constexpr int PLAYER_MP_X = 60;
-        static constexpr int PLAYER_MP_Y = 300;
 
         static constexpr int ENEMY_WEIGHT_START_X = 1150;
         static constexpr int ENEMY_WEIGHT_START_Y = 300;
@@ -256,9 +149,9 @@ namespace mc {
         static constexpr int THICKNESS = 2;
     };
 
-    export std::unique_ptr<Displayer> CreateCharacterDisplayer(IBattleService& characterService,
-                                                               IRenderService& renderService)
+    export std::unique_ptr<Displayer> CreateEnemyStatusDisplayer(
+        IBattleService& characterService, IRenderService& renderService)
     {
-        return std::make_unique<CharacterDisplayer>(characterService, renderService);
+        return std::make_unique<EnemyStatusDisplayer>(characterService, renderService);
     }
 } // namespace mc

@@ -1,11 +1,10 @@
 module;
 
-#include <app_build_setting.h>
 #include <memory>
 #include <array>
 #include <RenderUtils.h>
 
-export module Displayer:Control;
+export module Displayer:Navigation;
 import DisplayerBase;
 
 import AssetService;
@@ -22,10 +21,10 @@ namespace mc {
         const wchar_t* hintText;
     };
 
-    class ControlDisplayer : public Displayer
+    class NavigationDisplayer : public Displayer
     {
     public:
-        ControlDisplayer(IAssetService& asset, IRenderService& render,
+        NavigationDisplayer(IAssetService& asset, IRenderService& render,
                          IInputService& input, IOSService& os, uint32_t c = 0xFFFF00)
             : assetService(asset), renderService(render), inputService(input),
               osService(os), color(c) {}
@@ -178,6 +177,6 @@ namespace mc {
         IAssetService& assetService, IRenderService& renderService,
         IInputService& inputService, IOSService& osService, uint32_t color = COLOR_WHITE)
     {
-        return std::make_unique<ControlDisplayer>(assetService, renderService, inputService, osService, color);
+        return std::make_unique<NavigationDisplayer>(assetService, renderService, inputService, osService, color);
     }
 } // namespace mc

@@ -5,15 +5,14 @@ module;
 #include <algorithm>
 #include <RenderUtils.h>
 
-export module Displayer:CutsceneFocus;
+module Displayer;
 
-import DisplayerBase;
 import RenderService;
 
 namespace mc {
     /// @brief カットシーンのスロット間をスライドする角丸矩形フォーカス枠の Displayer。
     /// 内部に線形補間アニメーションを持ち、source から destination へ duration 秒で移動する。
-    export class CutsceneFocusDisplayer : public Displayer
+    class CutsceneFocusDisplayer : public DelegatingDisplayer
     {
     public:
         /// @brief アニメーション情報と枠の形状を指定してCutsceneFocusDisplayerを構築する
@@ -39,7 +38,7 @@ namespace mc {
               , m_source(source), m_destination(destination)
               , m_duration(duration) {}
 
-    private:
+    protected:
         void OnUpdate(float deltaTime) override
         {
             if (deltaTime > 0.f)
@@ -60,6 +59,7 @@ namespace mc {
                 m_cornerRadius, m_thickness, m_color);
         }
 
+    private:
         IRenderService& m_renderService;
 
         // レイアウト
@@ -79,13 +79,13 @@ namespace mc {
         static constexpr float DEFAULT_DURATION = 0.5f;
     };
 
-    export std::unique_ptr<CutsceneFocusDisplayer> CreateCutsceneFocusDisplayer(
+    std::unique_ptr<IDisplayer> CreateCutsceneFocusDisplayer(
         IRenderService& renderService,
         Point<float> source, Point<float> destination,
         float halfWidth, float halfHeight,
         int cornerRadius, int thickness,
-        uint32_t color = 0xFFFFFF,
-        float duration = CutsceneFocusDisplayer::DEFAULT_DURATION)
+        uint32_t color,
+        float duration)
     {
         return std::make_unique<CutsceneFocusDisplayer>(
             renderService, source, destination,

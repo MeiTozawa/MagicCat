@@ -4,13 +4,12 @@ module;
 #include <string>
 #include <RenderUtils.h>
 
-export module Displayer:Dialog;
-import DisplayerBase;
+module Displayer;
 import RenderService;
 
 namespace mc {
     /// @brief キャラクターの発言（吹き出しダイアログ）を画面上に描画するディスプレイヤー
-    export class DialogDisplayer : public Displayer
+    class DialogDisplayer : public IDialogDisplayer, public DelegatingDisplayer
     {
     public:
         /// @brief 描画先の基準位置を指定してDialogDisplayerを構築する
@@ -23,13 +22,13 @@ namespace mc {
         /// @brief ダイアログ内に表示するメッセージと文字色を設定する
         /// @param message 表示するワイド文字列
         /// @param messageColor 文字とダイアログ枠の色（RGB16進数）
-        void SetMessage(const std::wstring& message, uint32_t messageColor)
+        void SetMessage(const std::wstring& message, uint32_t messageColor) override
         {
             text = message;
             color = messageColor;
         }
 
-    private:
+    protected:
         void OnDraw(float deltaTime) const override
         {
             if (text.empty()) return;
@@ -55,6 +54,7 @@ namespace mc {
             renderService.DrawCenterString(centerX, y1 + boxHeight / 2, text.c_str(), color);
         }
 
+    private:
         IRenderService& renderService;
         int centerX;
         int topY;
@@ -70,7 +70,7 @@ namespace mc {
         static constexpr int DIALOG_TAIL_HEIGHT = 16;
     };
 
-    export std::unique_ptr<DialogDisplayer> CreateDialogDisplayer(
+    std::unique_ptr<IDialogDisplayer> CreateDialogDisplayer(
         IRenderService& renderService, int centerX, int topY)
     {
         return std::make_unique<DialogDisplayer>(renderService, centerX, topY);

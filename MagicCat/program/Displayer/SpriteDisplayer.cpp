@@ -1,19 +1,18 @@
-﻿module;
+module;
 
 #include <RenderUtils.h>
 
-export module Displayer:Sprite;
+module Displayer;
 
 import EventBus;
 import HealthComponent;
 import AssetService;
 import RenderService;
-import DisplayerBase;
 
 namespace mc {
     constexpr int ANIMATION_SPEED = 6;
 
-    class SpriteDisplayer : public Displayer
+    class SpriteDisplayer : public DelegatingDisplayer
     {
     public:
         SpriteDisplayer(IAssetService* assetService, IRenderService& renderService,
@@ -27,7 +26,7 @@ namespace mc {
             size = info.size;
         }
 
-    private:
+    protected:
         void OnUpdate(float deltaTime) override
         {
             timer += deltaTime;
@@ -43,8 +42,8 @@ namespace mc {
         void OnDraw(float deltaTime) const override
         {
             renderService.DrawRectRotaGraph(
-                x + size.x / 2,
-                y + size.y / 2,
+                GetX() + size.x / 2,
+                GetY() + size.y / 2,
                 frame_index * size.x,
                 0,
                 size.x,
@@ -57,6 +56,7 @@ namespace mc {
             );
         }
 
+    private:
         IAssetService* assetService;
         IRenderService& renderService;
         float timer = 0;
@@ -68,9 +68,9 @@ namespace mc {
         int handle;
     };
 
-    export std::unique_ptr<Displayer> CreateSpriteDisplayer(
+    std::unique_ptr<IDisplayer> CreateSpriteDisplayer(
         IAssetService* assetService, IRenderService* renderService,
-        ESprite sprite, float extraRate, bool isFlip = false
+        ESprite sprite, float extraRate, bool isFlip
     )
     {
         return std::make_unique<SpriteDisplayer>(assetService, *renderService, sprite, extraRate, isFlip);

@@ -1,13 +1,12 @@
 module;
 
 #include <memory>
-export module Displayer:Attack;
-import DisplayerBase;
+module Displayer;
 import RenderService;
 
 namespace mc {
     /// @brief 戦闘アクション（選択されたジャンケンの手など）を画面上に描画するディスプレイヤー
-    export class AttackDisplayer : public Displayer
+    class AttackDisplayer : public IAttackDisplayer, public DelegatingDisplayer
     {
     public:
         /// @brief 座標とスケールを指定してAttackDisplayerを構築する
@@ -20,21 +19,22 @@ namespace mc {
 
         /// @brief 描画するグラフィック画像ハンドルを設定する
         /// @param imageHandle 画像ハンドル
-        void SetImage(int imageHandle) { handle = imageHandle; }
+        void SetImage(int imageHandle) override { handle = imageHandle; }
 
-    private:
+    protected:
         void OnDraw(float deltaTime) const override
         {
             if (handle != -1)
                 renderService.DrawRotaGraphF(x, y, scale, 0.0, handle, true);
         }
 
+    private:
         float x, y, scale;
         int handle = -1;
         IRenderService& renderService;
     };
 
-    export std::unique_ptr<AttackDisplayer> CreateAttackDisplayer(IRenderService& renderService,
+    std::unique_ptr<IAttackDisplayer> CreateAttackDisplayer(IRenderService& renderService,
                                                                    float x, float y, float scale)
     {
         return std::make_unique<AttackDisplayer>(renderService, x, y, scale);

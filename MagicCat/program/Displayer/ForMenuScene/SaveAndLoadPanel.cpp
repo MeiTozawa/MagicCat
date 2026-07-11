@@ -47,7 +47,7 @@ namespace mc {
             EventBus::Unsubscribe(saveStateEventHandle);
         }
 
-    private:
+    protected:
         void OnUpdate(float /*deltaTime*/) override
         {
             slotGroup.Update();
@@ -110,6 +110,7 @@ namespace mc {
             }
         }
 
+    private:
         void RefreshSlotMeta()
         {
             for (int i = 0; i < SAVE_SLOT_COUNT; ++i)
@@ -127,7 +128,6 @@ namespace mc {
         std::array<SaveMetadata, SAVE_SLOT_COUNT> slotMeta{};
         EventHandle saveStateEventHandle;
 
-    private:
         static constexpr int RECT_WIDTH = WINDOW_WIDTH - MENU_BOX_MARGIN_X * 2 - 100;
         static constexpr int RECT_HEIGHT = 100;
 

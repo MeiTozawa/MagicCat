@@ -12,26 +12,21 @@ module SceneService;
 import EventBus;
 import BattleService;
 import EffectorFactory;
-import DisplayerBase;
+import Displayer;
 import AssetService;
 
 namespace mc {
     /// @brief シーン遷移フェード専用 Displayer。
     /// Effector が存在する間だけ全画面色塊を描画する。
-    class ScreenFadeDisplayer : public Displayer
+    class ScreenFadeDisplayer : public DelegatingDisplayer
     {
     public:
         explicit ScreenFadeDisplayer(IRenderService& rs) : renderService(rs) {}
 
-        void Draw(float deltaTime) const override
-        {
-            if (effectors.empty()) return;
-            Displayer::Draw(deltaTime);
-        }
-
     private:
         void OnDraw(float) const override
         {
+            if (!HasActiveEffectors()) return;
             renderService.DrawBoxAA(0.f, 0.f, WINDOW_WIDTH, WINDOW_HEIGHT, COLOR_BG, true);
         }
 
@@ -219,7 +214,7 @@ namespace mc {
         IRenderService* renderService = nullptr;
         IInputService* inputService = nullptr;
         IOSService* osService = nullptr;
-        std::unique_ptr<Displayer> fadeDisplayer;
+        std::unique_ptr<IDisplayer> fadeDisplayer;
 
         std::optional<ESceneState> pendingScene;
 

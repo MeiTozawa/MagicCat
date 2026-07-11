@@ -7,8 +7,7 @@ module;
 #include <format>
 #include <RenderUtils.h>
 
-export module Displayer:EnemyStatus;
-import DisplayerBase;
+module Displayer;
 
 import BattleService;
 import RenderService;
@@ -21,14 +20,15 @@ import Enemy;
 import SceneService;
 
 namespace mc {
-    class EnemyStatusDisplayer : public Displayers
+    class EnemyStatusDisplayer : public DelegatingDisplayer
     {
     public:
         EnemyStatusDisplayer(IBattleService& character, IRenderService& render)
             : characterService(character), renderService(render)
         {
+            displayers = CreateCompositeDisplayer();
             InitEnemyWeightDisplayers();
-            push_back(CreateLambdaDisplayer([this](float) { PrintEnemyInfoWithoutWeight(); }));
+            displayers->push_back(CreateLambdaDisplayer([this](float) { PrintEnemyInfoWithoutWeight(); }));
 
             addWeightEvent = EventBus::Subscribe<AddWeightEvent>([this](const AddWeightEvent& e)
             {
@@ -41,6 +41,17 @@ namespace mc {
         ~EnemyStatusDisplayer() override
         {
             EventBus::Unsubscribe(addWeightEvent);
+        }
+
+    protected:
+        void OnUpdate(float deltaTime) override
+        {
+            if (displayers) displayers->Update(deltaTime);
+        }
+
+        void OnDraw(float deltaTime) const override
+        {
+            if (displayers) displayers->Draw(deltaTime);
         }
 
     private:
@@ -68,7 +79,7 @@ namespace mc {
                                message.c_str(), COLOR_WHITE);
                 });
                 weightDisplayers[i] = d.get();
-                push_back(std::move(d));
+                displayers->push_back(std::move(d));
             }
         }
 
@@ -125,7 +136,8 @@ namespace mc {
         IRenderService& renderService;
         EventHandle addWeightEvent;
         // ウェイト表示 Displayer（インデックス: 0=Rock, 1=Scissors, 2=Paper）
-        std::array<Displayer*, 3> weightDisplayers = {};
+        std::array<IDisplayer*, 3> weightDisplayers = {};
+        std::unique_ptr<ICompositeDisplayer> displayers;
 
     private:
         static constexpr int ENEMY_NAME_X = 1150;
@@ -149,7 +161,7 @@ namespace mc {
         static constexpr int THICKNESS = 2;
     };
 
-    export std::unique_ptr<Displayer> CreateEnemyStatusDisplayer(
+    std::unique_ptr<IDisplayer> CreateEnemyStatusDisplayer(
         IBattleService& characterService, IRenderService& renderService)
     {
         return std::make_unique<EnemyStatusDisplayer>(characterService, renderService);

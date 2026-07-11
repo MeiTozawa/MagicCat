@@ -115,7 +115,7 @@ namespace mc {
         IBattleService& battleService;
 
         std::vector<EnemySlotView> slots;
-        std::unique_ptr<CutsceneFocusDisplayer> borderDisplayer;
+        std::unique_ptr<IDisplayer> borderDisplayer;
 
         float timer = 0.f;
         bool finished = false;

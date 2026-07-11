@@ -1,4 +1,4 @@
-﻿module;
+module;
 
 #include <memory>
 #include <vector>
@@ -6,8 +6,7 @@
 #include <format>
 #include <RenderUtils.h>
 
-export module Displayer:PlayerStatus;
-import DisplayerBase;
+module Displayer;
 
 import BattleService;
 import RenderService;
@@ -19,14 +18,15 @@ import Player;
 import SceneService;
 
 namespace mc {
-    class PlayerStatusDisplayer : public Displayers
+    class PlayerStatusDisplayer : public DelegatingDisplayer
     {
     public:
         PlayerStatusDisplayer(IBattleService& character, IRenderService& render)
             : characterService(character), renderService(render)
         {
-            push_back(CreateLambdaDisplayer([this](float) { PrintPlayerInfo(); }));
-            push_back(CreateLambdaDisplayer([this](float) { PrintPlayerActions(currentFocus); }));
+            displayers = CreateCompositeDisplayer();
+            displayers->push_back(CreateLambdaDisplayer([this](float) { PrintPlayerInfo(); }));
+            displayers->push_back(CreateLambdaDisplayer([this](float) { PrintPlayerActions(currentFocus); }));
 
             actionSelectionEvent = EventBus::Subscribe<ActionSelectionEvent>([this](const ActionSelectionEvent& e)
             {
@@ -38,6 +38,17 @@ namespace mc {
         ~PlayerStatusDisplayer() override
         {
             EventBus::Unsubscribe(actionSelectionEvent);
+        }
+
+    protected:
+        void OnUpdate(float deltaTime) override
+        {
+            if (displayers) displayers->Update(deltaTime);
+        }
+
+        void OnDraw(float deltaTime) const override
+        {
+            if (displayers) displayers->Draw(deltaTime);
         }
 
     private:
@@ -68,8 +79,8 @@ namespace mc {
                 {
                     // 選択中の枠は内側にもう一重追加して太く見せる
                     renderService.DrawHollowBox(x1 + 2 * THICKNESS, y1 + 2 * THICKNESS,
-                                                x2 - 2 * THICKNESS, y2 - 2 * THICKNESS,
-                                                THICKNESS, COLOR_WHITE);
+                                                 x2 - 2 * THICKNESS, y2 - 2 * THICKNESS,
+                                                 THICKNESS, COLOR_WHITE);
                 }
             }
             if (isMagicMenuOpen)
@@ -133,6 +144,7 @@ namespace mc {
         int currentFocus = 0;
         bool isMagicMenuOpen = false;
         EventHandle actionSelectionEvent;
+        std::unique_ptr<ICompositeDisplayer> displayers;
 
     private:
         static constexpr int PLAYER_DAMAGE_START_X = ACTION_MENU_X;
@@ -154,7 +166,7 @@ namespace mc {
         static constexpr int THICKNESS = 2;
     };
 
-    export std::unique_ptr<Displayer> CreatePlayerStatusDisplayer(
+    std::unique_ptr<IDisplayer> CreatePlayerStatusDisplayer(
         IBattleService& characterService, IRenderService& renderService)
     {
         return std::make_unique<PlayerStatusDisplayer>(characterService, renderService);

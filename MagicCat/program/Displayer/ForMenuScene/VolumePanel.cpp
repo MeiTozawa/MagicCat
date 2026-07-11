@@ -42,7 +42,7 @@ namespace mc {
 
         bool IsPanelFocus() const override { return activeIndex != std::nullopt; }
 
-    private:
+    protected:
         void OnUpdate(float /*deltaTime*/) override
         {
             if (activeIndex == std::nullopt)
@@ -50,6 +50,48 @@ namespace mc {
             else
                 UpdateValueTweak();
         }
+
+        void OnDraw(float /*deltaTime*/) const override
+        {
+            // 1. Draw outer row containers (primary group)
+            for (int i = 0; i < VOLUME_ROW_COUNT; ++i)
+            {
+                const bool isRowFocused = (activeIndex == std::nullopt && primaryGroup.GetFocusedIndex() == i);
+                const bool isRowActive = (activeIndex == i);
+                
+                const uint32_t fgColor = isRowActive ? COLOR_YELLOW : COLOR_WHITE;
+
+                renderService.DrawButton(PRIMARY_RECTS[i].Expand(PRIMARY_RECT_EXPAND), L"", 
+                    isRowFocused, COLOR_BG, fgColor);
+
+                // Draw row name on the left (e.g. Master, BGM, SFX)
+                renderService.DrawCenterString(
+                    PRIMARY_RECTS[i].x1 + TEXT_CENTER_X,
+                    PRIMARY_RECTS[i].y1 + TEXT_CENTER_Y,
+                    VOLUME_LABELS[i], fgColor);
+            }
+
+            // 2. Draw inner volume level buttons (secondary group)
+            for (int i = 0; i < VOLUME_ROW_COUNT; ++i)
+            {
+                int currentVol = 0;
+                if (i == 0) currentVol = audioService.GetMasterVolume();
+                else if (i == 1) currentVol = audioService.GetBgmVolume();
+                else if (i == 2) currentVol = audioService.GetSfxVolume();
+
+                for (int j = 0; j < VOLUME_LEVEL_COUNT; ++j)
+                {
+                    const bool isBtnFocused = (activeIndex == i && secondaryGroup[i].GetFocusedIndex() == j);
+                    const bool isBtnCurrent = (currentVol == j);
+
+                    const uint32_t fgColor = isBtnCurrent ? COLOR_YELLOW : COLOR_WHITE;
+
+                    renderService.DrawButton(SECONDARY_RECTS[i][j], TEXTS[j], isBtnFocused, COLOR_BG, fgColor);
+                }
+            }
+        }
+
+    private:
 
         void UpdateRowSelect()
         {
@@ -121,45 +163,7 @@ namespace mc {
             }
         }
 
-        void OnDraw(float /*deltaTime*/) const override
-        {
-            // 1. Draw outer row containers (primary group)
-            for (int i = 0; i < VOLUME_ROW_COUNT; ++i)
-            {
-                const bool isRowFocused = (activeIndex == std::nullopt && primaryGroup.GetFocusedIndex() == i);
-                const bool isRowActive = (activeIndex == i);
-                
-                const uint32_t fgColor = isRowActive ? COLOR_YELLOW : COLOR_WHITE;
 
-                renderService.DrawButton(PRIMARY_RECTS[i].Expand(PRIMARY_RECT_EXPAND), L"", 
-                    isRowFocused, COLOR_BG, fgColor);
-
-                // Draw row name on the left (e.g. Master, BGM, SFX)
-                renderService.DrawCenterString(
-                    PRIMARY_RECTS[i].x1 + TEXT_CENTER_X,
-                    PRIMARY_RECTS[i].y1 + TEXT_CENTER_Y,
-                    VOLUME_LABELS[i], fgColor);
-            }
-
-            // 2. Draw inner volume level buttons (secondary group)
-            for (int i = 0; i < VOLUME_ROW_COUNT; ++i)
-            {
-                int currentVol = 0;
-                if (i == 0) currentVol = audioService.GetMasterVolume();
-                else if (i == 1) currentVol = audioService.GetBgmVolume();
-                else if (i == 2) currentVol = audioService.GetSfxVolume();
-
-                for (int j = 0; j < VOLUME_LEVEL_COUNT; ++j)
-                {
-                    const bool isBtnFocused = (activeIndex == i && secondaryGroup[i].GetFocusedIndex() == j);
-                    const bool isBtnCurrent = (currentVol == j);
-
-                    const uint32_t fgColor = isBtnCurrent ? COLOR_YELLOW : COLOR_WHITE;
-
-                    renderService.DrawButton(SECONDARY_RECTS[i][j], TEXTS[j], isBtnFocused, COLOR_BG, fgColor);
-                }
-            }
-        }
         
 
         IInputService& inputService;

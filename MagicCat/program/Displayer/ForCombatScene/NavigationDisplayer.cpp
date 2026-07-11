@@ -4,8 +4,7 @@ module;
 #include <array>
 #include <RenderUtils.h>
 
-export module Displayer:Navigation;
-import DisplayerBase;
+module Displayer;
 
 import AssetService;
 import RenderService;
@@ -21,7 +20,7 @@ namespace mc {
         const wchar_t* hintText;
     };
 
-    class NavigationDisplayer : public Displayer
+    class NavigationDisplayer : public DelegatingDisplayer
     {
     public:
         NavigationDisplayer(IAssetService& asset, IRenderService& render,
@@ -29,7 +28,7 @@ namespace mc {
             : assetService(asset), renderService(render), inputService(input),
               osService(os), color(c) {}
 
-    private:
+    protected:
         void OnDraw(float) const override
         {
             const InputDevice activeDevice = inputService.GetActiveDevice();
@@ -42,6 +41,7 @@ namespace mc {
                 DrawMouseHints();
         }
 
+    private:
         void DrawGamepadHints() const
         {
             osService.SetCursorArrow();
@@ -173,9 +173,9 @@ namespace mc {
         static constexpr int HINT_TEXT_Y = HINT_Y - FONT_SIZE / 2;
     };
 
-    export std::unique_ptr<Displayer> CreateControlDisplayer(
+    std::unique_ptr<IDisplayer> CreateControlDisplayer(
         IAssetService& assetService, IRenderService& renderService,
-        IInputService& inputService, IOSService& osService, uint32_t color = COLOR_WHITE)
+        IInputService& inputService, IOSService& osService, uint32_t color)
     {
         return std::make_unique<NavigationDisplayer>(assetService, renderService, inputService, osService, color);
     }

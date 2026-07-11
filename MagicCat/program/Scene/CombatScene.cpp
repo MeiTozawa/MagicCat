@@ -36,7 +36,7 @@ namespace mc {
         void Start() override
         {
             UnsubscribeAll();
-            displayers.clear();
+            if (displayers) displayers->clear();
             SetupDisplayers();
             SetupController();
             SetupEventHandlers();
@@ -50,8 +50,11 @@ namespace mc {
         void Update(float deltaTime) override
         {
             combatController->Update(deltaTime);
-            displayers.Update(deltaTime);
-            displayers.Draw(deltaTime);
+            if (displayers)
+            {
+                displayers->Update(deltaTime);
+                displayers->Draw(deltaTime);
+            }
         }
 
     private:
@@ -76,34 +79,35 @@ namespace mc {
 
         void SetupDisplayers()
         {
-            displayers.push_back(CreateCardDisplayer(cardService, assetService, renderService));
-            displayers.push_back(CreatePlayerStatusDisplayer(battleService, renderService));
-            displayers.push_back(CreateEnemyStatusDisplayer(battleService, renderService));
-            displayers.push_back(CreateControlDisplayer(assetService, renderService, inputService, osService));
+            displayers = CreateCompositeDisplayer();
+            displayers->push_back(CreateCardDisplayer(cardService, assetService, renderService));
+            displayers->push_back(CreatePlayerStatusDisplayer(battleService, renderService));
+            displayers->push_back(CreateEnemyStatusDisplayer(battleService, renderService));
+            displayers->push_back(CreateControlDisplayer(assetService, renderService, inputService, osService));
 
             auto playerAnim = CreateSpriteDisplayer(&assetService, &renderService,
                                                     battleService.GetPlayer().GetSprite(), EXTRA_RATE);
             playerAnim->SetPosition(PLAYER_START_X, PLAYER_START_Y);
             playerAnimDisp = playerAnim.get();
-            displayers.push_back(std::move(playerAnim));
+            displayers->push_back(std::move(playerAnim));
 
             auto enemyAnim = CreateSpriteDisplayer(&assetService, &renderService,
                                                    battleService.GetEnemy().GetSprite(), EXTRA_RATE, true);
             enemyAnim->SetPosition(ENEMY_START_X, ENEMY_START_Y);
             enemyAnimDisp = enemyAnim.get();
-            displayers.push_back(std::move(enemyAnim));
+            displayers->push_back(std::move(enemyAnim));
 
             auto pAtk = CreateAttackDisplayer(renderService, PLAYER_ATTACK_X, PLAYER_ATTACK_Y, ATTACK_IMAGE_SCALE);
             playerAttack = pAtk.get();
-            displayers.push_back(std::move(pAtk));
+            displayers->push_back(std::move(pAtk));
 
             auto eAtk = CreateAttackDisplayer(renderService, ENEMY_ATTACK_X, ENEMY_ATTACK_Y, ATTACK_IMAGE_SCALE);
             enemyAttack = eAtk.get();
-            displayers.push_back(std::move(eAtk));
+            displayers->push_back(std::move(eAtk));
 
             auto dlg = CreateDialogDisplayer(renderService, PLAYER_DIALOG_X, PLAYER_DIALOG_Y);
             playerDialog = dlg.get();
-            displayers.push_back(std::move(dlg));
+            displayers->push_back(std::move(dlg));
         }
 
         void SetupController()
@@ -195,17 +199,17 @@ namespace mc {
         IBattleService& battleService;
         IOSService& osService;
 
-        Displayers displayers;
+        std::unique_ptr<ICompositeDisplayer> displayers;
         std::unique_ptr<ICombatController> combatController;
         std::optional<EventHandle> healthChangedEvent;
         std::optional<EventHandle> combatEvent;
         std::optional<EventHandle> stageClearHandle;
 
-        Displayer* playerAnimDisp = nullptr;
-        Displayer* enemyAnimDisp = nullptr;
-        AttackDisplayer* playerAttack = nullptr;
-        AttackDisplayer* enemyAttack = nullptr;
-        DialogDisplayer* playerDialog = nullptr;
+        IDisplayer* playerAnimDisp = nullptr;
+        IDisplayer* enemyAnimDisp = nullptr;
+        IAttackDisplayer* playerAttack = nullptr;
+        IAttackDisplayer* enemyAttack = nullptr;
+        IDialogDisplayer* playerDialog = nullptr;
 
     private:
         static constexpr int PLAYER_START_X = 800;

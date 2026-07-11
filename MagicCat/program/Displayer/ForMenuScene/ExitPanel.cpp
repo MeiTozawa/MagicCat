@@ -19,30 +19,31 @@ public:
         , assetService(asset)
     {}
 
-private:
-    void OnUpdate(float /*deltaTime*/) override
-    {
-        if (inputService.IsPressed(InputAction::Confirm))
+    protected:
+        void OnUpdate(float /*deltaTime*/) override
         {
-            renderService.ExitApplication();
-            return;
+            if (inputService.IsPressed(InputAction::Confirm))
+            {
+                renderService.ExitApplication();
+                return;
+            }
+            auto click = inputService.OnMouseClick(InputAction::MouseClick);
+            if (click.In(MENU_BOX_RECT))
+                renderService.ExitApplication();
         }
-        auto click = inputService.OnMouseClick(InputAction::MouseClick);
-        if (click.In(MENU_BOX_RECT))
-            renderService.ExitApplication();
-    }
 
-    void OnDraw(float /*deltaTime*/) const override
-    {
-        renderService.DrawCenterString(WINDOW_WIDTH / 2, y,
-                                 L"ゲームを終了しますか？", COLOR_TEXT_NORMAL);
-        renderService.DrawCenterString(WINDOW_WIDTH / 2, y + 100,
-                                 L"保存されていない内容は失われます！", COLOR_TEXT_RED);
-        
-        DrawNavigationHints();
-    }
-    
-    void DrawNavigationHints() const
+        void OnDraw(float /*deltaTime*/) const override
+        {
+            renderService.DrawCenterString(WINDOW_WIDTH / 2, GetY(),
+                                     L"ゲームを終了しますか？", COLOR_TEXT_NORMAL);
+            renderService.DrawCenterString(WINDOW_WIDTH / 2, GetY() + 100,
+                                     L"保存されていない内容は失われます！", COLOR_TEXT_RED);
+            
+            DrawNavigationHints();
+        }
+
+    private:
+        void DrawNavigationHints() const
     {
         int icon;
         switch (inputService.GetActiveDevice())

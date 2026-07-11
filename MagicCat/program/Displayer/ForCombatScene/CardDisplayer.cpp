@@ -8,8 +8,7 @@ module;
 #include <algorithm>
 #include <RenderUtils.h>
 
-export module Displayer:Card;
-import DisplayerBase;
+module Displayer;
 
 import CardService;
 import RenderService;
@@ -19,12 +18,13 @@ import EffectorFactory;
 import AssetEnumMapper;
 
 namespace mc {
-    class CardDisplayer : public Displayers
+    class CardDisplayer : public DelegatingDisplayer
     {
     public:
         CardDisplayer(ICardService& card, IAssetService& asset, IRenderService& render)
             : cardService(card), assetService(asset), renderService(render)
         {
+            displayers = CreateCompositeDisplayer();
             cachedHand = cardService.GetHandCards();
             RebuildDisplayers(false);
 
@@ -41,9 +41,20 @@ namespace mc {
             EventBus::Unsubscribe(handUpdateHandle);
         }
 
+    protected:
+        void OnUpdate(float deltaTime) override
+        {
+            if (displayers) displayers->Update(deltaTime);
+        }
+
+        void OnDraw(float deltaTime) const override
+        {
+            if (displayers) displayers->Draw(deltaTime);
+        }
+
     private:
-        std::unique_ptr<Displayer> CreatePrintACardDisplayer(Card card, Point<int> start_position,
-                                                             std::wstring message) const
+        std::unique_ptr<IDisplayer> CreatePrintACardDisplayer(Card card, Point<int> start_position,
+                                                              std::wstring message) const
         {
             return CreateLambdaDisplayer([card, start_position, message, this](float)
             {
@@ -102,25 +113,28 @@ namespace mc {
 
         void RebuildDisplayers(bool isDraw = false)
         {
-            displayers.clear();
-            auto position = Point<int>{CARD_START_X, CARD_START_Y};
-            for (size_t i = 0; i < cachedHand.size(); ++i)
+            if (displayers)
             {
-                std::wstring msg = std::format(L"+{}", cachedHand[i].Power);
-                auto cardDisplay = CreatePrintACardDisplayer(cachedHand[i], position, msg);
+                displayers->clear();
+                auto position = Point<int>{CARD_START_X, CARD_START_Y};
+                for (size_t i = 0; i < cachedHand.size(); ++i)
+                {
+                    std::wstring msg = std::format(L"+{}", cachedHand[i].Power);
+                    auto cardDisplay = CreatePrintACardDisplayer(cachedHand[i], position, msg);
 
-                if (isDraw && i == cachedHand.size() - 1)
-                    cardDisplay->AddEffector(CreateHitFlashEffector(renderService, 0x000000, 300));
+                    if (isDraw && i == cachedHand.size() - 1)
+                        cardDisplay->AddEffector(CreateHitFlashEffector(renderService, 0x000000, 300));
 
-                push_back(std::move(cardDisplay));
-                position.x += OFFSET_X;
+                    displayers->push_back(std::move(cardDisplay));
+                    position.x += OFFSET_X;
+                }
+
+                std::wstring drawPileMsg = std::format(L"山札\n{:2}枚", cardService.GetDrawCards().size());
+                displayers->push_back(CreatePrintACardDisplayer({ECardType::Null}, {DRAW_PILE_X1, DRAW_PILE_Y1}, drawPileMsg));
+
+                std::wstring discardPileMsg = std::format(L"捨札\n{:2}枚", cardService.GetDiscardCards().size());
+                displayers->push_back(CreatePrintACardDisplayer({ECardType::Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, discardPileMsg));
             }
-
-            std::wstring drawPileMsg = std::format(L"山札\n{:2}枚", cardService.GetDrawCards().size());
-            push_back(CreatePrintACardDisplayer({ECardType::Null}, {DRAW_PILE_X1, DRAW_PILE_Y1}, drawPileMsg));
-
-            std::wstring discardPileMsg = std::format(L"捨札\n{:2}枚", cardService.GetDiscardCards().size());
-            push_back(CreatePrintACardDisplayer({ECardType::Null}, {DISCARD_PILE_X, DISCARD_PILE_Y}, discardPileMsg));
         }
 
         ICardService& cardService;
@@ -128,6 +142,7 @@ namespace mc {
         IRenderService& renderService;
         EventHandle handUpdateHandle;
         std::vector<Card> cachedHand;
+        std::unique_ptr<ICompositeDisplayer> displayers;
 
     private:
         static constexpr int CARD_START_X = 400;
@@ -142,8 +157,8 @@ namespace mc {
         static constexpr float IMAGE_SCALE = 0.3f;
     };
 
-    export std::unique_ptr<Displayer> CreateCardDisplayer(ICardService& cardService, IAssetService& assetService,
-                                                          IRenderService& renderService)
+    std::unique_ptr<IDisplayer> CreateCardDisplayer(ICardService& cardService, IAssetService& assetService,
+                                                           IRenderService& renderService)
     {
         return std::make_unique<CardDisplayer>(cardService, assetService, renderService);
     }

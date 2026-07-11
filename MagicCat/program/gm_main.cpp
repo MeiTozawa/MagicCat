@@ -33,7 +33,7 @@ struct GameContext {
     std::unique_ptr<IInputService>   inputService;    // 依存なし
     std::unique_ptr<IOSService>      osService;       // 依存なし
     std::unique_ptr<ISceneService>   sceneService;    // renderService、inputService、osService に依存
-    std::unique_ptr<MenuIconDisplayer> menuIconDisplayer; // sceneService、inputService、renderService、assetService、osService に依存
+    std::unique_ptr<IDisplayer> menuIconDisplayer; // sceneService、inputService、renderService、assetService、osService に依存
 };
 
 /// @brief GameStart の static GameContext へのポインタ。

@@ -3,9 +3,8 @@ module;
 #include <memory>
 #include <RenderUtils.h>
 
-export module Displayer:MenuIcon;
+module Displayer;
 
-import DisplayerBase;
 import SceneService;
 import InputService;
 import RenderService;
@@ -16,7 +15,7 @@ namespace mc {
 
     /// @brief メニューアイコンの描画・マウス判定・シーン操作を担うディスプレイヤー。
     /// SceneService から分離された HandleMenuButton ロジックをカプセル化する。
-    export class MenuIconDisplayer : public Displayer
+    class MenuIconDisplayer : public DelegatingDisplayer
     {
     public:
         MenuIconDisplayer(ISceneService& sceneService, IInputService& inputService,
@@ -27,7 +26,7 @@ namespace mc {
               osService(osService)
         {}
 
-    private:
+    protected:
         void OnUpdate(float deltaTime) override
         {
             if (sceneService.GetCurrentScene() == ESceneState::Cutscene)
@@ -85,6 +84,7 @@ namespace mc {
                     0.8f, 0.0f, iconHandle, true);
         }
 
+    private:
         ISceneService&  sceneService;
         IInputService&  inputService;
         IRenderService& renderService;
@@ -95,7 +95,7 @@ namespace mc {
     };
 
     /// @brief MenuIconDisplayer を生成するファクトリー関数
-    export std::unique_ptr<MenuIconDisplayer> CreateMenuIconDisplayer(
+    std::unique_ptr<IDisplayer> CreateMenuIconDisplayer(
         ISceneService& sceneService, IInputService& inputService,
         IRenderService& renderService, IAssetService& assetService,
         IOSService& osService)

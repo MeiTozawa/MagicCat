@@ -21,14 +21,14 @@ namespace mc {
     public:
         SaveAndLoadPanel(SlotPanelMode mode,
                          IInputService& input, IRenderService& render,
-                         IBattleService& battle, IConfigService& config,
+                         IBattleService& battle, IPersistenceService& persistence,
                          ISceneService& scene, IOSService& os)
             : MenuPanel()
               , mode(mode)
               , inputService(input)
               , renderService(render)
               , battleService(battle)
-              , configService(config)
+              , persistenceService(persistence)
               , sceneService(scene)
               , slotGroup(SLOT_RECTS, input, os, ButtonGroupLayout::Vertical)
         {
@@ -113,14 +113,14 @@ namespace mc {
         void RefreshSlotMeta()
         {
             for (int i = 0; i < SAVE_SLOT_COUNT; ++i)
-                slotMeta[i] = configService.GetSaveMetadata(i);
+                slotMeta[i] = persistenceService.GetSaveMetadata(i);
         }
 
         SlotPanelMode mode;
         IInputService& inputService;
         IRenderService& renderService;
         IBattleService& battleService;
-        IConfigService& configService;
+        IPersistenceService& persistenceService;
         ISceneService& sceneService;
 
         ButtonGroup slotGroup;
@@ -166,22 +166,22 @@ namespace mc {
     std::unique_ptr<MenuPanel> CreateSavePanel(IInputService& input,
                                                IRenderService& render,
                                                IBattleService& battle,
-                                               IConfigService& config,
+                                               IPersistenceService& persistence,
                                                ISceneService& scene,
                                                IOSService& os)
     {
         return std::make_unique<SaveAndLoadPanel>(SlotPanelMode::Save,
-                                                  input, render, battle, config, scene, os);
+                                                  input, render, battle, persistence, scene, os);
     }
 
     std::unique_ptr<MenuPanel> CreateLoadPanel(IInputService& input,
                                                IRenderService& render,
                                                IBattleService& battle,
-                                               IConfigService& config,
+                                               IPersistenceService& persistence,
                                                ISceneService& scene,
                                                IOSService& os)
     {
         return std::make_unique<SaveAndLoadPanel>(SlotPanelMode::Load,
-                                                  input, render, battle, config, scene, os);
+                                                  input, render, battle, persistence, scene, os);
     }
 } // namespace mc

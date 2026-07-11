@@ -24,7 +24,7 @@ using ::testing::NiceMock;
 namespace mc {
 namespace {
 
-class StubConfigService : public IConfigService
+class StubConfigService : public IConfigService, public IPersistenceService
 {
     std::vector<EnemyConfig> enemies_;
     std::vector<CardConfig>  cards_;
@@ -68,7 +68,7 @@ RC_GTEST_PROP(BattleServiceProperties, SequenceAlwaysHasThreeEntries, ())
     StubConfigService cfg;
     NiceMock<MockAssetService> mockAsset;
     auto cs = CreateCardService(cfg);
-    auto bs = CreateBattleService(cfg, *cs, mockAsset);
+    auto bs = CreateBattleService(cfg, cfg, *cs, mockAsset);
 
     bs->StartStage();
 
@@ -80,7 +80,7 @@ RC_GTEST_PROP(BattleServiceProperties, SequenceEntriesAreFromPool, ())
     StubConfigService cfg;
     NiceMock<MockAssetService> mockAsset;
     auto cs = CreateCardService(cfg);
-    auto bs = CreateBattleService(cfg, *cs, mockAsset);
+    auto bs = CreateBattleService(cfg, cfg, *cs, mockAsset);
 
     bs->StartStage();
 
@@ -105,7 +105,7 @@ RC_GTEST_PROP(BattleServiceProperties, CurrentIndexAlwaysStartsAtZero, ())
     StubConfigService cfg;
     NiceMock<MockAssetService> mockAsset;
     auto cs = CreateCardService(cfg);
-    auto bs = CreateBattleService(cfg, *cs, mockAsset);
+    auto bs = CreateBattleService(cfg, cfg, *cs, mockAsset);
 
     bs->StartStage();
 
@@ -117,7 +117,7 @@ RC_GTEST_PROP(BattleServiceProperties, EnemyDeathAlwaysIncrementsIndex, ())
     StubConfigService cfg;
     NiceMock<MockAssetService> mockAsset;
     auto cs = CreateCardService(cfg);
-    auto bs = CreateBattleService(cfg, *cs, mockAsset);
+    auto bs = CreateBattleService(cfg, cfg, *cs, mockAsset);
 
     bs->StartStage();
     RC_ASSERT(bs->GetCurrentEnemyIndex() == 0);
@@ -133,7 +133,7 @@ RC_GTEST_PROP(BattleServiceProperties, ThreeConsecutiveEnemyDeaths_StageClear, (
     StubConfigService cfg;
     NiceMock<MockAssetService> mockAsset;
     auto cs = CreateCardService(cfg);
-    auto bs = CreateBattleService(cfg, *cs, mockAsset);
+    auto bs = CreateBattleService(cfg, cfg, *cs, mockAsset);
 
     bs->StartStage();
 

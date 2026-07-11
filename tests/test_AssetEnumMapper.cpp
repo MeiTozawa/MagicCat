@@ -16,6 +16,106 @@ import AssetService;
 namespace mc {
 namespace {
 
+struct SpriteToSoundMapping
+{
+    ESprite sprite;
+    ESound  expected;
+};
+
+constexpr SpriteToSoundMapping kSpriteToSoundMappings[] = {
+    // CatAttack group
+    { ESprite::MeowingCat,       ESound::CatAttack   },
+    // WolfAttack group
+    { ESprite::Wolf,             ESound::WolfAttack  },
+    { ESprite::TimberWolf,       ESound::WolfAttack  },
+    { ESprite::SnowFox,          ESound::WolfAttack  },
+    { ESprite::Bunny,            ESound::WolfAttack  },
+    { ESprite::StinkySkunk,      ESound::WolfAttack  },
+    // PigAttack group
+    { ESprite::DaintyPig,        ESound::PigAttack   },
+    { ESprite::MadBoar,          ESound::PigAttack   },
+    { ESprite::SlowTurtle,       ESound::PigAttack   },
+    { ESprite::SpikeyPorcupine,  ESound::PigAttack   },
+    { ESprite::CoralCrab,        ESound::PigAttack   },
+    // SheepAttack group
+    { ESprite::PasturingSheep,   ESound::SheepAttack },
+    { ESprite::CluckingChicken,  ESound::SheepAttack },
+    { ESprite::TinyChick,        ESound::SheepAttack },
+    { ESprite::HonkingGoose,     ESound::SheepAttack },
+    { ESprite::CroakingToad,     ESound::SheepAttack },
+    { ESprite::LeapingFrog,      ESound::SheepAttack },
+};
+
+// ---------------------------------------------------------------------------
+// Unit tests — SpriteToAttackSound specific mapping groups
+// ---------------------------------------------------------------------------
+
+TEST(SpriteToAttackSound, MeowingCat_ReturnsCatAttack)
+{
+    EXPECT_EQ(SpriteToAttackSound(ESprite::MeowingCat), ESound::CatAttack);
+}
+
+TEST(SpriteToAttackSound, WolfGroup_ReturnsWolfAttack)
+{
+    EXPECT_EQ(SpriteToAttackSound(ESprite::Wolf),        ESound::WolfAttack);
+    EXPECT_EQ(SpriteToAttackSound(ESprite::TimberWolf),  ESound::WolfAttack);
+    EXPECT_EQ(SpriteToAttackSound(ESprite::SnowFox),     ESound::WolfAttack);
+    EXPECT_EQ(SpriteToAttackSound(ESprite::Bunny),       ESound::WolfAttack);
+    EXPECT_EQ(SpriteToAttackSound(ESprite::StinkySkunk), ESound::WolfAttack);
+}
+
+TEST(SpriteToAttackSound, PigGroup_ReturnsPigAttack)
+{
+    EXPECT_EQ(SpriteToAttackSound(ESprite::DaintyPig),       ESound::PigAttack);
+    EXPECT_EQ(SpriteToAttackSound(ESprite::MadBoar),         ESound::PigAttack);
+    EXPECT_EQ(SpriteToAttackSound(ESprite::SlowTurtle),      ESound::PigAttack);
+    EXPECT_EQ(SpriteToAttackSound(ESprite::SpikeyPorcupine), ESound::PigAttack);
+    EXPECT_EQ(SpriteToAttackSound(ESprite::CoralCrab),       ESound::PigAttack);
+}
+
+TEST(SpriteToAttackSound, SheepGroup_ReturnsSheepAttack)
+{
+    EXPECT_EQ(SpriteToAttackSound(ESprite::PasturingSheep),  ESound::SheepAttack);
+    EXPECT_EQ(SpriteToAttackSound(ESprite::CluckingChicken), ESound::SheepAttack);
+    EXPECT_EQ(SpriteToAttackSound(ESprite::TinyChick),       ESound::SheepAttack);
+    EXPECT_EQ(SpriteToAttackSound(ESprite::HonkingGoose),    ESound::SheepAttack);
+    EXPECT_EQ(SpriteToAttackSound(ESprite::CroakingToad),    ESound::SheepAttack);
+    EXPECT_EQ(SpriteToAttackSound(ESprite::LeapingFrog),     ESound::SheepAttack);
+}
+
+// ---------------------------------------------------------------------------
+// Fallback tests — ESprite::Null and unknown / out-of-range values
+// ---------------------------------------------------------------------------
+
+TEST(SpriteToAttackSound, Null_ReturnsCatAttack)
+{
+    EXPECT_EQ(SpriteToAttackSound(ESprite::Null), ESound::CatAttack);
+}
+
+TEST(SpriteToAttackSound, UnknownValue_ReturnsCatAttack)
+{
+    // Cast an arbitrary out-of-range integer; function must not assert or throw
+    EXPECT_EQ(SpriteToAttackSound(static_cast<ESprite>(9999)), ESound::CatAttack);
+    EXPECT_EQ(SpriteToAttackSound(static_cast<ESprite>(-1)),   ESound::CatAttack);
+}
+
+// ---------------------------------------------------------------------------
+// Property test — Requirements 2.2, 2.3
+//
+// Feature: code-readability-refactor, Property 1:
+// For any ESprite in the known mapping table, SpriteToAttackSound returns the
+// expected ESound. Validates: Requirements 2.2, 2.3
+// ---------------------------------------------------------------------------
+
+RC_GTEST_PROP(SpriteToAttackSound_Property, AllKnownSpritesMapCorrectly, ())
+{
+    constexpr int tableSize = static_cast<int>(std::size(kSpriteToSoundMappings));
+    const int idx = *rc::gen::inRange(0, tableSize);
+
+    const auto& m = kSpriteToSoundMappings[idx];
+    RC_ASSERT(SpriteToAttackSound(m.sprite) == m.expected);
+}
+
 struct CardTypeMapping
 {
     ECardType  cardType;

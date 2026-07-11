@@ -7,6 +7,7 @@ import AudioService;
 import InputService;
 import RenderService;
 import ConfigService;
+import PersistenceService;
 import BattleService;
 import CardService;
 import OSService;
@@ -15,18 +16,27 @@ import Player;
 
 namespace mc {
 
-class MockConfigService : public IConfigService {
+/// @brief IConfigService のみをモックする（静的設定読み込み 4 メソッド）
+class MockIConfigService : public IConfigService {
 public:
     MOCK_METHOD(const std::vector<CardConfig>&, GetCardConfigs, (), (const, override));
     MOCK_METHOD(const std::vector<EnemyConfig>&, GetEnemyConfigs, (), (const, override));
     MOCK_METHOD(const PlayerConfig&, GetPlayerConfig, (), (const, override));
     MOCK_METHOD(const GameConfig&, GetGameConfig, (), (const, override));
+};
+
+/// @brief IPersistenceService のみをモックする（音量設定・存档 R/W 5 メソッド）
+class MockIPersistenceService : public IPersistenceService {
+public:
     MOCK_METHOD(bool, LoadSoundSettings, (int& masterVolume, int& bgmVolume, int& sfxVolume), (override));
     MOCK_METHOD(bool, SaveSoundSettings, (int masterVolume, int bgmVolume, int sfxVolume), (override));
     MOCK_METHOD(bool, SaveGame, (int slot, const GameState& state), (override));
     MOCK_METHOD(std::optional<GameState>, LoadGame, (int slot), (override));
     MOCK_METHOD(SaveMetadata, GetSaveMetadata, (int slot), (override));
 };
+
+/// @brief 両インターフェースを組み合わせた後方互換モック（既存テスト向け）
+class MockConfigService : public MockIConfigService, public MockIPersistenceService {};
 
 class MockAssetService : public IAssetService {
 public:
@@ -117,12 +127,12 @@ public:
     MOCK_METHOD(std::vector<Card>, GetHandCards, (), (override));
     MOCK_METHOD(std::vector<Card>, GetDrawCards, (), (override));
     MOCK_METHOD(std::vector<Card>, GetDiscardCards, (), (override));
-    MOCK_METHOD(std::vector<CardData>, GetHand, (), (const, override));
-    MOCK_METHOD(std::vector<CardData>, GetDrawPile, (), (const, override));
-    MOCK_METHOD(std::vector<CardData>, GetDiscardPile, (), (const, override));
-    MOCK_METHOD(void, SetHand, (const std::vector<CardData>&), (override));
-    MOCK_METHOD(void, SetDrawPile, (const std::vector<CardData>&), (override));
-    MOCK_METHOD(void, SetDiscardPile, (const std::vector<CardData>&), (override));
+    MOCK_METHOD(std::vector<CardData>, GetHandForSave, (), (const, override));
+    MOCK_METHOD(std::vector<CardData>, GetDrawPileForSave, (), (const, override));
+    MOCK_METHOD(std::vector<CardData>, GetDiscardPileForSave, (), (const, override));
+    MOCK_METHOD(void, SetHandFromLoad, (const std::vector<CardData>&), (override));
+    MOCK_METHOD(void, SetDrawPileFromLoad, (const std::vector<CardData>&), (override));
+    MOCK_METHOD(void, SetDiscardPileFromLoad, (const std::vector<CardData>&), (override));
 };
 
 } // namespace mc

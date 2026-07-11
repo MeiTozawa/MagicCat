@@ -16,7 +16,7 @@ import AudioService;
 import RenderService;
 import BattleService;
 import OSService;
-import MenuIconDisplayer;
+import Displayer;
 using namespace mc;
 
 /// @brief 全サービスの所有権を保持する構造体。
@@ -85,7 +85,6 @@ void GameStart()
                                     CreateCutsceneScene(*ctx.sceneService, *ctx.assetService,
                                                         *ctx.renderService, *ctx.battleService));
 
-    // メニューアイコンの描画・クリック検出を担当
     ctx.menuIconDisplayer = CreateMenuIconDisplayer(
         *ctx.sceneService, *ctx.inputService, *ctx.renderService, *ctx.assetService, *ctx.osService);
 

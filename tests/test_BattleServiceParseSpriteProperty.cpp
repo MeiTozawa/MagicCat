@@ -26,7 +26,7 @@ namespace mc {
 namespace {
 
 /// Minimal config service that vends a single enemy entry.
-class SingleEnemyConfigService : public IConfigService
+class SingleEnemyConfigService : public IConfigService, public IPersistenceService
 {
     std::vector<EnemyConfig> enemies_;
     std::vector<CardConfig>  cards_;
@@ -85,7 +85,7 @@ RC_GTEST_PROP(BattleServiceParseSpriteProperty,
         .WillOnce(Return(static_cast<ESprite>(0)));
 
     auto cardService   = CreateCardService(configService);
-    auto battleService = CreateBattleService(configService, *cardService, mockAsset);
+    auto battleService = CreateBattleService(configService, configService, *cardService, mockAsset);
 
     battleService->LoadEnemy(config);
 }
@@ -109,7 +109,7 @@ RC_GTEST_PROP(BattleServiceParseSpriteProperty,
         EnemyConfig{ 15, 1, 1, 3, 1, L"EnemyC", spriteName },
     };
 
-    class MultiEnemyConfigService : public IConfigService
+    class MultiEnemyConfigService : public IConfigService, public IPersistenceService
     {
         std::vector<EnemyConfig> enemies_;
         std::vector<CardConfig>  cards_ = { { 0, 2 }, { 1, 2 }, { 2, 2 }, { 3, 2 } };
@@ -142,7 +142,7 @@ RC_GTEST_PROP(BattleServiceParseSpriteProperty,
         .WillRepeatedly(Return(static_cast<ESprite>(0)));
 
     auto cardService   = CreateCardService(configService);
-    auto battleService = CreateBattleService(configService, *cardService, mockAsset);
+    auto battleService = CreateBattleService(configService, configService, *cardService, mockAsset);
 
     battleService->StartStage();
 

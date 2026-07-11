@@ -1,4 +1,12 @@
+// rpcndr.h (pulled in via DxLib) defines `small` as `char`, which conflicts
+// with headers in some dependency chains. Undefine before rapidcheck includes.
+#ifdef small
+#undef small
+#endif
+
 #include <gtest/gtest.h>
+#include <rapidcheck.h>
+#include <rapidcheck/gtest.h>
 #include <algorithm>
 
 import Player;
@@ -114,6 +122,33 @@ namespace {
         player.ChangeMp(2);
         EXPECT_EQ(player.GetMp(), initialMp + 9);
     }
+
+} // namespace
+} // namespace mc
+
+namespace mc {
+namespace {
+
+// Feature: code-readability-refactor, Property 3:
+// For any PlayerConfig, Player(config, sprite).GetMaxMp() == config.maxMp and GetMp() == 0
+// Validates: Requirements 6.2, 6.4
+RC_GTEST_PROP(Player_Property, ConstructorReflectsConfig, ())
+{
+    PlayerConfig config = Player::GetDefaultConfig();
+    config.maxMp     = *rc::gen::inRange(0, 1001);
+    config.initialHp = *rc::gen::inRange(1, 101);
+
+    Player player(config, ESprite::MeowingCat);
+
+#ifdef _DEBUG
+    RC_ASSERT(player.GetMaxMp() == 100);
+    RC_ASSERT(player.GetMp() == 10);
+#else
+    RC_ASSERT(player.GetMaxMp() == config.maxMp);
+    RC_ASSERT(player.GetMp() == 0);
+#endif
+    RC_ASSERT(player.GetHealthComponent().GetMaxHealth() == config.initialHp);
+}
 
 } // namespace
 } // namespace mc

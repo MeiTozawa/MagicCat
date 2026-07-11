@@ -54,7 +54,7 @@ namespace {
 
             cardService = CreateCardService(*mockConfig);
             sceneService = CreateSceneService();
-            characterService = CreateBattleService(*mockConfig, *cardService, *mockAssetService);
+            characterService = CreateBattleService(*mockConfig, *mockConfig, *cardService, *mockAssetService);
 
             characterService->StartStage();
             cardService->Start();

@@ -25,7 +25,7 @@ using ::testing::NiceMock;
 namespace mc {
 namespace {
 
-class StubConfigService : public IConfigService
+class StubConfigService : public IConfigService, public IPersistenceService
 {
     std::vector<EnemyConfig> enemies_;
     std::vector<CardConfig>  cards_;
@@ -76,7 +76,7 @@ protected:
     void SetUp() override
     {
         cardService   = CreateCardService(configService);
-        battleService = CreateBattleService(configService, *cardService, mockAssetService);
+        battleService = CreateBattleService(configService, configService, *cardService, mockAssetService);
     }
 
     void TearDown() override
@@ -262,7 +262,7 @@ TEST_F(BattleServiceTest, StartStage_WithSmallPool_StillGeneratesThreeEnemies)
         { EnemyConfig{ 10, 1, 1, 1, 1, L"Lone", "Bunny" } });
     auto cs  = CreateCardService(tinyConfig);
     NiceMock<MockAssetService> mockAsset;
-    auto bs  = CreateBattleService(tinyConfig, *cs, mockAsset);
+    auto bs  = CreateBattleService(tinyConfig, tinyConfig, *cs, mockAsset);
 
     bs->StartStage();
     EXPECT_EQ(bs->GetSequence().size(), 3u);
@@ -277,7 +277,7 @@ TEST_F(BattleServiceTest, StartStage_WithBattleCountTwo_ClearsCorrectly)
     ConfigTwoBattles configTwo;
     auto cs = CreateCardService(configTwo);
     NiceMock<MockAssetService> mockAsset;
-    auto bs = CreateBattleService(configTwo, *cs, mockAsset);
+    auto bs = CreateBattleService(configTwo, configTwo, *cs, mockAsset);
 
     bs->StartStage();
     ASSERT_EQ(bs->GetSequence().size(), 2u);

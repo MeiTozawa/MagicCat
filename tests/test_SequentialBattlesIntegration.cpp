@@ -26,7 +26,7 @@ using ::testing::NiceMock;
 namespace mc {
 namespace {
 
-class StubConfigService : public IConfigService
+class StubConfigService : public IConfigService, public IPersistenceService
 {
     std::vector<EnemyConfig> enemies_;
     std::vector<CardConfig>  cards_;
@@ -104,7 +104,7 @@ protected:
         sceneService->RegisterScene(ESceneState::Cutscene, std::move(cutsceneScene));
 
         BattleService = CreateBattleService(
-            configService, *cardService, mockAssetService);
+            configService, configService, *cardService, mockAssetService);
     }
 
     void TearDown() override

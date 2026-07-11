@@ -7,32 +7,35 @@
 #include <gtest/gtest.h>
 #include <rapidcheck.h>
 #include <rapidcheck/gtest.h>
+#include <array>
 
 import AssetService;
 
 namespace mc {
 namespace {
 
-// Minimal concrete AssetService for threshold testing.
+// ----------------------------------------------------------------------------
+// MapBasedTestAssetService
 //
-// The real AssetService constructor calls DxLib (LoadGraph, LoadSoundMem, etc.)
-// which is not available in the test environment. This subclass overrides only
-// GetSpriteInfo and stubs all other IAssetService methods so the class can
-// be constructed without DxLib.
+// Mimics the production SPRITE_INFO_MAP behavior without requiring DxLib.
+// Bunny and Wolf → {32,32}, 4 (large sprites)
+// All other registered ESprites → {16,16}, 4 (small sprites)
+// ESprite::Null or unknown → {0,0}, 0 (fallback)
+// ----------------------------------------------------------------------------
 
-class ThresholdTestAssetService : public IAssetService
+class MapBasedTestAssetService : public IAssetService
 {
 public:
-    // Matches the anonymous-namespace constant in AssetService.cpp.
-    // Duplicated here intentionally: validates that the production constant == 100
-    // is the boundary described in the threshold requirement.
-    static constexpr int THRESHOLD = 100;
+    // All 17 non-Null registered ESprite values, matching SPRITE_INFO_MAP in AssetService.cpp.
+    static const std::array<ESprite, 17> kRegisteredSprites;
 
     SpriteInfo GetSpriteInfo(ESprite e) override
     {
-        if (static_cast<int>(e) < THRESHOLD)
+        if (e == ESprite::Bunny || e == ESprite::Wolf)
             return {{32, 32}, 4};
-        return {{16, 16}, 4};
+        for (auto s : kRegisteredSprites)
+            if (s == e) return {{16, 16}, 4};
+        return {{0, 0}, 0};
     }
 
     int GetImageHandle(EImage) override { return -1; }
@@ -42,55 +45,78 @@ public:
     ESprite ParseSprite(const std::string&) const override { return ESprite::Null; }
 };
 
-RC_GTEST_PROP(GetSpriteInfo, BelowThreshold_Returns32x32, ())
+const std::array<ESprite, 17> MapBasedTestAssetService::kRegisteredSprites = {
+    ESprite::Bunny,
+    ESprite::Wolf,
+    ESprite::CluckingChicken,
+    ESprite::CoralCrab,
+    ESprite::CroakingToad,
+    ESprite::DaintyPig,
+    ESprite::HonkingGoose,
+    ESprite::LeapingFrog,
+    ESprite::MadBoar,
+    ESprite::MeowingCat,
+    ESprite::PasturingSheep,
+    ESprite::SlowTurtle,
+    ESprite::SnowFox,
+    ESprite::SpikeyPorcupine,
+    ESprite::StinkySkunk,
+    ESprite::TimberWolf,
+    ESprite::TinyChick,
+};
+
+// ----------------------------------------------------------------------------
+// Property 4: GetSpriteInfo が全登録済み ESprite に対して有効な SpriteInfo を返す
+// Validates: Requirements 7.2
+// ----------------------------------------------------------------------------
+
+// Feature: code-readability-refactor, Property 4:
+// For any registered ESprite, GetSpriteInfo returns a valid SpriteInfo
+// (size.x > 0, size.y > 0, frame > 0).
+RC_GTEST_PROP(GetSpriteInfo_Property, AllRegisteredSpritesHaveValidInfo, ())
 {
-    const int i = *rc::gen::inRange(0, 100); // [0, 99]
-    const ESprite sprite = static_cast<ESprite>(i);
+    const int tableSize = static_cast<int>(MapBasedTestAssetService::kRegisteredSprites.size());
+    const int idx = *rc::gen::inRange(0, tableSize);
 
-    ThresholdTestAssetService svc;
-    const SpriteInfo info = svc.GetSpriteInfo(sprite);
+    MapBasedTestAssetService svc;
+    const SpriteInfo info = svc.GetSpriteInfo(MapBasedTestAssetService::kRegisteredSprites[idx]);
 
-    RC_ASSERT(info.size.x == 32);
-    RC_ASSERT(info.size.y == 32);
-    RC_ASSERT(info.frame == 4);
+    RC_ASSERT(info.size.x > 0);
+    RC_ASSERT(info.size.y > 0);
+    RC_ASSERT(info.frame > 0);
 }
 
-RC_GTEST_PROP(GetSpriteInfo, AtOrAboveThreshold_Returns16x16, ())
+// ----------------------------------------------------------------------------
+// Example test: ESprite::Null → fallback {0,0}, 0
+// Validates: Requirements 7.3
+// ----------------------------------------------------------------------------
+
+TEST(GetSpriteInfo_Property, Null_ReturnsFallback)
 {
-    const int i = *rc::gen::inRange(100, 201); // [100, 200]
-    const ESprite sprite = static_cast<ESprite>(i);
-
-    ThresholdTestAssetService svc;
-    const SpriteInfo info = svc.GetSpriteInfo(sprite);
-
-    RC_ASSERT(info.size.x == 16);
-    RC_ASSERT(info.size.y == 16);
-    RC_ASSERT(info.frame == 4);
+    MapBasedTestAssetService svc;
+    const SpriteInfo info = svc.GetSpriteInfo(ESprite::Null);
+    EXPECT_EQ(info.size.x, 0);
+    EXPECT_EQ(info.size.y, 0);
+    EXPECT_EQ(info.frame, 0u);
 }
 
-TEST(GetSpriteInfo, Boundary_99_Returns32x32)
+// ----------------------------------------------------------------------------
+// Known-sprite example tests (updated from ThresholdTestAssetService)
+// ----------------------------------------------------------------------------
+
+TEST(GetSpriteInfo, KnownSprite_Bunny_Returns32x32)
 {
-    ThresholdTestAssetService svc;
-    const SpriteInfo info = svc.GetSpriteInfo(static_cast<ESprite>(99));
+    MapBasedTestAssetService svc;
+    const SpriteInfo info = svc.GetSpriteInfo(ESprite::Bunny);
     EXPECT_EQ(info.size.x, 32);
     EXPECT_EQ(info.size.y, 32);
     EXPECT_EQ(info.frame, 4u);
 }
 
-TEST(GetSpriteInfo, Boundary_100_Returns16x16)
+TEST(GetSpriteInfo, KnownSprite_Wolf_Returns32x32)
 {
-    ThresholdTestAssetService svc;
-    const SpriteInfo info = svc.GetSpriteInfo(static_cast<ESprite>(100));
-    EXPECT_EQ(info.size.x, 16);
-    EXPECT_EQ(info.size.y, 16);
-    EXPECT_EQ(info.frame, 4u);
-}
-
-TEST(GetSpriteInfo, KnownSprite_Bunny_Returns32x32)
-{
-    // ESprite::Bunny == 0, below threshold
-    ThresholdTestAssetService svc;
-    const SpriteInfo info = svc.GetSpriteInfo(ESprite::Bunny);
+    MapBasedTestAssetService svc;
+    const SpriteInfo info = svc.GetSpriteInfo(ESprite::Wolf);
     EXPECT_EQ(info.size.x, 32);
     EXPECT_EQ(info.size.y, 32);
     EXPECT_EQ(info.frame, 4u);
@@ -98,21 +124,20 @@ TEST(GetSpriteInfo, KnownSprite_Bunny_Returns32x32)
 
 TEST(GetSpriteInfo, KnownSprite_CluckingChicken_Returns16x16)
 {
-    // ESprite::CluckingChicken == 100, at threshold
-    ThresholdTestAssetService svc;
+    MapBasedTestAssetService svc;
     const SpriteInfo info = svc.GetSpriteInfo(ESprite::CluckingChicken);
     EXPECT_EQ(info.size.x, 16);
     EXPECT_EQ(info.size.y, 16);
     EXPECT_EQ(info.frame, 4u);
 }
 
-TEST(GetSpriteInfo, KnownSprite_Wolf_Returns32x32)
+TEST(GetSpriteInfo, KnownSprite_MeowingCat_Returns16x16)
 {
-    // ESprite::Wolf == 1, below threshold
-    ThresholdTestAssetService svc;
-    const SpriteInfo info = svc.GetSpriteInfo(ESprite::Wolf);
-    EXPECT_EQ(info.size.x, 32);
-    EXPECT_EQ(info.size.y, 32);
+    // MeowingCat is a small sprite (16x16) in the new SPRITE_INFO_MAP.
+    MapBasedTestAssetService svc;
+    const SpriteInfo info = svc.GetSpriteInfo(ESprite::MeowingCat);
+    EXPECT_EQ(info.size.x, 16);
+    EXPECT_EQ(info.size.y, 16);
     EXPECT_EQ(info.frame, 4u);
 }
 

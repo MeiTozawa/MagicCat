@@ -2,7 +2,7 @@
 // test_SaveLoad.cpp
 // Unit tests for the ConfigService save/load system.
 //
-// Task 13.1 — ConfigService SaveGame/LoadGame round-trip and GetSaveMetadata
+// Task 13.1  EConfigService SaveGame/LoadGame round-trip and GetSaveMetadata
 //   Tests: ConfigService_SaveGame_LoadGame_RoundTrip
 //          ConfigService_GetSaveMetadata_ValidSlot
 //          ConfigService_GetSaveMetadata_AbsentSlot
@@ -10,11 +10,11 @@
 //          ConfigService_LoadSoundSettings_AbsentFile
 //
 // Later tasks will append to this file:
-//   SECTION_13_2 — Player state accessor round-trip via BattleService
-//   SECTION_13_3 — Enemy state accessor round-trip via BattleService
-//   SECTION_13_4 — CardService accessor round-trip via BattleService
-//   SECTION_13_5 — BattleService SaveState/LoadState via MockConfigService
-//   SECTION_13_6 — AudioService construction and volume behaviour via MockConfigService
+//   SECTION_13_2  EPlayer state accessor round-trip via BattleService
+//   SECTION_13_3  EEnemy state accessor round-trip via BattleService
+//   SECTION_13_4  ECardService accessor round-trip via BattleService
+//   SECTION_13_5  EBattleService SaveState/LoadState via MockConfigService
+//   SECTION_13_6  EAudioService construction and volume behaviour via MockConfigService
 // =============================================================================
 
 #ifdef small
@@ -26,6 +26,7 @@
 #include <filesystem>
 
 import ConfigService;
+import PersistenceService;
 import BattleService;
 import CardService;
 import Enemy;
@@ -137,6 +138,7 @@ class ConfigServiceSaveLoadTest : public ::testing::Test
 {
 protected:
     std::unique_ptr<IConfigService> configService;
+    std::unique_ptr<IPersistenceService> persistenceService;
 
     void SetUp() override
     {
@@ -146,6 +148,7 @@ protected:
 
         WriteMinimalConfigFiles();
         configService = CreateConfigService(kCardConfigPath, kEnemyConfigPath, kGameConfigPath);
+        persistenceService = CreatePersistenceService();
         // Remove any leftover save file from a previous run.
         std::filesystem::remove(kTestSaveFile);
         std::filesystem::remove(kSoundSettingsFile);
@@ -168,9 +171,9 @@ TEST_F(ConfigServiceSaveLoadTest, ConfigService_SaveGame_LoadGame_RoundTrip)
 {
     const GameState original = MakeTestGameState();
 
-    ASSERT_TRUE(configService->SaveGame(kTestSlot, original));
+    ASSERT_TRUE(persistenceService->SaveGame(kTestSlot, original));
 
-    auto loaded = configService->LoadGame(kTestSlot);
+    auto loaded = persistenceService->LoadGame(kTestSlot);
     ASSERT_TRUE(loaded.has_value()) << "LoadGame returned nullopt for a slot that was just saved";
 
     const GameState& g = *loaded;
@@ -217,13 +220,13 @@ TEST_F(ConfigServiceSaveLoadTest, ConfigService_SaveGame_LoadGame_RoundTrip)
 TEST_F(ConfigServiceSaveLoadTest, ConfigService_GetSaveMetadata_ValidSlot)
 {
     const GameState original = MakeTestGameState();
-    ASSERT_TRUE(configService->SaveGame(kTestSlot, original));
+    ASSERT_TRUE(persistenceService->SaveGame(kTestSlot, original));
 
-    const SaveMetadata meta = configService->GetSaveMetadata(kTestSlot);
+    const SaveMetadata meta = persistenceService->GetSaveMetadata(kTestSlot);
 
     EXPECT_TRUE(meta.exists);
 
-    // currentBattle = currentIndex + 1 (1-based display index) — Requirement 1.10
+    // currentBattle = currentIndex + 1 (1-based display index)  ERequirement 1.10
     EXPECT_EQ(meta.currentBattle, original.currentIndex + 1);
     EXPECT_EQ(meta.totalBattles,  static_cast<int>(original.sequence.size()));
 
@@ -239,10 +242,10 @@ TEST_F(ConfigServiceSaveLoadTest, ConfigService_GetSaveMetadata_ValidSlot)
 /// Requirement 1.8, 14.5: GetSaveMetadata returns exists=false for an absent slot.
 TEST_F(ConfigServiceSaveLoadTest, ConfigService_GetSaveMetadata_AbsentSlot)
 {
-    // No save file written — ensure it really is absent.
+    // No save file written  Eensure it really is absent.
     std::filesystem::remove(kTestSaveFile);
 
-    const SaveMetadata meta = configService->GetSaveMetadata(kTestSlot);
+    const SaveMetadata meta = persistenceService->GetSaveMetadata(kTestSlot);
 
     EXPECT_FALSE(meta.exists);
 }
@@ -255,10 +258,10 @@ TEST_F(ConfigServiceSaveLoadTest, ConfigService_LoadSoundSettings_SaveSoundSetti
     const int bgmIn    = 1;
     const int sfxIn    = 4;
 
-    ASSERT_TRUE(configService->SaveSoundSettings(masterIn, bgmIn, sfxIn));
+    ASSERT_TRUE(persistenceService->SaveSoundSettings(masterIn, bgmIn, sfxIn));
 
     int masterOut = 99, bgmOut = 99, sfxOut = 99;
-    const bool loaded = configService->LoadSoundSettings(masterOut, bgmOut, sfxOut);
+    const bool loaded = persistenceService->LoadSoundSettings(masterOut, bgmOut, sfxOut);
 
     EXPECT_TRUE(loaded);
     EXPECT_EQ(masterOut, masterIn);
@@ -276,7 +279,7 @@ TEST_F(ConfigServiceSaveLoadTest, ConfigService_LoadSoundSettings_AbsentFile)
     const int sentinel = 42;
     int masterOut = sentinel, bgmOut = sentinel, sfxOut = sentinel;
 
-    const bool result = configService->LoadSoundSettings(masterOut, bgmOut, sfxOut);
+    const bool result = persistenceService->LoadSoundSettings(masterOut, bgmOut, sfxOut);
 
     EXPECT_FALSE(result);
     // Out-params must be unmodified on failure.
@@ -298,7 +301,7 @@ TEST_F(ConfigServiceSaveLoadTest, ConfigService_LoadSoundSettings_AbsentFile)
 // (Defined once; later sections may extend or reuse it)
 // ---------------------------------------------------------------------------
 
-class StubConfigForSaveLoad : public IConfigService
+class StubConfigForSaveLoad : public IConfigService, public IPersistenceService
 {
     std::vector<EnemyConfig> enemies_;
     std::vector<CardConfig>  cards_;
@@ -340,10 +343,10 @@ public:
         return realConfig_->GetSaveMetadata(slot);
     }
 
-    void SetRealConfig(IConfigService* real) { realConfig_ = real; }
+    void SetRealConfig(IPersistenceService* real) { realConfig_ = real; }
 
 private:
-    IConfigService* realConfig_ = nullptr;
+    IPersistenceService* realConfig_ = nullptr;
 };
 
 // ---------------------------------------------------------------------------
@@ -357,6 +360,7 @@ protected:
     static const std::string kSaveFile;  // resource/save2.json
 
     std::unique_ptr<IConfigService>  realConfig;
+    std::unique_ptr<IPersistenceService> realPersistence;
     StubConfigForSaveLoad            stubConfig;
     NiceMock<MockAssetService>       mockAsset;
     std::unique_ptr<ICardService>    cardService;
@@ -398,7 +402,8 @@ protected:
 
         realConfig = CreateConfigService(
             "test_s132_card.json", "test_s132_enemy.json", "test_s132_game.json");
-        stubConfig.SetRealConfig(realConfig.get());
+        realPersistence = CreatePersistenceService();
+        stubConfig.SetRealConfig(realPersistence.get());
 
         // MockAssetService: return deterministic ESprite values by name
         ON_CALL(mockAsset, ParseSprite(_))
@@ -411,7 +416,7 @@ protected:
             .WillByDefault(Return(ESprite::MeowingCat));
 
         cardService   = CreateCardService(stubConfig);
-        battleService = CreateBattleService(stubConfig, *cardService, mockAsset);
+        battleService = CreateBattleService(stubConfig, stubConfig, *cardService, mockAsset);
 
         // Remove any leftover save file from a prior test run
         std::filesystem::remove(kSaveFile);
@@ -443,7 +448,7 @@ TEST_F(PlayerRoundTripTest, Player_AllFieldsSurviveSaveLoadRoundTrip)
     const int maxHp = player.GetHealthComponent().GetMaxHealth();
     player.GetHealthComponent().SetHealth(maxHp - 3);
 
-    // Set MP (clamped accessor — we set via SetMp)
+    // Set MP (clamped accessor  Ewe set via SetMp)
     player.SetMp(7);
 
     // Mark clairvoyance used and two heal uses consumed
@@ -510,7 +515,7 @@ TEST(PlayerHpClampTest, Player_HpClamped_WhenLoadedHpExceedsMaxHp)
     corruptedState.discardPile = {};
 
     // ── Arrange: inline stub config service that returns the corrupted state ─
-    struct ClampTestConfig : public IConfigService
+    struct ClampTestConfig : public IConfigService, public IPersistenceService
     {
         std::vector<EnemyConfig> enemies = {
             EnemyConfig{ 20, 5, 1, 2, 3, L"Bunny", "Bunny" },
@@ -540,7 +545,7 @@ TEST(PlayerHpClampTest, Player_HpClamped_WhenLoadedHpExceedsMaxHp)
     ON_CALL(mockAsset, ParseSprite("MeowingCat")).WillByDefault(Return(ESprite::MeowingCat));
 
     auto cardService   = CreateCardService(stubConfig);
-    auto battleService = CreateBattleService(stubConfig, *cardService, mockAsset);
+    auto battleService = CreateBattleService(stubConfig, stubConfig, *cardService, mockAsset);
 
     // ── Act ───────────────────────────────────────────────────────────────
     const bool loaded = battleService->LoadState(0);
@@ -564,7 +569,7 @@ TEST(PlayerHpClampTest, Player_HpClamped_WhenLoadedHpExceedsMaxHp)
 // =============================================================================
 
 // ---------------------------------------------------------------------------
-// Fixture for SECTION_13_3 — reuses the same minimal config infrastructure
+// Fixture for SECTION_13_3  Ereuses the same minimal config infrastructure
 // from PlayerRoundTripTest (StubConfigForSaveLoad + real disk ConfigService).
 // ---------------------------------------------------------------------------
 
@@ -575,6 +580,7 @@ protected:
     static const std::string kSaveFile;  // resource/save2.json
 
     std::unique_ptr<IConfigService>  realConfig;
+    std::unique_ptr<IPersistenceService> realPersistence;
     StubConfigForSaveLoad            stubConfig;
     NiceMock<MockAssetService>       mockAsset;
     std::unique_ptr<ICardService>    cardService;
@@ -617,7 +623,8 @@ protected:
 
         realConfig = CreateConfigService(
             "test_s133_card.json", "test_s133_enemy.json", "test_s133_game.json");
-        stubConfig.SetRealConfig(realConfig.get());
+        realPersistence = CreatePersistenceService();
+        stubConfig.SetRealConfig(realPersistence.get());
 
         ON_CALL(mockAsset, ParseSprite(_))
             .WillByDefault(Return(ESprite::Null));
@@ -629,7 +636,7 @@ protected:
             .WillByDefault(Return(ESprite::MeowingCat));
 
         cardService   = CreateCardService(stubConfig);
-        battleService = CreateBattleService(stubConfig, *cardService, mockAsset);
+        battleService = CreateBattleService(stubConfig, stubConfig, *cardService, mockAsset);
 
         std::filesystem::remove(kSaveFile);
     }
@@ -704,7 +711,7 @@ TEST_F(EnemyRoundTripTest, Enemy_AllFieldsSurviveSaveLoadRoundTrip)
 // =============================================================================
 
 // ---------------------------------------------------------------------------
-// Fixture for SECTION_13_4 — mirrors EnemyRoundTripTest setup.
+// Fixture for SECTION_13_4  Emirrors EnemyRoundTripTest setup.
 // The ICardService pointer is kept externally so we can query pile contents
 // directly without needing a getter on IBattleService.
 // ---------------------------------------------------------------------------
@@ -716,6 +723,7 @@ protected:
     static const std::string kSaveFile;  // resource/save2.json
 
     std::unique_ptr<IConfigService>  realConfig;
+    std::unique_ptr<IPersistenceService> realPersistence;
     StubConfigForSaveLoad            stubConfig;
     NiceMock<MockAssetService>       mockAsset;
     std::unique_ptr<ICardService>    cardService;
@@ -758,7 +766,8 @@ protected:
 
         realConfig = CreateConfigService(
             "test_s134_card.json", "test_s134_enemy.json", "test_s134_game.json");
-        stubConfig.SetRealConfig(realConfig.get());
+        realPersistence = CreatePersistenceService();
+        stubConfig.SetRealConfig(realPersistence.get());
 
         ON_CALL(mockAsset, ParseSprite(_))
             .WillByDefault(Return(ESprite::Null));
@@ -770,7 +779,7 @@ protected:
             .WillByDefault(Return(ESprite::MeowingCat));
 
         cardService   = CreateCardService(stubConfig);
-        battleService = CreateBattleService(stubConfig, *cardService, mockAsset);
+        battleService = CreateBattleService(stubConfig, stubConfig, *cardService, mockAsset);
 
         std::filesystem::remove(kSaveFile);
     }
@@ -801,16 +810,16 @@ TEST_F(CardServiceRoundTripTest, CardService_AllPilesRestoredAfterSaveLoadRoundT
     cardService->DrawCard();
 
     // ── Capture pre-save state ────────────────────────────────────────────
-    const std::vector<CardData> preSaveHand        = cardService->GetHand();
-    const std::vector<CardData> preSaveDrawPile    = cardService->GetDrawPile();
-    const std::vector<CardData> preSaveDiscardPile = cardService->GetDiscardPile();
+    const std::vector<CardData> preSaveHand        = cardService->GetHandForSave();
+    const std::vector<CardData> preSaveDrawPile    = cardService->GetDrawPileForSave();
+    const std::vector<CardData> preSaveDiscardPile = cardService->GetDiscardPileForSave();
 
     // ── Act: save then load ───────────────────────────────────────────────
     battleService->SaveState(kSlot);
     ASSERT_TRUE(battleService->LoadState(kSlot)) << "LoadState must succeed";
 
     // ── Assert: hand restored ─────────────────────────────────────────────
-    const std::vector<CardData> loadedHand = cardService->GetHand();
+    const std::vector<CardData> loadedHand = cardService->GetHandForSave();
     ASSERT_EQ(loadedHand.size(), preSaveHand.size())
         << "hand size must be preserved after round-trip";
     for (std::size_t i = 0; i < preSaveHand.size(); ++i)
@@ -822,7 +831,7 @@ TEST_F(CardServiceRoundTripTest, CardService_AllPilesRestoredAfterSaveLoadRoundT
     }
 
     // ── Assert: drawPile restored ─────────────────────────────────────────
-    const std::vector<CardData> loadedDrawPile = cardService->GetDrawPile();
+    const std::vector<CardData> loadedDrawPile = cardService->GetDrawPileForSave();
     ASSERT_EQ(loadedDrawPile.size(), preSaveDrawPile.size())
         << "drawPile size must be preserved after round-trip";
     for (std::size_t i = 0; i < preSaveDrawPile.size(); ++i)
@@ -834,7 +843,7 @@ TEST_F(CardServiceRoundTripTest, CardService_AllPilesRestoredAfterSaveLoadRoundT
     }
 
     // ── Assert: discardPile restored ──────────────────────────────────────
-    const std::vector<CardData> loadedDiscardPile = cardService->GetDiscardPile();
+    const std::vector<CardData> loadedDiscardPile = cardService->GetDiscardPileForSave();
     ASSERT_EQ(loadedDiscardPile.size(), preSaveDiscardPile.size())
         << "discardPile size must be preserved after round-trip";
     for (std::size_t i = 0; i < preSaveDiscardPile.size(); ++i)
@@ -860,9 +869,9 @@ TEST_F(CardServiceRoundTripTest, CardService_TotalCardCountPreservedAfterRoundTr
 
     // ── Capture pre-save total ────────────────────────────────────────────
     const std::size_t preSaveTotal =
-        cardService->GetHand().size() +
-        cardService->GetDrawPile().size() +
-        cardService->GetDiscardPile().size();
+        cardService->GetHandForSave().size() +
+        cardService->GetDrawPileForSave().size() +
+        cardService->GetDiscardPileForSave().size();
 
     // ── Act ───────────────────────────────────────────────────────────────
     battleService->SaveState(kSlot);
@@ -870,9 +879,9 @@ TEST_F(CardServiceRoundTripTest, CardService_TotalCardCountPreservedAfterRoundTr
 
     // ── Assert: total unchanged ───────────────────────────────────────────
     const std::size_t postLoadTotal =
-        cardService->GetHand().size() +
-        cardService->GetDrawPile().size() +
-        cardService->GetDiscardPile().size();
+        cardService->GetHandForSave().size() +
+        cardService->GetDrawPileForSave().size() +
+        cardService->GetDiscardPileForSave().size();
 
     EXPECT_EQ(postLoadTotal, preSaveTotal)
         << "hand.size() + drawPile.size() + discardPile.size() must equal "
@@ -888,7 +897,7 @@ TEST_F(CardServiceRoundTripTest, CardService_TotalCardCountPreservedAfterRoundTr
 //
 // All three tests use NiceMock<MockConfigService> so that only the calls we
 // explicitly set up with EXPECT_CALL / ON_CALL matter.  Real disk I/O is
-// completely eliminated — the mock intercepts SaveGame/LoadGame.
+// completely eliminated  Ethe mock intercepts SaveGame/LoadGame.
 //
 // Requirements: 6.3, 6.4, 6.5, 6.6, 6.7, 6.8
 // =============================================================================
@@ -911,7 +920,7 @@ static PlayerConfig MakePlayerConfig()
 class BattleServiceMockConfigTest : public ::testing::Test
 {
 protected:
-    // Constant configs returned by the mock — must outlive the services.
+    // Constant configs returned by the mock  Emust outlive the services.
     std::vector<EnemyConfig>  enemies = {
         EnemyConfig{ 20, 5, 1, 2, 3, L"TestBunny", "Bunny" },
         EnemyConfig{ 18, 4, 2, 1, 2, L"TestWolf",  "Wolf"  },
@@ -929,7 +938,7 @@ protected:
 
     void SetUp() override
     {
-        // Wire static getters — called during construction / StartStage / LoadState.
+        // Wire static getters  Ecalled during construction / StartStage / LoadState.
         ON_CALL(mockConfig, GetEnemyConfigs())
             .WillByDefault(ReturnRef(enemies));
         ON_CALL(mockConfig, GetCardConfigs())
@@ -939,8 +948,8 @@ protected:
         ON_CALL(mockConfig, GetGameConfig())
             .WillByDefault(ReturnRef(gameCfg));
 
-        // ParseSprite: Bunny → ESprite::Bunny, Wolf → ESprite::Wolf,
-        // MeowingCat → ESprite::MeowingCat, anything else → Null.
+        // ParseSprite: Bunny ↁEESprite::Bunny, Wolf ↁEESprite::Wolf,
+        // MeowingCat ↁEESprite::MeowingCat, anything else ↁENull.
         ON_CALL(mockAsset, ParseSprite(_))
             .WillByDefault(Return(ESprite::Null));
         ON_CALL(mockAsset, ParseSprite("Bunny"))
@@ -951,12 +960,12 @@ protected:
             .WillByDefault(Return(ESprite::MeowingCat));
 
         cardService   = CreateCardService(mockConfig);
-        battleService = CreateBattleService(mockConfig, *cardService, mockAsset);
+        battleService = CreateBattleService(mockConfig, mockConfig, *cardService, mockAsset);
     }
 };
 
 /// Requirement 6.3, 6.4, 6.7:
-/// Full state round-trip via MockConfigService — SaveState captures the
+/// Full state round-trip via MockConfigService  ESaveState captures the
 /// serialised GameState; LoadState restores currentIndex, player HP, enemy HP,
 /// and all three card piles without any disk I/O.
 TEST_F(BattleServiceMockConfigTest, BattleService_FullStateRoundTrip)
@@ -982,9 +991,9 @@ TEST_F(BattleServiceMockConfigTest, BattleService_FullStateRoundTrip)
     const int  expectedPlayerHp     = player.GetHealthComponent().GetHealth();
     const int  expectedEnemyMaxHp   = enemy.GetHealthComponent().GetMaxHealth();
     const int  expectedRockOffset   = enemy.GetRockOffset();
-    const std::size_t expectedHandSize    = cardService->GetHand().size();
-    const std::size_t expectedDrawSize    = cardService->GetDrawPile().size();
-    const std::size_t expectedDiscardSize = cardService->GetDiscardPile().size();
+    const std::size_t expectedHandSize    = cardService->GetHandForSave().size();
+    const std::size_t expectedDrawSize    = cardService->GetDrawPileForSave().size();
+    const std::size_t expectedDiscardSize = cardService->GetDiscardPileForSave().size();
 
     // ── Wire mock: SaveGame captures the state; LoadGame returns it ───────
     GameState capturedState;
@@ -1017,11 +1026,11 @@ TEST_F(BattleServiceMockConfigTest, BattleService_FullStateRoundTrip)
     EXPECT_EQ(loadedEnemy.GetRockOffset(), expectedRockOffset)
         << "enemy rockOffset must be restored after round-trip";
 
-    EXPECT_EQ(cardService->GetHand().size(),        expectedHandSize)
+    EXPECT_EQ(cardService->GetHandForSave().size(),        expectedHandSize)
         << "hand size must be restored after round-trip";
-    EXPECT_EQ(cardService->GetDrawPile().size(),    expectedDrawSize)
+    EXPECT_EQ(cardService->GetDrawPileForSave().size(),    expectedDrawSize)
         << "drawPile size must be restored after round-trip";
-    EXPECT_EQ(cardService->GetDiscardPile().size(), expectedDiscardSize)
+    EXPECT_EQ(cardService->GetDiscardPileForSave().size(), expectedDiscardSize)
         << "discardPile size must be restored after round-trip";
 }
 
@@ -1075,7 +1084,7 @@ TEST_F(BattleServiceMockConfigTest, BattleService_LoadState_ReturnsFalse_ForUnkn
     stateWithUnknownSprite.enemyPaperOffset    = 0;
 
     stateWithUnknownSprite.currentIndex = 0;
-    // Sequence contains ESprite::Bunny — but we will tell ParseSprite to
+    // Sequence contains ESprite::Bunny  Ebut we will tell ParseSprite to
     // return Null for all strings, so FindEnemyConfigBySprite won't match.
     stateWithUnknownSprite.sequence = { static_cast<int>(ESprite::Bunny) };
 
@@ -1087,7 +1096,7 @@ TEST_F(BattleServiceMockConfigTest, BattleService_LoadState_ReturnsFalse_ForUnkn
     ON_CALL(mockConfig, LoadGame(_))
         .WillByDefault(Return(std::optional<GameState>(stateWithUnknownSprite)));
 
-    // ParseSprite now returns Null for every sprite name — simulates the
+    // ParseSprite now returns Null for every sprite name  Esimulates the
     // situation where the asset service cannot resolve the sprite in the pool.
     ON_CALL(mockAsset, ParseSprite(_))
         .WillByDefault(Return(ESprite::Null));
@@ -1120,7 +1129,7 @@ using ::testing::AtLeast;
 // Fixture for SECTION_13_6
 //
 // AudioService is a private inner class; construction goes through the
-// CreateAudioService(IConfigService&, IAssetService&, IBattleService&) factory.
+// CreateAudioService(IPersistenceService&, IAssetService&, IBattleService&) factory.
 //
 // MockBattleService is wrapped in NiceMock<> so that calls to GetPlayer /
 // GetEnemy (which may or may not occur during construction) don't emit
@@ -1211,7 +1220,7 @@ TEST_F(AudioServiceTest, AudioService_Construction_CallsLoadSoundSettings_Once)
 }
 
 // ---------------------------------------------------------------------------
-// Test 2: Construction when LoadSoundSettings returns false → defaults to 4,4,4
+// Test 2: Construction when LoadSoundSettings returns false ↁEdefaults to 4,4,4
 //         and calls SaveSoundSettings(4,4,4) exactly once.
 // Requirements 7.6, 13.2
 // ---------------------------------------------------------------------------
@@ -1265,7 +1274,7 @@ TEST_F(AudioServiceTest, AudioService_SetMasterVolume_CallsSaveSoundSettings)
 }
 
 // ---------------------------------------------------------------------------
-// Test 4: Volume clamping — SetMasterVolume(-1) → GetMasterVolume() == 0
+// Test 4: Volume clamping  ESetMasterVolume(-1) ↁEGetMasterVolume() == 0
 // Requirement 7.2
 // ---------------------------------------------------------------------------
 
@@ -1284,7 +1293,7 @@ TEST_F(AudioServiceTest, AudioService_VolumeClamping_SetMasterVolume_Negative)
 }
 
 // ---------------------------------------------------------------------------
-// Test 5: Volume clamping — SetMasterVolume(99) → GetMasterVolume() == 4
+// Test 5: Volume clamping  ESetMasterVolume(99) ↁEGetMasterVolume() == 4
 // Requirement 7.2
 // ---------------------------------------------------------------------------
 

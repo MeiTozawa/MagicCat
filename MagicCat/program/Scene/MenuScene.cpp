@@ -19,10 +19,10 @@ namespace mc {
     {
     public:
         MenuScene(IInputService& input, ISceneService& scene, IAssetService& asset,
-                  IRenderService& render, IAudioService& audio, IConfigService& config,
+                  IRenderService& render, IAudioService& audio, IPersistenceService& persistence,
                   IBattleService& battle, IOSService& os)
             : inputService(input), sceneService(scene), assetService(asset),
-              renderService(render), audioService(audio), configService(config),
+              renderService(render), audioService(audio), persistenceService(persistence),
               battleService(battle), osService(os),
               buttons(BTN_RECTS, input, os, ButtonGroupLayout::Horizontal) {}
 
@@ -73,9 +73,9 @@ namespace mc {
             case EMenuPanel::Volume: return CreateVolumePanel(
                     inputService, renderService, audioService, osService);
             case EMenuPanel::Save: return CreateSavePanel(
-                    inputService, renderService, battleService, configService, sceneService, osService);
+                    inputService, renderService, battleService, persistenceService, sceneService, osService);
             case EMenuPanel::Load: return CreateLoadPanel(
-                    inputService, renderService, battleService, configService, sceneService, osService);
+                    inputService, renderService, battleService, persistenceService, sceneService, osService);
             case EMenuPanel::Exit: return CreateExitPanel(
                     inputService, renderService, assetService);
             default: return nullptr;
@@ -102,7 +102,7 @@ namespace mc {
         IAssetService& assetService;
         IRenderService& renderService;
         IAudioService& audioService;
-        IConfigService& configService;
+        IPersistenceService& persistenceService;
         IBattleService& battleService;
         IOSService& osService;
         ButtonGroup buttons;
@@ -133,10 +133,10 @@ namespace mc {
 
     std::unique_ptr<IScene> CreateMenuScene(IInputService& inputService, ISceneService& sceneService,
                                             IAssetService& assetService, IRenderService& renderService,
-                                            IAudioService& audioService, IConfigService& configService,
+                                            IAudioService& audioService, IPersistenceService& persistenceService,
                                             IBattleService& battleService, IOSService& osService)
     {
         return std::make_unique<MenuScene>(inputService, sceneService, assetService, renderService,
-                                           audioService, configService, battleService, osService);
+                                           audioService, persistenceService, battleService, osService);
     }
 } // namespace mc

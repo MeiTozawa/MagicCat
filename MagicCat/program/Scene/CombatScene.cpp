@@ -77,7 +77,8 @@ namespace mc {
         void SetupDisplayers()
         {
             displayers.push_back(CreateCardDisplayer(cardService, assetService, renderService));
-            displayers.push_back(CreateCharacterDisplayer(battleService, renderService));
+            displayers.push_back(CreatePlayerStatusDisplayer(battleService, renderService));
+            displayers.push_back(CreateEnemyStatusDisplayer(battleService, renderService));
             displayers.push_back(CreateControlDisplayer(assetService, renderService, inputService, osService));
 
             auto playerAnim = CreateSpriteDisplayer(&assetService, &renderService,

@@ -12,6 +12,7 @@ import AssetService;
 import AudioService;
 import BattleService;
 import ConfigService;
+import PersistenceService;
 import SceneService;
 import OSService;
 import ButtonGroup;
@@ -59,32 +60,32 @@ namespace mc {
     export enum class SlotPanelMode { Save, Load };
 
     /// @brief セーブパネルを生成して返す（`SlotPanelMode::Save` で構築）。
-    /// @param input   入力サービス
-    /// @param render  描画サービス
-    /// @param battle  セーブ操作サービス
-    /// @param config  スロットメタデータ取得サービス
-    /// @param scene   シーン遷移サービス（ロード時のみ使用）
-    /// @param os      カーソル変更サービス
+    /// @param input       入力サービス
+    /// @param render      描画サービス
+    /// @param battle      セーブ操作サービス
+    /// @param persistence スロットメタデータ取得サービス
+    /// @param scene       シーン遷移サービス（ロード時のみ使用）
+    /// @param os          カーソル変更サービス
     /// @return 生成した `SaveAndLoadPanel` の所有権
     export std::unique_ptr<MenuPanel> CreateSavePanel(IInputService& input,
                                                       IRenderService& render,
                                                       IBattleService& battle,
-                                                      IConfigService& config,
+                                                      IPersistenceService& persistence,
                                                       ISceneService& scene,
                                                       IOSService& os);
 
     /// @brief ロードパネルを生成して返す（`SlotPanelMode::Load` で構築）。
-    /// @param input   入力サービス
-    /// @param render  描画サービス
-    /// @param battle  ロード操作サービス
-    /// @param config  スロットメタデータ取得サービス
-    /// @param scene   シーン遷移サービス
-    /// @param os      カーソル変更サービス
+    /// @param input       入力サービス
+    /// @param render      描画サービス
+    /// @param battle      ロード操作サービス
+    /// @param persistence スロットメタデータ取得サービス
+    /// @param scene       シーン遷移サービス
+    /// @param os          カーソル変更サービス
     /// @return 生成した `SaveAndLoadPanel` の所有権
     export std::unique_ptr<MenuPanel> CreateLoadPanel(IInputService& input,
                                                       IRenderService& render,
                                                       IBattleService& battle,
-                                                      IConfigService& config,
+                                                      IPersistenceService& persistence,
                                                       ISceneService& scene,
                                                       IOSService& os);
 

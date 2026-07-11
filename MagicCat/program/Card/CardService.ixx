@@ -8,6 +8,7 @@ import Enemy;
 import Character;
 import EventBus;
 import ConfigService;
+import PersistenceService;
 
 namespace mc {
 
@@ -68,29 +69,29 @@ namespace mc {
 
         // ── Serialization accessors ──────────────────────────────────────────
 
-        /// @brief 現在の手札を CardData のリストとして取得する（シリアライズ用）
+        /// @brief 現在の手札を CardData のリストとして取得する（セーブ用）
         /// @return 手札の CardData リスト
-        virtual std::vector<CardData> GetHand() const = 0;
+        virtual std::vector<CardData> GetHandForSave() const = 0;
 
-        /// @brief 現在の山札を CardData のリストとして取得する（シリアライズ用）
+        /// @brief 現在の山札を CardData のリストとして取得する（セーブ用）
         /// @return 山札の CardData リスト
-        virtual std::vector<CardData> GetDrawPile() const = 0;
+        virtual std::vector<CardData> GetDrawPileForSave() const = 0;
 
-        /// @brief 現在の捨て札を CardData のリストとして取得する（シリアライズ用）
+        /// @brief 現在の捨て札を CardData のリストとして取得する（セーブ用）
         /// @return 捨て札の CardData リスト
-        virtual std::vector<CardData> GetDiscardPile() const = 0;
+        virtual std::vector<CardData> GetDiscardPileForSave() const = 0;
 
-        /// @brief 手札を CardData リストから復元する（デシリアライズ用）
+        /// @brief 手札を CardData リストから復元する（ロード用）
         /// @param cards 復元する手札データ
-        virtual void SetHand(const std::vector<CardData>& cards) = 0;
+        virtual void SetHandFromLoad(const std::vector<CardData>& cards) = 0;
 
-        /// @brief 山札を CardData リストから復元する（デシリアライズ用）
+        /// @brief 山札を CardData リストから復元する（ロード用）
         /// @param cards 復元する山札データ
-        virtual void SetDrawPile(const std::vector<CardData>& cards) = 0;
+        virtual void SetDrawPileFromLoad(const std::vector<CardData>& cards) = 0;
 
-        /// @brief 捨て札を CardData リストから復元する（デシリアライズ用）
+        /// @brief 捨て札を CardData リストから復元する（ロード用）
         /// @param cards 復元する捨て札データ
-        virtual void SetDiscardPile(const std::vector<CardData>& cards) = 0;
+        virtual void SetDiscardPileFromLoad(const std::vector<CardData>& cards) = 0;
     };
 
     /// @brief プレイヤーがカードを引いたときに発行されるイベント

@@ -46,6 +46,9 @@ add_executable(MagicCatTests
 )
 
 target_compile_features(MagicCatTests PRIVATE cxx_std_23)
+if (MSVC)
+    target_compile_options(MagicCatTests PRIVATE "/bigobj")
+endif ()
 
 target_include_directories(MagicCatTests PRIVATE
     ${CMAKE_SOURCE_DIR}/common

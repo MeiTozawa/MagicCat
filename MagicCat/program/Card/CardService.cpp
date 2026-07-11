@@ -66,34 +66,34 @@ namespace mc {
         std::vector<Card> GetDrawCards() override { return drawPile; }
         std::vector<Card> GetDiscardCards() override { return discardPile; }
 
-        std::vector<CardData> GetHand() const override
+        std::vector<CardData> GetHandForSave() const override
         {
             return ToCardData(hand);
         }
 
-        std::vector<CardData> GetDrawPile() const override
+        std::vector<CardData> GetDrawPileForSave() const override
         {
             return ToCardData(drawPile);
         }
 
-        std::vector<CardData> GetDiscardPile() const override
+        std::vector<CardData> GetDiscardPileForSave() const override
         {
             return ToCardData(discardPile);
         }
 
-        void SetHand(const std::vector<CardData>& cards) override
+        void SetHandFromLoad(const std::vector<CardData>& cards) override
         {
             hand = FromCardData(cards);
             AssertCardCount();
         }
 
-        void SetDrawPile(const std::vector<CardData>& cards) override
+        void SetDrawPileFromLoad(const std::vector<CardData>& cards) override
         {
             drawPile = FromCardData(cards);
             AssertCardCount();
         }
 
-        void SetDiscardPile(const std::vector<CardData>& cards) override
+        void SetDiscardPileFromLoad(const std::vector<CardData>& cards) override
         {
             discardPile = FromCardData(cards);
             AssertCardCount();

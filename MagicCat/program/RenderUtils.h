@@ -77,7 +77,7 @@ namespace mc {
     };
     
     template <typename T>
-    using Point = Vec2<T>
+    using Point = Vec2<T>;
     
     template <typename T>
     requires std::integral<T> || std::floating_point<T>

@@ -6,6 +6,7 @@ module;
 export module BattleService;
 
 import ConfigService;
+import PersistenceService;
 import CardService;
 import AssetService;
 import EventBus;
@@ -92,6 +93,7 @@ namespace mc {
 
     export std::unique_ptr<IBattleService> CreateBattleService(
         IConfigService& configService,
+        IPersistenceService& persistenceService,
         ICardService& cardService,
         IAssetService& assetService
     );

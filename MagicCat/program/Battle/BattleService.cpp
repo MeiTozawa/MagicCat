@@ -21,10 +21,12 @@ namespace mc {
     public:
         BattleService(
             IConfigService& configService,
+            IPersistenceService& persistenceService,
             ICardService& cardService,
             IAssetService& assetService
         )
             : configService(configService)
+              , persistenceService(persistenceService)
               , cardService(cardService)
               , assetService(assetService)
         {
@@ -128,11 +130,11 @@ namespace mc {
             for (const auto& cfg : sequence)
                 state.sequence.push_back(static_cast<int>(assetService.ParseSprite(cfg.spriteName)));
 
-            state.hand        = cardService.GetHand();
-            state.drawPile    = cardService.GetDrawPile();
-            state.discardPile = cardService.GetDiscardPile();
+            state.hand        = cardService.GetHandForSave();
+            state.drawPile    = cardService.GetDrawPileForSave();
+            state.discardPile = cardService.GetDiscardPileForSave();
 
-            const bool success = configService.SaveGame(slot, state);
+            const bool success = persistenceService.SaveGame(slot, state);
             EventBus::Publish(SaveStateEvent(success, slot));
         }
 
@@ -140,7 +142,7 @@ namespace mc {
         {
             assert(slot >= 0 && slot < SAVE_SLOT_COUNT);
 
-            auto stateOpt = configService.LoadGame(slot);
+            auto stateOpt = persistenceService.LoadGame(slot);
             if (!stateOpt.has_value())
             {
                 EventBus::Publish(LoadStateEvent(false, slot));
@@ -195,9 +197,9 @@ namespace mc {
             currentEnemy->SetPaperOffset(state.enemyPaperOffset);
 
             // Restore card piles
-            cardService.SetHand(state.hand);
-            cardService.SetDrawPile(state.drawPile);
-            cardService.SetDiscardPile(state.discardPile);
+            cardService.SetHandFromLoad(state.hand);
+            cardService.SetDrawPileFromLoad(state.drawPile);
+            cardService.SetDiscardPileFromLoad(state.discardPile);
 
             EventBus::Publish(LoadStateEvent(true, slot));
             return true;
@@ -251,6 +253,7 @@ namespace mc {
         }
 
         IConfigService& configService;
+        IPersistenceService& persistenceService;  ///< 直接参照 — SaveGame/LoadGame に使用
         ICardService& cardService;
         IAssetService& assetService;
 
@@ -264,11 +267,12 @@ namespace mc {
 
     std::unique_ptr<IBattleService> CreateBattleService(
         IConfigService& configService,
+        IPersistenceService& persistenceService,
         ICardService& cardService,
         IAssetService& assetService
     )
     {
         return std::make_unique<BattleService>(
-            configService, cardService, assetService);
+            configService, persistenceService, cardService, assetService);
     }
 } // namespace mc

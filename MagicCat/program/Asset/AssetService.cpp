@@ -14,6 +14,11 @@ namespace mc {
     class AssetService : public IAssetService
     {
     public:
+        static constexpr Point<int> LARGE_SPRITE_SIZE = {32, 32};
+        static constexpr Point<int> SMALL_SPRITE_SIZE = {16, 16};
+        static constexpr size_t SPRITE_FRAME_COUNT = 4;
+        static const std::unordered_map<ESprite, SpriteInfo> SPRITE_INFO_MAP;
+
         AssetService()
         {
             LoadFonts();
@@ -47,9 +52,13 @@ namespace mc {
 
         SpriteInfo GetSpriteInfo(ESprite e) override
         {
-            if (static_cast<int>(e) < LARGE_SPRITE_ENUM_THRESHOLD)
-                return {{32, 32}, 4};
-            return {{16, 16}, 4};
+            auto it = SPRITE_INFO_MAP.find(e);
+            if (it == SPRITE_INFO_MAP.end())
+            {
+                printfDx(L"GetSpriteInfo: 未登録の ESprite 値 %d\n", static_cast<int>(e));
+                return {{0, 0}, 0};
+            }
+            return it->second;
         }
 
         int GetSoundHandle(ESound e) override
@@ -233,10 +242,28 @@ namespace mc {
         std::unordered_map<EFont, int> fontMappings = {};
         std::unordered_map<ESound, int> soundMappings = {};
 
-    private:
-        // ESprite の整数値がこの閾値未満のスプライトは 32×32 のスプライトシートを使用する。
-        // この閾値以上のスプライトは 16×16 のスプライトシートを使用する。
-        static constexpr int LARGE_SPRITE_ENUM_THRESHOLD = 100;
+    };
+
+    const std::unordered_map<ESprite, SpriteInfo> AssetService::SPRITE_INFO_MAP = {
+        // 32×32 スプライトシート（大型キャラクター）
+        {ESprite::Bunny,           {LARGE_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::Wolf,            {LARGE_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        // 16×16 スプライトシート（小型キャラクター）
+        {ESprite::CluckingChicken, {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::CoralCrab,       {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::CroakingToad,    {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::DaintyPig,       {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::HonkingGoose,    {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::LeapingFrog,     {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::MadBoar,         {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::MeowingCat,      {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::PasturingSheep,  {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::SlowTurtle,      {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::SnowFox,         {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::SpikeyPorcupine, {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::StinkySkunk,     {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::TimberWolf,      {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
+        {ESprite::TinyChick,       {SMALL_SPRITE_SIZE, SPRITE_FRAME_COUNT}},
     };
 
     std::unique_ptr<IAssetService> CreateAssetService()

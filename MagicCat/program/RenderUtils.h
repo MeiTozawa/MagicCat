@@ -11,7 +11,7 @@ namespace mc {
 
     template <typename T>
     requires std::integral<T> || std::floating_point<T>
-    struct Point;
+    struct Vec2;
 
     constexpr uint32_t COLOR_BG = 0x071F38;
 
@@ -69,12 +69,15 @@ namespace mc {
 
     template <typename T>
     requires std::integral<T> || std::floating_point<T>
-    struct Point
+    struct Vec2
     {
         T x, y;
         
         constexpr bool In(const Rect<T>& r) const;
     };
+    
+    template <typename T>
+    using Point = Vec2<T>
     
     template <typename T>
     requires std::integral<T> || std::floating_point<T>

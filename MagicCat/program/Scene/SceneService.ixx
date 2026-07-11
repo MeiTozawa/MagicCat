@@ -11,7 +11,7 @@ import InputService;
 import AssetService;
 import RenderService;
 import AudioService;
-import ConfigService;
+import PersistenceService;
 import BattleService;
 import OSService;
 
@@ -42,33 +42,21 @@ namespace mc {
             : selectedIndex(selected_index), isMagicMenuOpen(isMagicMenuOpen), silent(silent) {}
     };
 
-    /// @brief ビュー（UIや描画等）の基本インターフェース
-    export class IView
-    {
-    public:
-        virtual ~IView() = default;
-
-        /// @brief フレームごとの更新処理を行う
-        /// @param deltaTime 前回のフレームからの経過時間（秒）
-        virtual void Update(float deltaTime) = 0;
-    };
-
-    /// @brief 各シーン（Info, Combat, Rules等）の基本インターフェース
+    /// @brief 各画面（シーン）の基本クラス
     export class IScene
     {
     public:
         virtual ~IScene() = default;
 
-        /// @brief シーンが開始（アクティブ化）された際に呼ばれる初期化処理
+        /// @brief シーン開始時の処理
         virtual void Start() = 0;
 
-        /// @brief シーンの毎フレームの更新処理を行う
-        /// @param deltaTime 前回のフレームからの経過時間（秒）
+        /// @brief シーン更新処理
+        /// @param deltaTime 前のフレームからの経過時間（秒）
         virtual void Update(float deltaTime) = 0;
     };
 
-
-    /// @brief シーンの遷移やスタック管理を行うサービス
+    /// @brief シーンの遷移やスタック管理を行うインターフェース
     export class ISceneService
     {
     public:
@@ -101,11 +89,10 @@ namespace mc {
 
     export std::unique_ptr<ISceneService> CreateSceneService(IRenderService* renderService = nullptr,
                                                              IInputService* inputService = nullptr,
-                                                             IAssetService* assetService = nullptr,
                                                              IOSService* osService = nullptr);
     export std::unique_ptr<IScene> CreateMenuScene(IInputService& inputService, ISceneService& sceneService,
                                                     IAssetService& assetService, IRenderService& renderService,
-                                                    IAudioService& audioService, IConfigService& configService,
+                                                    IAudioService& audioService, IPersistenceService& persistenceService,
                                                     IBattleService& battleService, IOSService& osService);
     export std::unique_ptr<IScene> CreateInfoScene(IInputService& inputService, ISceneService& sceneService,
                                                    IRenderService& renderService, IBattleService& battleService);

@@ -12,3 +12,4 @@ export import :Dialog;
 export import :Sprite;
 export import :CutsceneFocus;
 export import :Menu;
+export import :MenuIcon;

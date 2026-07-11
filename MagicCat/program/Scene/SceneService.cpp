@@ -42,8 +42,8 @@ namespace mc {
     {
     public:
         explicit SceneService(IRenderService* rs, IInputService* is = nullptr,
-                              IAssetService* as = nullptr, IOSService* os = nullptr)
-            : renderService(rs), inputService(is), assetService(as), osService(os)
+                              IOSService* os = nullptr)
+            : renderService(rs), inputService(is), osService(os)
         {
             stageClearHandle = EventBus::Subscribe<StageClearEvent>([this](const StageClearEvent&)
             {
@@ -98,7 +98,6 @@ namespace mc {
             {
                 if (sceneStack.back() == ESceneState::Menu)
                 {
-                    menuJustClosed = true;
                     if (inputService)
                         inputService->ClearAndSetContext(InputContext::InGame);
                 }
@@ -115,8 +114,6 @@ namespace mc {
 
             if (!sceneStack.empty())
                 scenes[sceneStack.back()]->Update(deltaTime);
-            
-            HandleMenuButton(deltaTime);
 
             if (fadeDisplayer)
                 fadeDisplayer->Draw(deltaTime);
@@ -137,68 +134,6 @@ namespace mc {
             if (inputService)
                 inputService->ClearAndSetContext(InputContext::InGame);
             StartFadeIn();
-        }
-
-    private:
-        void HandleMenuButton(float deltaTime)
-        {
-            if (!inputService || !renderService) return;
-
-            const bool hasCutscene = std::ranges::any_of(sceneStack, [](ESceneState s)
-            {
-                return s == ESceneState::Cutscene;
-            });
-            if (hasCutscene) return;
-
-            const bool isMenuOpen = std::ranges::any_of(sceneStack, [](ESceneState s)
-            {
-                return s == ESceneState::Menu;
-            });
-
-            if (assetService)
-            {
-                const int iconHandle = assetService->GetImageHandle(EImage::BUTTON_MENU);
-                if (iconHandle >= 0)
-                    renderService->DrawRotaGraphF(
-                        static_cast<float>(MENU_ICON_X),
-                        static_cast<float>(MENU_ICON_Y),
-                        0.8, 0.0, iconHandle, true);
-            }
-
-            if (osService && inputService->GetActiveDevice() == InputDevice::Mouse
-                && inputService->IsMouseOver(MENU_ICON_RECT))
-                osService->SetCursorPointer();
-
-            const auto click = inputService->OnMouseClick(InputAction::MouseClick);
-            const bool iconClicked = click.x != -1 && click.y != -1 && click.In(MENU_ICON_RECT);
-
-            if (isMenuOpen)
-            {
-                if (iconClicked)
-                {
-                    inputService->PopContext();
-                    PopScene();
-                }
-            }
-            else
-            {
-                if (menuJustClosed)
-                {
-                    menuJustClosed = false;
-                    return;
-                }
-
-                if (inputService->IsPressed(InputAction::ToggleMenu))
-                {
-                    PushScene(ESceneState::Menu);
-                    return;
-                }
-
-                if (iconClicked)
-                {
-                    PushScene(ESceneState::Menu);
-                }
-            }
         }
         
         void EnsureInitialized()
@@ -283,14 +218,12 @@ namespace mc {
 
         IRenderService* renderService = nullptr;
         IInputService* inputService = nullptr;
-        IAssetService* assetService = nullptr;
         IOSService* osService = nullptr;
         std::unique_ptr<Displayer> fadeDisplayer;
 
         std::optional<ESceneState> pendingScene;
 
         bool cutsceneContextPushed = false;
-        bool menuJustClosed = false;
 
         EventHandle stageClearHandle;
         EventHandle stageFailHandle;
@@ -303,8 +236,8 @@ namespace mc {
     };
 
     std::unique_ptr<ISceneService> CreateSceneService(IRenderService* renderService, IInputService* inputService,
-                                                      IAssetService* assetService, IOSService* osService)
+                                                      IOSService* osService)
     {
-        return std::make_unique<SceneService>(renderService, inputService, assetService, osService);
+        return std::make_unique<SceneService>(renderService, inputService, osService);
     }
 } // namespace mc

@@ -14,6 +14,7 @@ import ConfigService;
 import Player;
 import Enemy;
 import ButtonGroup;
+import AssetEnumMapper;
 namespace mc {
     float StepTowards(float current, float target, float step)
     {
@@ -22,48 +23,20 @@ namespace mc {
         return target;
     }
 
-    static ESound GetAttackSound(ESprite sprite)
-    {
-        switch (sprite)
-        {
-        case ESprite::MeowingCat:
-            return ESound::CatAttack;
-        case ESprite::Wolf:
-        case ESprite::TimberWolf:
-        case ESprite::SnowFox:
-        case ESprite::Bunny:
-        case ESprite::StinkySkunk:
-            return ESound::WolfAttack;
-        case ESprite::DaintyPig:
-        case ESprite::MadBoar:
-        case ESprite::SlowTurtle:
-        case ESprite::SpikeyPorcupine:
-        case ESprite::CoralCrab:
-            return ESound::PigAttack;
-        case ESprite::PasturingSheep:
-        case ESprite::CluckingChicken:
-        case ESprite::TinyChick:
-        case ESprite::HonkingGoose:
-        case ESprite::CroakingToad:
-        case ESprite::LeapingFrog:
-            return ESound::SheepAttack;
-        default:
-            return ESound::CatAttack;
-        }
-    }
-
     class AudioService : public IAudioService
     {
     public:
-        AudioService(IConfigService& config, IAssetService& asset, IBattleService& character)
-            : configService(config), assetService(asset), characterService(character)
+        AudioService(IPersistenceService& persistence, IAssetService& asset, IBattleService& character)
+            : persistenceService(persistence)
+            , assetService(asset)
+            , characterService(character)
         {
-            if (!configService.LoadSoundSettings(masterLevel, bgmLevel, sfxLevel))
+            if (!persistenceService.LoadSoundSettings(masterLevel, bgmLevel, sfxLevel))
             {
                 masterLevel = 4;
                 bgmLevel = 4;
                 sfxLevel = 4;
-                configService.SaveSoundSettings(4, 4, 4);
+                persistenceService.SaveSoundSettings(4, 4, 4);
             }
             masterLevel = std::clamp(masterLevel, 0, 4);
             bgmLevel = std::clamp(bgmLevel, 0, 4);
@@ -124,7 +97,7 @@ namespace mc {
     private:
         void PersistVolumeSettings() const
         {
-            configService.SaveSoundSettings(masterLevel, bgmLevel, sfxLevel);
+            persistenceService.SaveSoundSettings(masterLevel, bgmLevel, sfxLevel);
         }
 
         /// @brief BGM の DxLib 音量値を計算する（bgmLevel × masterLevel のスケール）
@@ -261,7 +234,7 @@ namespace mc {
             auto tags = e.Victim->GetTags();
             if (std::ranges::find(tags, ETag::Player) != tags.end())
             {
-                ESound soundId = GetAttackSound(characterService.GetEnemy().GetSprite());
+                ESound soundId = SpriteToAttackSound(characterService.GetEnemy().GetSprite());
                 PlaySfx(assetService.GetSoundHandle(soundId));
                 const auto& player = characterService.GetPlayer();
                 const auto& healthComp = player.GetHealthComponent();
@@ -270,7 +243,7 @@ namespace mc {
             }
             else if (std::ranges::find(tags, ETag::Enemy) != tags.end())
             {
-                ESound soundId = GetAttackSound(characterService.GetPlayer().GetSprite());
+                ESound soundId = SpriteToAttackSound(characterService.GetPlayer().GetSprite());
                 PlaySfx(assetService.GetSoundHandle(soundId));
             }
         }
@@ -305,7 +278,7 @@ namespace mc {
             SetBgmTarget(0.f);
         }
 
-        IConfigService& configService;
+        IPersistenceService& persistenceService;
         IAssetService& assetService;
         IBattleService& characterService;
         std::vector<EventHandle> eventHandles;
@@ -323,17 +296,17 @@ namespace mc {
         static constexpr float BGM_FADE_TIME = 1.5f;
 
         /// @brief 音量レベル（0–4）を DxLib の音量値（0–255）にマッピングする
-        /// 仕様: level v → {0, 51, 102, 153, 204, 255}[v]
-        /// 配列サイズ 6 は仕様の完全な表をそのまま持つため（有効インデックスは 0–4）
+        /// 仕様: level v → {0xAF, 0xBF, 0xCF, 0xDF, 0xFF}[v]
+        /// 配列サイズ 5（有効インデックスは 0–4）
         static constexpr int VOLUME_LEVEL_MAP[5] = {
             0xAF, 0xBF, 0xCF, 0xDF, 0xFF
         };
     };
 
-    std::unique_ptr<IAudioService> CreateAudioService(IConfigService& configService,
+    std::unique_ptr<IAudioService> CreateAudioService(IPersistenceService& persistenceService,
                                                       IAssetService& assetService,
                                                       IBattleService& characterService)
     {
-        return std::make_unique<AudioService>(configService, assetService, characterService);
+        return std::make_unique<AudioService>(persistenceService, assetService, characterService);
     }
 } // namespace mc

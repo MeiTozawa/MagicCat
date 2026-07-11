@@ -38,4 +38,35 @@ namespace mc {
             return EImage::Null;
         }
     }
+
+    /// @brief ESprite → ESound（攻撃音）変換。未知の値は ESound::CatAttack を返す
+    export ESound SpriteToAttackSound(ESprite sprite)
+    {
+        switch (sprite)
+        {
+        case ESprite::MeowingCat:
+            return ESound::CatAttack;
+        case ESprite::Wolf:
+        case ESprite::TimberWolf:
+        case ESprite::SnowFox:
+        case ESprite::Bunny:
+        case ESprite::StinkySkunk:
+            return ESound::WolfAttack;
+        case ESprite::DaintyPig:
+        case ESprite::MadBoar:
+        case ESprite::SlowTurtle:
+        case ESprite::SpikeyPorcupine:
+        case ESprite::CoralCrab:
+            return ESound::PigAttack;
+        case ESprite::PasturingSheep:
+        case ESprite::CluckingChicken:
+        case ESprite::TinyChick:
+        case ESprite::HonkingGoose:
+        case ESprite::CroakingToad:
+        case ESprite::LeapingFrog:
+            return ESound::SheepAttack;
+        default:
+            return ESound::CatAttack;
+        }
+    }
 }

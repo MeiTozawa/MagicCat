@@ -5,6 +5,7 @@ export module AudioService;
 import AssetService;
 import BattleService;
 import ConfigService;
+import PersistenceService;
 
 namespace mc {
     
@@ -45,7 +46,7 @@ namespace mc {
         virtual void SetSfxVolume(int level) = 0;
     };
 
-    export std::unique_ptr<IAudioService> CreateAudioService(IConfigService& configService,
+    export std::unique_ptr<IAudioService> CreateAudioService(IPersistenceService& persistenceService,
                                                              IAssetService& assetService,
                                                              IBattleService& characterService);
 } // namespace mc

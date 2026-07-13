@@ -23,6 +23,12 @@ public:
     MOCK_METHOD(const std::vector<EnemyConfig>&, GetEnemyConfigs, (), (const, override));
     MOCK_METHOD(const PlayerConfig&, GetPlayerConfig, (), (const, override));
     MOCK_METHOD(const GameConfig&, GetGameConfig, (), (const, override));
+    
+    // Storage for configs to return by reference
+    std::vector<CardConfig> cardConfigs;
+    std::vector<EnemyConfig> enemyConfigs;
+    PlayerConfig playerConfig;
+    GameConfig gameConfig;
 };
 
 /// @brief IPersistenceService のみをモックする（音量設定・存档 R/W 5 メソッド）

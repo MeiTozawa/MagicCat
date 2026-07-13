@@ -43,6 +43,18 @@ add_executable(MagicCatTests
     test_SaveLoad.cpp
     test_exit_panel.cpp
     test_menu_scene.cpp
+    test_enterprise_quality_contracts.cpp
+    test_magiccat_preservation.cpp
+    test_scene_lifecycle_contracts.cpp
+    test_service_boundaries.cpp
+    test_frame_stability.cpp
+    test_ownership_lifetime_safety.cpp
+    test_external_operation_error_handling.cpp
+    test_resource_validation.cpp
+    test_deterministic_randomness.cpp
+    test_save_panel.cpp
+    test_japanese_localization_layout.cpp
+    test_maintainability_guardrails.cpp
 )
 
 target_compile_features(MagicCatTests PRIVATE cxx_std_23)

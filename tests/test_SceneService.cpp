@@ -172,7 +172,7 @@ protected:
     NiceMock<MockAssetService>  mockAsset;
     NiceMock<MockOSService>     mockOS;
 
-    std::unique_ptr<MenuIconDisplayer> controller;
+    std::unique_ptr<IDisplayer> controller;
 
     void SetUp() override {
         // デフォルト: クリックなし、マウスポジション原点（ホバーなし）

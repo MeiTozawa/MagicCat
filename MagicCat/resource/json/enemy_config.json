@@ -1,27 +1,27 @@
 [
   {
     "hp": 10,
-    "baseWeight": 8,
-    "rockDamage": 3,
+    "baseWeight": 2,
+    "rockDamage": 2,
     "scissorsDamage": 2,
     "paperDamage": 2,
     "name": "イノシシ",
     "sprite": "MadBoar"
   },
   {
-    "hp": 7,
-    "baseWeight": 6,
-    "rockDamage": 3,
-    "scissorsDamage": 3,
-    "paperDamage": 3,
+    "hp": 8,
+    "baseWeight": 4,
+    "rockDamage": 2,
+    "scissorsDamage": 2,
+    "paperDamage": 2,
     "name": "ヒツジ",
     "sprite": "PasturingSheep"
   },
   {
-    "hp": 5,
-    "baseWeight": 4,
+    "hp": 6,
+    "baseWeight": 6,
     "rockDamage": 2,
-    "scissorsDamage": 4,
+    "scissorsDamage": 2,
     "paperDamage": 2,
     "name": "オオカミ",
     "sprite": "TimberWolf"

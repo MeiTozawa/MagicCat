@@ -70,8 +70,9 @@ namespace mc {
             }
             renderService.DrawRotaGraphF(NEXT_PAGE_ICON_X, FOOTER_TEXT_Y, 0.5, 0.0, icon, true);
             renderService.DrawCenterString(WINDOW_WIDTH / 2, FOOTER_TEXT_Y, L"でページ切替", COLOR_TEXT_NORMAL);
-            
-            renderService.DrawCenterString(GetX() + PAGE_COUNT_OFFSET_X, FOOTER_TEXT_Y, 
+
+            renderService.DrawCenterString(
+                GetX() + PAGE_COUNT_OFFSET_X, FOOTER_TEXT_Y,
                 std::format(L"{}/{} ページ", currentPage + 1, PAGE_COUNT).c_str(), COLOR_TEXT_NORMAL);
         }
 
@@ -84,9 +85,16 @@ namespace mc {
             renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + LINE_SPACING * 2,
                                      L"攻撃した後、ターンが終了します。", COLOR_TEXT_RED);
             renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + LINE_SPACING * 3,
-                                     L"ターンが終了すると、敵のウェートの変更値はリセットされます。", COLOR_TEXT_RED);
+                                     L"ターンが終了すると、敵の⚖の変更値はリセットされます。", COLOR_TEXT_RED);
             renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + LINE_SPACING * 4,
                                      L"ターンが終了すると、手札は捨て札に捨てられます。", COLOR_TEXT_RED);
+
+            renderService.DrawString(GetX() + INDENT_LEVEL_1, GetY() + SECTION_SPACING,
+                                     L"表示される記号の意味：", COLOR_TEXT_NORMAL);
+            renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + SECTION_SPACING + LINE_SPACING,
+                                     L"⚖：敵がその手を出す確率の高さ。大きいほど出しやすい。", COLOR_TEXT_RED);
+            renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + SECTION_SPACING + LINE_SPACING * 2,
+                                     L"⚔：その手で勝った時に相手に与えるダメージ量。", COLOR_TEXT_RED);
         }
 
         void DrawPage1() const
@@ -96,13 +104,15 @@ namespace mc {
             renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + LINE_SPACING,
                                      L"魔法カード：MPが回復します。", COLOR_TEXT_BLUE);
             renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + LINE_SPACING * 2,
-                                     L"じゃんけんカード：敵の該当する攻撃のウェイトが上昇します。", COLOR_TEXT_GREEN);
-            renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + LINE_SPACING * 4,
-                                     L"手札は4枚までです。", COLOR_TEXT_GREEN);
+                                     L"じゃんけんカード：敵の該当する攻撃の⚖が上昇します。", COLOR_TEXT_GREEN);
+            renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + LINE_SPACING * 3,
+                                     L"カードは即座に発動されます。", COLOR_TEXT_RED);
             renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + LINE_SPACING * 5,
-                                     L"山札がなくなった場合、自動的に捨て札をシャッフルして、", COLOR_TEXT_RED);
+                                     L"手札は4枚までです。", COLOR_TEXT_GREEN);
             renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + LINE_SPACING * 6,
-                                     L"それをドロー山札として再構成する。", COLOR_TEXT_RED);
+                                     L"山札がなくなった場合、自動的に捨て札をシャッフルして、", COLOR_TEXT_RED);
+            renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + LINE_SPACING * 7,
+                                     L"それをドロー山札として再構成します。", COLOR_TEXT_RED);
         }
 
         void DrawPage2() const
@@ -115,12 +125,6 @@ namespace mc {
                                      L"【⚔UP】制限なし。そのターンの間、自分の攻撃力が+2される。", COLOR_TEXT_BLUE);
             renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + LINE_SPACING * 3,
                                      L"【回復】1バトルに3回まで。自分のHPを2回復する。", COLOR_TEXT_BLUE);
-            renderService.DrawString(GetX() + INDENT_LEVEL_1, GetY() + SECTION_SPACING,
-                                     L"表示される記号の意味：", COLOR_TEXT_NORMAL);
-            renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + SECTION_SPACING + LINE_SPACING,
-                                     L"⚖：敵がその手を出す確率の高さ。大きいほど出しやすい。", COLOR_TEXT_RED);
-            renderService.DrawString(GetX() + INDENT_LEVEL_2, GetY() + SECTION_SPACING + LINE_SPACING * 2,
-                                     L"⚔：その手で勝った時に相手に与えるダメージ量。", COLOR_TEXT_RED);
         }
 
         IInputService& inputService;
@@ -128,7 +132,6 @@ namespace mc {
         IAssetService& assetService;
         int currentPage = 0;
 
-    private:
         static constexpr int LINE_SPACING = 60;
         static constexpr int INDENT_LEVEL_1 = 50;
         static constexpr int INDENT_LEVEL_2 = 80;

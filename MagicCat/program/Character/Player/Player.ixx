@@ -141,6 +141,13 @@ namespace mc {
         /// @param value 設定するフラグ値
         void SetHasUsedClairvoyance(bool value) { hasUsedClairvoyance = value; }
 
+        /// @brief 戦闘ごとの魔法使用制限をリセットする
+        void ResetBattleMagicUses()
+        {
+            healUses = 0;
+            hasUsedClairvoyance = false;
+        }
+
         /// @brief 指定した魔法が使用可能か（MPや回数の制限をクリアしているか）判定する
         /// @param e 魔法の種類
         /// @return 使用可能ならtrue、そうでなければfalse

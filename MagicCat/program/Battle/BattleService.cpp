@@ -216,6 +216,8 @@ namespace mc {
 
             if (isEnemy)
             {
+                currentPlayer->ResetBattleMagicUses();
+
                 if (currentIndex < static_cast<int>(sequence.size()) - 1)
                 {
                     int prevIndex = currentIndex;

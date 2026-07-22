@@ -135,7 +135,7 @@ namespace mc {
         static constexpr int LINE_SPACING = 60;
         static constexpr int INDENT_LEVEL_1 = 50;
         static constexpr int INDENT_LEVEL_2 = 80;
-        static constexpr int SECTION_SPACING = 280;
+        static constexpr int SECTION_SPACING = 320;
         static constexpr int PAGE_COUNT = 3;
         static constexpr int PAGE_COUNT_OFFSET_X = 150;
         static constexpr int NEXT_PAGE_ICON_X = 780;

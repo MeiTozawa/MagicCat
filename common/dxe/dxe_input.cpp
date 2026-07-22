@@ -408,6 +408,8 @@ namespace dxe {
 		memset(btn_trg_down, 0, sizeof(btn_trg_down));
 		memset(btn_trg_release, 0, sizeof(btn_trg_release));
 
+		if (GetWindowActiveFlag() == FALSE) return;
+
 		for (int32_t i = 0; i < static_cast<int32_t>( eButton::UNIQUE_DEVICE_BUTTON_MAX ); ++i) {
 			bool f_on_bit = false;
 			if (i < static_cast<int32_t>(eButton::KB_MAX))			f_on_bit = CheckHitKey( dxlib_button_table_[i] );

@@ -105,6 +105,8 @@ namespace mc {
     private:
         void UpdateFocusFromMouse()
         {
+            if (inputService.GetActiveDevice() != InputDevice::Mouse) return;
+
             for (int i = 0; i < static_cast<int>(rects.size()); ++i)
             {
                 if (inputService.IsMouseOver(rects[i]))
@@ -121,6 +123,12 @@ namespace mc {
 
         void UpdateCursor() const
         {
+            if (inputService.GetActiveDevice() != InputDevice::Mouse)
+            {
+                osService.SetCursorArrow();
+                return;
+            }
+
             for (const auto& r : rects)
             {
                 if (inputService.IsMouseOver(r))
